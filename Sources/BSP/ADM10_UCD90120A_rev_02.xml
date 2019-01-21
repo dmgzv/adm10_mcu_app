@@ -1,0 +1,4628 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Version>1</Version>
+  <Timestamp>2019-01-09T16:34:23.9104242+03:00</Timestamp>
+  <Creator>Texas Instruments Fusion Digital Power Designer v7.0.25.0 [2018-02-01]</Creator>
+  <Devices>
+    <Device>
+      <PartID>UCD90120A</PartID>
+      <Address>126</Address>
+      <Is_Offline>true</Is_Offline>
+      <SAA_Number>1</SAA_Number>
+      <Device_ID>UCD90120A|2.3.4.0000|110603</Device_ID>
+      <Write_Protected>false</Write_Protected>
+      <Package>64</Package>
+      <Command_Device_Configs>
+        <item>
+          <key>
+            <unsignedByte>0</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>1</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>2</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>3</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>17</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>25</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>32</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>33</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>37</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>38</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>42</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>56</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>57</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>64</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>66</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>67</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>68</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>70</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>74</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>75</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>79</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>81</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>94</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>95</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>96</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>98</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>100</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>102</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>120</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>121</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>122</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>123</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>125</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>126</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>139</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>140</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>141</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>142</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>152</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>153</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>154</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>155</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>156</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>157</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>158</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>209</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>210</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>211</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>212</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>213</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>214</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>215</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>216</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>217</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>218</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>219</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>220</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>221</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>222</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>223</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>224</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>225</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>226</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>227</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>228</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>229</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>233</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>234</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>235</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>236</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>237</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>238</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>239</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>240</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>241</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>243</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>245</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>246</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>true</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>247</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>248</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>249</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>250</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>251</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>252</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+        <item>
+          <key>
+            <unsignedByte>253</unsignedByte>
+          </key>
+          <value>
+            <CommandDeviceConfiguration>
+              <Is_Paged>false</Is_Paged>
+            </CommandDeviceConfiguration>
+          </value>
+        </item>
+      </Command_Device_Configs>
+      <Num_Outputs>5</Num_Outputs>
+      <Parameters>
+        <Parameter>
+          <ID>PWM_CONFIG_0</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_0 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 0; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000008000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_1</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_1 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 1; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000008000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_2</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_2 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 2; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000008000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_3</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_3 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 3; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000008000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_4</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_4 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 4; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000008000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_5</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_5 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 5; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000008000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_6</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_6 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 6; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000008000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_7</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_7 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 7; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000008000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_8</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_8 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 8; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_9</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_9 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 9; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_10</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_10 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 10; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PWM_CONFIG_11</ID>
+          <Code>225</Code>
+          <IDAndCode>PWM_CONFIG_11 [MFR 17,0xE1]</IDAndCode>
+          <ValueText>Pin_ID = 11; Duty Cycle: 0,0 %; Frequency: 0 Hz; Phase: 0,0 deg</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x8800000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_0</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_0 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_1</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_1 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_2</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_2 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_3</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_3 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_4</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_4 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_5</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_5 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_6</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_6 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_7</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_7 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_8</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_8 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_9</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_9 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_10</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_10 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_11</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_11 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_12</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_12 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_13</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_13 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_14</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_14 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_15</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_15 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_16</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_16 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_17</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_17 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: False</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_18</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_18 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_19</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_19 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_20</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_20 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_21</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_21 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_22</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_22 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_23</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_23 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_24</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_24 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPIO_CONFIG_25</ID>
+          <Code>251</Code>
+          <IDAndCode>GPIO_CONFIG_25 [MFR 43,0xFB]</IDAndCode>
+          <ValueText>Enable: False; Out_Enable: False; Out_Value: False; Status: True</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x08" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>CAPABILITY</ID>
+          <Code>25</Code>
+          <IDAndCode>CAPABILITY [0x19]</IDAndCode>
+          <ValueText>Max Bus: 400 Khz; PEC: Yes; SMBALERT#: Yes</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0xB0" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>CONSTANTS</ID>
+          <Code>223</Code>
+          <IDAndCode>CONSTANTS [MFR 15,0xDF]</IDAndCode>
+          <ValueText>Max # Digital Comparators: 6; Max # GPOs: 12; Max # GPIs: 8; Max # Pages: 12; Max # Fans: 0; Max # Monitors: 13; Max # Fault Detail Items: 16; Max # PWMs: 12</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x060C080C000D100C" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>DEVICE_ID</ID>
+          <Code>253</Code>
+          <IDAndCode>DEVICE_ID [MFR 45,0xFD]</IDAndCode>
+          <ValueText>UCD90120A|2.3.4.0000|110603</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x5543443930313230417C322E332E342E303030307C31313036303300" />
+          <ParameterType>String</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPI_CONFIG</ID>
+          <Code>249</Code>
+          <IDAndCode>GPI_CONFIG [MFR 41,0xF9]</IDAndCode>
+          <ValueText>Inputs: Unassigned;Unassigned;Unassigned;Unassigned;Unassigned;Unassigned;Unassigned;Unassigned;</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x00000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_1</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_1 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_2</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_2 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_3</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_3 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_4</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_4 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_5</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_5 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_6</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_6 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_7</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_7 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_8</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_8 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_9</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_9 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_10</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_10 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_11</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_11 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>GPO_CONFIG_12</ID>
+          <Code>248</Code>
+          <IDAndCode>GPO_CONFIG_12 [MFR 40,0xF8]</IDAndCode>
+          <ValueText>Unassigned; No Mask</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>LOGGED_COMMON_PEAKS</ID>
+          <Code>238</Code>
+          <IDAndCode>LOGGED_COMMON_PEAKS [MFR 30,0xEE]</IDAndCode>
+          <ValueText>Temp: 34 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x22" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>LOGGED_FAULT_DETAIL_ENABLES</ID>
+          <Code>239</Code>
+          <IDAndCode>LOGGED_FAULT_DETAIL_ENABLES [MFR 31,0xEF]</IDAndCode>
+          <ValueText>Common: &lt;EMPTY&gt;; GPI: &lt;empty&gt;; Rail #1: VOUT_OV,VOUT_UV,TON_MAX,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #2: VOUT_OV,VOUT_UV,TON_MAX,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #3: VOUT_OV,VOUT_UV,TON_MAX,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #4: VOUT_OV,VOUT_UV,TON_MAX,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #5: VOUT_OV,VOUT_UV,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #6: VOUT_OV,VOUT_UV,TON_MAX,IOUT_OC,IOUT_UC,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #7: VOUT_OV,VOUT_UV,TON_MAX,IOUT_OC,IOUT_UC,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #8: VOUT_OV,VOUT_UV,TON_MAX,IOUT_OC,IOUT_UC,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #9: VOUT_OV,VOUT_UV,TON_MAX,IOUT_OC,IOUT_UC,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #10: VOUT_OV,VOUT_UV,TON_MAX,IOUT_OC,IOUT_UC,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #11: VOUT_OV,VOUT_UV,TON_MAX,IOUT_OC,IOUT_UC,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT; Rail #12: VOUT_OV,VOUT_UV,TON_MAX,IOUT_OC,IOUT_UC,TEMPERATURE_OT,SEQ_ON_TIMEOUT,SEQ_OFF_TIMEOUT</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x0000E7E7E7E7E3FFFFFFFFFFFFFF" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>LOGGED_FAULTS2</ID>
+          <Code>234</Code>
+          <IDAndCode>LOGGED_FAULTS [MFR 26,0xEA]</IDAndCode>
+          <ValueText>Common: &lt;EMPTY&gt;; GPI: &lt;empty&gt;; Rail #1: &lt;EMPTY&gt;; Rail #2: &lt;EMPTY&gt;; Rail #3: &lt;EMPTY&gt;; Rail #4: &lt;EMPTY&gt;; Rail #5: &lt;EMPTY&gt;; Rail #6: &lt;EMPTY&gt;; Rail #7: &lt;EMPTY&gt;; Rail #8: &lt;EMPTY&gt;; Rail #9: &lt;EMPTY&gt;; Rail #10: &lt;EMPTY&gt;; Rail #11: &lt;EMPTY&gt;; Rail #12: &lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x0000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_DATE</ID>
+          <Code>157</Code>
+          <IDAndCode>MFR_DATE [0x9D]</IDAndCode>
+          <ValueText>YYMMDD</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x59594D4D4444" />
+          <ParameterType>String</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_ID</ID>
+          <Code>153</Code>
+          <IDAndCode>MFR_ID [0x99]</IDAndCode>
+          <ValueText>MFR_ID</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x4D46525F4944" />
+          <ParameterType>String</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_LOCATION</ID>
+          <Code>156</Code>
+          <IDAndCode>MFR_LOCATION [0x9C]</IDAndCode>
+          <ValueText>MFR_LOCATION</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x4D46525F4C4F434154494F4E" />
+          <ParameterType>String</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_MODEL</ID>
+          <Code>154</Code>
+          <IDAndCode>MFR_MODEL [0x9A]</IDAndCode>
+          <ValueText>MFR_MODEL</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x4D46525F4D4F44454C" />
+          <ParameterType>String</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_REVISION</ID>
+          <Code>155</Code>
+          <IDAndCode>MFR_REVISION [0x9B]</IDAndCode>
+          <ValueText>MFR_REVISION</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x4D46525F5245564953494F4E" />
+          <ParameterType>String</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_SERIAL</ID>
+          <Code>158</Code>
+          <IDAndCode>MFR_SERIAL [0x9E]</IDAndCode>
+          <ValueText>000000</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x303030303030" />
+          <ParameterType>String</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MISC_CONFIG</ID>
+          <Code>252</Code>
+          <IDAndCode>MISC_CONFIG [MFR 44,0xFC]</IDAndCode>
+          <ValueText>Time Between Resequences: 0 msec; Resequence Abort: no; Max Resequences: 1; FIFO Mode: Disabled; Brownout Enable: no</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x0000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MONITOR_CONFIG</ID>
+          <Code>213</Code>
+          <IDAndCode>MONITOR_CONFIG [MFR 05,0xD5]</IDAndCode>
+          <ValueText>Pin 1 MON1: Rail #1, Type Voltage; Pin 2 MON2: Rail #2, Type Voltage; Pin 3 MON3: Rail #3, Type Voltage; Pin 4 MON4: Not Assigned; Pin 5 MON5: Rail #4, Type Voltage; Pin 6 MON6: Rail #5, Type Voltage; Pin 59 MON7: Not Assigned; Pin 62 MON8: Not Assigned; Pin 63 MON9: Not Assigned; Pin 50 MON10: Not Assigned; Pin 52 MON11: Not Assigned; Pin 54 MON12: Not Assigned; Pin 56 MON13: Not Assigned</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x20212200232400000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>NUM_PAGES</ID>
+          <Code>214</Code>
+          <IDAndCode>NUM_PAGES [MFR 06,0xD6]</IDAndCode>
+          <ValueText>5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x05" />
+          <ParameterType>UnitlessZeroDigit</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PIN_SELECTED_RAIL_STATES</ID>
+          <Code>221</Code>
+          <IDAndCode>PIN_SELECTED_RAIL_STATES [MFR 13,0xDD]</IDAndCode>
+          <ValueText>State 0: Enabled=No, Turn Off Mode=ImmediateOff, Rails States= Rail #1 Off, Rail #2 Off, Rail #3 Off, Rail #4 Off, Rail #5 Off, Rail #6 Off, Rail #7 Off, Rail #8 Off, Rail #9 Off, Rail #10 Off, Rail #11 Off, Rail #12 Off; State 1: Enabled=No, Turn Off Mode=ImmediateOff, Rails States= Rail #1 Off, Rail #2 Off, Rail #3 Off, Rail #4 Off, Rail #5 Off, Rail #6 Off, Rail #7 Off, Rail #8 Off, Rail #9 Off, Rail #10 Off, Rail #11 Off, Rail #12 Off; State 2: Enabled=No, Turn Off Mode=ImmediateOff, Rails States= Rail #1 Off, Rail #2 Off, Rail #3 Off, Rail #4 Off, Rail #5 Off, Rail #6 Off, Rail #7 Off, Rail #8 Off, Rail #9 Off, Rail #10 Off, Rail #11 Off, Rail #12 Off; State 3: Enabled=No, Turn Off Mode=ImmediateOff, Rails States= Rail #1 Off, Rail #2 Off, Rail #3 Off, Rail #4 Off, Rail #5 Off, Rail #6 Off, Rail #7 Off, Rail #8 Off, Rail #9 Off, Rail #10 Off, Rail #11 Off, Rail #12 Off; State 4: Enabled=No, Turn Off Mode=ImmediateOff, Rails States= Rail #1 Off, Rail #2 Off, Rail #3 Off, Rail #4 Off, Rail #5 Off, Rail #6 Off, Rail #7 Off, Rail #8 Off, Rail #9 Off, Rail #10 Off, Rail #11 Off, Rail #12 Off; State 5: Enabled=No, Turn Off Mode=ImmediateOff, Rails States= Rail #1 Off, Rail #2 Off, Rail #3 Off, Rail #4 Off, Rail #5 Off, Rail #6 Off, Rail #7 Off, Rail #8 Off, Rail #9 Off, Rail #10 Off, Rail #11 Off, Rail #12 Off; State 6: Enabled=No, Turn Off Mode=ImmediateOff, Rails States= Rail #1 Off, Rail #2 Off, Rail #3 Off, Rail #4 Off, Rail #5 Off, Rail #6 Off, Rail #7 Off, Rail #8 Off, Rail #9 Off, Rail #10 Off, Rail #11 Off, Rail #12 Off; State 7: Enabled=No, Turn Off Mode=ImmediateOff, Rails States= Rail #1 Off, Rail #2 Off, Rail #3 Off, Rail #4 Off, Rail #5 Off, Rail #6 Off, Rail #7 Off, Rail #8 Off, Rail #9 Off, Rail #10 Off, Rail #11 Off, Rail #12 Off</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>PMBUS_REVISION</ID>
+          <Code>152</Code>
+          <IDAndCode>PMBUS_REVISION [0x98]</IDAndCode>
+          <ValueText>1,1,1,1 - Part I: 1,1, Part II: 1,1</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x21" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Manufacturer</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_TEMPERATURE_1</ID>
+          <Code>141</Code>
+          <IDAndCode>READ_TEMPERATURE_1 [0x8D]</IDAndCode>
+          <ValueText>33 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xE214" />
+          <ValueNumeric>33.25</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>RESET_COUNT2</ID>
+          <Code>220</Code>
+          <IDAndCode>RESET_COUNT [MFR 12,0xDC]</IDAndCode>
+          <ValueText>0 </ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>UnitlessZeroDigit</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>REAL_TIME_CLOCK</ID>
+          <Code>215</Code>
+          <IDAndCode>RUN_TIME_CLOCK [MFR 07,0xD7]</IDAndCode>
+          <ValueText>2011-03-23 11:49:44.360</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x0289C928000B340A" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>REAL_TIME_CLOCK_TRIM</ID>
+          <Code>216</Code>
+          <IDAndCode>RUN_TIME_CLOCK_TRIM [MFR 08,0xD8]</IDAndCode>
+          <ValueText>0,00 %</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8800" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Percent</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_BYTE</ID>
+          <Code>120</Code>
+          <IDAndCode>STATUS_BYTE [0x78]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_CML</ID>
+          <Code>126</Code>
+          <IDAndCode>STATUS_CML [0x7E]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_WORD</ID>
+          <Code>121</Code>
+          <IDAndCode>STATUS_WORD [0x79]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SYSTEM_RESET_CONFIG</ID>
+          <Code>210</Code>
+          <IDAndCode>SYSTEM_RESET_CONFIG [MFR 02,0xD2]</IDAndCode>
+          <ValueText>Disabled</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SYSTEM_WATCHDOG_CONFIG</ID>
+          <Code>211</Code>
+          <IDAndCode>SYSTEM_WATCHDOG_CONFIG [MFR 03,0xD3]</IDAndCode>
+          <ValueText>Disabled</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x00000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>255</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #1]</IDAndCode>
+          <ValueText>EXP -14</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x12" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>FAULT_RESPONSES</ID>
+          <Code>233</Code>
+          <IDAndCode>FAULT_RESPONSES [MFR 25,0xE9,Rail #1]</IDAndCode>
+          <ValueText>Retry Time: 0 msec| Max Volt Glitch Time: 0,0 msec| Max Other Glitch Time: 0 msec| VOUT_OV: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| VOUT_UV: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_OC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_UC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| OT: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| TON_MAX: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_GAIN</ID>
+          <Code>56</Code>
+          <IDAndCode>IOUT_CAL_GAIN [0x38,Rail #1]</IDAndCode>
+          <ValueText>10,0000 mΩ</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xD280" />
+          <ValueNumeric>10</ValueNumeric>
+          <ParameterType>Resistance</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_OFFSET</ID>
+          <Code>57</Code>
+          <IDAndCode>IOUT_CAL_OFFSET [0x39,Rail #1]</IDAndCode>
+          <ValueText>0,000000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>CurrentCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_FAULT_LIMIT</ID>
+          <Code>70</Code>
+          <IDAndCode>IOUT_OC_FAULT_LIMIT [0x46,Rail #1]</IDAndCode>
+          <ValueText>20,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xDA80" />
+          <ValueNumeric>20</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_WARN_LIMIT</ID>
+          <Code>74</Code>
+          <IDAndCode>IOUT_OC_WARN_LIMIT [0x4A,Rail #1]</IDAndCode>
+          <ValueText>15,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xD3C0" />
+          <ValueNumeric>15</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_UC_FAULT_LIMIT</ID>
+          <Code>75</Code>
+          <IDAndCode>IOUT_UC_FAULT_LIMIT [0x4B,Rail #1]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>LOGGED_PAGE_PEAKS</ID>
+          <Code>237</Code>
+          <IDAndCode>LOGGED_PAGE_PEAKS [MFR 29,0xED,Rail #1]</IDAndCode>
+          <ValueText>Voltage: 0,000 V, Current: 0,00 A, Temp: 0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x0000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #1]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_STATUS</ID>
+          <Code>243</Code>
+          <IDAndCode>MFR_STATUS [MFR 35,0xF3,Rail #1]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x00000000" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>ON_OFF_CONFIG</ID>
+          <Code>2</Code>
+          <IDAndCode>ON_OFF_CONFIG [0x02,Rail #1]</IDAndCode>
+          <ValueText>Mode: Always Converting</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OPERATION</ID>
+          <Code>1</Code>
+          <IDAndCode>OPERATION [0x01,Rail #1]</IDAndCode>
+          <ValueText>Unit: On; Margin: None</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x80" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_FAULT_LIMIT</ID>
+          <Code>79</Code>
+          <IDAndCode>OT_FAULT_LIMIT [0x4F,Rail #1]</IDAndCode>
+          <ValueText>255 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xF3FC" />
+          <ValueNumeric>255</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_WARN_LIMIT</ID>
+          <Code>81</Code>
+          <IDAndCode>OT_WARN_LIMIT [0x51,Rail #1]</IDAndCode>
+          <ValueText>255 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xF3FC" />
+          <ValueNumeric>255</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_OFF</ID>
+          <Code>95</Code>
+          <IDAndCode>POWER_GOOD_OFF [0x5F,Rail #1]</IDAndCode>
+          <ValueText>0,765 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x30F6" />
+          <ValueNumeric>0.765</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_ON</ID>
+          <Code>94</Code>
+          <IDAndCode>POWER_GOOD_ON [0x5E,Rail #1]</IDAndCode>
+          <ValueText>0,810 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x33D7" />
+          <ValueNumeric>0.81</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_IOUT</ID>
+          <Code>140</Code>
+          <IDAndCode>READ_IOUT [0x8C,Rail #1]</IDAndCode>
+          <ValueText>0,00 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_TEMPERATURE_2</ID>
+          <Code>142</Code>
+          <IDAndCode>READ_TEMPERATURE_2 [0x8E,Rail #1]</IDAndCode>
+          <ValueText>33 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xE214" />
+          <ValueNumeric>33.25</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_VOUT</ID>
+          <Code>139</Code>
+          <IDAndCode>READ_VOUT [0x8B,Rail #1]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0002" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #1]</IDAndCode>
+          <ValueText>Rail On Dep: Rail #5 | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: Rail #2,3,4 | Enable: Pin 11 GPIO1 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x93000000000000100000000E" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_IOUT</ID>
+          <Code>123</Code>
+          <IDAndCode>STATUS_IOUT [0x7B,Rail #1]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_TEMPERATURE</ID>
+          <Code>125</Code>
+          <IDAndCode>STATUS_TEMPERATURE [0x7D,Rail #1]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_VOUT</ID>
+          <Code>122</Code>
+          <IDAndCode>STATUS_VOUT [0x7A,Rail #1]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_GAIN</ID>
+          <Code>228</Code>
+          <IDAndCode>TEMPERATURE_CAL_GAIN [MFR 20,0xE4,Rail #1]</IDAndCode>
+          <ValueText>100,0 °C/V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xEB20" />
+          <ValueNumeric>100</ValueNumeric>
+          <ParameterType>TemperatureGain</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_OFFSET</ID>
+          <Code>229</Code>
+          <IDAndCode>TEMPERATURE_CAL_OFFSET [MFR 21,0xE5,Rail #1]</IDAndCode>
+          <ValueText>0,00 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TemperatureCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_DELAY</ID>
+          <Code>100</Code>
+          <IDAndCode>TOFF_DELAY [0x64,Rail #1]</IDAndCode>
+          <ValueText>0,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_MAX_WARN_LIMIT</ID>
+          <Code>102</Code>
+          <IDAndCode>TOFF_MAX_WARN_LIMIT [0x66,Rail #1]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x7FFF" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_DELAY</ID>
+          <Code>96</Code>
+          <IDAndCode>TON_DELAY [0x60,Rail #1]</IDAndCode>
+          <ValueText>500,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xFBE8" />
+          <ValueNumeric>500</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_MAX_FAULT_LIMIT</ID>
+          <Code>98</Code>
+          <IDAndCode>TON_MAX_FAULT_LIMIT [0x62,Rail #1]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_CAL_MONITOR</ID>
+          <Code>209</Code>
+          <IDAndCode>VOUT_CAL_MONITOR [MFR 01,0xD1,Rail #1]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_COMMAND</ID>
+          <Code>33</Code>
+          <IDAndCode>VOUT_COMMAND [0x21,Rail #1]</IDAndCode>
+          <ValueText>0,900 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x399A" />
+          <ValueNumeric>0.9</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_HIGH</ID>
+          <Code>37</Code>
+          <IDAndCode>VOUT_MARGIN_HIGH [0x25,Rail #1]</IDAndCode>
+          <ValueText>0,945 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3C7B" />
+          <ValueNumeric>0.945</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_LOW</ID>
+          <Code>38</Code>
+          <IDAndCode>VOUT_MARGIN_LOW [0x26,Rail #1]</IDAndCode>
+          <ValueText>0,855 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x36B8" />
+          <ValueNumeric>0.855</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_FAULT_LIMIT</ID>
+          <Code>64</Code>
+          <IDAndCode>VOUT_OV_FAULT_LIMIT [0x40,Rail #1]</IDAndCode>
+          <ValueText>1,035 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x423D" />
+          <ValueNumeric>1.035</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_WARN_LIMIT</ID>
+          <Code>66</Code>
+          <IDAndCode>VOUT_OV_WARN_LIMIT [0x42,Rail #1]</IDAndCode>
+          <ValueText>0,990 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3F5C" />
+          <ValueNumeric>0.99</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_SCALE_MONITOR</ID>
+          <Code>42</Code>
+          <IDAndCode>VOUT_SCALE_MONITOR [0x2A,Rail #1]</IDAndCode>
+          <ValueText>1,000 </ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xBA00" />
+          <ValueNumeric>1</ValueNumeric>
+          <ParameterType>UnitlessThreeDigit</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_FAULT_LIMIT</ID>
+          <Code>68</Code>
+          <IDAndCode>VOUT_UV_FAULT_LIMIT [0x44,Rail #1]</IDAndCode>
+          <ValueText>0,765 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x30F6" />
+          <ValueNumeric>0.765</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_WARN_LIMIT</ID>
+          <Code>67</Code>
+          <IDAndCode>VOUT_UV_WARN_LIMIT [0x43,Rail #1]</IDAndCode>
+          <ValueText>0,810 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x33D7" />
+          <ValueNumeric>0.81</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>0</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #2]</IDAndCode>
+          <ValueText>EXP -14</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x12" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>FAULT_RESPONSES</ID>
+          <Code>233</Code>
+          <IDAndCode>FAULT_RESPONSES [MFR 25,0xE9,Rail #2]</IDAndCode>
+          <ValueText>Retry Time: 0 msec| Max Volt Glitch Time: 0,0 msec| Max Other Glitch Time: 0 msec| VOUT_OV: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| VOUT_UV: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_OC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_UC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| OT: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| TON_MAX: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_GAIN</ID>
+          <Code>56</Code>
+          <IDAndCode>IOUT_CAL_GAIN [0x38,Rail #2]</IDAndCode>
+          <ValueText>0,6113 mΩ</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xB272" />
+          <ValueNumeric>0.6113</ValueNumeric>
+          <ParameterType>Resistance</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_OFFSET</ID>
+          <Code>57</Code>
+          <IDAndCode>IOUT_CAL_OFFSET [0x39,Rail #2]</IDAndCode>
+          <ValueText>0,000000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>CurrentCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_FAULT_LIMIT</ID>
+          <Code>70</Code>
+          <IDAndCode>IOUT_OC_FAULT_LIMIT [0x46,Rail #2]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_WARN_LIMIT</ID>
+          <Code>74</Code>
+          <IDAndCode>IOUT_OC_WARN_LIMIT [0x4A,Rail #2]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_UC_FAULT_LIMIT</ID>
+          <Code>75</Code>
+          <IDAndCode>IOUT_UC_FAULT_LIMIT [0x4B,Rail #2]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>LOGGED_PAGE_PEAKS</ID>
+          <Code>237</Code>
+          <IDAndCode>LOGGED_PAGE_PEAKS [MFR 29,0xED,Rail #2]</IDAndCode>
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #2]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_STATUS</ID>
+          <Code>243</Code>
+          <IDAndCode>MFR_STATUS [MFR 35,0xF3,Rail #2]</IDAndCode>
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>ON_OFF_CONFIG</ID>
+          <Code>2</Code>
+          <IDAndCode>ON_OFF_CONFIG [0x02,Rail #2]</IDAndCode>
+          <ValueText>Mode: Always Converting</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OPERATION</ID>
+          <Code>1</Code>
+          <IDAndCode>OPERATION [0x01,Rail #2]</IDAndCode>
+          <ValueText>Unit: ImmediateOff; Margin: None</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_FAULT_LIMIT</ID>
+          <Code>79</Code>
+          <IDAndCode>OT_FAULT_LIMIT [0x4F,Rail #2]</IDAndCode>
+          <ValueText>0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_WARN_LIMIT</ID>
+          <Code>81</Code>
+          <IDAndCode>OT_WARN_LIMIT [0x51,Rail #2]</IDAndCode>
+          <ValueText>0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_OFF</ID>
+          <Code>95</Code>
+          <IDAndCode>POWER_GOOD_OFF [0x5F,Rail #2]</IDAndCode>
+          <ValueText>0,808 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x33AE" />
+          <ValueNumeric>0.808</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_ON</ID>
+          <Code>94</Code>
+          <IDAndCode>POWER_GOOD_ON [0x5E,Rail #2]</IDAndCode>
+          <ValueText>0,855 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x36B8" />
+          <ValueNumeric>0.855</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_IOUT</ID>
+          <Code>140</Code>
+          <IDAndCode>READ_IOUT [0x8C,Rail #2]</IDAndCode>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_TEMPERATURE_2</ID>
+          <Code>142</Code>
+          <IDAndCode>READ_TEMPERATURE_2 [0x8E,Rail #2]</IDAndCode>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_VOUT</ID>
+          <Code>139</Code>
+          <IDAndCode>READ_VOUT [0x8B,Rail #2]</IDAndCode>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #2]</IDAndCode>
+          <ValueText>Rail On Dep: Rail #5 | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Pin 12 GPIO2 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x9B0000000000001000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_IOUT</ID>
+          <Code>123</Code>
+          <IDAndCode>STATUS_IOUT [0x7B,Rail #2]</IDAndCode>
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_TEMPERATURE</ID>
+          <Code>125</Code>
+          <IDAndCode>STATUS_TEMPERATURE [0x7D,Rail #2]</IDAndCode>
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_VOUT</ID>
+          <Code>122</Code>
+          <IDAndCode>STATUS_VOUT [0x7A,Rail #2]</IDAndCode>
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_GAIN</ID>
+          <Code>228</Code>
+          <IDAndCode>TEMPERATURE_CAL_GAIN [MFR 20,0xE4,Rail #2]</IDAndCode>
+          <ValueText>0,0 °C/V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TemperatureGain</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_OFFSET</ID>
+          <Code>229</Code>
+          <IDAndCode>TEMPERATURE_CAL_OFFSET [MFR 21,0xE5,Rail #2]</IDAndCode>
+          <ValueText>0,00 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TemperatureCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_DELAY</ID>
+          <Code>100</Code>
+          <IDAndCode>TOFF_DELAY [0x64,Rail #2]</IDAndCode>
+          <ValueText>0,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_MAX_WARN_LIMIT</ID>
+          <Code>102</Code>
+          <IDAndCode>TOFF_MAX_WARN_LIMIT [0x66,Rail #2]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x7FFF" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_DELAY</ID>
+          <Code>96</Code>
+          <IDAndCode>TON_DELAY [0x60,Rail #2]</IDAndCode>
+          <ValueText>500,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xFBE8" />
+          <ValueNumeric>500</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_MAX_FAULT_LIMIT</ID>
+          <Code>98</Code>
+          <IDAndCode>TON_MAX_FAULT_LIMIT [0x62,Rail #2]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_CAL_MONITOR</ID>
+          <Code>209</Code>
+          <IDAndCode>VOUT_CAL_MONITOR [MFR 01,0xD1,Rail #2]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_COMMAND</ID>
+          <Code>33</Code>
+          <IDAndCode>VOUT_COMMAND [0x21,Rail #2]</IDAndCode>
+          <ValueText>0,950 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3CCD" />
+          <ValueNumeric>0.95</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_HIGH</ID>
+          <Code>37</Code>
+          <IDAndCode>VOUT_MARGIN_HIGH [0x25,Rail #2]</IDAndCode>
+          <ValueText>0,998 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3FD7" />
+          <ValueNumeric>0.998</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_LOW</ID>
+          <Code>38</Code>
+          <IDAndCode>VOUT_MARGIN_LOW [0x26,Rail #2]</IDAndCode>
+          <ValueText>0,903 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x39C3" />
+          <ValueNumeric>0.903</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_FAULT_LIMIT</ID>
+          <Code>64</Code>
+          <IDAndCode>VOUT_OV_FAULT_LIMIT [0x40,Rail #2]</IDAndCode>
+          <ValueText>1,093 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x45EC" />
+          <ValueNumeric>1.093</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_WARN_LIMIT</ID>
+          <Code>66</Code>
+          <IDAndCode>VOUT_OV_WARN_LIMIT [0x42,Rail #2]</IDAndCode>
+          <ValueText>1,045 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x42E1" />
+          <ValueNumeric>1.045</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_SCALE_MONITOR</ID>
+          <Code>42</Code>
+          <IDAndCode>VOUT_SCALE_MONITOR [0x2A,Rail #2]</IDAndCode>
+          <ValueText>1,000 </ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xBA00" />
+          <ValueNumeric>1</ValueNumeric>
+          <ParameterType>UnitlessThreeDigit</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_FAULT_LIMIT</ID>
+          <Code>68</Code>
+          <IDAndCode>VOUT_UV_FAULT_LIMIT [0x44,Rail #2]</IDAndCode>
+          <ValueText>0,808 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x33AE" />
+          <ValueNumeric>0.808</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_WARN_LIMIT</ID>
+          <Code>67</Code>
+          <IDAndCode>VOUT_UV_WARN_LIMIT [0x43,Rail #2]</IDAndCode>
+          <ValueText>0,855 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x36B8" />
+          <ValueNumeric>0.855</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>1</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #3]</IDAndCode>
+          <ValueText>EXP -13</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x13" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>FAULT_RESPONSES</ID>
+          <Code>233</Code>
+          <IDAndCode>FAULT_RESPONSES [MFR 25,0xE9,Rail #3]</IDAndCode>
+          <ValueText>Retry Time: 0 msec| Max Volt Glitch Time: 0,0 msec| Max Other Glitch Time: 0 msec| VOUT_OV: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| VOUT_UV: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_OC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_UC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| OT: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| TON_MAX: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_GAIN</ID>
+          <Code>56</Code>
+          <IDAndCode>IOUT_CAL_GAIN [0x38,Rail #3]</IDAndCode>
+          <ValueText>10,0000 mΩ</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xD280" />
+          <ValueNumeric>10</ValueNumeric>
+          <ParameterType>Resistance</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_OFFSET</ID>
+          <Code>57</Code>
+          <IDAndCode>IOUT_CAL_OFFSET [0x39,Rail #3]</IDAndCode>
+          <ValueText>0,000000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>CurrentCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_FAULT_LIMIT</ID>
+          <Code>70</Code>
+          <IDAndCode>IOUT_OC_FAULT_LIMIT [0x46,Rail #3]</IDAndCode>
+          <ValueText>2,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xC200" />
+          <ValueNumeric>2</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_WARN_LIMIT</ID>
+          <Code>74</Code>
+          <IDAndCode>IOUT_OC_WARN_LIMIT [0x4A,Rail #3]</IDAndCode>
+          <ValueText>1,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xBA00" />
+          <ValueNumeric>1</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_UC_FAULT_LIMIT</ID>
+          <Code>75</Code>
+          <IDAndCode>IOUT_UC_FAULT_LIMIT [0x4B,Rail #3]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>LOGGED_PAGE_PEAKS</ID>
+          <Code>237</Code>
+          <IDAndCode>LOGGED_PAGE_PEAKS [MFR 29,0xED,Rail #3]</IDAndCode>
+          <ValueText>Voltage: 0,000 V, Current: 0,00 A, Temp: 0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x0000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #3]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_STATUS</ID>
+          <Code>243</Code>
+          <IDAndCode>MFR_STATUS [MFR 35,0xF3,Rail #3]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x00000000" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>ON_OFF_CONFIG</ID>
+          <Code>2</Code>
+          <IDAndCode>ON_OFF_CONFIG [0x02,Rail #3]</IDAndCode>
+          <ValueText>Mode: Always Converting</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OPERATION</ID>
+          <Code>1</Code>
+          <IDAndCode>OPERATION [0x01,Rail #3]</IDAndCode>
+          <ValueText>Unit: ImmediateOff; Margin: None</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_FAULT_LIMIT</ID>
+          <Code>79</Code>
+          <IDAndCode>OT_FAULT_LIMIT [0x4F,Rail #3]</IDAndCode>
+          <ValueText>255 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xF3FC" />
+          <ValueNumeric>255</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_WARN_LIMIT</ID>
+          <Code>81</Code>
+          <IDAndCode>OT_WARN_LIMIT [0x51,Rail #3]</IDAndCode>
+          <ValueText>255 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xF3FC" />
+          <ValueNumeric>255</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_OFF</ID>
+          <Code>95</Code>
+          <IDAndCode>POWER_GOOD_OFF [0x5F,Rail #3]</IDAndCode>
+          <ValueText>1,530 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x30F6" />
+          <ValueNumeric>1.53</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_ON</ID>
+          <Code>94</Code>
+          <IDAndCode>POWER_GOOD_ON [0x5E,Rail #3]</IDAndCode>
+          <ValueText>1,620 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x33D7" />
+          <ValueNumeric>1.62</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_IOUT</ID>
+          <Code>140</Code>
+          <IDAndCode>READ_IOUT [0x8C,Rail #3]</IDAndCode>
+          <ValueText>0,00 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_TEMPERATURE_2</ID>
+          <Code>142</Code>
+          <IDAndCode>READ_TEMPERATURE_2 [0x8E,Rail #3]</IDAndCode>
+          <ValueText>0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_VOUT</ID>
+          <Code>139</Code>
+          <IDAndCode>READ_VOUT [0x8B,Rail #3]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #3]</IDAndCode>
+          <ValueText>Rail On Dep: Rail #1 | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Pin 13 GPIO3 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0xA30000000000000100000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_IOUT</ID>
+          <Code>123</Code>
+          <IDAndCode>STATUS_IOUT [0x7B,Rail #3]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_TEMPERATURE</ID>
+          <Code>125</Code>
+          <IDAndCode>STATUS_TEMPERATURE [0x7D,Rail #3]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_VOUT</ID>
+          <Code>122</Code>
+          <IDAndCode>STATUS_VOUT [0x7A,Rail #3]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_GAIN</ID>
+          <Code>228</Code>
+          <IDAndCode>TEMPERATURE_CAL_GAIN [MFR 20,0xE4,Rail #3]</IDAndCode>
+          <ValueText>100,0 °C/V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xEB20" />
+          <ValueNumeric>100</ValueNumeric>
+          <ParameterType>TemperatureGain</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_OFFSET</ID>
+          <Code>229</Code>
+          <IDAndCode>TEMPERATURE_CAL_OFFSET [MFR 21,0xE5,Rail #3]</IDAndCode>
+          <ValueText>0,00 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TemperatureCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_DELAY</ID>
+          <Code>100</Code>
+          <IDAndCode>TOFF_DELAY [0x64,Rail #3]</IDAndCode>
+          <ValueText>0,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_MAX_WARN_LIMIT</ID>
+          <Code>102</Code>
+          <IDAndCode>TOFF_MAX_WARN_LIMIT [0x66,Rail #3]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x7FFF" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_DELAY</ID>
+          <Code>96</Code>
+          <IDAndCode>TON_DELAY [0x60,Rail #3]</IDAndCode>
+          <ValueText>10,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xD280" />
+          <ValueNumeric>10</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_MAX_FAULT_LIMIT</ID>
+          <Code>98</Code>
+          <IDAndCode>TON_MAX_FAULT_LIMIT [0x62,Rail #3]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_CAL_MONITOR</ID>
+          <Code>209</Code>
+          <IDAndCode>VOUT_CAL_MONITOR [MFR 01,0xD1,Rail #3]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_COMMAND</ID>
+          <Code>33</Code>
+          <IDAndCode>VOUT_COMMAND [0x21,Rail #3]</IDAndCode>
+          <ValueText>1,800 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x399A" />
+          <ValueNumeric>1.8</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_HIGH</ID>
+          <Code>37</Code>
+          <IDAndCode>VOUT_MARGIN_HIGH [0x25,Rail #3]</IDAndCode>
+          <ValueText>1,890 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3C7B" />
+          <ValueNumeric>1.89</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_LOW</ID>
+          <Code>38</Code>
+          <IDAndCode>VOUT_MARGIN_LOW [0x26,Rail #3]</IDAndCode>
+          <ValueText>1,710 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x36B8" />
+          <ValueNumeric>1.71</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_FAULT_LIMIT</ID>
+          <Code>64</Code>
+          <IDAndCode>VOUT_OV_FAULT_LIMIT [0x40,Rail #3]</IDAndCode>
+          <ValueText>2,070 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x423D" />
+          <ValueNumeric>2.07</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_WARN_LIMIT</ID>
+          <Code>66</Code>
+          <IDAndCode>VOUT_OV_WARN_LIMIT [0x42,Rail #3]</IDAndCode>
+          <ValueText>1,980 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3F5C" />
+          <ValueNumeric>1.98</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_SCALE_MONITOR</ID>
+          <Code>42</Code>
+          <IDAndCode>VOUT_SCALE_MONITOR [0x2A,Rail #3]</IDAndCode>
+          <ValueText>0,500 </ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xB200" />
+          <ValueNumeric>0.5</ValueNumeric>
+          <ParameterType>UnitlessThreeDigit</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_FAULT_LIMIT</ID>
+          <Code>68</Code>
+          <IDAndCode>VOUT_UV_FAULT_LIMIT [0x44,Rail #3]</IDAndCode>
+          <ValueText>1,530 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x30F6" />
+          <ValueNumeric>1.53</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_WARN_LIMIT</ID>
+          <Code>67</Code>
+          <IDAndCode>VOUT_UV_WARN_LIMIT [0x43,Rail #3]</IDAndCode>
+          <ValueText>1,620 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x33D7" />
+          <ValueNumeric>1.62</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>2</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #4]</IDAndCode>
+          <ValueText>EXP -12</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x14" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>FAULT_RESPONSES</ID>
+          <Code>233</Code>
+          <IDAndCode>FAULT_RESPONSES [MFR 25,0xE9,Rail #4]</IDAndCode>
+          <ValueText>Retry Time: 0 msec| Max Volt Glitch Time: 0,0 msec| Max Other Glitch Time: 0 msec| VOUT_OV: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| VOUT_UV: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_OC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_UC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| OT: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| TON_MAX: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_GAIN</ID>
+          <Code>56</Code>
+          <IDAndCode>IOUT_CAL_GAIN [0x38,Rail #4]</IDAndCode>
+          <ValueText>10,0000 mΩ</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xD280" />
+          <ValueNumeric>10</ValueNumeric>
+          <ParameterType>Resistance</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_OFFSET</ID>
+          <Code>57</Code>
+          <IDAndCode>IOUT_CAL_OFFSET [0x39,Rail #4]</IDAndCode>
+          <ValueText>0,000000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>CurrentCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_FAULT_LIMIT</ID>
+          <Code>70</Code>
+          <IDAndCode>IOUT_OC_FAULT_LIMIT [0x46,Rail #4]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_WARN_LIMIT</ID>
+          <Code>74</Code>
+          <IDAndCode>IOUT_OC_WARN_LIMIT [0x4A,Rail #4]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_UC_FAULT_LIMIT</ID>
+          <Code>75</Code>
+          <IDAndCode>IOUT_UC_FAULT_LIMIT [0x4B,Rail #4]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>LOGGED_PAGE_PEAKS</ID>
+          <Code>237</Code>
+          <IDAndCode>LOGGED_PAGE_PEAKS [MFR 29,0xED,Rail #4]</IDAndCode>
+          <ValueText>Voltage: 0,000 V, Current: 0,00 A, Temp: 0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x0000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #4]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_STATUS</ID>
+          <Code>243</Code>
+          <IDAndCode>MFR_STATUS [MFR 35,0xF3,Rail #4]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x00000000" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>ON_OFF_CONFIG</ID>
+          <Code>2</Code>
+          <IDAndCode>ON_OFF_CONFIG [0x02,Rail #4]</IDAndCode>
+          <ValueText>Mode: Always Converting</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OPERATION</ID>
+          <Code>1</Code>
+          <IDAndCode>OPERATION [0x01,Rail #4]</IDAndCode>
+          <ValueText>Unit: ImmediateOff; Margin: None</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_FAULT_LIMIT</ID>
+          <Code>79</Code>
+          <IDAndCode>OT_FAULT_LIMIT [0x4F,Rail #4]</IDAndCode>
+          <ValueText>255 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xF3FC" />
+          <ValueNumeric>255</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_WARN_LIMIT</ID>
+          <Code>81</Code>
+          <IDAndCode>OT_WARN_LIMIT [0x51,Rail #4]</IDAndCode>
+          <ValueText>255 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xF3FC" />
+          <ValueNumeric>255</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_OFF</ID>
+          <Code>95</Code>
+          <IDAndCode>POWER_GOOD_OFF [0x5F,Rail #4]</IDAndCode>
+          <ValueText>2,805 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x2CE1" />
+          <ValueNumeric>2.805</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_ON</ID>
+          <Code>94</Code>
+          <IDAndCode>POWER_GOOD_ON [0x5E,Rail #4]</IDAndCode>
+          <ValueText>2,970 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x2F85" />
+          <ValueNumeric>2.97</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_IOUT</ID>
+          <Code>140</Code>
+          <IDAndCode>READ_IOUT [0x8C,Rail #4]</IDAndCode>
+          <ValueText>0,00 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_TEMPERATURE_2</ID>
+          <Code>142</Code>
+          <IDAndCode>READ_TEMPERATURE_2 [0x8E,Rail #4]</IDAndCode>
+          <ValueText>0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_VOUT</ID>
+          <Code>139</Code>
+          <IDAndCode>READ_VOUT [0x8B,Rail #4]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #4]</IDAndCode>
+          <ValueText>Rail On Dep: Rail #1 | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Pin 14 GPIO4 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0xAB0000000000000100000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_IOUT</ID>
+          <Code>123</Code>
+          <IDAndCode>STATUS_IOUT [0x7B,Rail #4]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_TEMPERATURE</ID>
+          <Code>125</Code>
+          <IDAndCode>STATUS_TEMPERATURE [0x7D,Rail #4]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_VOUT</ID>
+          <Code>122</Code>
+          <IDAndCode>STATUS_VOUT [0x7A,Rail #4]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_GAIN</ID>
+          <Code>228</Code>
+          <IDAndCode>TEMPERATURE_CAL_GAIN [MFR 20,0xE4,Rail #4]</IDAndCode>
+          <ValueText>100,0 °C/V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xEB20" />
+          <ValueNumeric>100</ValueNumeric>
+          <ParameterType>TemperatureGain</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_OFFSET</ID>
+          <Code>229</Code>
+          <IDAndCode>TEMPERATURE_CAL_OFFSET [MFR 21,0xE5,Rail #4]</IDAndCode>
+          <ValueText>0,00 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TemperatureCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_DELAY</ID>
+          <Code>100</Code>
+          <IDAndCode>TOFF_DELAY [0x64,Rail #4]</IDAndCode>
+          <ValueText>0,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_MAX_WARN_LIMIT</ID>
+          <Code>102</Code>
+          <IDAndCode>TOFF_MAX_WARN_LIMIT [0x66,Rail #4]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x7FFF" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_DELAY</ID>
+          <Code>96</Code>
+          <IDAndCode>TON_DELAY [0x60,Rail #4]</IDAndCode>
+          <ValueText>10,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xD280" />
+          <ValueNumeric>10</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_MAX_FAULT_LIMIT</ID>
+          <Code>98</Code>
+          <IDAndCode>TON_MAX_FAULT_LIMIT [0x62,Rail #4]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_CAL_MONITOR</ID>
+          <Code>209</Code>
+          <IDAndCode>VOUT_CAL_MONITOR [MFR 01,0xD1,Rail #4]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_COMMAND</ID>
+          <Code>33</Code>
+          <IDAndCode>VOUT_COMMAND [0x21,Rail #4]</IDAndCode>
+          <ValueText>3,300 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x34CD" />
+          <ValueNumeric>3.3</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_HIGH</ID>
+          <Code>37</Code>
+          <IDAndCode>VOUT_MARGIN_HIGH [0x25,Rail #4]</IDAndCode>
+          <ValueText>3,465 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3771" />
+          <ValueNumeric>3.465</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_LOW</ID>
+          <Code>38</Code>
+          <IDAndCode>VOUT_MARGIN_LOW [0x26,Rail #4]</IDAndCode>
+          <ValueText>3,135 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3229" />
+          <ValueNumeric>3.135</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_FAULT_LIMIT</ID>
+          <Code>64</Code>
+          <IDAndCode>VOUT_OV_FAULT_LIMIT [0x40,Rail #4]</IDAndCode>
+          <ValueText>3,795 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3CB8" />
+          <ValueNumeric>3.795</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_WARN_LIMIT</ID>
+          <Code>66</Code>
+          <IDAndCode>VOUT_OV_WARN_LIMIT [0x42,Rail #4]</IDAndCode>
+          <ValueText>3,630 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3A14" />
+          <ValueNumeric>3.63</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_SCALE_MONITOR</ID>
+          <Code>42</Code>
+          <IDAndCode>VOUT_SCALE_MONITOR [0x2A,Rail #4]</IDAndCode>
+          <ValueText>0,333 </ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xAAAA" />
+          <ValueNumeric>0.333</ValueNumeric>
+          <ParameterType>UnitlessThreeDigit</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_FAULT_LIMIT</ID>
+          <Code>68</Code>
+          <IDAndCode>VOUT_UV_FAULT_LIMIT [0x44,Rail #4]</IDAndCode>
+          <ValueText>2,805 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x2CE1" />
+          <ValueNumeric>2.805</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_WARN_LIMIT</ID>
+          <Code>67</Code>
+          <IDAndCode>VOUT_UV_WARN_LIMIT [0x43,Rail #4]</IDAndCode>
+          <ValueText>2,970 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x2F85" />
+          <ValueNumeric>2.97</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>3</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #5]</IDAndCode>
+          <ValueText>EXP -10</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x16" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>FAULT_RESPONSES</ID>
+          <Code>233</Code>
+          <IDAndCode>FAULT_RESPONSES [MFR 25,0xE9,Rail #5]</IDAndCode>
+          <ValueText>Retry Time: 0 msec| Max Volt Glitch Time: 0,0 msec| Max Other Glitch Time: 0 msec| VOUT_OV: Resequence: Disabled; Glitch filter: Disabled; Response: Shut down immediately; Restart: Do not restart| VOUT_UV: Resequence: Disabled; Glitch filter: Disabled; Response: Shut down immediately; Restart: Do not restart| IOUT_OC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| IOUT_UC: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| OT: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A| TON_MAX: Resequence: Disabled; Glitch filter: Disabled; Response: Ignore; Restart: N/A</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x808000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_GAIN</ID>
+          <Code>56</Code>
+          <IDAndCode>IOUT_CAL_GAIN [0x38,Rail #5]</IDAndCode>
+          <ValueText>10,0000 mΩ</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xD280" />
+          <ValueNumeric>10</ValueNumeric>
+          <ParameterType>Resistance</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_CAL_OFFSET</ID>
+          <Code>57</Code>
+          <IDAndCode>IOUT_CAL_OFFSET [0x39,Rail #5]</IDAndCode>
+          <ValueText>0,000000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>CurrentCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_FAULT_LIMIT</ID>
+          <Code>70</Code>
+          <IDAndCode>IOUT_OC_FAULT_LIMIT [0x46,Rail #5]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_OC_WARN_LIMIT</ID>
+          <Code>74</Code>
+          <IDAndCode>IOUT_OC_WARN_LIMIT [0x4A,Rail #5]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>IOUT_UC_FAULT_LIMIT</ID>
+          <Code>75</Code>
+          <IDAndCode>IOUT_UC_FAULT_LIMIT [0x4B,Rail #5]</IDAndCode>
+          <ValueText>0,000 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>LOGGED_PAGE_PEAKS</ID>
+          <Code>237</Code>
+          <IDAndCode>LOGGED_PAGE_PEAKS [MFR 29,0xED,Rail #5]</IDAndCode>
+          <ValueText>Voltage: 0,000 V, Current: 0,00 A, Temp: 0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x0000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #5]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MFR_STATUS</ID>
+          <Code>243</Code>
+          <IDAndCode>MFR_STATUS [MFR 35,0xF3,Rail #5]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x00000000" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>ON_OFF_CONFIG</ID>
+          <Code>2</Code>
+          <IDAndCode>ON_OFF_CONFIG [0x02,Rail #5]</IDAndCode>
+          <ValueText>Mode: Always Converting</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OPERATION</ID>
+          <Code>1</Code>
+          <IDAndCode>OPERATION [0x01,Rail #5]</IDAndCode>
+          <ValueText>Unit: ImmediateOff; Margin: None</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_FAULT_LIMIT</ID>
+          <Code>79</Code>
+          <IDAndCode>OT_FAULT_LIMIT [0x4F,Rail #5]</IDAndCode>
+          <ValueText>255 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xF3FC" />
+          <ValueNumeric>255</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>OT_WARN_LIMIT</ID>
+          <Code>81</Code>
+          <IDAndCode>OT_WARN_LIMIT [0x51,Rail #5]</IDAndCode>
+          <ValueText>255 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xF3FC" />
+          <ValueNumeric>255</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_OFF</ID>
+          <Code>95</Code>
+          <IDAndCode>POWER_GOOD_OFF [0x5F,Rail #5]</IDAndCode>
+          <ValueText>10,200 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x28CD" />
+          <ValueNumeric>10.2</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>POWER_GOOD_ON</ID>
+          <Code>94</Code>
+          <IDAndCode>POWER_GOOD_ON [0x5E,Rail #5]</IDAndCode>
+          <ValueText>10,800 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x2B33" />
+          <ValueNumeric>10.8</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_IOUT</ID>
+          <Code>140</Code>
+          <IDAndCode>READ_IOUT [0x8C,Rail #5]</IDAndCode>
+          <ValueText>0,00 A</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Current</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_TEMPERATURE_2</ID>
+          <Code>142</Code>
+          <IDAndCode>READ_TEMPERATURE_2 [0x8E,Rail #5]</IDAndCode>
+          <ValueText>0 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Temperature</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>READ_VOUT</ID>
+          <Code>139</Code>
+          <IDAndCode>READ_VOUT [0x8B,Rail #5]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #5]</IDAndCode>
+          <ValueText>Rail On Dep: &lt;None&gt; | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: Rail #1,2,3,4 | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x00000000000000000000000F" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_IOUT</ID>
+          <Code>123</Code>
+          <IDAndCode>STATUS_IOUT [0x7B,Rail #5]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_TEMPERATURE</ID>
+          <Code>125</Code>
+          <IDAndCode>STATUS_TEMPERATURE [0x7D,Rail #5]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>STATUS_VOUT</ID>
+          <Code>122</Code>
+          <IDAndCode>STATUS_VOUT [0x7A,Rail #5]</IDAndCode>
+          <ValueText>&lt;EMPTY&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Bitmask</ParameterType>
+          <ParameterCategory>Status</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_GAIN</ID>
+          <Code>228</Code>
+          <IDAndCode>TEMPERATURE_CAL_GAIN [MFR 20,0xE4,Rail #5]</IDAndCode>
+          <ValueText>100,0 °C/V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xEB20" />
+          <ValueNumeric>100</ValueNumeric>
+          <ParameterType>TemperatureGain</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TEMPERATURE_CAL_OFFSET</ID>
+          <Code>229</Code>
+          <IDAndCode>TEMPERATURE_CAL_OFFSET [MFR 21,0xE5,Rail #5]</IDAndCode>
+          <ValueText>0,00 °C</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TemperatureCalibration</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_DELAY</ID>
+          <Code>100</Code>
+          <IDAndCode>TOFF_DELAY [0x64,Rail #5]</IDAndCode>
+          <ValueText>0,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TOFF_MAX_WARN_LIMIT</ID>
+          <Code>102</Code>
+          <IDAndCode>TOFF_MAX_WARN_LIMIT [0x66,Rail #5]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x7FFF" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_DELAY</ID>
+          <Code>96</Code>
+          <IDAndCode>TON_DELAY [0x60,Rail #5]</IDAndCode>
+          <ValueText>0,0 ms</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>TON_MAX_FAULT_LIMIT</ID>
+          <Code>98</Code>
+          <IDAndCode>TON_MAX_FAULT_LIMIT [0x62,Rail #5]</IDAndCode>
+          <ValueText>&lt;No Limit&gt;</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x8000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>TimeOneDigitMilliseconds</ParameterType>
+          <ParameterCategory>OnOff</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_CAL_MONITOR</ID>
+          <Code>209</Code>
+          <IDAndCode>VOUT_CAL_MONITOR [MFR 01,0xD1,Rail #5]</IDAndCode>
+          <ValueText>0,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x0000" />
+          <ValueNumeric>0</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_COMMAND</ID>
+          <Code>33</Code>
+          <IDAndCode>VOUT_COMMAND [0x21,Rail #5]</IDAndCode>
+          <ValueText>12,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3000" />
+          <ValueNumeric>12</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_HIGH</ID>
+          <Code>37</Code>
+          <IDAndCode>VOUT_MARGIN_HIGH [0x25,Rail #5]</IDAndCode>
+          <ValueText>12,600 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3266" />
+          <ValueNumeric>12.6</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MARGIN_LOW</ID>
+          <Code>38</Code>
+          <IDAndCode>VOUT_MARGIN_LOW [0x26,Rail #5]</IDAndCode>
+          <ValueText>11,400 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x2D9A" />
+          <ValueNumeric>11.4</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_FAULT_LIMIT</ID>
+          <Code>64</Code>
+          <IDAndCode>VOUT_OV_FAULT_LIMIT [0x40,Rail #5]</IDAndCode>
+          <ValueText>13,800 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x3733" />
+          <ValueNumeric>13.8</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_OV_WARN_LIMIT</ID>
+          <Code>66</Code>
+          <IDAndCode>VOUT_OV_WARN_LIMIT [0x42,Rail #5]</IDAndCode>
+          <ValueText>13,200 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x34CD" />
+          <ValueNumeric>13.2</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_SCALE_MONITOR</ID>
+          <Code>42</Code>
+          <IDAndCode>VOUT_SCALE_MONITOR [0x2A,Rail #5]</IDAndCode>
+          <ValueText>0,164 </ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0xA2A0" />
+          <ValueNumeric>0.164</ValueNumeric>
+          <ParameterType>UnitlessThreeDigit</ParameterType>
+          <ParameterCategory>Calibration</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_FAULT_LIMIT</ID>
+          <Code>68</Code>
+          <IDAndCode>VOUT_UV_FAULT_LIMIT [0x44,Rail #5]</IDAndCode>
+          <ValueText>6,000 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x1800" />
+          <ValueNumeric>6</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_UV_WARN_LIMIT</ID>
+          <Code>67</Code>
+          <IDAndCode>VOUT_UV_WARN_LIMIT [0x43,Rail #5]</IDAndCode>
+          <ValueText>10,800 V</ValueText>
+          <ValueEncoded xsi:type="PMBusWord" Hex="0x2B33" />
+          <ValueNumeric>10.8</ValueNumeric>
+          <ParameterType>Voltage</ParameterType>
+          <ParameterCategory>Limits</ParameterCategory>
+          <Page>4</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #6]</IDAndCode>
+          <ValueText>EXP -10</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x16" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>5</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #6]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>5</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #6]</IDAndCode>
+          <ValueText>Rail On Dep: &lt;None&gt; | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>5</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #7]</IDAndCode>
+          <ValueText>EXP -12</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x14" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>6</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #7]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>6</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #7]</IDAndCode>
+          <ValueText>Rail On Dep: &lt;None&gt; | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>6</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #8]</IDAndCode>
+          <ValueText>EXP 0</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>7</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #8]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>7</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #8]</IDAndCode>
+          <ValueText>Rail On Dep: &lt;None&gt; | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>7</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #9]</IDAndCode>
+          <ValueText>EXP 0</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>8</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #9]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>8</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #9]</IDAndCode>
+          <ValueText>Rail On Dep: &lt;None&gt; | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>8</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #10]</IDAndCode>
+          <ValueText>EXP 0</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>9</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #10]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>9</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #10]</IDAndCode>
+          <ValueText>Rail On Dep: &lt;None&gt; | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x000000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>9</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #11]</IDAndCode>
+          <ValueText>EXP 0</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>10</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #11]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>10</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #11]</IDAndCode>
+          <ValueText>Rail On Dep: &lt;None&gt; | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x040000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>10</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>VOUT_MODE</ID>
+          <Code>32</Code>
+          <IDAndCode>VOUT_MODE [0x20,Rail #12]</IDAndCode>
+          <ValueText>EXP 0</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>11</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>MARGIN_CONFIG</ID>
+          <Code>245</Code>
+          <IDAndCode>MARGIN_CONFIG [MFR 37,0xF5,Rail #12]</IDAndCode>
+          <ValueText>Mode: Disabled; Increase Duty Cycle decreases Voltage; Ignore Faults: False; PWM Pin: ID 0, # 17 FPWM1_GPIO5</ValueText>
+          <ValueEncoded xsi:type="PMBusByte" Hex="0x00" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>11</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+        <Parameter>
+          <ID>SEQ_CONFIG</ID>
+          <Code>246</Code>
+          <IDAndCode>SEQ_CONFIG [MFR 38,0xF6,Rail #12]</IDAndCode>
+          <ValueText>Rail On Dep: &lt;None&gt; | GPI On Dep: &lt;None&gt; | Rail Off Dep: &lt;None&gt; | GPI Off Dep: &lt;None&gt; | Fault Dep: &lt;None&gt; | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely</ValueText>
+          <ValueEncoded xsi:type="PMBusBlock" Hex="0x040000000000000000000000" />
+          <ParameterType>Custom</ParameterType>
+          <ParameterCategory>Configuration</ParameterCategory>
+          <Page>11</Page>
+          <Phase xsi:nil="true" />
+          <CustomIndex xsi:nil="true" />
+        </Parameter>
+      </Parameters>
+      <Other>
+        <Custom_Commands>
+          <READ_VTRACK_REG>
+            <Enabled>false</Enabled>
+            <Label>Vtrack</Label>
+            <Gain>1</Gain>
+            <Offset>0</Offset>
+            <Reference>2</Reference>
+          </READ_VTRACK_REG>
+        </Custom_Commands>
+        <UCD31XX_CLA_User_Data />
+      </Other>
+      <Custom xsi:type="CustomProjectData">
+        <Real_Time_Clock>
+          <PC_Clock>2011-03-23 11:49:44.370</PC_Clock>
+          <Delta>0 Days, 00:00:00.010</Delta>
+          <Write_Time>2011-03-23 11:49:44.344</Write_Time>
+          <Drift>-2,088.421 sec/hour</Drift>
+          <Accuracy>-58.012 %</Accuracy>
+        </Real_Time_Clock>
+        <Logged_Fault_Detail2>
+          <UCD90XXLoggedFaultDetail xsi:type="UCD90XXLoggedFaultDetailVer2">
+            <Timestamp>
+              <Milliseconds>14761</Milliseconds>
+              <Days>0</Days>
+            </Timestamp>
+            <Index>0</Index>
+            <Page_Index>0</Page_Index>
+            <Fault_ID>0</Fault_ID>
+            <Fault_Value>0</Fault_Value>
+            <Fault_Value_Bytes>AAAA</Fault_Value_Bytes>
+            <Is_Paged>true</Is_Paged>
+          </UCD90XXLoggedFaultDetail>
+          <UCD90XXLoggedFaultDetail xsi:type="UCD90XXLoggedFaultDetailVer2">
+            <Timestamp>
+              <Milliseconds>14807</Milliseconds>
+              <Days>0</Days>
+            </Timestamp>
+            <Index>1</Index>
+            <Page_Index>0</Page_Index>
+            <Fault_ID>5</Fault_ID>
+            <Fault_Value>33.3125</Fault_Value>
+            <Fault_Value_Bytes>AAAA</Fault_Value_Bytes>
+            <Is_Paged>true</Is_Paged>
+          </UCD90XXLoggedFaultDetail>
+        </Logged_Fault_Detail2>
+        <BlackBox_Fault_Log_List />
+      </Custom>
+    </Device>
+  </Devices>
+  <Sequencing_Config_V1>
+    <Show_Warning_For_Circular_Rail_Dependencies>true</Show_Warning_For_Circular_Rail_Dependencies>
+    <Traces>
+      <TraceDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Extra1>EN</Extra1>
+        <Name>EN #1</Name>
+        <Pin_ID>18</Pin_ID>
+        <Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Event_Times>
+      </TraceDefinition>
+      <TraceDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Extra1>EN</Extra1>
+        <Name>EN #2</Name>
+        <Pin_ID>19</Pin_ID>
+        <Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Event_Times>
+      </TraceDefinition>
+      <TraceDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Extra1>EN</Extra1>
+        <Name>EN #3</Name>
+        <Pin_ID>20</Pin_ID>
+        <Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Event_Times>
+      </TraceDefinition>
+      <TraceDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Extra1>EN</Extra1>
+        <Name>EN #5</Name>
+        <Pin_ID>21</Pin_ID>
+        <Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Event_Times>
+      </TraceDefinition>
+    </Traces>
+    <Int_Rail_Defs>
+      <RailDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Name>Rail #1</Name>
+        <Page_Index>0</Page_Index>
+        <Color />
+        <Ext_Tracking_Mode>None</Ext_Tracking_Mode>
+        <Control_Line>1</Control_Line>
+        <Ext_Tracking_Custom_Source_Name />
+        <Operation_Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Operation_Event_Times>
+        <Vout>0</Vout>
+        <Note />
+      </RailDefinition>
+      <RailDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Name>Rail #2</Name>
+        <Page_Index>1</Page_Index>
+        <Color />
+        <Ext_Tracking_Mode>None</Ext_Tracking_Mode>
+        <Control_Line>1</Control_Line>
+        <Ext_Tracking_Custom_Source_Name />
+        <Operation_Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Operation_Event_Times>
+        <Vout>0</Vout>
+        <Note />
+      </RailDefinition>
+      <RailDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Extra1>RAIL</Extra1>
+        <Name>Rail #3</Name>
+        <Page_Index>2</Page_Index>
+        <Color />
+        <Ext_Tracking_Mode>None</Ext_Tracking_Mode>
+        <Control_Line>1</Control_Line>
+        <Ext_Tracking_Custom_Source_Name />
+        <Operation_Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Operation_Event_Times>
+        <Vout>0</Vout>
+        <Note />
+      </RailDefinition>
+      <RailDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Extra1>RAIL</Extra1>
+        <Name>Rail #4</Name>
+        <Page_Index>3</Page_Index>
+        <Color />
+        <Ext_Tracking_Mode>None</Ext_Tracking_Mode>
+        <Control_Line>1</Control_Line>
+        <Ext_Tracking_Custom_Source_Name />
+        <Operation_Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Operation_Event_Times>
+        <Vout>0</Vout>
+        <Note />
+      </RailDefinition>
+      <RailDefinition>
+        <Part_ID>UCD90120A</Part_ID>
+        <Address>126</Address>
+        <Extra1>RAIL</Extra1>
+        <Name>Rail #5</Name>
+        <Page_Index>4</Page_Index>
+        <Color />
+        <Ext_Tracking_Mode>None</Ext_Tracking_Mode>
+        <Control_Line>1</Control_Line>
+        <Ext_Tracking_Custom_Source_Name />
+        <Operation_Event_Times>
+          <Start>0</Start>
+          <Stop>0</Stop>
+        </Operation_Event_Times>
+        <Vout>0</Vout>
+        <Note />
+      </RailDefinition>
+    </Int_Rail_Defs>
+    <Ext_Rail_Defs />
+    <Devices />
+    <Other_Names />
+  </Sequencing_Config_V1>
+  <Use_Old_UCD92XX_CLA_Gains>true</Use_Old_UCD92XX_CLA_Gains>
+</ProjectData>

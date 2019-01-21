@@ -1,0 +1,58 @@
+#ifndef __AT45DB641E_H
+#define __AT45DB641E_H
+
+#include "spi.h"
+#include "bsp_dev.h"
+
+#define AT45DB641E_PAGES_PER_BLOCK		8
+#define AT45DB641E_BLOCKS_PER_SECTOR	128
+#define AT45DB641E_PAGES_PER_SECTOR		(AT45DB641E_PAGES_PER_BLOCK * AT45DB641E_BLOCKS_PER_SECTOR)
+
+#define AT45DB641E_SECTORS_COUNT			32
+#define AT45DB641E_PAGES_COUNT				(AT45DB641E_SECTORS_COUNT * AT45DB641E_PAGES_PER_SECTOR)
+#define AT45DB641E_BLOCKS_COUNT				(AT45DB641E_SECTORS_COUNT * AT45DB641E_BLOCKS_PER_SECTOR)
+
+#define AT45DB641E_PAGE_SIZE					256
+#define AT45DB641E_BLOCK_SIZE					(AT45DB641E_PAGES_PER_BLOCK * AT45DB641E_PAGE_SIZE)
+#define AT45DB641E_SECTOR_SIZE				(AT45DB641E_BLOCKS_PER_SECTOR * AT45DB641E_BLOCK_SIZE)
+#define AT45DB641E_SIZE								(AT45DB641E_SECTORS_COUNT * AT45DB641E_SECTOR_SIZE)
+
+
+typedef enum {
+	AT45DB641E_PIN_SPI_CS,
+	AT45DB641E_PIN_WP,
+	AT45DB641E_PIN_RESET
+} AT45DB641E_PIN_T;
+
+typedef enum {
+	AT45DB641E_PIN_STATE_ASSERT = 1,
+	AT45DB641E_PIN_STATE_DEASSERT = 0	
+} AT45DB641E_PIN_STATE_T;
+
+typedef struct {
+	BSP_DEV;
+	SPI_TypeDef *SPI;
+	SPI_CS_T CS;
+	void (*InitPins)(void *Priv);
+	void (*SetPinState)(void *Priv, AT45DB641E_PIN_T Pin, AT45DB641E_PIN_STATE_T PinState);
+	void *Priv;
+	uint16_t DevId;
+	uint8_t ManufId;
+	uint8_t Status;
+} AT45DB641E_T;
+
+int32_t AT45DB641E_WaitReady(AT45DB641E_T *dev);
+int32_t AT45DB641E_ErasePage(AT45DB641E_T *dev, uint32_t Addr);
+int32_t AT45DB641E_EraseBlock(AT45DB641E_T *dev, uint32_t Addr);
+int32_t AT45DB641E_EraseSector(AT45DB641E_T *dev, uint32_t Addr);
+int32_t AT45DB641E_Erase(AT45DB641E_T *dev, uint32_t Addr);
+int32_t AT45DB641E_Read(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
+int32_t AT45DB641E_ProgramPage(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
+int32_t AT45DB641E_ModifyPage(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
+
+int32_t AT45DB641E_Init(AT45DB641E_T *dev, SPI_TypeDef *SPI, void (*InitPins)(void *Priv),\
+	void (*SetPinState)(void *Priv, AT45DB641E_PIN_T Pin, AT45DB641E_PIN_STATE_T PinState), void *Priv);
+
+
+
+#endif /* __AT45DB641E_H */

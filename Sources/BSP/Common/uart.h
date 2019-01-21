@@ -1,0 +1,141 @@
+#ifndef __UART_H
+#define __UART_H
+
+/* Includes ------------------------------------------------------------------*/
+#include "bsp_config.h"
+#include "stm32f4xx_hal.h"
+#ifdef BSP_CONFIG_USE_FREERTOS
+#include "cmsis_os.h"
+#endif
+
+/* Definition for USART1 */
+#define UART1_TX_PIN        GPIO_PIN_9
+#define UART1_TX_GPIO_PORT  GPIOA  
+#define UART1_TX_AF         GPIO_AF7_USART1
+#define UART1_RX_PIN        GPIO_PIN_10
+#define UART1_RX_GPIO_PORT  GPIOA 
+#define UART1_RX_AF         GPIO_AF7_USART1
+
+#define UART1_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE()
+#define UART1_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE() 
+
+#ifdef BSP_CONFIG_USE_FREERTOS
+#define UART1_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 2)
+#else
+#define UART1_IRQ_PRIORITY               (0)
+#endif
+
+#define UART1_BAUDRATE			(115200)
+#define UART1_WORDLENGTH 		UART_WORDLENGTH_8B
+#define UART1_STOPBITS 			UART_STOPBITS_1
+#define UART1_PARITY 				UART_PARITY_NONE
+#define UART1_HWCONTROL 		UART_HWCONTROL_NONE
+#define UART1_MODE 					UART_MODE_TX_RX
+#define UART1_OVERSAMPLING 	UART_OVERSAMPLING_16
+
+/* Definition for USART2 */
+#define UART2_TX_PIN        GPIO_PIN_5
+#define UART2_TX_GPIO_PORT  GPIOD  
+#define UART2_TX_AF         GPIO_AF7_USART2
+#define UART2_RX_PIN        GPIO_PIN_6
+#define UART2_RX_GPIO_PORT  GPIOD 
+#define UART2_RX_AF         GPIO_AF7_USART2
+
+#define UART2_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOD_CLK_ENABLE()
+#define UART2_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOD_CLK_ENABLE() 
+
+#ifdef BSP_CONFIG_USE_FREERTOS
+#define UART2_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
+#else
+#define UART2_IRQ_PRIORITY               (0)
+#endif
+
+#define UART2_BAUDRATE			(115200)
+#define UART2_WORDLENGTH 		UART_WORDLENGTH_8B
+#define UART2_STOPBITS 			UART_STOPBITS_1
+#define UART2_PARITY 				UART_PARITY_NONE
+#define UART2_HWCONTROL 		UART_HWCONTROL_NONE
+#define UART2_MODE 					UART_MODE_TX_RX
+#define UART2_OVERSAMPLING 	UART_OVERSAMPLING_16
+
+/* Definition for UART4 */
+#define UART4_TX_PIN        GPIO_PIN_10
+#define UART4_TX_GPIO_PORT  GPIOC  
+#define UART4_TX_AF         GPIO_AF8_UART4
+#define UART4_RX_PIN        GPIO_PIN_11
+#define UART4_RX_GPIO_PORT  GPIOC 
+#define UART4_RX_AF         GPIO_AF8_UART4
+
+#define UART4_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE()
+#define UART4_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE() 
+
+#ifdef BSP_CONFIG_USE_FREERTOS
+#define UART4_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 2)
+#else
+#define UART4_IRQ_PRIORITY               (0)
+#endif
+
+#define UART4_BAUDRATE			(115200)
+#define UART4_WORDLENGTH 		UART_WORDLENGTH_8B
+#define UART4_STOPBITS 			UART_STOPBITS_1
+#define UART4_PARITY 				UART_PARITY_NONE
+#define UART4_HWCONTROL 		UART_HWCONTROL_NONE
+#define UART4_MODE 					UART_MODE_TX_RX
+#define UART4_OVERSAMPLING 	UART_OVERSAMPLING_16
+
+/* Definition for UART5 */
+#define UART5_TX_PIN        GPIO_PIN_12
+#define UART5_TX_GPIO_PORT  GPIOC  
+#define UART5_TX_AF         GPIO_AF8_UART5
+#define UART5_RX_PIN        GPIO_PIN_2
+#define UART5_RX_GPIO_PORT  GPIOD 
+#define UART5_RX_AF         GPIO_AF8_UART5
+
+#define UART5_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE()
+#define UART5_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOD_CLK_ENABLE() 
+
+#ifdef BSP_CONFIG_USE_FREERTOS
+#define UART5_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 2)
+#else
+#define UART5_IRQ_PRIORITY               (0)
+#endif
+
+#define UART5_BAUDRATE			(115200)
+#define UART5_WORDLENGTH 		UART_WORDLENGTH_8B
+#define UART5_STOPBITS 			UART_STOPBITS_1
+#define UART5_PARITY 				UART_PARITY_NONE
+#define UART5_HWCONTROL 		UART_HWCONTROL_NONE
+#define UART5_MODE 					UART_MODE_TX_RX
+#define UART5_OVERSAMPLING 	UART_OVERSAMPLING_16
+
+/* Definition for UART6 */
+#define UART6_TX_PIN        GPIO_PIN_6
+#define UART6_TX_GPIO_PORT  GPIOC  
+#define UART6_TX_AF         GPIO_AF8_USART6
+#define UART6_RX_PIN        GPIO_PIN_7
+#define UART6_RX_GPIO_PORT  GPIOC 
+#define UART6_RX_AF         GPIO_AF8_USART6
+
+#define UART6_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE()
+#define UART6_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE() 
+
+#ifdef BSP_CONFIG_USE_FREERTOS
+#define UART6_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 2)
+#else
+#define UART6_IRQ_PRIORITY               (0)
+#endif
+
+#define UART6_BAUDRATE			(115200)
+#define UART6_WORDLENGTH 		UART_WORDLENGTH_8B
+#define UART6_STOPBITS 			UART_STOPBITS_1
+#define UART6_PARITY 				UART_PARITY_NONE
+#define UART6_HWCONTROL 		UART_HWCONTROL_NONE
+#define UART6_MODE 					UART_MODE_TX_RX
+#define UART6_OVERSAMPLING 	UART_OVERSAMPLING_16
+
+int32_t UART_Init(void);
+void UART_Deinit(void);
+int32_t UART_Transmit(USART_TypeDef * Instance, char *Buffer, uint32_t  Size);
+int32_t UART_Receive(USART_TypeDef * Instance, char *Buffer, uint32_t  Size);
+
+#endif /* __UART_H */

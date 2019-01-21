@@ -1,0 +1,6 @@
+# Ignore project object files
+Objects/*
+DebugConfig/*
+Listings/*
+*.uvguix.*
+EventRecorderStub.scvd
