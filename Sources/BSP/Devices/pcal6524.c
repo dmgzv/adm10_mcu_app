@@ -6,7 +6,7 @@ static const uint8_t pcal6524_reg_polarity[PCAL6524_BANKS_CNT] = {0x08, 0x09, 0x
 static const uint8_t pcal6524_reg_config[PCAL6524_BANKS_CNT] = {0x0C, 0x0D, 0x0E};
 
 
-int32_t PCAL6524_SetPinDir(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t Dir)
+int32_t PCAL6524_SetPinCfg(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t Dir)
 {
 	uint8_t cmd;
 	
@@ -115,7 +115,7 @@ error:
 	return -1;
 }
 
-int32_t PCAL6524_GetBankDir(PCAL6524_T *Dev, uint8_t Bank)
+int32_t PCAL6524_GetBankCfg(PCAL6524_T *Dev, uint8_t Bank)
 {
 	uint8_t cmd;
 	uint8_t cfg;

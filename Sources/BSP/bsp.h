@@ -11,6 +11,8 @@
 #include "bsp_led.h"
 #include "bsp_pwr_pin.h"
 #include "bsp_pwr.h"
+#include "bsp_sdram.h"
+#include "bsp_fpga.h"
 #include "bsp_flash.h"
 #include "bsp_sfp_i2c_switch.h"
 #include "bsp_sfp_pin.h"
@@ -54,13 +56,18 @@ typedef struct {
 	BSP_LED_T AlarmLed;
 	BSP_PWR_PIN_T PowerPin;
 	BSP_PWR_T Power;
+	
+	BSP_SDRAM_T Sdram;
+	BSP_FPGA_T Fpga;
+	BSP_FLASH_T Flash;
+
+	BSP_ETH_PIN_T EthPin;
+	BSP_ETH_SW_T EthSw;
+	
+	BSP_CLK_T Clk;
 	BSP_SFP_I2C_SWITCH_T SfpSwitch;
 	BSP_SFP_PIN_T SfpPin;
 	BSP_SFP_T Sfp[BSP_SFP_CNT];
-	BSP_FLASH_T Flash;
-	BSP_CLK_T Clk;
-	BSP_ETH_PIN_T EthPin;
-	BSP_ETH_SW_T EthSw;
 }BSP_DEVICES_T;
 
 typedef struct {

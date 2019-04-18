@@ -167,6 +167,7 @@ typedef S29GL01GS_T BSP_FLASH_T;
 
 #endif
 
+int32_t BSP_FLASH_EraseFPGA(BSP_FLASH_T *Dev, uint32_t Idx);
 int32_t BSP_FLASH_EraseChip(BSP_FLASH_T *Dev);
 int32_t BSP_FLASH_RandomTest(BSP_FLASH_T *Dev);
 

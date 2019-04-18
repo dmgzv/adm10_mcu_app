@@ -29,11 +29,16 @@ typedef struct {
 	float Vout;
 	float Iout;
 	float Temp;
+	uint8_t StatusVout;
+	uint8_t StatusIout;
+	uint32_t StatusMFR;
 } UCD90120A_RAIL_MON_T;
 
 typedef struct {
 	UCD90120A_RAIL_MON_T Rail[UCD90120A_RAILS_CNT];
 	float Temp;
+	uint16_t Status;
+	uint8_t CML;
 } UCD90120A_MON_T;
 
 typedef struct {

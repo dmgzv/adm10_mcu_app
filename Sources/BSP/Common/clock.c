@@ -1,6 +1,6 @@
 #include "clock.h"
 
-#if 0
+#if 1
 
 /**
   * @brief  System Clock Configuration 180 MHz

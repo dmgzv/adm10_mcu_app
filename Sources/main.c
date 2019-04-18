@@ -4,6 +4,10 @@
 #include "bsp.h"
 
 #include "bsp_netif.h"
+#include "tftp_client.h"
+
+#include "shell_cmd.h"
+#include "shell_telnet.h"
 
 #include "log.h"
 #include "watchdog.h"
@@ -28,6 +32,18 @@
 #endif
 
 
+SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnet;
+SHELL_TELNET_PRIV_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnetPriv;
+const SHELL_IFACE_T ShellTelnetIface = 
+{
+	&SHELL_TELNET_Init,
+	&SHELL_TELNET_Connect,
+	&SHELL_TELNET_Receive,
+	&SHELL_TELNET_Transmit,
+	&SHELL_TELNET_Disconnect,
+	&ShellTelnetPriv
+};
+	
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
@@ -122,6 +138,9 @@ int main(void)
 static void System_Thread(void const *argument)
 {
 	uint32_t Time = 0, Period = 0, MaxPeriod = 0, MinPeriod = 0xFFFFFFFF;
+	
+	osDelay(1000);
+	
 	WATCHDOG_Refresh();
 	LOG_Init();
 	WATCHDOG_Refresh();
@@ -142,8 +161,10 @@ static void System_Thread(void const *argument)
 	//SHELL_Init(&ShellUart1, "Shell Uart 1" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart1Iface);
 	//SHELL_Init(&ShellUart2, "Shell Uart 2" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart2Iface);
 	//SHELL_Init(&ShellUart6, "Shell Uart 6" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart6Iface);
-	//SHELL_Init(&ShellTelnet, "Shell Telnet" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellTelnetIface);
-	//WATCHDOG_Refresh();
+	TFTP_CLIENT_Init();
+	SHELL_Init(&ShellTelnet, "Shell Telnet" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellTelnetIface);
+	
+	WATCHDOG_Refresh();
 	for(;;)
   {
 		WATCHDOG_Refresh();

@@ -8,6 +8,11 @@
 #define UCD90120A_CMD_VOUT_COMMAND 				0x21
 #define UCD90120A_CMD_VOUT_SCALE_MONITOR 	0x2A
 
+#define UCD90120A_CMD_STATUS_WORD					0x79
+#define UCD90120A_CMD_STATUS_VOUT					0x7A
+#define UCD90120A_CMD_STATUS_IOUT					0x7B
+#define UCD90120A_CMD_STATUS_CML					0x7E
+
 #define UCD90120A_CMD_READ_VOUT		 				0x8B
 #define UCD90120A_CMD_READ_IOUT		 				0x8C
 #define UCD90120A_CMD_READ_TEMPERATURE_1	0x8D
@@ -21,6 +26,8 @@
 #define UCD90120A_CMD_MFR_LOCATION 0x9C
 #define UCD90120A_CMD_MFR_DATE 0x9D
 #define UCD90120A_CMD_MFR_SERIAL	0x9E
+
+#define UCD90120A_CMD_MFR_STATUS	0xF3
 
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define	UCD90120A_msDelay(ms) 		osDelay(ms)
@@ -74,7 +81,7 @@ static int32_t UCD90120A_ReadCfg(UCD90120A_T *Dev)
 
 static int32_t UCD90120A_UpdateRailMon(UCD90120A_T *Dev, uint8_t Num)
 {
-	uint8_t Data[2];
+	uint8_t Data[4];
 	
 	if(PMBUS_WriteByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_PAGE, &Num))
 		return -1;
@@ -90,23 +97,52 @@ static int32_t UCD90120A_UpdateRailMon(UCD90120A_T *Dev, uint8_t Num)
 	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_READ_TEMPERATURE_2, Data))
 		return -1;
 	Dev->Mon.Rail[Num].Temp = PMBUS_LinearToFloat(Data[0] + (Data[1] << 8));
+	
+	if(PMBUS_ReadByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_STATUS_VOUT, Data))
+		return -1;
+	Dev->Mon.Rail[Num].StatusVout = Data[0];
+	
+	if(PMBUS_ReadByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_STATUS_IOUT, Data))
+		return -1;
+	Dev->Mon.Rail[Num].StatusIout = Data[0];
+	
+	if(PMBUS_ReadBlock(Dev->I2C, Dev->Addr, UCD90120A_CMD_MFR_STATUS, Data, 4))
+		return -1;
+	Dev->Mon.Rail[Num].StatusMFR = Data[0] + (Data[1] << 8) + (Data[2] << 16) + (Data[3] << 24);
+	
 	return 0;
 }
 
-static int32_t UCD90120A_UpdateMon(UCD90120A_T *Dev)
+static int32_t UCD90120A_UpdateTemp(UCD90120A_T *Dev)
 {
-	uint32_t i;
 	uint8_t Data[2];
 		
 	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_READ_TEMPERATURE_1, Data))
 		return -1;
 	Dev->Mon.Temp = PMBUS_LinearToFloat(Data[0] + (Data[1] << 8));
 	
-	for (i = 0; i < UCD90120A_RAILS_CNT; i++)
-	{
-		if (UCD90120A_UpdateRailMon(Dev, i))
-			return -1;
-	}
+	return 0;
+}
+
+static int32_t UCD90120A_UpdateStatus(UCD90120A_T *Dev)
+{
+	uint8_t Data[2];
+		
+	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_STATUS_WORD, Data))
+		return -1;
+	Dev->Mon.Status = Data[0] + (Data[1] << 8);
+	
+	return 0;
+}
+
+static int32_t UCD90120A_UpdateCML(UCD90120A_T *Dev)
+{
+	uint8_t Data;
+		
+	if(PMBUS_ReadByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_STATUS_WORD, &Data))
+		return -1;
+	Dev->Mon.CML = Data;
+	
 	return 0;
 }
 
@@ -198,6 +234,8 @@ error:
 
 int32_t UCD90120A_Update(UCD90120A_T *Dev)
 {
+	uint32_t i;
+	
 	if (!Dev)
 		return -1;
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
@@ -205,8 +243,20 @@ int32_t UCD90120A_Update(UCD90120A_T *Dev)
 	
 	BSP_DEV_LOCK(Dev);
 	
-	if( UCD90120A_UpdateMon(Dev))
+	if( UCD90120A_UpdateStatus(Dev))
 		goto error;
+	
+	if( UCD90120A_UpdateCML(Dev))
+		goto error;
+	
+	if( UCD90120A_UpdateTemp(Dev))
+		goto error;
+	
+	for (i = 0; i < UCD90120A_RAILS_CNT; i++)
+	{
+		if (UCD90120A_UpdateRailMon(Dev, i))
+			goto error;
+	}
 
 	BSP_DEV_UNLOCK(Dev);
 	return 0;

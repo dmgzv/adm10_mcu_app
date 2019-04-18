@@ -34,8 +34,8 @@ int32_t BSP_PWR_Init(BSP_PWR_T *Dev, BSP_PWR_PIN_T *Pin)
 	
 	Dev->Pin = Pin;	
 	
-	//if (DIM3R3400_Init(&Dev->dim3r3400, BSP_PWR_DIM3R3400_I2C, BSP_PWR_DIM3R3400_I2C_ADDR))
-	//	return -1;
+	if (DIM3R3400_Init(&Dev->dim3r3400, BSP_PWR_DIM3R3400_I2C, BSP_PWR_DIM3R3400_I2C_ADDR))
+		return -1;
 
 	
 	if (BSP_PWR_PIN_SetState(Dev->Pin, BSP_PWR_PIN_UCD_RST, 0))
@@ -60,7 +60,10 @@ int32_t BSP_PWR_Init(BSP_PWR_T *Dev, BSP_PWR_PIN_T *Pin)
 		return -1;
 	
 	/* todo: Add check voltages values*/
-	BSP_PWR_msDelay(800);
+	BSP_PWR_msDelay(1000);
+	
+	I2C_Deinit();
+	I2C_Init();
 	
 	for (i = 0; i < BSP_PWR_GDT080A_CNT; i++)
 	{

@@ -2,7 +2,11 @@
 #define __S29GL01GS_H
 
 #include "stm32f4xx_hal.h"
+#include "bsp_config.h"
 #include "bsp_dev.h"
+#ifdef BSP_CONFIG_USE_FREERTOS
+#include "cmsis_os.h"
+#endif
 
 #define S29GL01GS_SECTOR_SIZE				(128 * 1024)
 #define S29GL01GS_SECTORS_COUNT			(1024)

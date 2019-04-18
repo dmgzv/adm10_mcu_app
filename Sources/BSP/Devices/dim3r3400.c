@@ -9,7 +9,7 @@
 
 static int32_t DIM3R3400_ReadReg(DIM3R3400_T *Dev, uint8_t Reg, uint8_t *Data)
 {
-	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Reg, sizeof(Reg), (char*)&Data, sizeof(Data)))
+	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Reg, sizeof(Reg), (char*)Data, sizeof(*Data)))
 		return -1;
 	return 0;
 }

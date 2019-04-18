@@ -89,11 +89,26 @@ int32_t BSP_SFP_PIN_Init(BSP_SFP_PIN_T *Dev, BSP_SFP_I2C_SWITCH_T *I2CSwitch)
 	
 	for (i = 0; i < BSP_SFP_PIN_PCA9536_CNT; i++)
 	{
+		uint8_t I2CAddr, Addr = 0, Data, Idx = 0;
+		uint8_t ValidI2CAddr[32];
+		
 		if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->I2CSwitch, i))
 		{
 			result = -1;
 			continue;
 		}
+		
+		for (I2CAddr = 0x1; I2CAddr < 0x7E; I2CAddr++)
+		{
+			
+			if (((I2CAddr << 1) == 0xD4) || ((I2CAddr << 1) == 0xD6) )
+				continue;
+			if (I2C_Sequential_Receive(I2C3, I2CAddr << 1, (uint8_t*)&Addr, 1, (char*)&Data, 1) == 0)
+				ValidI2CAddr[Idx++] = I2CAddr << 1;
+		}
+		Idx++;
+		
+		/*
 		if (PCA9536_Init(&Dev->pca9536[i], BSP_SFP_PIN_PCA9536_I2C))
 		{
 			result = -1;
@@ -114,6 +129,7 @@ int32_t BSP_SFP_PIN_Init(BSP_SFP_PIN_T *Dev, BSP_SFP_I2C_SWITCH_T *I2CSwitch)
 			result = -1;
 			continue;
 		}
+		*/
 	}	
 	return result;	
 }
@@ -278,15 +294,27 @@ int32_t BSP_SFP_PIN_GetRateSel(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *Ra
 }
 
 int32_t BSP_SFP_PIN_GetModAbs(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *ModAbs)
-{	
+{
+	uint8_t Addr;
+	char Data;
+	
 	if ((!Dev) || (SfpNum > 19) || (!ModAbs))
 		return -1;
 	
 	if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->I2CSwitch, SfpNum))
 		return -1;
+	/*
 	if (PCA9536_GetBankIn(&Dev->pca9536[SfpNum]))
-		return -1;	
+		return -1;
 	*ModAbs = (Dev->pca9536[SfpNum].Ins >> BSP_SFP_PIN_PCA9536_MOD_ABS_BIT) & 0x01;	
+	*/
+	Addr = 0;
+	Data = 0;
+	*ModAbs = 0;
+	if (I2C_Sequential_Receive(BSP_SFP_PIN_PCA9536_I2C, 0xA0, &Addr, 1, &Data, 1))
+		*ModAbs = 1;
+	if (Data != 0x03)
+		*ModAbs = 1;	
 	return 0;
 }
 

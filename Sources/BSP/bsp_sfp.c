@@ -88,17 +88,13 @@ int32_t BSP_SFP_UpdateDevice(BSP_SFP_T *Dev)
 	return 0;
 } 
 
-uint32_t SFPUpdateStepCounter;
-
 void BSP_SFP_Update(BSP_SFP_T *Dev, BSP_SFP_CFG_T *Cfg)
 {
 	if (!Dev)
 		return;
 	
-	if (BSP_SFP_PIN_GetModAbs(Dev->pin, Dev->Num, &Dev->ModAbs))
-			return;	
-	if (BSP_SFP_PIN_GetTxFault(Dev->pin, Dev->Num, &Dev->TxFault))
-			return;
+	BSP_SFP_PIN_GetModAbs(Dev->pin, Dev->Num, &Dev->ModAbs);
+	BSP_SFP_PIN_GetTxFault(Dev->pin, Dev->Num, &Dev->TxFault);
 	//if (BSP_FPGA_GetSFPLOS(Dev->fpga, Dev->Num, &Dev->LOS))
 	//	return;
 	if ((Dev->TxDisable) && (!Cfg->TxDisable))
@@ -116,8 +112,6 @@ void BSP_SFP_Update(BSP_SFP_T *Dev, BSP_SFP_CFG_T *Cfg)
 	
 	if (Dev->ModAbs)
 	{
-		if (BSP_SFP_PIN_SetLed(Dev->pin, Dev->Num, BSP_SFP_PIN_LED_RED))
-			return;
 		if (BSP_DEV_GET_STATE(&Dev->sfp) != BSP_DEV_STATE_RESET)
 		{
 			SFP_Deinit(&Dev->sfp);
@@ -125,8 +119,6 @@ void BSP_SFP_Update(BSP_SFP_T *Dev, BSP_SFP_CFG_T *Cfg)
 	}
 	else
 	{
-		if (BSP_SFP_PIN_SetLed(Dev->pin, Dev->Num, BSP_SFP_PIN_LED_GREEN))
-			return;
 		if (BSP_DEV_GET_STATE(&Dev->sfp) != BSP_DEV_STATE_OK)
 		{
 			if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->i2c_switch, Dev->Num))
@@ -137,8 +129,7 @@ void BSP_SFP_Update(BSP_SFP_T *Dev, BSP_SFP_CFG_T *Cfg)
 		{
 			if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->i2c_switch, Dev->Num))
 				return;
-			if (SFP_Update(&Dev->sfp))
-				return;
+			SFP_Update(&Dev->sfp);
 		}
 	}
 }
@@ -163,6 +154,7 @@ int32_t BSP_SFP_Init(BSP_SFP_T *Dev, uint32_t Num, BSP_SFP_PIN_T *pin, BSP_SFP_I
 		return -1;
 	if (BSP_SFP_PIN_SetTxDisable(Dev->pin, Dev->Num, 1))
 		return -1;
+	
 	Dev->TxDisable = 1;
 	Dev->ModAbs = 1;
 	return 0;

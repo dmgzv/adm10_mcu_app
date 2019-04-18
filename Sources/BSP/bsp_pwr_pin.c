@@ -6,7 +6,7 @@ int32_t BSP_PWR_PIN_SetState(BSP_PWR_PIN_T *Dev, uint8_t PinMask, uint8_t State)
 	
 	if (!Dev)
 		return -1;
-	/*
+	
 	CurState = Dev->pca9536.Outs;
 	
 	if (State)
@@ -19,7 +19,7 @@ int32_t BSP_PWR_PIN_SetState(BSP_PWR_PIN_T *Dev, uint8_t PinMask, uint8_t State)
 		if (PCA9536_SetBankOut(&Dev->pca9536, NewState))
 			return -1;
 	}
-	*/
+	
 	return 0;
 }
 
@@ -45,8 +45,7 @@ int32_t BSP_PWR_PIN_Init(BSP_PWR_PIN_T *Dev)
 	
 	if (!Dev)
 		return -1;
-	/*
-	
+		
 	if (PCA9536_Init(&Dev->pca9536, BSP_PWR_PIN_PCA9536_I2C))
 			return -1;	
 	if (PCA9536_SetBankPol(&Dev->pca9536, BSP_PWR_PIN_PCA9536_POL_DEFAULT ))
@@ -55,7 +54,6 @@ int32_t BSP_PWR_PIN_Init(BSP_PWR_PIN_T *Dev)
 		return -1;
 	if (PCA9536_SetBankDir(&Dev->pca9536, BSP_PWR_PIN_PCA9536_DIR_DEFAULT))
 		return -1;
-	*/
-	
+		
 	return 0;
 }

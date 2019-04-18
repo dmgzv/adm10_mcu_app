@@ -19,7 +19,7 @@ typedef struct {
 	uint8_t Pols[PCAL6524_BANKS_CNT];
 } PCAL6524_T;
 
-int32_t PCAL6524_SetPinDir(PCAL6524_T *dev, uint8_t Bank, uint8_t Pin, uint8_t Cfg);
+int32_t PCAL6524_SetPinCfg(PCAL6524_T *dev, uint8_t Bank, uint8_t Pin, uint8_t Cfg);
 int32_t PCAL6524_SetPinOut(PCAL6524_T *dev, uint8_t Bank, uint8_t Pin, uint8_t Out);
 int32_t PCAL6524_SetPinPol(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t Pol);
 

@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -544,6 +544,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_ll_fmc.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_hal_sram.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sram.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -608,11 +613,6 @@
               <FileName>s29gl01gs.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\s29gl01gs.c</FilePath>
-            </File>
-            <File>
-              <FileName>mt48lc16m16a2.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Sources\BSP\Devices\mt48lc16m16a2.h</FilePath>
             </File>
             <File>
               <FileName>mt48lc16m16a2.c</FileName>
@@ -729,6 +729,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_netif.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_fpga.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -743,6 +748,11 @@
               <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\stm32f4xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\tftp_client.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1018,6 +1028,26 @@
               <FileName>tcpip.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\LwIP\src\api\tcpip.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Shell</GroupName>
+          <Files>
+            <File>
+              <FileName>shell.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Shell\shell.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_cmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Shell\shell_cmd.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_telnet.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Shell\shell_telnet.c</FilePath>
             </File>
           </Files>
         </Group>

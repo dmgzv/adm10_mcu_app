@@ -136,8 +136,8 @@ int32_t BSP_SFP_I2C_SWITCH_Init(BSP_SFP_I2C_SWITCH_T *dev)
 			result = -1;
 	}
 	
-	if (BSP_SFP_I2C_SWITCH_SelectChannel(dev, 0))
-		return -1;
+	//if (BSP_SFP_I2C_SWITCH_SelectChannel(dev, 0))
+	//	return -1;
 	
 	return result;
 }

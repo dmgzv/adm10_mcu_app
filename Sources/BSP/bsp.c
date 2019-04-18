@@ -108,11 +108,27 @@ int32_t BSP_InitDevices(BSP_DEVICES_T *Devices)
 	/* Init Power*/
 	if (BSP_PWR_Init(&Devices->Power, &Devices->PowerPin))
 		result = -1;
-	if (MT48LC16M16A2_Init())
+	osDelay(3000);
+	/* Init SDRAM*/
+	if (BSP_SDRAM_Init(&Devices->Sdram))
 		result = -1;
+	/* Init SDRAM*/
+	if (BSP_FPGA_Init(&Devices->Fpga))
+		result = -1;
+	/* Init Flash*/
+	if (BSP_FLASH_Init(&Devices->Flash))
+		result = -1;
+	
+	/* Init Ethernet Pins*/
+	if (BSP_ETH_PIN_Init(&Devices->EthPin))
+		result = -1;
+	/* Init Ethernet Switch*/
+	if (BSP_ETH_SW_Init(&Devices->EthSw))
+		result = -1;
+	
 	/* Init Clocks*/
-	//if (BSP_CLK_Init(&Devices->Clk))
-	//	result = -1;
+	if (BSP_CLK_Init(&Devices->Clk))
+		result = -1;
 	/* Init SFP I2C Switches*/
 	if (BSP_SFP_I2C_SWITCH_Init(&Devices->SfpSwitch))
 		result = -1;	
@@ -125,21 +141,7 @@ int32_t BSP_InitDevices(BSP_DEVICES_T *Devices)
 		if (BSP_SFP_Init(&Devices->Sfp[i], i, &Devices->SfpPin, &Devices->SfpSwitch))
 			result = -1;
 	}
-		/* Init Ethernet Pins*/
-	if (BSP_ETH_PIN_Init(&Devices->EthPin))
-		result = -1;
-	/* Init Ethernet Switch*/
-	if (BSP_ETH_SW_Init(&Devices->EthSw))
-		result = -1;
-	/* Init Flash*/
-	if (BSP_FLASH_Init(&Devices->Flash))
-		result = -1;
-	/* Perform Random Flash Test*/
-	//if (BSP_FLASH_RandomTest(&Devices->Flash))
-	//	result = -1;
-	if (result)
-		BSP_LED_Set(&Devices->AlarmLed, BSP_LED_COLOR_RED);
-	
+
 	return result;
 }
 

@@ -165,6 +165,50 @@ void BSP_AT45DB641E_SetPinState(void *Priv, AT45DB641E_PIN_T Pin, AT45DB641E_PIN
 }
 #elif defined(BSP_FLASH_TYPE_S29GL01GS)
 
+int32_t BSP_FLASH_EraseFPGA(BSP_FLASH_T *Dev, uint32_t Idx)
+{
+	uint32_t Addr;
+	
+	if (Idx == 0)
+	{
+		for (Addr = BSP_FLASH_FPGA_1_FW_ADDR_START; Addr < BSP_FLASH_FPGA_1_FW_ADDR_END; Addr+=BSP_FLASH_PAGE_SIZE)
+		{
+			if (BSP_FLASH_WaitReady(Dev))
+				return -1;
+			if (BSP_FLASH_ErasePage(Dev, Addr))
+				return -1;
+		}
+		if (BSP_FLASH_WaitReady(Dev))
+			return -1;
+	}
+	else if (Idx == 1)
+	{
+		for (Addr = BSP_FLASH_FPGA_2_FW_ADDR_START; Addr < BSP_FLASH_FPGA_2_FW_ADDR_END; Addr+=BSP_FLASH_PAGE_SIZE)
+		{
+			if (BSP_FLASH_WaitReady(Dev))
+				return -1;
+			if (BSP_FLASH_ErasePage(Dev, Addr))
+				return -1;
+		}
+		if (BSP_FLASH_WaitReady(Dev))
+			return -1;
+	}
+	else if (Idx == 2)
+	{
+		for (Addr = BSP_FLASH_FPGA_3_FW_ADDR_START; Addr < BSP_FLASH_FPGA_3_FW_ADDR_END; Addr+=BSP_FLASH_PAGE_SIZE)
+		{
+			if (BSP_FLASH_WaitReady(Dev))
+				return -1;
+			if (BSP_FLASH_ErasePage(Dev, Addr))
+				return -1;
+		}
+		if (BSP_FLASH_WaitReady(Dev))
+			return -1;
+	}
+	
+	return 0;
+}
+
 int32_t BSP_FLASH_EraseChip(BSP_FLASH_T *Dev)
 {
 	uint32_t i;
@@ -182,64 +226,96 @@ int32_t BSP_FLASH_EraseChip(BSP_FLASH_T *Dev)
 	return 0;
 }
 
+#if 0
 #define BSP_FLASH_SHIFT	0 /*0x4000000*/
+
+#define BSP_FLASH_BUFFER_SIZE	0x10000
+//static uint8_t RxBuffer[BSP_FLASH_BUFFER_SIZE];
+static uint8_t RxBuffer[BSP_FLASH_BUFFER_SIZE];
+static uint32_t SectorEraseMaxTime = 0;
+static uint32_t ChipEraseTime = 0;
+static uint32_t BufferReadMaxTime = 0;
+static uint32_t ChipReadTime = 0;
+static uint32_t BufferProgramMaxTime = 0;
+static uint32_t ChipProgramTime = 0;
 
 int32_t BSP_FLASH_RandomTest(BSP_FLASH_T *Dev)
 {
 	uint32_t i, j;
-	uint8_t Buffer[256];
-#if 1
+	uint32_t Time;
+	
+
+	ChipEraseTime = osKernelSysTick();
 	for (i = 0; i < BSP_FLASH_PAGES_CNT; i++)
 	{
+		Time = osKernelSysTick();
 		if (BSP_FLASH_WaitReady(Dev))
 			return -1;
 		if (BSP_FLASH_ErasePage(Dev, BSP_FLASH_SHIFT + i * BSP_FLASH_PAGE_SIZE))
 			return -1;
+		Time = osKernelSysTick() - Time;
+		if (Time > SectorEraseMaxTime)
+			SectorEraseMaxTime = Time;
 	}
 	if (BSP_FLASH_WaitReady(Dev))
 		return -1;
+	ChipEraseTime = osKernelSysTick() - ChipEraseTime;
 	
 	/* Check data after Erase */
-	for (i = 0; i < BSP_FLASH_SIZE / sizeof(Buffer); i++)
+	ChipReadTime = osKernelSysTick();
+	for (i = 0; i < BSP_FLASH_SIZE / sizeof(RxBuffer); i++)
 	{
-		if (BSP_FLASH_Read(Dev, BSP_FLASH_SHIFT + i * sizeof(Buffer), Buffer, sizeof(Buffer)))
+		Time = osKernelSysTick();
+		if (BSP_FLASH_Read(Dev, BSP_FLASH_SHIFT + i * sizeof(RxBuffer), RxBuffer, sizeof(RxBuffer)))
 			return -1;
-		for (j = 0; j < sizeof(Buffer)/sizeof(Buffer[0]); j++)
+		for (j = 0; j < sizeof(RxBuffer)/sizeof(RxBuffer[0]); j++)
 		{
-			if (Buffer[j] != 0xFF)
+			if (RxBuffer[j] != 0xFF)
 				return -1;
 		}
+		Time = osKernelSysTick() - Time;
+		if (Time > BufferReadMaxTime)
+			BufferReadMaxTime = Time;
 	}
-#endif	
+	ChipReadTime = osKernelSysTick() - ChipReadTime;
+
 	/*Program memory with random data*/
 	srand(0);
-	for (i = 0; i < BSP_FLASH_SIZE / sizeof(Buffer); i++)
+	for (i = 0; i < sizeof(RxBuffer)/sizeof(RxBuffer[0]); i++)
 	{
-		for (j = 0; j < sizeof(Buffer)/sizeof(Buffer[0]); j++)
-		{
-			Buffer[j] = rand() % 256; /*Fill buffer with random data from 0 to 255*/
-		}
+		RxBuffer[j] = rand() % 0xFF; /*Fill buffer with random data from 0 to 255*/
+	}
+	ChipProgramTime = osKernelSysTick();
+	for (i = 0; i < BSP_FLASH_SIZE / sizeof(RxBuffer); i++)
+	{
+		Time = osKernelSysTick();
 		if (BSP_FLASH_WaitReady(Dev))
 			return -1;
-		if (BSP_FLASH_ProgramPage(Dev, BSP_FLASH_SHIFT + i * sizeof(Buffer), Buffer, sizeof(Buffer)))
+		if (BSP_FLASH_ProgramPage(Dev, BSP_FLASH_SHIFT + i * sizeof(RxBuffer), RxBuffer, sizeof(RxBuffer)))
 			return -1;
+		Time = osKernelSysTick() - Time;
+		if (Time > BufferProgramMaxTime)
+			BufferProgramMaxTime = Time;
 	}
 	if (BSP_FLASH_WaitReady(Dev))
 		return -1;
+	ChipProgramTime = osKernelSysTick() - ChipProgramTime;
 	
 	/*Check random data after programing*/
 	srand(0);
-	for (i = 0; i < BSP_FLASH_SIZE / sizeof(Buffer); i++)
+	for (i = 0; i < BSP_FLASH_SIZE / sizeof(RxBuffer); i++)
 	{
-		if (BSP_FLASH_Read(Dev, BSP_FLASH_SHIFT + i * sizeof(Buffer), Buffer, sizeof(Buffer)))
+		if (BSP_FLASH_Read(Dev, BSP_FLASH_SHIFT + i * sizeof(RxBuffer), RxBuffer, sizeof(RxBuffer)))
 			return -1;
-		for (j = 0; j < sizeof(Buffer)/sizeof(Buffer[0]); j++)
+		for (j = 0; j < sizeof(RxBuffer)/sizeof(RxBuffer[0]); j++)
 		{
-			if (Buffer[j] != rand() % 256) /*Check random data in buffer */
+			if (RxBuffer[j] != RxBuffer[j]) /*Check random data in buffer */
 				return -1;
+			RxBuffer[j] = 0;
 		}
 	}
 	return 0;
 }
+#endif	
 
 #endif

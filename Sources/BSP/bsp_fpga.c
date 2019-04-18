@@ -1,271 +1,223 @@
 #include "bsp_fpga.h"
 #include <string.h>
 
-#define FPGA_REG_STATUS_1_ADDR	0x00
-#define FPGA_REG_STATUS_2_ADDR	0x01
-#define FPGA_REG_STATUS_3_ADDR	0x02
-#define FPGA_REG_STATUS_4_ADDR	0x03
+void HAL_SRAM_MspInit(SRAM_HandleTypeDef* hsram) {
+/* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+	
+	GPIO_InitTypeDef GPIO_InitStruct;
+	/* Peripheral clock enable */
+  __HAL_RCC_FMC_CLK_ENABLE();
+  
+  /** FMC GPIO Configuration  
+  PE2   ------> FMC_A23
+  PE3   ------> FMC_A19
+  PE4   ------> FMC_A20
+  PE5   ------> FMC_A21
+  PE6   ------> FMC_A22
+  PF0   ------> FMC_A0
+  PF1   ------> FMC_A1
+  PF2   ------> FMC_A2
+  PF3   ------> FMC_A3
+  PF4   ------> FMC_A4
+  PF5   ------> FMC_A5
+  PF12   ------> FMC_A6
+  PF13   ------> FMC_A7
+  PF14   ------> FMC_A8
+  PF15   ------> FMC_A9
+  PG0   ------> FMC_A10
+  PG1   ------> FMC_A11
+  PE7   ------> FMC_D4
+  PE7   ------> FMC_DA4
+  PE8   ------> FMC_D5
+  PE8   ------> FMC_DA5
+  PE9   ------> FMC_D6
+  PE9   ------> FMC_DA6
+  PE10   ------> FMC_D7
+  PE10   ------> FMC_DA7
+  PE11   ------> FMC_D8
+  PE11   ------> FMC_DA8
+  PE12   ------> FMC_D9
+  PE12   ------> FMC_DA9
+  PE13   ------> FMC_D10
+  PE13   ------> FMC_DA10
+  PE14   ------> FMC_D11
+  PE14   ------> FMC_DA11
+  PE15   ------> FMC_D12
+  PE15   ------> FMC_DA12
+  PD8   ------> FMC_D13
+  PD8   ------> FMC_DA13
+  PD9   ------> FMC_D14
+  PD9   ------> FMC_DA14
+  PD10   ------> FMC_D15
+  PD11   ------> FMC_A16
+  PD12   ------> FMC_A17
+  PD13   ------> FMC_A18
+  PD14   ------> FMC_D0
+  PD14   ------> FMC_DA0
+  PD15   ------> FMC_D1
+  PD15   ------> FMC_DA1
+  PG2   ------> FMC_A12
+  PG3   ------> FMC_A13
+  PG4   ------> FMC_A14
+  PG5   ------> FMC_A15
+  PD0   ------> FMC_D2
+  PD0   ------> FMC_DA2
+  PD1   ------> FMC_D3
+  PD1   ------> FMC_DA3
+  PD4   ------> FMC_NOE
+  PD5   ------> FMC_NWE
+  PD7   ------> FMC_NE1
+  PG9   ------> FMC_NE2
+  PG10   ------> FMC_NE3
+  PG13   ------> FMC_A24
+  PB7   ------> FMC_NL
+  */
+  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
+                          |GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9 
+                          |GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13 
+                          |GPIO_PIN_14|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-#define FPGA_REG_STICKY_1_ADDR	0x04
-#define FPGA_REG_STICKY_2_ADDR	0x05
-#define FPGA_REG_STICKY_3_ADDR	0x06
-#define FPGA_REG_STICKY_4_ADDR	0x07
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_12|GPIO_PIN_13 
+                          |GPIO_PIN_14|GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
-#define FPGA_REG_MASK_1_ADDR	0x08
-#define FPGA_REG_MASK_2_ADDR	0x09
-#define FPGA_REG_MASK_3_ADDR	0x0A
-#define FPGA_REG_MASK_4_ADDR	0x0B
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_9|GPIO_PIN_10 
+                          |GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
-#define FPGA_REG_MGMT_ADDR	0x0C
+  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
+                          |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
+                          |GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5 
+                          |GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-static const uint16_t fpga_reg_status_addr[FPGA_REG_STATUS_CNT] = 
-{ FPGA_REG_STATUS_1_ADDR, FPGA_REG_STATUS_2_ADDR, FPGA_REG_STATUS_3_ADDR, FPGA_REG_STATUS_4_ADDR };
-/*
-static const uint16_t fpga_reg_sticky_addr[FPGA_REG_STICKY_CNT] = 
-{ FPGA_REG_STICKY_1_ADDR, FPGA_REG_STICKY_2_ADDR, FPGA_REG_STICKY_3_ADDR, FPGA_REG_STICKY_4_ADDR };
-static const uint16_t fpga_reg_mask_addr[FPGA_REG_MASK_CNT] = 
-{ FPGA_REG_MASK_1_ADDR, FPGA_REG_MASK_2_ADDR, FPGA_REG_MASK_3_ADDR, FPGA_REG_MASK_4_ADDR };
-*/
-static const uint16_t fpga_reg_mgmt_addr[FPGA_REG_MGMT_CNT] = 
-{ FPGA_REG_MGMT_ADDR };
-
-#ifdef BSP_CONFIG_USE_FREERTOS
-#define	BSP_FPGA_msDelay(ms) 		osDelay(ms)
-#else
-#define BSP_FPGA_msDelay(ms) 		HAL_Delay(ms)
-#endif
-
-static void BSP_FPGA_SetSpiCS(void *Priv, uint32_t PinState)
-{
-	HAL_GPIO_WritePin(BSP_FPGA_SPI_CS_GPIO_PORT, BSP_FPGA_SPI_CS_GPIO_PIN, PinState ? GPIO_PIN_SET : GPIO_PIN_RESET);
+  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 
-static void BSP_FPGA_InitSpiCS(BSP_FPGA_T *Dev)
-{
-	GPIO_InitTypeDef  GPIO_InitStruct;
-	
-	BSP_FPGA_SPI_CS_GPIO_CLK_ENABLE();  
-	/* SPI CS GPIO pin configuration  */
-	GPIO_InitStruct.Pin       = BSP_FPGA_SPI_CS_GPIO_PIN;
-	GPIO_InitStruct.Mode      = GPIO_MODE_OUTPUT_OD;
-	GPIO_InitStruct.Pull      = GPIO_PULLUP;
-	GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;	
-	HAL_GPIO_Init(BSP_FPGA_SPI_CS_GPIO_PORT, &GPIO_InitStruct);
-	HAL_GPIO_WritePin(BSP_FPGA_SPI_CS_GPIO_PORT, BSP_FPGA_SPI_CS_GPIO_PIN, GPIO_PIN_SET);
-	
-	Dev->SpiCS.Priv = Dev;
-	Dev->SpiCS.SetState = &BSP_FPGA_SetSpiCS;
-}
+void HAL_SRAM_MspDeInit(SRAM_HandleTypeDef *hsram)
+{ 	
+  /* Peripheral clock enable */
+  __HAL_RCC_FMC_CLK_DISABLE();
+  
+  /** FMC GPIO Configuration  
+  PE2   ------> FMC_A23
+  PE3   ------> FMC_A19
+  PE4   ------> FMC_A20
+  PE5   ------> FMC_A21
+  PE6   ------> FMC_A22
+  PF0   ------> FMC_A0
+  PF1   ------> FMC_A1
+  PF2   ------> FMC_A2
+  PF3   ------> FMC_A3
+  PF4   ------> FMC_A4
+  PF5   ------> FMC_A5
+  PF12   ------> FMC_A6
+  PF13   ------> FMC_A7
+  PF14   ------> FMC_A8
+  PF15   ------> FMC_A9
+  PG0   ------> FMC_A10
+  PG1   ------> FMC_A11
+  PE7   ------> FMC_D4
+  PE7   ------> FMC_DA4
+  PE8   ------> FMC_D5
+  PE8   ------> FMC_DA5
+  PE9   ------> FMC_D6
+  PE9   ------> FMC_DA6
+  PE10   ------> FMC_D7
+  PE10   ------> FMC_DA7
+  PE11   ------> FMC_D8
+  PE11   ------> FMC_DA8
+  PE12   ------> FMC_D9
+  PE12   ------> FMC_DA9
+  PE13   ------> FMC_D10
+  PE13   ------> FMC_DA10
+  PE14   ------> FMC_D11
+  PE14   ------> FMC_DA11
+  PE15   ------> FMC_D12
+  PE15   ------> FMC_DA12
+  PD8   ------> FMC_D13
+  PD8   ------> FMC_DA13
+  PD9   ------> FMC_D14
+  PD9   ------> FMC_DA14
+  PD10   ------> FMC_D15
+  PD11   ------> FMC_A16
+  PD12   ------> FMC_A17
+  PD13   ------> FMC_A18
+  PD14   ------> FMC_D0
+  PD14   ------> FMC_DA0
+  PD15   ------> FMC_D1
+  PD15   ------> FMC_DA1
+  PG2   ------> FMC_A12
+  PG3   ------> FMC_A13
+  PG4   ------> FMC_A14
+  PG5   ------> FMC_A15
+  PD0   ------> FMC_D2
+  PD0   ------> FMC_DA2
+  PD1   ------> FMC_D3
+  PD1   ------> FMC_DA3
+  PD4   ------> FMC_NOE
+  PD5   ------> FMC_NWE
+  PD7   ------> FMC_NE1
+  PG9   ------> FMC_NE2
+  PG10   ------> FMC_NE3
+  PG13   ------> FMC_A24
+  PB7   ------> FMC_NL
+  */
+  HAL_GPIO_DeInit(GPIOE, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
+                          |GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9 
+                          |GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13 
+                          |GPIO_PIN_14|GPIO_PIN_15);
 
-static int32_t __BSP_FPGA_WriteReg(BSP_FPGA_T *Dev, uint16_t Addr, uint16_t Data)
-{
-	uint8_t Buffer[4];
-	int32_t result;
-	
-	Buffer[0] = (0x02 << 6) | (0x01 << 4) | ((Addr >> 8) & 0xFF);
-	Buffer[1] = Addr & 0xFF;
-	Buffer[2] = (Data >> 8) & 0xFF;
-	Buffer[3] = Data & 0xFF;
-	
-	result = SPI_Transmit(BSP_FPGA_SPI, &Dev->SpiCS, (char*) Buffer, sizeof(Buffer));
-	if (result)
-		return -1;	
-	return 0;
-}
+  HAL_GPIO_DeInit(GPIOF, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_12|GPIO_PIN_13 
+                          |GPIO_PIN_14|GPIO_PIN_15);
 
-static int32_t __BSP_FPGA_ReadReg(BSP_FPGA_T *Dev, uint16_t Addr, uint16_t *Data)
-{
-	uint8_t Buffer[4];
-	int32_t result;
-	
-	Buffer[0] = (0x02 << 6) | (0x02 << 4) | ((Addr >> 8) & 0x0F);
-	Buffer[1] = Addr & 0xFF;
-	
-	result = SPI_TransmitReceive(BSP_FPGA_SPI, &Dev->SpiCS, (char*) Buffer, (char*)Buffer, sizeof(Buffer));
-	if (result)
-		return -1;
-	*Data = (Buffer[2] << 8) | Buffer[3];
-	return 0;
-}
+  HAL_GPIO_DeInit(GPIOG, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
+                          |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_9|GPIO_PIN_10 
+                          |GPIO_PIN_13);
 
-int32_t BSP_FPGA_WriteReg(BSP_FPGA_T *Dev, uint16_t Addr, uint16_t Data)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_WriteReg(Dev, Addr, Data))
-		goto error;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
+  HAL_GPIO_DeInit(GPIOD, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
+                          |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
+                          |GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5 
+                          |GPIO_PIN_7);
 
-int32_t BSP_FPGA_ReadReg(BSP_FPGA_T *Dev, uint16_t Addr, uint16_t *Data)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, Addr, Data))
-		goto error;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_WriteSMI22(BSP_FPGA_T *Dev, uint8_t PhyAddr, uint8_t DevAddr, uint16_t Data)
-{
-	uint8_t Buffer[4];
-	int32_t result;
-	
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-		
-	Buffer[0] = (0x01 << 6) | (0x01 << 4) | ((PhyAddr >> 1) & 0x0F);
-	Buffer[1] = ((PhyAddr & 0x01) << 7) | ((DevAddr & 0x1F) << 2) | 0x02;
-	Buffer[2] = (Data >> 8) & 0xFF;
-	Buffer[3] = Data & 0xFF;
-	
-	result = SPI_Transmit(BSP_FPGA_SPI, &Dev->SpiCS, (char*) Buffer, sizeof(Buffer));
-	if (result)
-		goto error;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_ReadSMI22(BSP_FPGA_T *Dev, uint8_t PhyAddr, uint8_t DevAddr, uint16_t *Data)
-{
-	uint8_t Buffer[12];
-	int32_t result;
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Buffer[0] = (0x01 << 6) | (0x02 << 4) | ((PhyAddr >> 1) & 0x0F);
-	Buffer[1] = ((PhyAddr & 0x01) << 7) | ((DevAddr & 0x1F) << 2) | 0x02;
-	
-	result = SPI_TransmitReceive(BSP_FPGA_SPI, &Dev->SpiCS, (char*) Buffer, (char*)Buffer, sizeof(Buffer));
-	if (result)
-		goto error;
-	
-	*Data = (Buffer[10] << 8) | Buffer[11];
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_WriteSMI45(BSP_FPGA_T *Dev, uint8_t PhyAddr, uint8_t RegAddr, uint16_t Addr, uint16_t Data)
-{
-	uint8_t Buffer[8];
-	int32_t result;
-	
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Buffer[0] = (0x00 << 6) | (0x00 << 4) | ((PhyAddr >> 1) & 0x0F);
-	Buffer[1] = ((PhyAddr & 0x01) << 7) | ((RegAddr & 0x1F) << 2) | 0x02;
-	Buffer[2] = (Addr >> 8) & 0xFF;
-	Buffer[3] = Addr & 0xFF;
-	
-	result = SPI_Transmit(BSP_FPGA_SPI, &Dev->SpiCS, (char*) Buffer, sizeof(Buffer));
-	if (result)
-		goto error;
-	
-	Buffer[0] = (0x00 << 6) | (0x01 << 4) | ((PhyAddr >> 1) & 0x0F);
-	Buffer[1] = ((PhyAddr & 0x01) << 7) | ((RegAddr & 0x1F) << 2) | 0x02;
-	Buffer[2] = (Data >> 8) & 0xFF;
-	Buffer[3] = Data & 0xFF;
-	
-	result = SPI_Transmit(BSP_FPGA_SPI, &Dev->SpiCS, (char*) Buffer, sizeof(Buffer));
-	if (result)
-		goto error;
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_ReadSMI45(BSP_FPGA_T *Dev, uint8_t PhyAddr, uint8_t RegAddr, uint16_t Addr, uint16_t *Data)
-{
-	uint8_t Buffer[12];
-	int32_t result;
-	
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Buffer[0] = (0x00 << 6) | (0x00 << 4) | ((PhyAddr >> 1) & 0x0F);
-	Buffer[1] = ((PhyAddr & 0x01) << 7) | ((RegAddr & 0x1F) << 2) | 0x02;
-	Buffer[2] = (Addr >> 8) & 0xFF;
-	Buffer[3] = Addr & 0xFF;
-	
-	result = SPI_Transmit(BSP_FPGA_SPI, &Dev->SpiCS, (char*) Buffer, 8);
-	if (result)
-		goto error;
-	
-	Buffer[0] = (0x00 << 6) | (0x03 << 4) | ((PhyAddr >> 1) & 0x0F);
-	Buffer[1] = ((PhyAddr & 0x01) << 7) | ((RegAddr & 0x1F) << 2) | 0x02;
-	
-	result = SPI_TransmitReceive(BSP_FPGA_SPI, &Dev->SpiCS, (char*) Buffer, (char*)Buffer, sizeof(Buffer));
-	if (result)
-		goto error;
-	
-	*Data = (Buffer[10] << 8) | Buffer[11];
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
+  HAL_GPIO_DeInit(GPIOB, GPIO_PIN_7);
 }
 
 int32_t BSP_FPGA_Init(BSP_FPGA_T *Dev)
 {
-	uint32_t i;
-	uint16_t Data;
-	uint16_t Mgmt[FPGA_REG_MGMT_CNT];
+	FMC_NORSRAM_TimingTypeDef Timing;
 	
 	if (!Dev)
 		return -1;
@@ -273,43 +225,40 @@ int32_t BSP_FPGA_Init(BSP_FPGA_T *Dev)
 	BSP_DEV_INIT(Dev);
 	BSP_DEV_LOCK(Dev);
 	
-	BSP_FPGA_InitSpiCS(Dev);
-	
-	for (i = 0; i < FPGA_REG_MGMT_CNT; i++)
-	{
-		if (__BSP_FPGA_ReadReg(Dev, fpga_reg_mgmt_addr[i], &Data))
-			goto error;
-		if (Data == 0xFFFF)
-			goto error;
-		Dev->Mgmt[i] = Data;	
-	}	
-	
-	for (i = 0; i < FPGA_REG_STATUS_CNT; i++)
-	{
-		if (__BSP_FPGA_ReadReg(Dev, fpga_reg_status_addr[i], &Data))
-			goto error;
-		Dev->Status[i] = Data;	
-	}
-	
-	for (i = 0; i < FPGA_REG_MGMT_CNT; i++)
-	{
-		Mgmt[i] = Dev->Mgmt[i];
-	}	
-	
-	Mgmt[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(0)] = Mgmt[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(0)] | (1 << BSP_FPGA_CFP_PRG_CTRL1_BIT_IDX(0));
-	Mgmt[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(0)] = Mgmt[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(0)] | (1 << BSP_FPGA_CFP_PRG_CTRL2_BIT_IDX(0));	
-	Mgmt[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(0)] = Mgmt[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(0)] | (1 << BSP_FPGA_CFP_PRG_CTRL3_BIT_IDX(0));
+	/** Perform the SRAM3 memory initialization sequence
+  */
+  Dev->hsram.Instance = FMC_NORSRAM_DEVICE;
+  Dev->hsram.Extended = FMC_NORSRAM_EXTENDED_DEVICE;
+  /* Dev->hsram.Init */
+  Dev->hsram.Init.NSBank = FMC_NORSRAM_BANK3;
+  Dev->hsram.Init.DataAddressMux = FMC_DATA_ADDRESS_MUX_ENABLE;
+  Dev->hsram.Init.MemoryType = FMC_MEMORY_TYPE_PSRAM;
+  Dev->hsram.Init.MemoryDataWidth = FMC_NORSRAM_MEM_BUS_WIDTH_8;
+  Dev->hsram.Init.BurstAccessMode = FMC_BURST_ACCESS_MODE_DISABLE;
+  Dev->hsram.Init.WaitSignalPolarity = FMC_WAIT_SIGNAL_POLARITY_LOW;
+  Dev->hsram.Init.WrapMode = FMC_WRAP_MODE_DISABLE;
+  Dev->hsram.Init.WaitSignalActive = FMC_WAIT_TIMING_BEFORE_WS;
+  Dev->hsram.Init.WriteOperation = FMC_WRITE_OPERATION_ENABLE;
+  Dev->hsram.Init.WaitSignal = FMC_WAIT_SIGNAL_DISABLE;
+  Dev->hsram.Init.ExtendedMode = FMC_EXTENDED_MODE_DISABLE;
+  Dev->hsram.Init.AsynchronousWait = FMC_ASYNCHRONOUS_WAIT_DISABLE;
+  Dev->hsram.Init.WriteBurst = FMC_WRITE_BURST_DISABLE;
+  Dev->hsram.Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
+  Dev->hsram.Init.PageSize = FMC_PAGE_SIZE_NONE;
+  /* Timing */
+  Timing.AddressSetupTime = 2;
+  Timing.AddressHoldTime = 2;
+  Timing.DataSetupTime = 4;
+  Timing.BusTurnAroundDuration = 2;
+  Timing.CLKDivision = 16;
+  Timing.DataLatency = 17;
+  Timing.AccessMode = FMC_ACCESS_MODE_A;
+  /* ExtTiming */
 
-	Mgmt[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(1)] = Mgmt[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(1)] | 1 << BSP_FPGA_CFP_PRG_CTRL1_BIT_IDX(1);
-	Mgmt[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(1)] = Mgmt[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(1)] | 1 << BSP_FPGA_CFP_PRG_CTRL2_BIT_IDX(1);	
-	Mgmt[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(1)] = Mgmt[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(1)] | 1 << BSP_FPGA_CFP_PRG_CTRL3_BIT_IDX(1);
+  if (HAL_SRAM_Init(&Dev->hsram, &Timing, NULL) != HAL_OK)
+		goto error;
 	
-	for (i = 0; i < FPGA_REG_MGMT_CNT; i++)
-	{
-		if (__BSP_FPGA_WriteReg(Dev, fpga_reg_mgmt_addr[i], Mgmt[i]))
-			goto error;
-		Dev->Mgmt[i] = Mgmt[i];	
-	}	
+	Dev->SwVersion = *((uint8_t*)BSP_FPGA_MAXV_ADDR);
 	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
@@ -317,405 +266,6 @@ int32_t BSP_FPGA_Init(BSP_FPGA_T *Dev)
 	
 error:
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetSFPLOS(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *LOS)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_status_addr[BSP_FPGA_SFP_LOS_STATUS_IDX(Idx)], &Dev->Status[BSP_FPGA_SFP_LOS_STATUS_IDX(Idx)]))
-		goto error;
-	*LOS = BSP_FPGA_SFP_LOS(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetPLLLock(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *Lock)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_status_addr[BSP_FPGA_PLL_LOCK_STATUS_IDX(Idx)], &Dev->Status[BSP_FPGA_PLL_LOCK_STATUS_IDX(Idx)]))
-		goto error;
-	*Lock = BSP_FPGA_PLL_LOCK(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPLOS(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *LOS)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_status_addr[BSP_FPGA_CFP_LOS_STATUS_IDX(Idx)], &Dev->Status[BSP_FPGA_CFP_LOS_STATUS_IDX(Idx)]))
-		goto error;
-	*LOS = BSP_FPGA_CFP_LOS(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPModAbs(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *Abs)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_status_addr[BSP_FPGA_CFP_MOD_ABS_STATUS_IDX(Idx)], &Dev->Status[BSP_FPGA_CFP_MOD_ABS_STATUS_IDX(Idx)]))
-		goto error;
-	*Abs = BSP_FPGA_CFP_MOD_ABS(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPGlbAlrm(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *GlbAlrm)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_status_addr[BSP_FPGA_CFP_GLB_ALRM_STATUS_IDX(Idx)], &Dev->Status[BSP_FPGA_CFP_GLB_ALRM_STATUS_IDX(Idx)]))
-		goto error;
-	*GlbAlrm = BSP_FPGA_CFP_GLB_ALRM(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_SetCFPReset(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t Reset)
-{
-	uint16_t Mgmt;
-	
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Mgmt = Dev->Mgmt[BSP_FPGA_CFP_RESET_MGMT_IDX(Idx)];	
-	if (Reset)
-		Mgmt |= (1 << BSP_FPGA_CFP_RESET_BIT_IDX(Idx));
-	else
-		Mgmt &= ~(1 << BSP_FPGA_CFP_RESET_BIT_IDX(Idx));
-	if (__BSP_FPGA_WriteReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_RESET_MGMT_IDX(Idx)], Mgmt))
-		goto error;
-	Dev->Mgmt[BSP_FPGA_CFP_RESET_MGMT_IDX(Idx)] = Mgmt;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPReset(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *Reset)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_RESET_MGMT_IDX(Idx)], &Dev->Mgmt[BSP_FPGA_CFP_RESET_MGMT_IDX(Idx)]))
-		goto error;
-	*Reset = BSP_FPGA_CFP_RESET(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_SetCFPTxDisable(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t TxDisable)
-{
-	uint16_t Mgmt;
-	
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Mgmt = Dev->Mgmt[BSP_FPGA_CFP_TX_DIS_MGMT_IDX(Idx)];	
-	if (TxDisable)
-		Mgmt |= (1 << BSP_FPGA_CFP_TX_DIS_BIT_IDX(Idx));
-	else
-		Mgmt &= ~(1 << BSP_FPGA_CFP_TX_DIS_BIT_IDX(Idx));
-	if (__BSP_FPGA_WriteReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_TX_DIS_MGMT_IDX(Idx)], Mgmt))
-		goto error;
-	Dev->Mgmt[BSP_FPGA_CFP_TX_DIS_MGMT_IDX(Idx)] = Mgmt;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPTxDisable(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *TxDisable)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_TX_DIS_MGMT_IDX(Idx)], &Dev->Mgmt[BSP_FPGA_CFP_TX_DIS_MGMT_IDX(Idx)]))
-		goto error;
-	*TxDisable = BSP_FPGA_CFP_TX_DIS(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_SetCFPLowPwr(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t LowPwr)
-{
-	uint16_t Mgmt;
-	
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Mgmt = Dev->Mgmt[BSP_FPGA_CFP_LOW_PWR_MGMT_IDX(Idx)];	
-	if (LowPwr)
-		Mgmt |= (1 << BSP_FPGA_CFP_LOW_PWR_BIT_IDX(Idx));
-	else
-		Mgmt &= ~(1 << BSP_FPGA_CFP_LOW_PWR_BIT_IDX(Idx));
-	if (__BSP_FPGA_WriteReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_LOW_PWR_MGMT_IDX(Idx)], Mgmt))
-		goto error;
-	Dev->Mgmt[BSP_FPGA_CFP_LOW_PWR_MGMT_IDX(Idx)] = Mgmt;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPLowPwr(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *LowPwr)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_LOW_PWR_MGMT_IDX(Idx)], &Dev->Mgmt[BSP_FPGA_CFP_LOW_PWR_MGMT_IDX(Idx)]))
-		goto error;
-	*LowPwr = BSP_FPGA_CFP_LOW_PWR(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_SetCFPPrgCntl1(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t PrgCntl)
-{
-	uint16_t Mgmt;
-	
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Mgmt = Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(Idx)];	
-	if (PrgCntl)
-		Mgmt |= (1 << BSP_FPGA_CFP_PRG_CTRL1_BIT_IDX(Idx));
-	else
-		Mgmt &= ~(1 << BSP_FPGA_CFP_PRG_CTRL1_BIT_IDX(Idx));
-	if (__BSP_FPGA_WriteReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(Idx)], Mgmt))
-		goto error;
-	Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(Idx)] = Mgmt;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPPrgCntl1(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *PrgCntl)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(Idx)], &Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL1_MGMT_IDX(Idx)]))
-		goto error;
-	*PrgCntl = BSP_FPGA_CFP_PRG_CTRL1(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_SetCFPPrgCntl2(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t PrgCntl)
-{
-	uint16_t Mgmt;
-	
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Mgmt = Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(Idx)];	
-	if (PrgCntl)
-		Mgmt |= (1 << BSP_FPGA_CFP_PRG_CTRL2_BIT_IDX(Idx));
-	else
-		Mgmt &= ~(1 << BSP_FPGA_CFP_PRG_CTRL2_BIT_IDX(Idx));
-	if (__BSP_FPGA_WriteReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(Idx)], Mgmt))
-		goto error;
-	Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(Idx)] = Mgmt;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPPrgCntl2(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *PrgCntl)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(Idx)], &Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL2_MGMT_IDX(Idx)]))
-		goto error;
-	*PrgCntl = BSP_FPGA_CFP_PRG_CTRL2(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_SetCFPPrgCntl3(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t PrgCntl)
-{
-	uint16_t Mgmt;
-	
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	Mgmt = Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(Idx)];	
-	if (PrgCntl)
-		Mgmt |= (1 << BSP_FPGA_CFP_PRG_CTRL3_BIT_IDX(Idx));
-	else
-		Mgmt &= ~(1 << BSP_FPGA_CFP_PRG_CTRL3_BIT_IDX(Idx));
-	if (__BSP_FPGA_WriteReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(Idx)], Mgmt))
-		goto error;
-	Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(Idx)] = Mgmt;	
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
-	BSP_DEV_UNLOCK(Dev);
-	return -1;
-}
-
-int32_t BSP_FPGA_GetCFPPrgCntl3(BSP_FPGA_T *Dev, uint32_t Idx, uint32_t *PrgCntl)
-{
-	if (!Dev)
-		return -1;	
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	if (__BSP_FPGA_ReadReg(Dev, fpga_reg_mgmt_addr[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(Idx)], &Dev->Mgmt[BSP_FPGA_CFP_PRG_CTRL3_MGMT_IDX(Idx)]))
-		goto error;
-	*PrgCntl = BSP_FPGA_CFP_PRG_CTRL3(Dev, Idx);
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-	
-error:
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
 }

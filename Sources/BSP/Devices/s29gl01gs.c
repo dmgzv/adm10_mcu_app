@@ -263,18 +263,28 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
   Dev->hnor[0].Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
   Dev->hnor[0].Init.PageSize = FMC_PAGE_SIZE_NONE;
   /* Timing */
-  Timing.AddressSetupTime = 2;
-  Timing.AddressHoldTime = 2;
-  Timing.DataSetupTime = 10;
-  Timing.BusTurnAroundDuration = 2;
+	/*
+		todo: Set correct values timing values
+		HCLK == 180 MHz
+		tHCLK = 5,5 ns
+		
+		tWC == 60 ns
+		tWP = 20 ns
+		tRC = 100 ns
+		tAVQV = 100 ns
+	*/
+  Timing.AddressSetupTime = 4;
+  Timing.AddressHoldTime = 4;
+  Timing.DataSetupTime = 20; // tWP = 
+  Timing.BusTurnAroundDuration = 4;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;
   Timing.AccessMode = FMC_ACCESS_MODE_D;
   /* ExtTiming */
-  ExtTiming.AddressSetupTime = 2;
-  ExtTiming.AddressHoldTime = 2;
-  ExtTiming.DataSetupTime = 10;
-  ExtTiming.BusTurnAroundDuration = 2;
+  ExtTiming.AddressSetupTime = 4;
+  ExtTiming.AddressHoldTime = 4;
+  ExtTiming.DataSetupTime = 20;
+  ExtTiming.BusTurnAroundDuration = 4;
   ExtTiming.CLKDivision = 16;
   ExtTiming.DataLatency = 17;
   ExtTiming.AccessMode = FMC_ACCESS_MODE_D;
@@ -319,18 +329,18 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
   Dev->hnor[1].Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
   Dev->hnor[1].Init.PageSize = FMC_PAGE_SIZE_NONE;
   /* Timing */
-  Timing.AddressSetupTime = 2;
-  Timing.AddressHoldTime = 2;
-  Timing.DataSetupTime = 10;
-  Timing.BusTurnAroundDuration = 2;
+  Timing.AddressSetupTime = 4;
+  Timing.AddressHoldTime = 4;
+  Timing.DataSetupTime = 20;
+  Timing.BusTurnAroundDuration = 4;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;
   Timing.AccessMode = FMC_ACCESS_MODE_D;
   /* ExtTiming */
-  ExtTiming.AddressSetupTime = 2;
-  ExtTiming.AddressHoldTime = 2;
-  ExtTiming.DataSetupTime = 10;
-  ExtTiming.BusTurnAroundDuration = 2;
+  ExtTiming.AddressSetupTime = 4;
+  ExtTiming.AddressHoldTime = 4;
+  ExtTiming.DataSetupTime = 20;
+  ExtTiming.BusTurnAroundDuration = 4;
   ExtTiming.CLKDivision = 16;
   ExtTiming.DataLatency = 17;
   ExtTiming.AccessMode = FMC_ACCESS_MODE_D;
@@ -393,11 +403,11 @@ int32_t S29GL01GS_Read(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t S
 	{
 		if (HAL_NOR_GetStatus(&Dev->hnor[1], S29GL01GS_NOR_BANK_ADDR, 0) != HAL_NOR_STATUS_SUCCESS)
 			goto error;
-		if (HAL_NOR_ReadBuffer(&Dev->hnor[1], Addr + S29GL01GS_NOR_BANK_ADDR - S29GL01GS_NOR_BANK_SIZE, Buffer, Size/2) != HAL_OK)
+		if (HAL_NOR_ReadBuffer(&Dev->hnor[1], Addr + S29GL01GS_NOR_BANK_ADDR, Buffer, Size/2) != HAL_OK)
 			goto error;
 		if (Size % 2)
 		{
-			if (HAL_NOR_Read(&Dev->hnor[1], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR - S29GL01GS_NOR_BANK_SIZE + (Size / 2)), &Data) != HAL_OK)
+			if (HAL_NOR_Read(&Dev->hnor[1], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR + (Size / 2)), &Data) != HAL_OK)
 				goto error;
 			((char*)Buffer)[Size - 1] = Data;
 		}
@@ -415,7 +425,7 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 {
 	uint16_t Data;
 	uint16_t *pdata = NULL;
-  uint32_t index  = 0, i;
+  uint32_t index  = 0;
   uint32_t startaddress = 0;
 	
 	if ((!Dev) || (!Buffer))
@@ -428,7 +438,6 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 	/* todo: Fix programing of data to several banks*/
 	if (Addr < S29GL01GS_NOR_BANK_SIZE)
 	{
-#if 1
 		pdata = Buffer;
 		index = Size / 2;
 		startaddress = Addr + S29GL01GS_NOR_BANK_ADDR;
@@ -454,31 +463,18 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 			if (HAL_NOR_Program(&Dev->hnor[0], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR + (Size / 2)), &Data) != HAL_OK)
 				goto error;
 		}
-#else 
-		if (HAL_NOR_GetStatus(&Dev->hnor[0], S29GL01GS_NOR_BANK_ADDR, 0) != HAL_NOR_STATUS_SUCCESS)
-			goto error;		
-		if (HAL_NOR_ProgramBuffer(&Dev->hnor[0], Addr + S29GL01GS_NOR_BANK_ADDR, Buffer, Size / 2) != HAL_OK)
-			goto error;
-		if (Size % 2)
-		{
-			Data = 0xFF00 | ((char*)Buffer)[Size - 1];
-			if (HAL_NOR_Program(&Dev->hnor[0], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR + (Size / 2)), &Data) != HAL_OK)
-				goto error;
-		}
-#endif
 	}
 	else
 	{
-#if 1
 		pdata = Buffer;
 		index = Size / 2;
-		startaddress = Addr + S29GL01GS_NOR_BANK_ADDR  - S29GL01GS_NOR_BANK_SIZE;
+		startaddress = Addr + S29GL01GS_NOR_BANK_ADDR ;
 		while(index > 0)
 		{
 			/* Read NOR device status */
 			while(1)
 			{
-				if (HAL_NOR_GetStatus(&Dev->hnor[1], S29GL01GS_NOR_BANK_ADDR, 0) == HAL_NOR_STATUS_SUCCESS)
+				if (HAL_NOR_GetStatus(&Dev->hnor[1], S29GL01GS_NOR_BANK_ADDR + S29GL01GS_NOR_BANK_SIZE, 0) == HAL_NOR_STATUS_SUCCESS)
 					break;
 			}		
 			/* Write data to NOR */
@@ -492,21 +488,9 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 		if (Size % 2)
 		{
 			Data = 0xFF00 | ((char*)Buffer)[Size - 1];
-			if (HAL_NOR_Program(&Dev->hnor[1], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR  - S29GL01GS_NOR_BANK_SIZE + (Size / 2)), &Data) != HAL_OK)
+			if (HAL_NOR_Program(&Dev->hnor[1], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR + (Size / 2)), &Data) != HAL_OK)
 				goto error;
 		}
-#else
-		if (HAL_NOR_GetStatus(&Dev->hnor[1], S29GL01GS_NOR_BANK_ADDR, 0) != HAL_NOR_STATUS_SUCCESS)
-			goto error;
-		if (HAL_NOR_ProgramBuffer(&Dev->hnor[1], Addr + S29GL01GS_NOR_BANK_ADDR - S29GL01GS_NOR_BANK_SIZE, Buffer, Size / 2) != HAL_OK)
-			goto error;
-		if (Size % 2)
-		{
-			Data = 0xFF00 | ((char*)Buffer)[Size - 1];
-			if (HAL_NOR_Program(&Dev->hnor[1], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR - S29GL01GS_NOR_BANK_SIZE + (Size / 2)), &Data) != HAL_OK)
-				goto error;
-		}
-#endif
 	}
 	
 	BSP_DEV_UNLOCK(Dev);
@@ -538,7 +522,7 @@ int32_t S29GL01GS_EraseSector(S29GL01GS_T *Dev, uint32_t Addr)
 	{
 		if (HAL_NOR_GetStatus(&Dev->hnor[1], S29GL01GS_NOR_BANK_ADDR, 0) != HAL_NOR_STATUS_SUCCESS)
 			goto error;
-		if (HAL_NOR_Erase_Block(&Dev->hnor[1], Addr - S29GL01GS_NOR_BANK_SIZE, S29GL01GS_NOR_BANK_ADDR) != HAL_OK)
+		if (HAL_NOR_Erase_Block(&Dev->hnor[1], Addr, S29GL01GS_NOR_BANK_ADDR) != HAL_OK)
 			goto error;
 	}
 	
