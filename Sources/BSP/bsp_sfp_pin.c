@@ -1,4 +1,8 @@
 #include "bsp_sfp_pin.h"
+#include "bsp_pwr_in.h"
+#include "bsp_pwr_pin.h"
+#include "bsp_pwr_seq.h"
+#include "bsp_sfp_i2c_switch.h"
 
 #define BSP_SFP_PIN_PCA9536_LED_0_BIT		 0
 #define BSP_SFP_PIN_PCA9536_LED_1_BIT		 1
@@ -26,150 +30,189 @@ static const uint8_t pcal6524_addr[BSP_SFP_PIN_PCAL6524_CNT] =
 	BSP_SFP_PIN_PCAL6524_2_I2C_ADDR,
 	BSP_SFP_PIN_PCAL6524_3_I2C_ADDR
 };
-static const uint8_t pcal6524_bank_cfg[BSP_SFP_PIN_PCAL6524_CNT][PCAL6524_BANKS_CNT] = 
-{
-	{0x00, 0x00, 0x00}, /* All pins are outputs */ 
-	{0xFF, 0xFF, 0xFF}, /* All pins are inputs */
-	{0x00, 0x00, 0x00} /* All pins are outputs */ 
-};
-static const uint8_t pcal6524_bank_out[BSP_SFP_PIN_PCAL6524_CNT][PCAL6524_BANKS_CNT] = 
-{
-	{0xFF, 0xFF, 0xFF}, /* All pins are asserted */ 
-	{0xFF, 0xFF, 0xFF}, /* All pins are asserted */
-	{0xFF, 0xFF, 0xFF}  /* All pins are asserted */
-};
-static const uint8_t pcal6524_bank_pol[BSP_SFP_PIN_PCAL6524_CNT][PCAL6524_BANKS_CNT] = 
-{
-	{0x00, 0x00, 0x00}, /* All pins are not inverted */
-	{0x00, 0x00, 0x00}, /* All pins are not inverted */ 
-	{0x00, 0x00, 0x00}  /* All pins are not inverted */
-};
 
-int32_t BSP_SFP_PIN_Init(BSP_SFP_PIN_T *Dev, BSP_SFP_I2C_SWITCH_T *I2CSwitch)
+PCAL6524_T pcal6524[BSP_SFP_PIN_PCAL6524_CNT];
+//PCA9536_T pca9536[BSP_SFP_PIN_PCA9536_CNT];	
+
+static int32_t BSP_SFP_PIN_CheckConditions(void)
 {
-	uint32_t i, bank;
-	int32_t result = 0;
+	//uint32_t i;
 	
-	if (!Dev)
+	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 		return -1;
-	
-	Dev->I2CSwitch = I2CSwitch;
-	
-	for (i = 0; i < BSP_SFP_PIN_PCAL6524_CNT; i++)
+	if (BSP_DEV_GET_STATE(&pca9536) != BSP_DEV_STATE_OK)
+		return -1;
+	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
+		return -1;
+	/*
+	for (i = 0; i < BSP_PCA9548_CNT; i++)
 	{
-		if (PCAL6524_Init(&Dev->pcal6524[i], (I2C_TypeDef*)pcal6524_i2c[i], (uint8_t)pcal6524_addr[i]))
-		{
-			result = -1;
-			continue;
-		}
-		for (bank = 0; bank < PCAL6524_BANKS_CNT; bank++)
-		{
-			if (PCAL6524_SetBankPol(&Dev->pcal6524[i], bank, (uint8_t)pcal6524_bank_pol[i][bank]))
-			{
-				result = -1;
-				continue;
-			}
-			if (PCAL6524_SetBankCfg(&Dev->pcal6524[i], bank, (uint8_t)pcal6524_bank_cfg[i][bank]))
-			{
-				result = -1;
-				continue;
-			}
-			if (PCAL6524_SetBankOut(&Dev->pcal6524[i], bank, (uint8_t)pcal6524_bank_out[i][bank]))
-			{
-				result = -1;
-				continue;
-			}
-			if (PCAL6524_GetBankIn(&Dev->pcal6524[i], bank))
-			{
-				result = -1;
-				continue;
-			}
-		}
+		if (BSP_DEV_GET_STATE(&pca9548a[i]) != BSP_DEV_STATE_OK)
+			return -1;
 	}
-	
-	for (i = 0; i < BSP_SFP_PIN_PCA9536_CNT; i++)
+	for (i = 0; i < BSP_PCA9546_CNT; i++)
 	{
-		uint8_t I2CAddr, Addr = 0, Data, Idx = 0;
-		uint8_t ValidI2CAddr[32];
-		
-		if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->I2CSwitch, i))
-		{
-			result = -1;
-			continue;
+		if (BSP_DEV_GET_STATE(&pca9546a[i]) != BSP_DEV_STATE_OK)
+			return -1;
+	}
+	*/
+	return 0;
+}
+
+void BSP_SFP_PIN_Process(void)
+{
+	uint32_t i;
+	
+	
+	if (BSP_SFP_PIN_CheckConditions())
+	{
+		/* External faults present */
+		for (i = 0; i < BSP_SFP_PIN_PCAL6524_CNT; i++)
+		{			
+			if(BSP_DEV_GET_STATE(&pcal6524[i]) != BSP_DEV_STATE_RESET)
+			{
+				PCAL6524_Deinit(&pcal6524[i]);
+			}
 		}
-		
-		for (I2CAddr = 0x1; I2CAddr < 0x7E; I2CAddr++)
-		{
-			
-			if (((I2CAddr << 1) == 0xD4) || ((I2CAddr << 1) == 0xD6) )
-				continue;
-			if (I2C_Sequential_Receive(I2C3, I2CAddr << 1, (uint8_t*)&Addr, 1, (char*)&Data, 1) == 0)
-				ValidI2CAddr[Idx++] = I2CAddr << 1;
-		}
-		Idx++;
-		
 		/*
-		if (PCA9536_Init(&Dev->pca9536[i], BSP_SFP_PIN_PCA9536_I2C))
+		for (i = 0; i < BSP_SFP_PIN_PCA9536_CNT; i++)
 		{
-			result = -1;
-			continue;
-		}
-		if (PCA9536_SetBankPol(&Dev->pca9536[i],BSP_SFP_PIN_PCA9536_POL_DEFAULT ))
-		{
-			result = -1;
-			continue;
-		}
-		if (PCA9536_SetBankOut(&Dev->pca9536[i], BSP_SFP_PIN_PCA9536_OUT_DEFAULT))
-		{
-			result = -1;
-			continue;
-		}
-		if (PCA9536_SetBankDir(&Dev->pca9536[i], BSP_SFP_PIN_PCA9536_DIR_DEFAULT))
-		{
-			result = -1;
-			continue;
+			if(BSP_DEV_GET_STATE(&pca9536[i]) != BSP_DEV_STATE_RESET)
+			{
+				PCA9536_Deinit(&pca9536[i]);
+			}
 		}
 		*/
-	}	
-	return result;	
+	}
+	else
+	{
+		/* External faults absent */
+		for (i = 0; i < BSP_SFP_PIN_PCAL6524_CNT; i++)
+		{
+			if(BSP_DEV_GET_STATE(&pcal6524[i]) != BSP_DEV_STATE_OK)
+			{
+				PCAL6524_Init(&pcal6524[i], (I2C_TypeDef*)pcal6524_i2c[i], (uint8_t)pcal6524_addr[i]);
+			}
+		}
+		/*
+		for (i = 0; i < BSP_SFP_PIN_PCAL6524_CNT; i++)
+		{
+			if(BSP_DEV_GET_STATE(&pca9536[i]) != BSP_DEV_STATE_OK)
+			{
+				if (!BSP_SFP_I2C_SWITCH_SelectChannel(SfpNum))
+				{
+					PCA9536_Init(&pca9536[i], BSP_SFP_PIN_PCA9536_I2C);
+					BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
+				}
+			}
+		}
+		*/		
+	}
 }
 
-int32_t BSP_SFP_PIN_SetTxDisable(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t TxDisable)
+int32_t BSP_SFP_PIN_InitTxFault(uint32_t SfpNum)
 {
 	uint32_t bank, pin;
 	
-	if ((!Dev) || (SfpNum > 19))
+	if (SfpNum > 19)
 		return -1;
 		
 	pin = SfpNum % 8;
 	bank = SfpNum / 8;
 	
-	if (PCAL6524_SetPinOut(&Dev->pcal6524[2], bank, pin, TxDisable))
+	if (PCAL6524_SetPinPol(&pcal6524[1], bank, pin, 0))
+		return -1;
+	if (PCAL6524_SetPinCfg(&pcal6524[1], bank, pin, 1))
 		return -1;
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_GetTxDisable(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *TxDisable)
+int32_t BSP_SFP_PIN_GetTxFault(uint32_t SfpNum, uint32_t *TxFault)
 {
 	uint32_t bank, pin;
 	
-	if ((!Dev) || (SfpNum > 19))
+	if ((SfpNum > 19) || (!TxFault))
 		return -1;
 	
 	pin = SfpNum % 8;
 	bank = SfpNum / 8;
 	
-	if (PCAL6524_GetBankOut(&Dev->pcal6524[2], bank))
-		return -1;
-	*TxDisable = (Dev->pcal6524[2].Outs[bank] >> pin) & 0x01;	
+	if (PCAL6524_GetBankIn(&pcal6524[1], bank))
+		return -1;	
+	*TxFault = (pcal6524[1].Ins[bank] >> pin) & 0x01;	
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_SetLinkLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t Color)
+int32_t BSP_SFP_PIN_InitTxDisable(uint32_t SfpNum)
+{
+	uint32_t bank, pin;
+	
+	if (SfpNum > 19)
+		return -1;
+		
+	pin = SfpNum % 8;
+	bank = SfpNum / 8;
+	
+	if (PCAL6524_SetPinPol(&pcal6524[2], bank, pin, 0))
+		return -1;
+	if (PCAL6524_SetPinCfg(&pcal6524[2], bank, pin, 0))
+		return -1;
+	return 0;
+}
+
+int32_t BSP_SFP_PIN_SetTxDisable(uint32_t SfpNum, uint32_t TxDisable)
+{
+	uint32_t bank, pin;
+	
+	if (SfpNum > 19)
+		return -1;
+		
+	pin = SfpNum % 8;
+	bank = SfpNum / 8;
+	
+	if (PCAL6524_SetPinOut(&pcal6524[2], bank, pin, TxDisable))
+		return -1;
+	return 0;
+}
+
+int32_t BSP_SFP_PIN_GetTxDisable(uint32_t SfpNum, uint32_t *TxDisable)
+{
+	uint32_t bank, pin;
+	
+	if (SfpNum > 19)
+		return -1;
+	
+	pin = SfpNum % 8;
+	bank = SfpNum / 8;
+	
+	if (PCAL6524_GetBankOut(&pcal6524[2], bank))
+		return -1;
+	*TxDisable = (pcal6524[2].Outs[bank] >> pin) & 0x01;	
+	return 0;
+}
+
+int32_t BSP_SFP_PIN_InitLinkLed(uint32_t SfpNum)
+{
+	uint32_t bank, pin;
+	
+	if (SfpNum > 19)
+		return -1;
+		
+	pin = SfpNum % 8;
+	bank = SfpNum / 8;
+	
+	if (PCAL6524_SetPinPol(&pcal6524[0], bank, pin, 0))
+		return -1;
+	if (PCAL6524_SetPinCfg(&pcal6524[0], bank, pin, 0))
+		return -1;
+	return 0;
+}
+
+int32_t BSP_SFP_PIN_SetLinkLed(uint32_t SfpNum, uint32_t Color)
 {
 	uint32_t bank, pin, out;
 	
-	if ((!Dev) || (SfpNum > 19))
+	if (SfpNum > 19)
 		return -1;
 		
 	pin = SfpNum % 8;
@@ -185,38 +228,38 @@ int32_t BSP_SFP_PIN_SetLinkLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t Col
 		default:
 			return -1;
 	}
-	if (PCAL6524_SetPinOut(&Dev->pcal6524[0], bank, pin, out))
+	if (PCAL6524_SetPinOut(&pcal6524[0], bank, pin, out))
 		return -1;
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_GetLinkLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *Color)
+int32_t BSP_SFP_PIN_GetLinkLed(uint32_t SfpNum, uint32_t *Color)
 {
 	uint32_t bank, pin;
 	
-	if ((!Dev) || (SfpNum > 19) || (!Color))
+	if ((SfpNum > 19) || (!Color))
 		return -1;
 	
 	pin = SfpNum % 8;
 	bank = SfpNum / 8;
 	
-	if (PCAL6524_GetBankOut(&Dev->pcal6524[0], bank))
+	if (PCAL6524_GetBankOut(&pcal6524[0], bank))
 		return -1;
-	if ((Dev->pcal6524[0].Outs[bank] >> pin) & 0x01)
+	if ((pcal6524[0].Outs[bank] >> pin) & 0x01)
 		*Color = BSP_SFP_PIN_LED_OFF;
 	else
 		*Color = BSP_SFP_PIN_LED_GREEN;
 	return 0;
 }
-
-int32_t BSP_SFP_PIN_SetLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t Color)
+/*
+int32_t BSP_SFP_PIN_SetLed(uint32_t SfpNum, uint32_t Color)
 {
 	uint8_t Out;
 	
-	if ((!Dev) || (SfpNum > 19))
+	if (SfpNum > 19)
 		return -1;
 	
-	Out = Dev->pca9536[SfpNum].Outs & ~(BSP_SFP_PIN_PCA9536_LED_0_MASK | BSP_SFP_PIN_PCA9536_LED_1_MASK);
+	Out = pca9536[SfpNum].Outs & ~(BSP_SFP_PIN_PCA9536_LED_0_MASK | BSP_SFP_PIN_PCA9536_LED_1_MASK);
 	switch (Color) {
 		case BSP_SFP_PIN_LED_OFF:
 			Out |= BSP_SFP_PIN_PCA9536_LED_0_MASK | BSP_SFP_PIN_PCA9536_LED_1_MASK;
@@ -232,24 +275,27 @@ int32_t BSP_SFP_PIN_SetLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t Color)
 		default:
 			return -1;
 	}
-	if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->I2CSwitch, SfpNum))
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(SfpNum))
 		return -1;	
-	if (PCA9536_SetBankOut(&Dev->pca9536[SfpNum], Out))
+	if (PCA9536_SetBankOut(&pca9536[SfpNum], Out))
 		return -1;
-	
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO))
+		return -1;
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_GetLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *Color)
+int32_t BSP_SFP_PIN_GetLed(uint32_t SfpNum, uint32_t *Color)
 {	
-	if ((!Dev) || (SfpNum > 19) || (!Color))
+	if ((SfpNum > 19) || (!Color))
 		return -1;
 	
-	if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->I2CSwitch, SfpNum))
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(SfpNum))
 		return -1;
-	if (PCA9536_GetBankOut(&Dev->pca9536[SfpNum]))
+	if (PCA9536_GetBankOut(&pca9536[SfpNum]))
 		return -1;
-	switch (Dev->pca9536[SfpNum].Outs & (BSP_SFP_PIN_PCA9536_LED_0_MASK | BSP_SFP_PIN_PCA9536_LED_1_MASK)) {
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO))
+		return -1;
+	switch (pca9536[SfpNum].Outs & (BSP_SFP_PIN_PCA9536_LED_0_MASK | BSP_SFP_PIN_PCA9536_LED_1_MASK)) {
 		case (BSP_SFP_PIN_PCA9536_LED_0_MASK | BSP_SFP_PIN_PCA9536_LED_1_MASK):
 			*Color = BSP_SFP_PIN_LED_OFF;
 			break;
@@ -268,45 +314,55 @@ int32_t BSP_SFP_PIN_GetLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *Color)
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_SetRateSel(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t RateSel)
+int32_t BSP_SFP_PIN_SetRateSel(uint32_t SfpNum, uint32_t RateSel)
 {	
-	if ((!Dev) || (SfpNum > 19))
+	if (SfpNum > 19)
 		return -1;
 	
-	if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->I2CSwitch, SfpNum))
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(SfpNum))
 		return -1;	
-	if (PCA9536_SetPinOut(&Dev->pca9536[SfpNum], BSP_SFP_PIN_PCA9536_RATE_SEL_BIT, RateSel))
-		return -1;	
+	if (PCA9536_SetPinOut(&pca9536[SfpNum], BSP_SFP_PIN_PCA9536_RATE_SEL_BIT, RateSel))
+		return -1;
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO))
+		return -1;
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_GetRateSel(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *RateSel)
+int32_t BSP_SFP_PIN_GetRateSel(uint32_t SfpNum, uint32_t *RateSel)
 {	
-	if ((!Dev) || (SfpNum > 19) || (!RateSel))
+	if ((SfpNum > 19) || (!RateSel))
 		return -1;
 	
-	if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->I2CSwitch, SfpNum))
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(SfpNum))
 		return -1;
-	if (PCA9536_GetBankOut(&Dev->pca9536[SfpNum]))
+	if (PCA9536_GetBankOut(&pca9536[SfpNum]))
 		return -1;
-	*RateSel = (Dev->pca9536[SfpNum].Outs >> BSP_SFP_PIN_PCA9536_RATE_SEL_BIT) & 0x01;	
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO))
+		return -1;
+	*RateSel = (pca9536[SfpNum].Outs >> BSP_SFP_PIN_PCA9536_RATE_SEL_BIT) & 0x01;	
+	return 0;
+}
+*/
+
+int32_t BSP_SFP_PIN_InitModAbs(uint32_t SfpNum)
+{
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_GetModAbs(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *ModAbs)
+int32_t BSP_SFP_PIN_GetModAbs(uint32_t SfpNum, uint32_t *ModAbs)
 {
 	uint8_t Addr;
 	char Data;
 	
-	if ((!Dev) || (SfpNum > 19) || (!ModAbs))
+	if ((SfpNum > 19) || (!ModAbs))
 		return -1;
 	
-	if (BSP_SFP_I2C_SWITCH_SelectChannel(Dev->I2CSwitch, SfpNum))
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(SfpNum))
 		return -1;
 	/*
-	if (PCA9536_GetBankIn(&Dev->pca9536[SfpNum]))
+	if (PCA9536_GetBankIn(&pca9536[SfpNum]))
 		return -1;
-	*ModAbs = (Dev->pca9536[SfpNum].Ins >> BSP_SFP_PIN_PCA9536_MOD_ABS_BIT) & 0x01;	
+	*ModAbs = (pca9536[SfpNum].Ins >> BSP_SFP_PIN_PCA9536_MOD_ABS_BIT) & 0x01;	
 	*/
 	Addr = 0;
 	Data = 0;
@@ -314,22 +370,10 @@ int32_t BSP_SFP_PIN_GetModAbs(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *Mod
 	if (I2C_Sequential_Receive(BSP_SFP_PIN_PCA9536_I2C, 0xA0, &Addr, 1, &Data, 1))
 		*ModAbs = 1;
 	if (Data != 0x03)
-		*ModAbs = 1;	
-	return 0;
-}
-
-int32_t BSP_SFP_PIN_GetTxFault(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *TxFault)
-{
-	uint32_t bank, pin;
+		*ModAbs = 1;
 	
-	if ((!Dev) || (SfpNum > 19) || (!TxFault))
+	if (BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO))
 		return -1;
 	
-	pin = SfpNum % 8;
-	bank = SfpNum / 8;
-	
-	if (PCAL6524_GetBankIn(&Dev->pcal6524[1], bank))
-		return -1;	
-	*TxFault = (Dev->pcal6524[1].Ins[bank] >> pin) & 0x01;	
 	return 0;
 }

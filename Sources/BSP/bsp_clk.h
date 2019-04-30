@@ -15,10 +15,8 @@
 	#error	Define BSP_CONFIG_USE_I2C3 in bsp_config.h for BSP_CLK
 #endif
 
-typedef struct {
-	SI5332_T si5332[BSP_CLK_SI5332_CNT];
-} BSP_CLK_T;
+extern SI5332_T si5332[BSP_CLK_SI5332_CNT];
 
-int32_t BSP_CLK_Init(BSP_CLK_T *Dev);
+void BSP_CLK_Process(void);
 
 #endif /* __BSP_CLK_H */

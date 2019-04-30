@@ -15,11 +15,8 @@
 #define BSP_ETH_SW_SPI_CS_GPIO_SPEED					GPIO_SPEED_FAST
 #define BSP_ETH_SW_SPI_CS_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOF_CLK_ENABLE() 
 
-typedef struct {
-	KSZ8895_T ksz8895;
-} BSP_ETH_SW_T;
-
-int32_t BSP_ETH_SW_Init(BSP_ETH_SW_T *Dev);
-int32_t BSP_ETH_SW_Update(BSP_ETH_SW_T *Dev);
+extern KSZ8895_T ksz8895;
+	
+void BSP_ETH_SW_Process(void);
 
 #endif /* __BSP_ETH_SW_H */

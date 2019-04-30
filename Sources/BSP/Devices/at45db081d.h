@@ -1,0 +1,58 @@
+#ifndef __AT45DB081D_H
+#define __AT45DB081D_H
+
+#include "spi.h"
+
+#define AT45DB081D_PAGES_PER_BLOCK		8
+#define AT45DB081D_BLOCKS_PER_SECTOR	32
+#define AT45DB081D_PAGES_PER_SECTOR		(AT45DB081D_PAGES_PER_BLOCK * AT45DB081D_BLOCKS_PER_SECTOR)
+
+#define AT45DB081D_SECTORS_COUNT			16
+#define AT45DB081D_PAGES_COUNT				(AT45DB081D_SECTORS_COUNT * AT45DB081D_PAGES_PER_SECTOR)
+#define AT45DB081D_BLOCKS_COUNT				(AT45DB081D_SECTORS_COUNT * AT45DB081D_BLOCKS_PER_SECTOR)
+
+#define AT45DB081D_PAGE_SIZE					256
+#define AT45DB081D_BLOCK_SIZE					(AT45DB081D_PAGES_PER_BLOCK * AT45DB081D_PAGE_SIZE)
+#define AT45DB081D_SECTOR_SIZE				(AT45DB081D_BLOCKS_PER_SECTOR * AT45DB081D_BLOCK_SIZE)
+#define AT45DB081D_SIZE								(AT45DB081D_SECTORS_COUNT * AT45DB081D_SECTOR_SIZE)
+
+
+typedef enum 
+{
+	AT45DB081D_PIN_SPI_CS,
+	AT45DB081D_PIN_WP,
+	AT45DB081D_PIN_RESET
+} AT45DB081D_PIN_T;
+
+typedef enum 
+{
+	AT45DB081D_PIN_STATE_ASSERT = 1,
+	AT45DB081D_PIN_STATE_DEASSERT = 0	
+} AT45DB081D_PIN_STATE_T;
+
+typedef struct
+{
+	SPI_TypeDef *SPI;
+	void (*InitPins)(void *Priv);
+	void (*SetPinState)(void *Priv, AT45DB081D_PIN_T Pin, AT45DB081D_PIN_STATE_T PinState);
+	void *Priv;
+	uint16_t DevId;
+	uint8_t ManufId;
+	uint8_t Status;
+} AT45DB081D_T;
+
+int32_t AT45DB081D_WaitReady(AT45DB081D_T *dev);
+int32_t AT45DB081D_ErasePage(AT45DB081D_T *dev, uint32_t Addr);
+int32_t AT45DB081D_EraseBlock(AT45DB081D_T *dev, uint32_t Addr);
+int32_t AT45DB081D_EraseSector(AT45DB081D_T *dev, uint32_t Addr);
+int32_t AT45DB081D_Erase(AT45DB081D_T *dev, uint32_t Addr);
+int32_t AT45DB081D_Read(AT45DB081D_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
+int32_t AT45DB081D_ProgramPage(AT45DB081D_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
+int32_t AT45DB081D_ModifyPage(AT45DB081D_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
+
+int32_t AT45DB081D_Init(AT45DB081D_T *dev, SPI_TypeDef *SPI, void (*InitPins)(void *Priv),\
+	void (*SetPinState)(void *Priv, AT45DB081D_PIN_T Pin, AT45DB081D_PIN_STATE_T PinState), void *Priv);
+
+
+
+#endif /* __AT45DB081D_H */

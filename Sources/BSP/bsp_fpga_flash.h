@@ -1,0 +1,40 @@
+#ifndef __BSP_FPGA_FLASH_H
+#define __BSP_FPGA_FLASH_H
+
+#include "s29gl01gs.h"
+
+/* 0x00000000 - 0x02000000 - FPGA 1 Firmaware */
+/* 0x02000000 - 0x03000000 - FPGA 2 Firmaware */
+/* 0x03000000 - 0x04000000 - FPGA 3 Firmaware */
+
+
+#define BSP_FLASH_FPGA_1_FW_ADDR_START (0x00000000)
+#define BSP_FLASH_FPGA_1_FW_ADDR_END	 (0x02000000)
+#define BSP_FLASH_FPGA_1_FW_PAGES_CNT	 ((BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
+
+#define BSP_FLASH_FPGA_2_FW_ADDR_START (0x02000000)
+#define BSP_FLASH_FPGA_2_FW_ADDR_END	 (0x03000000)
+#define BSP_FLASH_FPGA_2_FW_PAGES_CNT	 ((BSP_FLASH_FPGA_2_FW_ADDR_END - BSP_FLASH_FPGA_2_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
+
+#define BSP_FLASH_FPGA_3_FW_ADDR_START (0x03000000)
+#define BSP_FLASH_FPGA_3_FW_ADDR_END	 (0x04000000)
+#define BSP_FLASH_FPGA_3_FW_PAGES_CNT	 ((BSP_FLASH_FPGA_2_FW_ADDR_END - BSP_FLASH_FPGA_2_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
+
+#define BSP_FLASH_FPGA_3_FW_ADDR_START (0x03000000)
+#define BSP_FLASH_FPGA_3_FW_ADDR_END	 (0x04000000)
+#define BSP_FLASH_FPGA_3_FW_PAGES_CNT	 ((BSP_FLASH_FPGA_2_FW_ADDR_END - BSP_FLASH_FPGA_2_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
+
+extern S29GL01GS_T s29gl01gs;
+
+#define	BSP_FPGA_FLASH_Init()															S29GL01GS_Init(&s29gl01gs)
+#define BSP_FPGA_FLASH_Read(Addr, Buffer, Size) 					S29GL01GS_Read(&s29gl01gs, (Addr), (Buffer), (Size))
+#define BSP_FPGA_FLASH_ProgramSector(Addr, Buffer, Size)	S29GL01GS_ProgramSector(&s29gl01gs, (Addr), (Buffer), (Size))
+#define BSP_FPGA_FLASH_EraseSectorErase(Addr) 						S29GL01GS_EraseSector(&s29gl01gs, (Addr))
+#define BS_FPGAP_FLASH_WaitReady() 												S29GL01GS_WaitReady(&s29gl01gs)
+int32_t BSP_FPGA_FLASH_EraseFPGA(uint32_t Idx);
+int32_t BSP_FPGA_FLASH_EraseChip(void);
+int32_t BSP_FPGA_FLASH_RandomTest(void);
+
+void BSP_FPGA_FLASH_Process(void);
+
+#endif /* __BSP_FPGA_FLASH_H */

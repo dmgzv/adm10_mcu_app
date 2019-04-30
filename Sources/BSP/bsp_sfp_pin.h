@@ -28,22 +28,31 @@
 	#error	Define BSP_CONFIG_USE_I2C3 in bsp_config.h for BSP_SFP_PIN
 #endif
 
-typedef struct {
-	PCAL6524_T pcal6524[BSP_SFP_PIN_PCAL6524_CNT];
-	BSP_SFP_I2C_SWITCH_T *I2CSwitch;
-	PCA9536_T pca9536[BSP_SFP_PIN_PCA9536_CNT];	
-}BSP_SFP_PIN_T;
+extern PCAL6524_T pcal6524[BSP_SFP_PIN_PCAL6524_CNT];
+//extern PCA9536_T pca9536[BSP_SFP_PIN_PCA9536_CNT];	
 
-int32_t BSP_SFP_PIN_Init(BSP_SFP_PIN_T *Dev, BSP_SFP_I2C_SWITCH_T *I2CSwitch);
-int32_t BSP_SFP_PIN_SetTxDisable(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t TxDisable);
-int32_t BSP_SFP_PIN_GetTxDisable(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *TxDisable);
-int32_t BSP_SFP_PIN_SetLinkLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t Color);
-int32_t BSP_SFP_PIN_GetLinkLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *Color);
-int32_t BSP_SFP_PIN_SetLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t Color);
-int32_t BSP_SFP_PIN_GetLed(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *Color);
-int32_t BSP_SFP_PIN_SetRateSel(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t RateSel);
-int32_t BSP_SFP_PIN_GetRateSel(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *RateSel);
-int32_t BSP_SFP_PIN_GetModAbs(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *ModAbs);
-int32_t BSP_SFP_PIN_GetTxFault(BSP_SFP_PIN_T *Dev, uint32_t SfpNum, uint32_t *TxFault);
+void BSP_SFP_PIN_Process(void);
+	
+int32_t BSP_SFP_PIN_InitTxFault(uint32_t SfpNum);
+int32_t BSP_SFP_PIN_GetTxFault(uint32_t SfpNum, uint32_t *TxFault);
+
+int32_t BSP_SFP_PIN_InitTxDisable(uint32_t SfpNum);	
+int32_t BSP_SFP_PIN_SetTxDisable(uint32_t SfpNum, uint32_t TxDisable);
+int32_t BSP_SFP_PIN_GetTxDisable(uint32_t SfpNum, uint32_t *TxDisable);
+	
+int32_t BSP_SFP_PIN_InitLinkLed(uint32_t SfpNum);
+int32_t BSP_SFP_PIN_SetLinkLed(uint32_t SfpNum, uint32_t Color);
+int32_t BSP_SFP_PIN_GetLinkLed(uint32_t SfpNum, uint32_t *Color);
+	
+int32_t BSP_SFP_PIN_InitLed(uint32_t SfpNum);
+int32_t BSP_SFP_PIN_SetLed(uint32_t SfpNum, uint32_t Color);
+int32_t BSP_SFP_PIN_GetLed(uint32_t SfpNum, uint32_t *Color);
+	
+int32_t BSP_SFP_PIN_InitRateSel(uint32_t SfpNum);
+int32_t BSP_SFP_PIN_SetRateSel(uint32_t SfpNum, uint32_t RateSel);
+int32_t BSP_SFP_PIN_GetRateSel(uint32_t SfpNum, uint32_t *RateSel);
+	
+int32_t BSP_SFP_PIN_InitModAbs(uint32_t SfpNum);
+int32_t BSP_SFP_PIN_GetModAbs(uint32_t SfpNum, uint32_t *ModAbs);
 
 #endif /* __BSP_SFP_PIN_H */

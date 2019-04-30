@@ -13,13 +13,13 @@
 #define	KSZ8895_msDelay(ms) 		HAL_Delay(ms)
 #endif
 
-#define KSZ8895_PIN_Init(Dev, Type)	(Dev)->Pin.Init((Dev)->Pin.Priv, (Type))
-#define KSZ8895_PIN_SetState(Dev, Type, State)	(Dev)->Pin.SetState((Dev)->Pin.Priv, (Type), (State))
+#define KSZ8895_InitPin(Dev, Pin)							((Dev)->PinCtrl ? BSP_PIN_CTRL_Init((Dev)->PinCtrl, Pin) : 0)	
+#define KSZ8895_SetPinState(Dev, Pin, State)	((Dev)->PinCtrl ? BSP_PIN_CTRL_SetState((Dev)->PinCtrl, Pin, State) : 0)
 
 static void __KSZ8895_SetCSState(void *Priv, uint32_t State)
 {
 	KSZ8895_T *Dev = Priv;
-	KSZ8895_PIN_SetState(Dev, KSZ8895_PIN_TYPE_SPI_CS, State ? KSZ8895_PIN_STATE_ASSERT : KSZ8895_PIN_STATE_DEASSERT);
+	KSZ8895_SetPinState(Dev, KSZ8895_PIN_SPI_CS, State);
 }
 
 static int32_t __KSZ8895_ReadReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t *Data)
@@ -50,35 +50,34 @@ static int32_t __KSZ8895_WriteReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t Data)
 	return 0;
 }
 
-int32_t KSZ8895_Init(KSZ8895_T *Dev, SPI_TypeDef *SPI, KSZ8895_PIN_T *Pin)
+int32_t KSZ8895_Init(KSZ8895_T *Dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl)
 {
-	if ((!Dev) || (!SPI) || (!Pin))
-		return -1;
-	if (!Pin->SetState)
+	if ((!Dev) || (!SPI) || (!PinCtrl))
 		return -1;
 	
 	BSP_DEV_INIT(Dev);
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->SPI = SPI;
-	Dev->Pin = *Pin;
+	Dev->PinCtrl = PinCtrl;
+
 	Dev->CS.SetState = &__KSZ8895_SetCSState;
 	Dev->CS.Priv = Dev;
 	
-	if (KSZ8895_PIN_Init(Dev, KSZ8895_PIN_TYPE_SPI_CS))
+	if (KSZ8895_InitPin(Dev, KSZ8895_PIN_SPI_CS))
 		goto error;
-	if (KSZ8895_PIN_Init(Dev, KSZ8895_PIN_TYPE_RESET))
+	if (KSZ8895_InitPin(Dev, KSZ8895_PIN_RESET))
 		goto error;
-	if (KSZ8895_PIN_Init(Dev, KSZ8895_PIN_TYPE_PWR_DOWN))
+	if (KSZ8895_InitPin(Dev, KSZ8895_PIN_PWR_DOWN))
 		goto error;	
 	
 	KSZ8895_msDelay(10);
 	
-	if (KSZ8895_PIN_SetState(Dev, KSZ8895_PIN_TYPE_SPI_CS, KSZ8895_PIN_STATE_ASSERT))
+	if (KSZ8895_SetPinState(Dev, KSZ8895_PIN_SPI_CS, 1))
 		goto error;
-	if (KSZ8895_PIN_SetState(Dev, KSZ8895_PIN_TYPE_RESET, KSZ8895_PIN_STATE_ASSERT))
+	if (KSZ8895_SetPinState(Dev, KSZ8895_PIN_RESET, 1))
 		goto error;
-	if (KSZ8895_PIN_SetState(Dev, KSZ8895_PIN_TYPE_PWR_DOWN, KSZ8895_PIN_STATE_ASSERT))
+	if (KSZ8895_SetPinState(Dev, KSZ8895_PIN_PWR_DOWN, 1))
 		goto error;	
 	
 	KSZ8895_msDelay(10);
@@ -100,6 +99,45 @@ int32_t KSZ8895_Init(KSZ8895_T *Dev, SPI_TypeDef *SPI, KSZ8895_PIN_T *Pin)
 	
 error:
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+void KSZ8895_Deinit(KSZ8895_T *Dev)
+{
+	if (!Dev)
+		return;
+	BSP_DEV_DEINIT(Dev);
+}
+
+int32_t KSZ8895_Update(KSZ8895_T *Dev)
+{
+	uint8_t Data;
+	uint32_t i;
+	
+	if (!Dev)
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	for (i = 0; i < 4; i++)
+	{
+	
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_0(i), &Data))
+			goto error;	
+		Dev->PortStatus[i][0] = Data;
+		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_1(i), &Data))
+			goto error;		
+		Dev->PortStatus[i][1] = Data;
+	}
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+	
+error:
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
 }

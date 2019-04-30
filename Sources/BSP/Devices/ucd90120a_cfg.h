@@ -1,5 +1,5 @@
-#ifndef __UCD90120A_CFG_H
-#define __UCD90120A_CFG_H
+#ifndef __UCD90120A_CFG_CMD_H
+#define __UCD90120A_CFG_CMD_H
 
 #include "pmbus.h"
 
@@ -8,7 +8,7 @@ typedef struct {
 	uint8_t Cmd;
 	uint8_t *Data;
 	uint32_t DataLen;
-}UCD90120A_CFG_T;
+}UCD90120A_CFG_CMD_T;
 
 
-#endif /* __UCD90120A_CFG_H */
+#endif /* __UCD90120A_CFG_CMD_H */

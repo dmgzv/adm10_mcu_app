@@ -5,6 +5,8 @@
 #include "string_fnc.h"
 #include "crc.h"
 
+#define PROFILE_PROTOCOL_LANG_PACKET_SIZE 256
+
 static uint32_t PROFILE_PROTOCOL_GetClass(PROFILE_T *Profile, char * cmd, char * rsp )
 {
 	char *p = rsp;
@@ -174,34 +176,16 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 {	
 	uint32_t AddColor = 0;
 	uint32_t TableId;//номер таблицы (секции)
-	uint32_t TableIdx;//номер таблицы (секции)
+	uint32_t Item;//номер таблицы (секции)
 	uint32_t TableSize = 0;
-	PROFILE_PARAM_T *Table = NULL;
-	PROFILE_PARAM_T *TableEnd = NULL;
 	char* p;
 	uint32_t len;
-	PROFILE_COLOR_T Color;
+	uint8_t Color;
 	uint8_t State;
 	char TempValue[PROFILE_STRING_MAX_LEN];
 	
 	if( !StrToUint( cmd + 2, &TableId, ';' ) )
 		TableId = 0xFFFFFFFF;
-
-	//поиск соответствующих номеру секции указателей на описание секции
-	if( TableId > 0 && TableId <= 8 && Profile->Descr[Profile->Idx]->Tables[ TableId - 1 ] && Profile->Descr[Profile->Idx]->TablesSize[ TableId - 1 ] )//Таблицы 1-7
-	{
-		TableIdx = TableId - 1;
-		Table = (PROFILE_PARAM_T*)Profile->Descr[Profile->Idx]->Tables[ TableIdx ];
-		TableSize = Profile->Descr[Profile->Idx]->TablesSize[ TableIdx ];
-		TableEnd = Table + TableSize;
-	}
-	else if( 100 <= TableId && TableId <= 103 && Profile->Descr[Profile->Idx]->Tables[ TableId-100+PROFILE_TABLE_100 ] && Profile->Descr[Profile->Idx]->TablesSize[ TableId-100+PROFILE_TABLE_100 ] )//Таблицы 100 - 103
-	{
-		TableIdx = TableId - 100 + PROFILE_TABLE_100;
-		Table = (PROFILE_PARAM_T*)Profile->Descr[Profile->Idx]->Tables[ TableIdx ];
-		TableSize = Profile->Descr[Profile->Idx]->TablesSize[ TableIdx ];
-		TableEnd = Table + TableSize;
-	}
 
 	//начинаем формировать ответ
 	p = rsp;
@@ -209,21 +193,57 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 	p += 2;
 	p = UintToStr( p, TableId );//Номер таблицы
 	*p++ = ';';
-
-	if( Table && TableSize )
+	
+	switch (TableId)
 	{
-		if ((cmd[1] == 0x77) && (TableId == 2))
+		case 1:
+			TableId = PROFILE_TABLE_1;
+			TableSize = Profile->Descr[Profile->Idx]->Table1Size;
+			break;
+		case 2:
+			TableId = PROFILE_TABLE_2;
+			TableSize = Profile->Descr[Profile->Idx]->Table2Size;
+			break;
+		case 3:
+			TableId = PROFILE_TABLE_3;
+			TableSize = Profile->Descr[Profile->Idx]->Table3Size;
+			break;
+		case 4:
+			TableId = PROFILE_TABLE_4;
+			TableSize = Profile->Descr[Profile->Idx]->Table4Size;
+			break;
+		case 5:
+			TableId = PROFILE_TABLE_5;
+			TableSize = Profile->Descr[Profile->Idx]->Table5Size;
+			break;
+		case 8:
+			TableId = PROFILE_TABLE_8;
+			TableSize = Profile->Descr[Profile->Idx]->Table8Size;
+			break;
+		case 103:
+			TableId = PROFILE_TABLE_103;
+			TableSize = Profile->Descr[Profile->Idx]->Table103Size;
+			break;
+		default:
+			TableId = 0xFFFFFFFF;
+			TableSize = 0;
+		break;
+	}
+	
+	if ((TableId != 0xFFFFFFFF) && (TableSize != 0))
+	{
+		if ((cmd[1] == 0x77) && (TableId == PROFILE_TABLE_2))
 			AddColor = 1;
 		
-		for( ; Table < TableEnd; Table++ )//перебор параметров секции	с их печатью
+		for(Item = 1 ; Item <= TableSize; Item++ )//перебор параметров секции	с их печатью
 		{
-			PROFILE_GetState(Profile, Table, &State);
-			PROFILE_GetColor(Profile, Table, &Color);
-			if (State != PROFILE_STATE_OOS)
+			PROFILE_GetState(Profile, TableId, Item, &State);
+			PROFILE_GetColor(Profile, TableId, Item, &Color);
+			//if (State != PROFILE_STATE_OOS)
 			{
-				if (PROFILE_GetValue(Profile, Table, TempValue) == 0)
+				if (PROFILE_GetValue(Profile, TableId, Item, TempValue) == 0)
 				{
-					if (PROFILE_ValueToString( Table->Type, TempValue, p , &len) == 0)
+					if (PROFILE_ValueToString( Profile, TableId, Item, TempValue, p , &len) == 0)
 						p += len;
 				}
 			}			
@@ -236,7 +256,7 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 			}
 			*p++ = ';';
 		}
-		Profile->TablesChanges &= ~(1 << TableIdx);
+		Profile->TablesChanges &= ~(1 << TableId);
 	}
 	else
 	{//Нет такой таблицы
@@ -251,9 +271,7 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 
 static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char * rsp)
 {
-	uint32_t TableId = 0;
-	uint32_t TableIdx = 0;
-	PROFILE_PARAM_T *Param = NULL;
+	uint32_t TableId;//номер таблицы (секции)
 	uint32_t Item = 0;
 	char * p = cmd;
 	uint32_t error = 0;
@@ -272,7 +290,7 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 		error = 1;
 	if( (  p = strchr(  p + 1, ';' ) ) == NULL )
 		error = 1;		//;Конец индекса
-	Value =  p + 1;											//Указатель на параметр 
+	Value =  p + 1;	  //Указатель на параметр 
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
 		error = 1;		//;Конец параметра
 	if( strchr( p + 1, ';' ) )
@@ -289,31 +307,7 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 			error = 1; //Неверная контрольная сумма
 	}
 	else 
-		error = 1;	
-
-	if( !error )// установка при отсутствии ошибок в запросе
-	{
-		//Получить указатель на таблицу
-		//поиск соответствующих номеру секции указателей на описание секции
-		if( TableId > 0 && TableId <= 7 && Profile->Descr[Profile->Idx]->Tables[ TableId - 1 ] && Profile->Descr[Profile->Idx]->TablesSize[ TableId - 1 ] )//Таблицы 1-7
-		{
-			if (Item && Item <= Profile->Descr[Profile->Idx]->TablesSize[ TableId - 1 ] )
-			{
-				TableIdx = TableId - 1;
-				Param = (PROFILE_PARAM_T*)Profile->Descr[Profile->Idx]->Tables[ TableIdx ];
-				Param += Item -1;
-			}
-		}
-		else if( 100 <= TableId && TableId <= 103 && Profile->Descr[Profile->Idx]->Tables[ TableId-100+PROFILE_TABLE_100 ] && Profile->Descr[Profile->Idx]->TablesSize[ TableId-100+PROFILE_TABLE_100 ] )//Таблицы 100 - 103
-		{
-			if (Item && Item <= Profile->Descr[Profile->Idx]->TablesSize[ TableId-100+PROFILE_TABLE_100 ] )
-			{
-				TableIdx = TableId-100+PROFILE_TABLE_100;
-				Param = (PROFILE_PARAM_T*)Profile->Descr[Profile->Idx]->Tables[ TableIdx ];
-				Param += Item -1;
-			}
-		}
-	}
+		error = 1;
 	
 	p = rsp;
 	memcpy(p, cmd, 2);
@@ -322,21 +316,50 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 	*p++ = ';';
 	p = UintToStr( p, Item );
 	*p++ = ';';
-	if( Param && Profile->SetEnable && ( Param->Access & 0xAA )		//Есть доступ на установку параметров
-		&& ( ( cmd[ 1 ] == 0x72 && TableId != 6 ) || ( cmd[ 1 ] == 0x76 && TableId == 6 ) ) ) //Проверка номера таблицы и команды
+	
+	switch (TableId)
+	{
+		case 1:
+			TableId = PROFILE_TABLE_1;
+			break;
+		case 2:
+			TableId = PROFILE_TABLE_2;
+			break;
+		case 3:
+			TableId = PROFILE_TABLE_3;
+			break;
+		case 4:
+			TableId = PROFILE_TABLE_4;
+			break;
+		case 5:
+			TableId = PROFILE_TABLE_5;
+			break;
+		case 8:
+			TableId = PROFILE_TABLE_8;
+			break;
+		case 103:
+			TableId = PROFILE_TABLE_103;
+			break;
+		default:
+			TableId = 0xFFFFFFFF;
+		break;
+	}
+	
+	if (( (!error) && (Profile->SetEnable) && (TableId != 0xFFFFFFFF))		//Есть доступ на установку параметров
+		&& ( ( cmd[ 1 ] == 0x72 && TableId != PROFILE_TABLE_6 ) || ( cmd[ 1 ] == 0x76 && TableId == PROFILE_TABLE_6 ) ) ) //Проверка номера таблицы и команды
 	{	
-		if (PROFILE_StringToValue(Param->Type, TempValue, Value) == 0)
+		if (PROFILE_StringToValue(Profile, TableId, Item, TempValue, Value) == 0)
 		{
-			if (PROFILE_CheckValue(Profile, Param, TempValue) == 0)
+			if (PROFILE_CheckValue(Profile, TableId, Item, TempValue) == 0)
 			{
-				PROFILE_SetValue(Profile, Param, TempValue);
-				PROFILE_SetValueDependencies(Profile, Param, TempValue);
+				PROFILE_SetValue(Profile, TableId, Item, TempValue);
+				PROFILE_SetValueDependencies(Profile, TableId, Item, TempValue);
 				PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
 			}				
 		}
-		if (PROFILE_GetValue(Profile, Param, TempValue) == 0)
+		if (PROFILE_GetValue(Profile, TableId, Item, TempValue) == 0)
 		{
-			if (PROFILE_ValueToString(Param->Type, TempValue, p , &len) == 0)
+			if (PROFILE_ValueToString(Profile, TableId, Item, TempValue, p , &len) == 0)
 				p += len;
 		}
 	}
@@ -357,10 +380,9 @@ int32_t PROFILE_PROTOCOL_SetColor(PROFILE_T *Profile, char * cmd, char * rsp)
 	uint32_t TableId = 0;
 	uint32_t Item = 0;
 	uint32_t tmp;
-	PROFILE_COLOR_T ColorDegrade; //Degrade цвет
-	PROFILE_COLOR_T ColorFailure; //Failure цвет
-	PROFILE_PARAM_T *Param = (PROFILE_PARAM_T*)Profile->Descr[Profile->Idx]->Tables[PROFILE_TABLE_2];
-	uint32_t ParamsCnt = Profile->Descr[Profile->Idx]->TablesSize[PROFILE_TABLE_2];
+	uint8_t ColorDegrade; //Degrade цвет
+	uint8_t ColorFailure; //Failure цвет
+	uint32_t ParamsCnt = Profile->Descr[Profile->Idx]->Table2Size;
 	int32_t error = 0;
 	char *p = rsp;
 	uint32_t CRCRead, CRCCalc;
@@ -377,12 +399,12 @@ int32_t PROFILE_PROTOCOL_SetColor(PROFILE_T *Profile, char * cmd, char * rsp)
 		error = 1;		//;Конец индекса
 	if( !StrToUint( p + 1, &tmp, ';' ) )
 		error = 1; 
-	ColorDegrade = (PROFILE_COLOR_T)tmp;
+	ColorDegrade = tmp;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
 		error = 1;		//;Конец цвета degrade
 	if( !StrToUint( p + 1, &tmp, ';' ) )
 		error = 1;
-	ColorFailure = (PROFILE_COLOR_T)tmp;
+	ColorFailure = tmp;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
 		error = 1;		//;Конец цвета failure
 	if( strchr( p + 1, ';' ) )
@@ -403,11 +425,11 @@ int32_t PROFILE_PROTOCOL_SetColor(PROFILE_T *Profile, char * cmd, char * rsp)
 	memcpy(rsp, cmd, 2);
 	p = rsp + 2;
 	// установка при отсутствии ошибок в запросе
-	if( !error && Profile->SetEnable && TableId == 2 && Item && Item <= ParamsCnt && Param[Item - 1].Color )
+	if( !error && Profile->SetEnable && TableId == 2 && Item && Item <= ParamsCnt)
 	{
-		PROFILE_SetAlarmColors(Profile, &Param[Item - 1], ColorDegrade, ColorFailure);
+		PROFILE_SetAlarmColors(Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure);
 		PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
-		PROFILE_GetAlarmColors(Profile, &Param[Item - 1], &ColorDegrade, &ColorFailure);
+		PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, Item, &ColorDegrade, &ColorFailure);
 		p = UintToStr( p, TableId );
 		*p++ = ';';
 		p = UintToStr( p, Item );
@@ -436,11 +458,11 @@ int32_t PROFILE_PROTOCOL_GetColors(PROFILE_T *Profile, char * cmd, char * rsp)
 {
 	uint32_t TableId;
 	char* p = rsp;
-	PROFILE_PARAM_T *Param = (PROFILE_PARAM_T*)Profile->Descr[Profile->Idx]->Tables[PROFILE_TABLE_2];
-	uint32_t ParamsCnt = Profile->Descr[Profile->Idx]->TablesSize[PROFILE_TABLE_2];
+	PROFILE_TABLE2_PARAM_T *Param = (PROFILE_TABLE2_PARAM_T*)Profile->Descr[Profile->Idx]->Table2;
+	uint32_t ParamsCnt = Profile->Descr[Profile->Idx]->Table2Size;
 	uint32_t i;
-	PROFILE_COLOR_T ColorDegrade; //Degrade цвет
-	PROFILE_COLOR_T ColorFailure; //Failure цвет
+	uint8_t ColorDegrade; //Degrade цвет
+	uint8_t ColorFailure; //Failure цвет
 	
 	if( !StrToUint( cmd + 2, &TableId, ';' ) )
 		TableId = 0xFFFFFFFF;
@@ -452,11 +474,11 @@ int32_t PROFILE_PROTOCOL_GetColors(PROFILE_T *Profile, char * cmd, char * rsp)
 	if( TableId == 2 )// цвета только для динимических параметров
 	{
 		//Выводим для всех параметров
-		for( i = 0; i < ParamsCnt; i++ )
+		for( i = 1; i <= ParamsCnt; i++ )
 		{
-			if( Param[i].Color )
+			if( Param[i-1].Color )
 			{
-				PROFILE_GetAlarmColors(Profile, &Param[i], &ColorDegrade, &ColorFailure);
+				PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, i, &ColorDegrade, &ColorFailure);
 				p = UintToStr( p, ColorDegrade );//Degrade цвет
 				*p++ = '@';
 				p = UintToStr( p, ColorFailure );//Failure цвет
@@ -498,11 +520,7 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_T *Profile, char * cmd, char * rs
 	p = rsp;
 	memcpy(p , cmd, 2);
 	p += 2;
-	if (Item == 1)
-	{
-		PROFILE_FLASH_LangpackClear(&Profile->ProfileFlash);
-	}
-	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_FLASH_LANG_BUFFER_SIZE)
+	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_PACKET_SIZE)
 	{
 		PROFILE_FLASH_LangpackSave(&Profile->ProfileFlash, LangBlock, Item);
 		p = UintToStr( p, Item );
@@ -536,7 +554,7 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_T *Profile, char * cmd, char * rsp
 	p = UintToStr( p, Item );// начинаем формировать ответ
 	*p++ = ';';
 	
-	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_FLASH_LANG_BUFFER_SIZE )
+	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_PACKET_SIZE )
 	{// читаем блок из флеш, если он доступен
 		PROFILE_FLASH_LangpackLoad(&Profile->ProfileFlash, p, Item);
 		for(i = 0; i < 256; i++)

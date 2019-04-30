@@ -1,11 +1,9 @@
 #include "bsp_led.h"
 
-int32_t BSP_LED_Init(BSP_LED_T *Led, BSP_LED_TYPE_T Type)
+void BSP_LED_Init(BSP_LED_TYPE_T Type)
 {
 	GPIO_InitTypeDef  GPIO_InitStruct;
 	
-	if (!Led)
-		return -1;	
 	switch (Type)
 	{
 		case BSP_LED_TYPE_POWER:  
@@ -40,18 +38,13 @@ int32_t BSP_LED_Init(BSP_LED_T *Led, BSP_LED_TYPE_T Type)
 			HAL_GPIO_WritePin(BSP_LED_ALARM_RED_GPIO_PORT, BSP_LED_ALARM_RED_GPIO_PIN, GPIO_PIN_RESET);
 			break;
 		default:
-			return -1;
+			return;
 	}
-	Led->Type = Type;
-	Led->Color = BSP_LED_COLOR_NO;
-	return 0;
 }
 
-int32_t BSP_LED_Set(BSP_LED_T *Led, BSP_LED_COLOR_T Color)
+void BSP_LED_Set(BSP_LED_TYPE_T Type, BSP_LED_COLOR_T Color)
 {	
-	if (!Led)
-		return -1;	
-	switch (Led->Type)
+	switch (Type)
 	{
 		case BSP_LED_TYPE_POWER:
 			switch (Color)
@@ -65,7 +58,7 @@ int32_t BSP_LED_Set(BSP_LED_T *Led, BSP_LED_COLOR_T Color)
 				case BSP_LED_COLOR_RED:
 				case BSP_LED_COLOR_YELLOW:
 				default:
-					return -1;
+					return;
 			}
 			break;
 		case BSP_LED_TYPE_ALARM:
@@ -85,11 +78,10 @@ int32_t BSP_LED_Set(BSP_LED_T *Led, BSP_LED_COLOR_T Color)
 					break;
 				case BSP_LED_COLOR_GREEN:
 				default:
-					return -1;
+					return;
 			}
 			break;
 		default:
-			return -1;
+			return;
 	}
-	return 0;
 }

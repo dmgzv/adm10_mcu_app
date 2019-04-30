@@ -3,25 +3,17 @@
 
 #include "stm32f4xx_hal.h"
 
-typedef enum 
-{
+typedef enum {
 	BSP_LED_TYPE_POWER,
 	BSP_LED_TYPE_ALARM,
 } BSP_LED_TYPE_T;
 
-typedef enum 
-{
+typedef enum {
 	BSP_LED_COLOR_NO,
   BSP_LED_COLOR_RED,
   BSP_LED_COLOR_GREEN,
 	BSP_LED_COLOR_YELLOW
 } BSP_LED_COLOR_T;
-
-typedef struct
-{
-	BSP_LED_TYPE_T Type;
-	BSP_LED_COLOR_T Color;
-}	BSP_LED_T;
 
 #define BSP_LED_POWER_GREEN_GPIO_PIN          		GPIO_PIN_15
 #define BSP_LED_POWER_GREEN_GPIO_PORT             GPIOC
@@ -45,8 +37,7 @@ typedef struct
 #define BSP_LED_ALARM_RED_GPIO_SPEED							GPIO_SPEED_FAST
 #define BSP_LED_ALARM_RED_GPIO_CLK_ENABLE() 			__HAL_RCC_GPIOC_CLK_ENABLE()   
 
-
-int32_t BSP_LED_Init(BSP_LED_T *Led, BSP_LED_TYPE_T Type);
-int32_t BSP_LED_Set(BSP_LED_T *Led, BSP_LED_COLOR_T Color);
+void BSP_LED_Init(BSP_LED_TYPE_T Type);
+void BSP_LED_Set(BSP_LED_TYPE_T Type, BSP_LED_COLOR_T Color);
 																						
 #endif /* __BSP_LED_H */

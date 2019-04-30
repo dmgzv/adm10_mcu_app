@@ -3,10 +3,11 @@
 #include "cmsis_os.h"
 #include "bsp.h"
 
-#include "bsp_netif.h"
+#include "bsp_eth.h"
 #include "tftp_client.h"
 
 #include "shell_cmd.h"
+#include "shell_uart.h"
 #include "shell_telnet.h"
 
 #include "log.h"
@@ -30,7 +31,38 @@
 #ifndef BSP_CONFIG_USE_UART5
 	#error	Define BSP_CONFIG_USE_UART5 in bsp_config.h for PROFILE_IFACE
 #endif
+	
+#define SHELL_IFACE_UART4 UART4
+#ifndef BSP_CONFIG_USE_UART4
+	#error	Define BSP_CONFIG_USE_UART4 in bsp_config.h for SHELL_IFACE
+#endif
+	
+#define SHELL_IFACE_UART5 UART5
+#ifndef BSP_CONFIG_USE_UART5
+	#error	Define BSP_CONFIG_USE_UART5 in bsp_config.h for SHELL_IFACE
+#endif
 
+SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellUart4;
+const SHELL_IFACE_T ShellUart4Iface = 
+{
+	NULL,
+	NULL,
+	&SHELL_UART_Receive,
+	&SHELL_UART_Transmit,
+	NULL,
+	SHELL_IFACE_UART4
+};
+
+SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellUart5;
+const SHELL_IFACE_T ShellUart5Iface = 
+{
+	NULL,
+	NULL,
+	&SHELL_UART_Receive,
+	&SHELL_UART_Transmit,
+	NULL,
+	SHELL_IFACE_UART5
+};
 
 SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnet;
 SHELL_TELNET_PRIV_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnetPriv;
@@ -64,11 +96,6 @@ PROFILE_VALUES_DYNAMIC_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValues
 PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart4;
 PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart5;
 
-BSP_DEVICES_T /*__attribute__((section ("CCM_DATA")))*/ Devices;
-BSP_DEVICES_CFG_T /*__attribute__((section ("CCM_DATA")))*/ DevicesCfg;
-
-BSP_ETH_T Eth;
-
 osThreadId SystemThreadHandle;
 /* Private functions */
 
@@ -83,31 +110,26 @@ osThreadDef(System, System_Thread, osPriorityNormal, 0, 1024);
 
 void PROFILE_UpdateValues(void)
 {
-	PROFILE_ADM_UpdateValues(&Profile, &Devices);	
+	PROFILE_ADM_UpdateValues(&Profile);	
 }
 
-int32_t PROFILE_CheckConfigValue(PROFILE_T *Profile, PROFILE_PARAM_T	*Param, void *Value)
+int32_t PROFILE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
 {
-	if (PROFILE_ADM_CheckConfigValue(Profile, &Devices, Param, Value))
+	if (PROFILE_ADM_CheckConfigValue(Profile, Table, Idx, Value))
 		return -1;
 	return 0;
 }
 
-int32_t PROFILE_SetConfigValueDependencies(PROFILE_T *Profile, PROFILE_PARAM_T	*Param, void *Value)
+int32_t PROFILE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
 {
-	if (PROFILE_ADM_SetConfigValueDependencies(Profile, &Devices, Param, Value))
+	if (PROFILE_ADM_SetConfigValueDependencies(Profile, Table, Idx, Value))
 		return -1;
 	return 0;
 }
 
 void PROFILE_UpdateConfigs(void)
 {
-	PROFILE_ADM_UpdateConfigs(&Profile, &Devices, &DevicesCfg);
-}
-
-void PROFILE_InitStates(void)
-{
-	PROFILE_ADM_InitStates(&Profile);
+	PROFILE_ADM_UpdateConfigs(&Profile);
 }
 
 /**
@@ -139,30 +161,43 @@ static void System_Thread(void const *argument)
 {
 	uint32_t Time = 0, Period = 0, MaxPeriod = 0, MinPeriod = 0xFFFFFFFF;
 	
-	osDelay(1000);
-	
-	WATCHDOG_Refresh();
+	/* Init Log*/	
 	LOG_Init();
 	WATCHDOG_Refresh();
-	BSP_InitPeriferia();
+	
+	/* Init Slot Address */	
+	BSP_InitSlotAddress();
 	WATCHDOG_Refresh();
-	BSP_InitDevices(&Devices);
+	
+	/* Init Leds */
+	BSP_InitLeds();
 	WATCHDOG_Refresh();
-	BSP_ETH_Init(&Eth, BSP_GetSlotAddress());
+	
+	/* Init Peripheria*/
+	BSP_InitInterfaces();
 	WATCHDOG_Refresh();
-	PROFILE_Init(&Profile, ProfileDescr, &ProfileValuesStatic, sizeof(ProfileValuesStatic), &ProfileValuesDynamic, sizeof(ProfileValuesDynamic), &Devices.Flash);
+	
+	/* Init Memory*/
+	BSP_InitMemory();
 	WATCHDOG_Refresh();
-	PROFILE_InitStates();
+	
+	/* Init Profile*/
+	PROFILE_Init(&Profile, ProfileDescr, &ProfileValuesStatic, sizeof(ProfileValuesStatic), &ProfileValuesDynamic, sizeof(ProfileValuesDynamic));
 	WATCHDOG_Refresh();
-	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile Uart 4", PROFILE_IFACE_UART_4, BSP_GetSlotAddress(), &Profile);
+	
+	/* Init Profile Protocol*/
+	//PROFILE_IFACE_Init(&ProfileIfaceUart4, "Receive UART4", "Process UART4", PROFILE_IFACE_UART_4, SlotAddress, &Profile);
+	//WATCHDOG_Refresh();
+	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Receive UART5", "Process UART5", PROFILE_IFACE_UART_5, SlotAddress, &Profile);
 	WATCHDOG_Refresh();
-	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Profile Uart 5", PROFILE_IFACE_UART_5, BSP_GetSlotAddress(), &Profile);
-	WATCHDOG_Refresh();
-	//SHELL_Init(&ShellUart1, "Shell Uart 1" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart1Iface);
-	//SHELL_Init(&ShellUart2, "Shell Uart 2" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart2Iface);
-	//SHELL_Init(&ShellUart6, "Shell Uart 6" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart6Iface);
+
+	BSP_ETH_Init();
 	TFTP_CLIENT_Init();
 	SHELL_Init(&ShellTelnet, "Shell Telnet" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellTelnetIface);
+	WATCHDOG_Refresh();
+	SHELL_Init(&ShellUart4, "Shell UART4" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart4Iface);
+	//WATCHDOG_Refresh();
+	//SHELL_Init(&ShellUart5, "Shell UART5" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart5Iface);
 	
 	WATCHDOG_Refresh();
 	for(;;)
@@ -170,7 +205,7 @@ static void System_Thread(void const *argument)
 		WATCHDOG_Refresh();
 		Time = osKernelSysTick();
 		PROFILE_UpdateConfigs();
-		BSP_UpdateDevices(&Devices, &DevicesCfg);
+		BSP_UpdateCard();
 		PROFILE_UpdateValues();
 		Period = osKernelSysTick() - Time;
 		if (Period > MaxPeriod)

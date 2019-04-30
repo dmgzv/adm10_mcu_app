@@ -3,6 +3,10 @@
 
 #include "spi.h"
 #include "bsp_dev.h"
+#include "bsp_pin_ctrl.h"
+#ifdef BSP_CONFIG_USE_FREERTOS
+#include "cmsis_os.h"
+#endif
 
 #define AT45DB641E_PAGES_PER_BLOCK		8
 #define AT45DB641E_BLOCKS_PER_SECTOR	128
@@ -18,24 +22,15 @@
 #define AT45DB641E_SIZE								(AT45DB641E_SECTORS_COUNT * AT45DB641E_SECTOR_SIZE)
 
 
-typedef enum {
-	AT45DB641E_PIN_SPI_CS,
-	AT45DB641E_PIN_WP,
-	AT45DB641E_PIN_RESET
-} AT45DB641E_PIN_T;
-
-typedef enum {
-	AT45DB641E_PIN_STATE_ASSERT = 1,
-	AT45DB641E_PIN_STATE_DEASSERT = 0	
-} AT45DB641E_PIN_STATE_T;
+#define AT45DB641E_PIN_SPI_CS 0
+#define AT45DB641E_PIN_WP			1
+#define AT45DB641E_PIN_RESET	2
 
 typedef struct {
-	BSP_DEV;
+	BSP_DEV;	
 	SPI_TypeDef *SPI;
 	SPI_CS_T CS;
-	void (*InitPins)(void *Priv);
-	void (*SetPinState)(void *Priv, AT45DB641E_PIN_T Pin, AT45DB641E_PIN_STATE_T PinState);
-	void *Priv;
+	BSP_PIN_CTRL_T *PinCtrl;
 	uint16_t DevId;
 	uint8_t ManufId;
 	uint8_t Status;
@@ -50,8 +45,7 @@ int32_t AT45DB641E_Read(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t
 int32_t AT45DB641E_ProgramPage(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
 int32_t AT45DB641E_ModifyPage(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
 
-int32_t AT45DB641E_Init(AT45DB641E_T *dev, SPI_TypeDef *SPI, void (*InitPins)(void *Priv),\
-	void (*SetPinState)(void *Priv, AT45DB641E_PIN_T Pin, AT45DB641E_PIN_STATE_T PinState), void *Priv);
+int32_t AT45DB641E_Init(AT45DB641E_T *dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl);
 
 
 

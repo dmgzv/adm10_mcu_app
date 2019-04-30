@@ -25,5 +25,6 @@ typedef struct {
 
 int32_t PCA9548A_SelectChannel(PCA9548A_T *dev, PCA9548A_CH_T Channel);
 int32_t PCA9548A_Init(PCA9548A_T *dev, I2C_TypeDef *I2C, uint8_t Addr);
+void PCA9548A_Deinit(PCA9548A_T *Dev);
 
 #endif /* __PCA9548A_H */

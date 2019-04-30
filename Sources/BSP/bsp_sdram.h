@@ -6,11 +6,11 @@
 #if defined(BSP_SDRAM_TYPE_MT48LC16M16A2)
 #include "mt48lc16m16a2.h"
 
-typedef MT48LC16M16A2_T BSP_SDRAM_T;
+extern MT48LC16M16A2_T mt48lc16m16a2; 
 
-#define BSP_SDRAM_ADDR																	MT48LC16M16A2_ADDR
-#define BSP_SDRAM_SIZE																	MT48LC16M16A2_SIZE
-#define	BSP_SDRAM_Init(Dev)															MT48LC16M16A2_Init((Dev))
+#define BSP_SDRAM_ADDR			MT48LC16M16A2_ADDR
+#define BSP_SDRAM_SIZE			MT48LC16M16A2_SIZE
+#define	BSP_SDRAM_Init()		MT48LC16M16A2_Init(&mt48lc16m16a2)
 
 #endif /* defined(BSP_SDRAM_TYPE_MT48LC16M16A2) */
 

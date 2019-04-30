@@ -323,7 +323,7 @@ const uint8_t Values320[] = {0xA0, 0xA2};
 const uint8_t Values321[] = {0x00, 0x18};
 const uint8_t Values322[] = {0x33, 0x2B};
 
-const UCD90120A_CFG_T BSP_UCD90120A_CFG_Table[] = {
+const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 	// Format=Tab; Hex=CoderUpper; BreakOutBytes=True; PEC=False; IncludeBlockLength=False [DO NOT REMOVE THIS LINE IF YOU WANT TO IMPORT USING A FUSION TOOL]
 	// SMBus Fields are Request,Address,Command,Data
 	// For reads, the last field is what is expected back from the device

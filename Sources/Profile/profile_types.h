@@ -6,47 +6,41 @@
 #include "cmsis_os.h"
 
 #define PROFILE_MUTEX_T	osMutexId
-#define PROFILE_STRING_MAX_LEN	64
+#define PROFILE_STRING_MAX_LEN	48
 
-typedef enum {
-	PROFILE_TYPE_BOOL = (1 << 0),
-	PROFILE_TYPE_INT32 = (1 << 1),
-	PROFILE_TYPE_UINT32 = (1 << 2),
-	PROFILE_TYPE_FLOAT_1 = (1 << 3),
-	PROFILE_TYPE_FLOAT_2 = (1 << 3) | (1 << 28),
-	PROFILE_TYPE_FLOAT_3 = (1 << 3) | (2 << 28),
-	PROFILE_TYPE_FLOAT_E = (1 << 3) | (7 << 28),
-	PROFILE_TYPE_HEX32 = (1 << 4),
-	PROFILE_TYPE_STRING = (1 << 5),
-	PROFILE_TYPE_ENUM = (1 << 6),
-	PROFILE_TYPE_OID = (1 << 7),
-	PROFILE_TYPE_IP = (1 << 8),
-	PROFILE_TYPE_CNT = (1 << 9),
-	PROFILE_TYPE_CNT64 = (1 << 10),
-	PROFILE_TYPE_BITMSK = (1 << 11)
-} PROFILE_TYPE_T;
+#define PROFILE_TYPE_BOOL 		0
+#define PROFILE_TYPE_INT32 		1
+#define PROFILE_TYPE_UINT32 	2
+#define PROFILE_TYPE_FLOAT_1 	3
+#define PROFILE_TYPE_FLOAT_2 	4
+#define PROFILE_TYPE_FLOAT_3 	5
+#define PROFILE_TYPE_FLOAT_E 	6
+#define PROFILE_TYPE_HEX32 		7
+#define PROFILE_TYPE_STRING 	8
+#define PROFILE_TYPE_ENUM 		9
+#define PROFILE_TYPE_OID 			10
+#define PROFILE_TYPE_IP 			11
+#define PROFILE_TYPE_CNT 			12
+#define PROFILE_TYPE_CNT64 		13
+#define PROFILE_TYPE_BITMSK 	14
 
-typedef enum {
-	PROFILE_COLOR_NA = 0, //- параметр не может иметь соответствующего типа аварии. Цвет для данного параметра не определен.
-	PROFILE_COLOR_NO = 1,//- Нет цвета в текущем состоянии
-	PROFILE_COLOR_INFO = 2,//- Белый	  (Цвет для параметров ENUM)
-	PROFILE_COLOR_NORMAL = 3,//- Зелёный
-	PROFILE_COLOR_WARNING = 4,//- Голубой
-	PROFILE_COLOR_MINOR = 5,//- Жёлтый
-	PROFILE_COLOR_MAJOR = 6,//- Оранжевый
-	PROFILE_COLOR_CRITICAL = 7,//- Красный
-} PROFILE_COLOR_T;
+#define PROFILE_COLOR_NA 				0 //- параметр не может иметь соответствующего типа аварии. Цвет для данного параметра не определен.
+#define PROFILE_COLOR_NO 				1 //- Нет цвета в текущем состоянии
+#define PROFILE_COLOR_INFO 			2 //- Белый	  (Цвет для параметров ENUM)
+#define PROFILE_COLOR_NORMAL 		3 //- Зелёный
+#define PROFILE_COLOR_WARNING 	4 //- Голубой
+#define PROFILE_COLOR_MINOR 		5 //- Жёлтый
+#define PROFILE_COLOR_MAJOR 		6 //- Оранжевый
+#define PROFILE_COLOR_CRITICAL 	7 //- Красный
 
-typedef enum {
-	PROFILE_STATE_OOS = 0,
-	PROFILE_STATE_MT,
-	PROFILE_STATE_IS
-}PROFILE_STATE_T;
+#define	PROFILE_STATE_OOS 0
+#define	PROFILE_STATE_MT	1
+#define	PROFILE_STATE_IS	2
 
-#define PROFILE_THR_CMAX				3//	Верхний критический предел
-#define PROFILE_THR_WMAX				2//	Верхний порог (предупреждение)
-#define PROFILE_THR_WMIN				1// Нижний порог (предупреждение)
-#define PROFILE_THR_CMIN				0// Нижнее критический предел
+#define PROFILE_THR_CMAX				0//	Верхний критический предел
+#define PROFILE_THR_WMAX				1//	Верхний порог (предупреждение)
+#define PROFILE_THR_WMIN				2// Нижний порог (предупреждение)
+#define PROFILE_THR_CMIN				3// Нижнее критический предел
 
 #define PROFILE_ACCESS_NONE				(0)
 #define PROFILE_ACCESS_READ				(1 << 0)
@@ -55,16 +49,75 @@ typedef enum {
 #define PROFILE_ACCESS(SU, AD, US, MN)	(((MN) << 0) | ((US) << 2) | ((AD) << 4) | ((SU) << 6))
 
 typedef struct {
-	uint32_t Table;
-	uint32_t Index;
-	uint32_t Access;
-	PROFILE_TYPE_T	Type;
+	uint8_t Table;
+	uint16_t Index;
+	uint8_t Access;
+	uint8_t	Type;
 	void *Value;
-	PROFILE_COLOR_T *Color;
-	PROFILE_COLOR_T *DegradeColor;//Цвет предупреждения
-	PROFILE_COLOR_T *FailureColor;//Цвет критического значения
+	uint8_t *State;
+} PROFILE_TABLE1_PARAM_T;
+
+typedef struct {
+	uint8_t Table;
+	uint16_t Index;
+	uint8_t Access;
+	uint8_t	Type;
+	void *Value;
+	uint8_t *Color;
+	uint8_t *DegradeColor;//Цвет предупреждения
+	uint8_t *FailureColor;//Цвет критического значения
 	void *Thesholds; 
 	uint8_t *State;
+} PROFILE_TABLE2_PARAM_T;
+
+typedef struct {
+	uint8_t Table;
+	uint16_t Index;
+	uint8_t Access;
+	uint8_t	Type;
+	void *Value;
+} PROFILE_TABLE3_PARAM_T;
+
+typedef struct {
+	uint8_t Table;
+	uint16_t Index;
+	uint8_t Access;
+	uint8_t	Type;
+	void *Value;
+	void *Thesholds; 
+} PROFILE_TABLE4_PARAM_T;
+
+typedef struct {
+	uint8_t Table;
+	uint16_t Index;
+	uint8_t Access;
+	uint8_t	Type;
+	void *Value;
+} PROFILE_TABLE5_PARAM_T;
+
+typedef struct {
+	uint8_t Table;
+	uint16_t Index;
+	uint8_t Access;
+	uint8_t	Type;
+	void *Value;
+	uint8_t *State;
+} PROFILE_TABLE8_PARAM_T;
+
+typedef struct {
+	uint8_t Table;
+	uint16_t Index;
+	uint8_t Access;
+	uint8_t	Type;
+	void *Value;
+} PROFILE_TABLE103_PARAM_T;
+
+typedef struct {
+	uint8_t Table;
+	uint16_t Index;
+	uint8_t Access;
+	uint8_t	Type;
+	void *Value;
 } PROFILE_PARAM_T;
 
 //=============================================================================
@@ -88,9 +141,21 @@ typedef struct {
 // Структура общего описания профиля
 //=============================================================================
 typedef struct {
-	char *DeviceClass;
-	const PROFILE_PARAM_T *Tables[ PROFILE_TABLES_CNT ];	//Указатель на таблицу профиля
-	const uint32_t	TablesSize[ PROFILE_TABLES_CNT ];	//Количество строк (параметров) для таблицы профиля
+	const char *DeviceClass;
+	const PROFILE_TABLE1_PARAM_T *Table1;	//Указатель на таблицу профиля
+	const uint32_t Table1Size;	//Количество строк (параметров) для таблицы профиля
+	const PROFILE_TABLE2_PARAM_T *Table2;	//Указатель на таблицу профиля
+	const uint32_t Table2Size;	//Количество строк (параметров) для таблицы профиля
+	const PROFILE_TABLE3_PARAM_T *Table3;	//Указатель на таблицу профиля
+	const uint32_t Table3Size;	//Количество строк (параметров) для таблицы профиля
+	const PROFILE_TABLE4_PARAM_T *Table4;	//Указатель на таблицу профиля
+	const uint32_t Table4Size;	//Количество строк (параметров) для таблицы профиля
+	const PROFILE_TABLE5_PARAM_T *Table5;	//Указатель на таблицу профиля
+	const uint32_t Table5Size;	//Количество строк (параметров) для таблицы профиля
+	const PROFILE_TABLE8_PARAM_T *Table8;	//Указатель на таблицу профиля
+	const uint32_t Table8Size;	//Количество строк (параметров) для таблицы профиля
+	const PROFILE_TABLE103_PARAM_T *Table103;	//Указатель на таблицу профиля
+	const uint32_t Table103Size;	//Количество строк (параметров) для таблицы профиля
 	const char 			**Text; //Указатель на файл профиля
 	const uint32_t	*TextSize;	//Количество строк в профиле
 	const void 			*DefaultValues; //Указатель на дефолтные значения

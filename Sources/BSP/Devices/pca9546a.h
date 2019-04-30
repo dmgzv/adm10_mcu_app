@@ -19,7 +19,13 @@ typedef struct {
 	PCA9546A_CH_T Channel;
 } PCA9546A_T;
 
+/* 
+	Device is locked when any channel is selected.
+	Devices is unlocked when no channels are selected.
+*/
+
 int32_t PCA9546A_SelectChannel(PCA9546A_T *dev, PCA9546A_CH_T Channel);
 int32_t PCA9546A_Init(PCA9546A_T *dev, I2C_TypeDef *I2C, uint8_t Addr);
+void PCA9546A_Deinit(PCA9546A_T *dev);
 
 #endif /* __PCA9546A_H */

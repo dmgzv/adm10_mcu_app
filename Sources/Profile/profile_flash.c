@@ -33,20 +33,17 @@ typedef struct {
 
 #define PROFILE_FLASH_MESSAGE_QUEUE_SIZE	( 1 )
 
-#define PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE	( 256 )
+#define PROFILE_FLASH_PARAMS_PAGES_CNT(ProfileFlash)	\
+	( ((ProfileFlash)->ValuesSize) % BSP_FLASH_PAGE_SIZE  ? \
+		((ProfileFlash)->ValuesSize) / BSP_FLASH_PAGE_SIZE + 1 : \
+		((ProfileFlash)->ValuesSize) / BSP_FLASH_PAGE_SIZE + 0	)
 
-#define PROFILE_FLASH_CONFIG_RECORDS_CNT								( 4 )
-#define PROFILE_FLASH_CONFIG_RECORD_SIZE(ProfileFlash)			( PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE + (ProfileFlash)->ValuesSize ) 
-#define PROFILE_FLASH_CONFIG_RECORD_PAGES_CNT(ProfileFlash) \
-	( (PROFILE_FLASH_CONFIG_RECORD_SIZE(ProfileFlash) % BSP_FLASH_PAGE_SIZE) ?  \
-		(PROFILE_FLASH_CONFIG_RECORD_SIZE(ProfileFlash) / BSP_FLASH_PAGE_SIZE + 1) : \
-		(PROFILE_FLASH_CONFIG_RECORD_SIZE(ProfileFlash) / BSP_FLASH_PAGE_SIZE + 0)	)
-#define PROFILE_FLASH_CONFIG_RECORD_BUFFERS_CNT(ProfileFlash) \
-	( (PROFILE_FLASH_CONFIG_RECORD_SIZE(ProfileFlash) % PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE) ?  \
-		(PROFILE_FLASH_CONFIG_RECORD_SIZE(ProfileFlash) / PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE + 1) : \
-		(PROFILE_FLASH_CONFIG_RECORD_SIZE(ProfileFlash) / PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE + 0)	)
-#define PROFILE_FLASH_CONFIG_RECORD_HEADER_ADDR(ProfileFlash, RecordIdx) ( PROFILE_FLASH_CONFIG_START((ProfileFlash)->ProfileIdx) + (((RecordIdx) % PROFILE_FLASH_CONFIG_RECORDS_CNT) * PROFILE_FLASH_CONFIG_RECORD_PAGES_CNT(ProfileFlash) * BSP_FLASH_PAGE_SIZE) )
-#define PROFILE_FLASH_CONFIG_RECORD_VALUES_ADDR(ProfileFlash, RecordIdx) ( PROFILE_FLASH_CONFIG_RECORD_HEADER_ADDR(ProfileFlash, RecordIdx) + PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE)
+#define PROFILE_FLASH_CONFIG_PAGES_CNT 	( PROFILE_FLASH_CONFIG_SIZE / BSP_FLASH_PAGE_SIZE )
+
+#define PROFILE_FLASH_CONFIG_RECORDS_CNT						( 4 )
+#define PROFILE_FLASH_CONFIG_RECORD_PAGES_CNT  			( PROFILE_FLASH_CONFIG_PAGES_CNT / PROFILE_FLASH_CONFIG_RECORDS_CNT )
+#define PROFILE_FLASH_CONFIG_RECORD_SIZE						( PROFILE_FLASH_CONFIG_RECORD_PAGES_CNT * BSP_FLASH_PAGE_SIZE )
+#define PROFILE_FLASH_CONFIG_RECORD_ADDR(ProfileIdx, RecordIdx) ( PROFILE_FLASH_CONFIG_START(ProfileIdx) + (((RecordIdx) % PROFILE_FLASH_CONFIG_RECORDS_CNT) * PROFILE_FLASH_CONFIG_RECORD_SIZE) )
 
 static int32_t PROFILE_FLASH_HeaderLoad(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t *HeaderIdx, uint32_t *ProfileIdx)
 {
@@ -55,7 +52,7 @@ static int32_t PROFILE_FLASH_HeaderLoad(PROFILE_FLASH_T *ProfileFlash, uint32_t 
 	uint16_t Crc16;
 	
 	Addr = PROFILE_FLASH_HEADER_ADDR(Idx);
-	if (BSP_FLASH_Read(ProfileFlash->Flash, Addr, (char*)&Header, sizeof(Header)))
+	if (BSP_FLASH_Read(Addr, (char*)&Header, sizeof(Header)))
 		return -1;
 	if ((Header.Idx % PROFILE_FLASH_HEADERS_CNT) != (Idx % PROFILE_FLASH_HEADERS_CNT))
 		return -1;
@@ -128,15 +125,15 @@ int32_t PROFILE_FLASH_ProfileIdxSave(PROFILE_FLASH_T *ProfileFlash, uint32_t Pro
 	Header.Crc16 = Calc_CRC16((char*)&Header, sizeof(Header), 0);
 	
 	Addr = PROFILE_FLASH_HEADER_ADDR(Header.Idx);
-	if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
+	if (BSP_FLASH_WaitReady())
 		return -1;
-	if (BSP_FLASH_ProgramPage(ProfileFlash->Flash, Addr, (char*)&Header, sizeof(Header)))
+	if (BSP_FLASH_ProgramPage(Addr, (char*)&Header, sizeof(Header)))
 		return -1;
 	
 	memset(&Header, 0, sizeof(Header));
-	if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
+	if (BSP_FLASH_WaitReady())
 		return -1;
-	if (BSP_FLASH_Read(ProfileFlash->Flash, Addr, (char*)&Header, sizeof(Header)))
+	if (BSP_FLASH_Read(Addr, (char*)&Header, sizeof(Header)))
 		return -1;
 	Crc16 = Header.Crc16;
 	Header.Crc16 = 0;
@@ -148,9 +145,9 @@ int32_t PROFILE_FLASH_ProfileIdxSave(PROFILE_FLASH_T *ProfileFlash, uint32_t Pro
 		for (i = 1; i < PROFILE_FLASH_HEADERS_CNT; i++)
 		{
 			Addr = PROFILE_FLASH_HEADER_ADDR(i);
-			if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
+			if (BSP_FLASH_WaitReady())
 				return -1;
-			if (BSP_FLASH_ErasePage(ProfileFlash->Flash, Addr))
+			if (BSP_FLASH_ErasePage(Addr))
 				return -1;
 		}
 	}
@@ -170,7 +167,7 @@ static void ProfileFlash_Thread(void const *argument)
 	uint32_t i, Size;
 	uint16_t Crc16;
 	uint32_t ErrorCntr;
-	char Buffer[PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE];
+	char Page[BSP_FLASH_PAGE_SIZE];
 	
 	while (1)
 	{
@@ -198,57 +195,47 @@ repeat:
 		Overhead.ValuesCrc16 = Crc16;
 		Overhead.Crc16 = Calc_CRC16((char*)&Overhead, sizeof(Overhead), 0);
 		
-		Addr = PROFILE_FLASH_CONFIG_RECORD_HEADER_ADDR(ProfileFlash, ProfileFlash->ConfigIdx);
+		Addr = PROFILE_FLASH_CONFIG_RECORD_ADDR(ProfileFlash->ProfileIdx, ProfileFlash->ConfigIdx);
 		
-		/*Erase all record pages*/
-		for (i = 0 ; i < PROFILE_FLASH_CONFIG_RECORD_PAGES_CNT(ProfileFlash); i++)
-		{
-			if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
-				goto error;
-			if (BSP_FLASH_ErasePage(ProfileFlash->Flash, Addr + i * BSP_FLASH_PAGE_SIZE))
-				goto error;
-		}
-		
-		/*Program record overhead*/
-		if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
-			goto error;		
-		if (BSP_FLASH_ProgramPage(ProfileFlash->Flash, Addr, (char*)&Overhead, sizeof(Overhead)))
+		/*First page with overhead*/
+		if (BSP_FLASH_WaitReady())
+			goto error;
+		if (BSP_FLASH_ProgramPage(Addr, (char*)&Overhead, sizeof(Overhead)))
 			goto error;
 		
-		/* Check that overhead was proggramed sucessfully*/
 		memset(&Overhead, 0, sizeof(Overhead));
-		if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
+		if (BSP_FLASH_WaitReady())
 			goto error;
-		if (BSP_FLASH_Read(ProfileFlash->Flash, Addr, (char*)&Overhead, sizeof(Overhead)))
+		if (BSP_FLASH_Read(Addr, (char*)&Overhead, sizeof(Overhead)))
 			goto error;
 		Crc16 = Overhead.Crc16;
 		Overhead.Crc16 = 0;
 		if (Crc16 != Calc_CRC16((char*)&Overhead, sizeof(Overhead), 0))
 			goto error;
 		
-		Addr = PROFILE_FLASH_CONFIG_RECORD_VALUES_ADDR(ProfileFlash, ProfileFlash->ConfigIdx);
+		Addr += BSP_FLASH_PAGE_SIZE;
 		
 		Crc16 = 0;
-		for (i = 1; i < PROFILE_FLASH_CONFIG_RECORD_BUFFERS_CNT(ProfileFlash); i++)
+		for (i = 0; i < PROFILE_FLASH_PARAMS_PAGES_CNT(ProfileFlash); i++)
 		{
-			if (i == PROFILE_FLASH_CONFIG_RECORD_BUFFERS_CNT(ProfileFlash) - 1)
-				Size = PROFILE_FLASH_CONFIG_RECORD_SIZE(ProfileFlash) - (i * PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE);
+			if (i == PROFILE_FLASH_PARAMS_PAGES_CNT(ProfileFlash) - 1)
+				Size = ProfileFlash->ValuesSize - (i * BSP_FLASH_PAGE_SIZE);
 			else 
-				Size = PROFILE_FLASH_CONFIG_RECORD_BUFFER_SIZE;
-			if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
+				Size = BSP_FLASH_PAGE_SIZE;
+			if (BSP_FLASH_WaitReady())
 				goto error;
 			osMutexWait(ProfileFlash->ValuesMutex, osWaitForever);
-			if (BSP_FLASH_ProgramPage(ProfileFlash->Flash, Addr, p, Size))
+			if (BSP_FLASH_ProgramPage(Addr, p, Size))
 			{
 				osMutexRelease( ProfileFlash->ValuesMutex );
 				goto error;
 			}
 			osMutexRelease( ProfileFlash->ValuesMutex );
-			if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
+			if (BSP_FLASH_WaitReady())
 				goto error;
-			if (BSP_FLASH_Read(ProfileFlash->Flash, Addr, Buffer, Size))
+			if (BSP_FLASH_Read(Addr, Page, Size))
 				goto error;
-			Crc16 = Calc_CRC16(Buffer, Size, Crc16);
+			Crc16 = Calc_CRC16(Page, Size, Crc16);
 			Addr += Size;
 			p += Size;			
 		}
@@ -260,10 +247,10 @@ repeat:
 		{
 			for (i = 1; i < PROFILE_FLASH_CONFIG_RECORDS_CNT; i++)
 			{
-				Addr = PROFILE_FLASH_CONFIG_RECORD_HEADER_ADDR(ProfileFlash, ProfileFlash->ConfigIdx);
-				if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
+				Addr = PROFILE_FLASH_CONFIG_RECORD_ADDR(ProfileFlash->ProfileIdx, ProfileFlash->ConfigIdx);
+				if (BSP_FLASH_WaitReady())
 					goto error;
-				if (BSP_FLASH_ErasePage(ProfileFlash->Flash, Addr))
+				if (BSP_FLASH_ErasePage(Addr))
 					goto error;
 			}
 		}
@@ -277,12 +264,11 @@ error:
 	}
 }
 
-int32_t PROFILE_FLASH_Init(PROFILE_FLASH_T *ProfileFlash, char *Name, BSP_FLASH_T *Flash, void *Values, uint32_t ValuesSize, osMutexId ValuesMutex)
+int32_t PROFILE_FLASH_Init(PROFILE_FLASH_T *ProfileFlash, char *Name, void *Values, uint32_t ValuesSize, osMutexId ValuesMutex)
 {	
 	osThreadDef_t ProfileFlash_osThreadDef = { Name, ProfileFlash_Thread, osPriorityNormal, 0, 1024};
 	osMessageQDef_t ProfileFlash_osMessageQDef = {PROFILE_FLASH_MESSAGE_QUEUE_SIZE, sizeof(uint32_t)};
 	
-	ProfileFlash->Flash = Flash;
 	ProfileFlash->Values = Values;
 	ProfileFlash->ValuesSize = ValuesSize;
 	ProfileFlash->ValuesMutex = ValuesMutex;
@@ -313,8 +299,8 @@ static int32_t PROFILE_FLASH_RecordLoad(PROFILE_FLASH_T *ProfileFlash, uint32_t 
 	uint16_t Crc16;
 	PROFILE_FLASH_CONFIG_HEADER_T ConfigRecordOverhead;
 	
-	Addr = PROFILE_FLASH_CONFIG_RECORD_HEADER_ADDR(ProfileFlash, Idx);
-	if (BSP_FLASH_Read(ProfileFlash->Flash, Addr, (char*)&ConfigRecordOverhead, sizeof(ConfigRecordOverhead)))
+	Addr = PROFILE_FLASH_CONFIG_RECORD_ADDR(ProfileFlash->ProfileIdx, Idx);
+	if (BSP_FLASH_Read(Addr, (char*)&ConfigRecordOverhead, sizeof(ConfigRecordOverhead)))
 		return -1;
 	if ((ConfigRecordOverhead.Idx % PROFILE_FLASH_HEADERS_CNT) != (Idx % PROFILE_FLASH_HEADERS_CNT))
 		return -1;
@@ -337,11 +323,11 @@ static int32_t PROFILE_FLASH_RecordLoad(PROFILE_FLASH_T *ProfileFlash, uint32_t 
 	if (Crc16 != Calc_CRC16((char*)&ConfigRecordOverhead, sizeof(ConfigRecordOverhead), 0))
 		return -1;
 	
-	Addr = PROFILE_FLASH_CONFIG_RECORD_VALUES_ADDR(ProfileFlash, Idx);
+	Addr += BSP_FLASH_PAGE_SIZE;
 	
 	if( osMutexWait( ProfileFlash->ValuesMutex, osWaitForever ) != osOK )
 		return -1;
-	if (BSP_FLASH_Read(ProfileFlash->Flash, Addr, ProfileFlash->Values, ProfileFlash->ValuesSize))
+	if (BSP_FLASH_Read(Addr, ProfileFlash->Values, ProfileFlash->ValuesSize))
 		goto error;
 	Crc16 = Calc_CRC16((char*)ProfileFlash->Values, ProfileFlash->ValuesSize, 0);
 	if (Crc16 != ConfigRecordOverhead.ValuesCrc16)
@@ -382,42 +368,28 @@ int32_t PROFILE_FLASH_ParamsLoad(PROFILE_FLASH_T *ProfileFlash)
 	return 0;
 }
 
-#define PROFILE_FLASH_LANG_PAGES_CNT	\
-	( (PROFILE_FLASH_LANG_SIZE % BSP_FLASH_PAGE_SIZE) ? \
-		(PROFILE_FLASH_LANG_SIZE / BSP_FLASH_PAGE_SIZE) + 1 : \
-		(PROFILE_FLASH_LANG_SIZE / BSP_FLASH_PAGE_SIZE) + 0 ) 
-
-int32_t PROFILE_FLASH_LangpackSave(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index)
+void PROFILE_FLASH_LangpackSave(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index)
 {
 	uint32_t Addr;
 	
-	Addr = PROFILE_FLASH_LANG_START(ProfileFlash->ProfileIdx) + Index * PROFILE_FLASH_LANG_BUFFER_SIZE;
-	if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
-		return -1;
-	if (BSP_FLASH_ProgramPage(ProfileFlash->Flash, Addr, Block, PROFILE_FLASH_LANG_BUFFER_SIZE))
-		return -1;
-	return 0;
+	Addr = PROFILE_FLASH_LANG_START(ProfileFlash->ProfileIdx) + Index * BSP_FLASH_PAGE_SIZE;
+	if (BSP_FLASH_WaitReady())
+		return;
+	BSP_FLASH_ProgramPage(Addr, Block, BSP_FLASH_PAGE_SIZE);
 }
-int32_t PROFILE_FLASH_LangpackLoad(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index)
+void PROFILE_FLASH_LangpackLoad(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index)
 {
 	uint32_t Addr;
-	Addr = PROFILE_FLASH_LANG_START(ProfileFlash->ProfileIdx) + Index * PROFILE_FLASH_LANG_BUFFER_SIZE;
-	if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
-		return -1;
-	if (BSP_FLASH_Read(ProfileFlash->Flash, Addr, Block, PROFILE_FLASH_LANG_BUFFER_SIZE))
-		return -1;
-	return 0;
+	Addr = PROFILE_FLASH_LANG_START(ProfileFlash->ProfileIdx) + Index * BSP_FLASH_PAGE_SIZE;
+	if (BSP_FLASH_WaitReady())
+		return;
+	BSP_FLASH_Read(Addr, Block, BSP_FLASH_PAGE_SIZE);
 }
-int32_t PROFILE_FLASH_LangpackClear(PROFILE_FLASH_T *ProfileFlash)
+void PROFILE_FLASH_LangpackClear(PROFILE_FLASH_T *ProfileFlash)
 {
-	uint32_t Addr, i;
+	uint32_t Addr;
 	Addr = PROFILE_FLASH_LANG_START(ProfileFlash->ProfileIdx);
-	for (i = 0; i < PROFILE_FLASH_LANG_PAGES_CNT; i++)
-	{
-		if (BSP_FLASH_WaitReady(ProfileFlash->Flash))
-			return -1;
-		if (BSP_FLASH_ErasePage(ProfileFlash->Flash, Addr + i * BSP_FLASH_PAGE_SIZE))
-			return - 1;
-	}
-	return 0;
+	if (BSP_FLASH_WaitReady())
+		return;
+	BSP_FLASH_ErasePage(Addr);
 }

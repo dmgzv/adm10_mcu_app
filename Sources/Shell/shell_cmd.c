@@ -6,12 +6,11 @@
 #include "bsp.h"
 #include "tftp_client.h"
 
-extern BSP_DEVICES_T Devices;
-
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -27,6 +26,7 @@ const SHELL_CMD_T ShellCmdList[] =
 	{ "system", 	"System information", &SHELL_CMD_SystemCallback},
 	{ "info", 		"Project information", &SHELL_CMD_InfoCallback},
 	{ "status", 	"Status of devices", &SHELL_CMD_StatusCallback},
+	{ "dim3r", 		"DIM3R3400 control", &SHELL_CMD_DIM3RCallback},
 	{ "ucd", 			"UCD90120A control", &SHELL_CMD_UCDCallback},
 	{ "gdt", 			"GDT080A control", &SHELL_CMD_GDTCallback},
 	{ "sfp", 			"SFP control", &SHELL_CMD_SFPCallback},
@@ -80,23 +80,79 @@ static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t
 	uint32_t i;
 	
 	SHELL_Transmit(Shell,  "Device     PCB  Presence  Init\r");
-	SHELL_Transmit(Shell,   "PCA9536    D107     1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.PowerPin.pca9536));
-	SHELL_Transmit(Shell,   "DIM3R3400  A5       1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.Power.dim3r3400));
-	SHELL_Transmit(Shell,   "UCD90120A  D108     1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.Power.ucd90120a));
-	SHELL_Transmit(Shell,   "GDT080A    A6       1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.Power.gdt080a[0]));
-	SHELL_Transmit(Shell,   "GDT080A    A7       1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.Power.gdt080a[1]));
-	SHELL_Transmit(Shell,   "SI5332     D83      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.Clk.si5332[0]));
-	SHELL_Transmit(Shell,   "SI5332     D84      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.Clk.si5332[1]));
-	/*SHELL_Transmit(Shell,   "FPGA       D12      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.Fpga));*/
-	SHELL_Transmit(Shell,   "PCA9548    D72      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpSwitch.pca9548a[0]));
-	SHELL_Transmit(Shell,   "PCA9548    D73      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpSwitch.pca9548a[1]));
-	SHELL_Transmit(Shell,   "PCA9546    D74      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpSwitch.pca9546a[0]));
-	SHELL_Transmit(Shell,   "PCAL6624   D67      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpPin.pcal6524[0]));
-	SHELL_Transmit(Shell,   "PCAL6624   D58      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpPin.pcal6524[1]));
-	SHELL_Transmit(Shell,   "PCAL6624   D57      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpPin.pcal6524[2]));
+	SHELL_Transmit(Shell,   "PCA9536    D107     1     %s\r", BSP_DEV_GET_STATE_STR(&pca9536));
+	SHELL_Transmit(Shell,   "DIM3R3400  A5       1     %s\r", BSP_DEV_GET_STATE_STR(&dim3r3400));
+	SHELL_Transmit(Shell,   "UCD90120A  D108     1     %s\r", BSP_DEV_GET_STATE_STR(&ucd90120a));
+	SHELL_Transmit(Shell,   "GDT080A    A6       1     %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[0]));
+	SHELL_Transmit(Shell,   "GDT080A    A7       1     %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[1]));
+	SHELL_Transmit(Shell,   "SI5332     D83      1     %s\r", BSP_DEV_GET_STATE_STR(&si5332[0]));
+	SHELL_Transmit(Shell,   "SI5332     D84      1     %s\r", BSP_DEV_GET_STATE_STR(&si5332[1]));
+	SHELL_Transmit(Shell,   "FPGA       D12      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_maxv));
+	SHELL_Transmit(Shell,   "PCA9548    D72      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[0]));
+	SHELL_Transmit(Shell,   "PCA9548    D73      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[1]));
+	SHELL_Transmit(Shell,   "PCA9546    D74      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9546a[0]));
+	SHELL_Transmit(Shell,   "PCAL6624   D67      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[0]));
+	SHELL_Transmit(Shell,   "PCAL6624   D58      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[1]));
+	SHELL_Transmit(Shell,   "PCAL6624   D57      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[2]));
 	for (i = 0; i < BSP_SFP_CNT; i++)
-		SHELL_Transmit(Shell,   "SFP        ---      %d     %s\r", BSP_SFP_GetModAbs(&Devices.Sfp[i]) ? 0 : 1, BSP_DEV_GET_STATE_STR(&Devices.Sfp[i].sfp));
-	SHELL_Transmit(Shell,   "KSZ8895    D99      1     %s\r", BSP_DEV_GET_STATE_STR(&Devices.EthSw.ksz8895));
+		SHELL_Transmit(Shell,   "SFP        ---      %d     %s\r", sfp[i].Pin.ModAbs ? 0 : 1, BSP_DEV_GET_STATE_STR(&sfp[i]));
+	SHELL_Transmit(Shell,   "KSZ8895    D99      1     %s\r", BSP_DEV_GET_STATE_STR(&ksz8895));
+}
+
+#define SHELL_CMD_DIM3R_HELP \
+"Usage:\r"\
+"    dim3r <cmd> [<data1> <data2> ...]\r"\
+"Commands:\r"\
+"    help - Display this help.\r"\
+"    init - Init device.\r"\
+"    mntr - Display device monitor values.\r"
+
+static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{	
+	if (CmdParamsCnt == 1)
+	{
+		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&dim3r3400));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", dim3r3400.Addr >> 1);
+	}
+	else if (CmdParamsCnt == 2)
+	{
+		if (!strcmp(CmdParamsList[1], "help"))
+		{
+			SHELL_Transmit(Shell, SHELL_CMD_DIM3R_HELP);
+		}
+		else if (!strcmp(CmdParamsList[1], "init"))
+		{
+			if (DIM3R3400_Init(&dim3r3400, BSP_PWR_IN_DIM3R3400_I2C, BSP_PWR_IN_DIM3R3400_I2C_ADDR))
+				goto cmd_err;
+		}
+		else if (!strcmp(CmdParamsList[1], "mntr"))
+		{
+			if (DIM3R3400_Update(&dim3r3400))
+				goto cmd_err;
+			SHELL_Transmit(Shell, "Status: 0x%02X\r", dim3r3400.Status);
+			SHELL_Transmit(Shell, "VOUT: %2.2f\r", dim3r3400.Vout);
+			SHELL_Transmit(Shell, "IOUT: %2.2f\r", dim3r3400.Iout);
+			SHELL_Transmit(Shell, "VINA: %2.2f\r", dim3r3400.Vin[0]);
+			SHELL_Transmit(Shell, "VINB: %2.2f\r", dim3r3400.Vin[1]);
+			SHELL_Transmit(Shell, "Temperature: %2.2f\r", dim3r3400.Temp);
+		}
+		else
+		{
+			goto invalid_cmd;
+		}
+	}
+	else 
+	{
+		goto invalid_cmd;
+	}
+	
+	return;
+invalid_cmd:
+	SHELL_Transmit(Shell, "Error: invalid command\r");
+	return;
+cmd_err:
+	SHELL_Transmit(Shell, "Error: command error\r");
+	return;
 }
 
 #define SHELL_CMD_PCA9536_HELP \
@@ -124,7 +180,7 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.PowerPin.pca9536));
+		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pca9536));
 		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r", PCA9536_I2C_ADDR >> 1);
 	}
 	else if (CmdParamsCnt == 2)
@@ -135,23 +191,23 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 		}
 		else if (!strcmp(CmdParamsList[1], "pin"))
 		{
-			if (PCA9536_GetBankDir(&Devices.PowerPin.pca9536))
+			if (PCA9536_GetBankDir(&pca9536))
 				goto cmd_err;
-			if (PCA9536_GetBankIn(&Devices.PowerPin.pca9536))
+			if (PCA9536_GetBankIn(&pca9536))
 				goto cmd_err;
-			if (PCA9536_GetBankOut(&Devices.PowerPin.pca9536))
+			if (PCA9536_GetBankOut(&pca9536))
 				goto cmd_err;
-			if (PCA9536_GetBankPol(&Devices.PowerPin.pca9536))
+			if (PCA9536_GetBankPol(&pca9536))
 				goto cmd_err;
 			SHELL_Transmit(Shell,   "Idx  In  Dir  Out  Pol  Info\r");
 			for (i = 0; i < 4; i++)
 			{
 				SHELL_Transmit(Shell,   "%3d  %2d  %3d  %3d  %3d  %s\r",
 					i,
-					(Devices.PowerPin.pca9536.Ins >> (i % 8)) & 0x01,
-					(Devices.PowerPin.pca9536.Dirs >> (i % 8)) & 0x01,
-					(Devices.PowerPin.pca9536.Outs >> (i % 8)) & 0x01,
-					(Devices.PowerPin.pca9536.Pols >> (i % 8)) & 0x01,
+					(pca9536.Ins >> (i % 8)) & 0x01,
+					(pca9536.Dirs >> (i % 8)) & 0x01,
+					(pca9536.Outs >> (i % 8)) & 0x01,
+					(pca9536.Pols >> (i % 8)) & 0x01,
 					shell_pca9536_pin_info[i]);
 			}
 		}
@@ -174,7 +230,7 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCA9536_SetPinOut(&Devices.PowerPin.pca9536, Pin, Data))
+			if (PCA9536_SetPinOut(&pca9536, Pin, Data))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "dir"))
@@ -189,7 +245,7 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCA9536_SetPinDir(&Devices.PowerPin.pca9536, Pin, Data))
+			if (PCA9536_SetPinDir(&pca9536, Pin, Data))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "pol"))
@@ -204,7 +260,7 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCA9536_SetPinPol(&Devices.PowerPin.pca9536, Pin, Data))
+			if (PCA9536_SetPinPol(&pca9536, Pin, Data))
 				goto cmd_err;
 		}
 		else
@@ -332,8 +388,8 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpPin.pcal6524[Idx]));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", Devices.SfpPin.pcal6524[Idx].Addr >> 1);
+		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[Idx]));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", pcal6524[Idx].Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -345,13 +401,13 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 		{
 			for (i = 0; i < BSP_SFP_PIN_PCAL6524_CNT; i++)
 			{
-				if (PCAL6524_GetBankIn(&Devices.SfpPin.pcal6524[Idx], i))
+				if (PCAL6524_GetBankIn(&pcal6524[Idx], i))
 					goto cmd_err;
-				if (PCAL6524_GetBankOut(&Devices.SfpPin.pcal6524[Idx], i))
+				if (PCAL6524_GetBankOut(&pcal6524[Idx], i))
 					goto cmd_err;
-				if (PCAL6524_GetBankCfg(&Devices.SfpPin.pcal6524[Idx], i))
+				if (PCAL6524_GetBankCfg(&pcal6524[Idx], i))
 					goto cmd_err;
-				if (PCAL6524_GetBankPol(&Devices.SfpPin.pcal6524[Idx], i))
+				if (PCAL6524_GetBankPol(&pcal6524[Idx], i))
 					goto cmd_err;
 			}
 			SHELL_Transmit(Shell,   "Idx  In  Cfg  Out  Pol  Info\r");
@@ -359,10 +415,10 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 			{
 				SHELL_Transmit(Shell,   "%3d  %2d  %3d  %3d  %3d  %s\r",
 					i,
-					(Devices.SfpPin.pcal6524[Idx].Ins[i / 8] >> (i % 8)) & 0x01,
-					(Devices.SfpPin.pcal6524[Idx].Cfgs[i / 8] >> (i % 8)) & 0x01,
-					(Devices.SfpPin.pcal6524[Idx].Outs[i / 8] >> (i % 8)) & 0x01,
-					(Devices.SfpPin.pcal6524[Idx].Pols[i / 8] >> (i % 8)) & 0x01,
+					(pcal6524[Idx].Ins[i / 8] >> (i % 8)) & 0x01,
+					(pcal6524[Idx].Cfgs[i / 8] >> (i % 8)) & 0x01,
+					(pcal6524[Idx].Outs[i / 8] >> (i % 8)) & 0x01,
+					(pcal6524[Idx].Pols[i / 8] >> (i % 8)) & 0x01,
 					shell_pcal6524_pin_info[Idx][i]);
 			}
 		}
@@ -401,7 +457,7 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCAL6524_SetPinOut(&Devices.SfpPin.pcal6524[Idx], Pin / 8, Pin % 8, Data))
+			if (PCAL6524_SetPinOut(&pcal6524[Idx], Pin / 8, Pin % 8, Data))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "dir"))
@@ -416,7 +472,7 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCAL6524_SetPinCfg(&Devices.SfpPin.pcal6524[Idx], Pin / 8, Pin % 8, Data))
+			if (PCAL6524_SetPinCfg(&pcal6524[Idx], Pin / 8, Pin % 8, Data))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "pol"))
@@ -431,7 +487,7 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCAL6524_SetPinPol(&Devices.SfpPin.pcal6524[Idx], Pin / 8, Pin % 8, Data))
+			if (PCAL6524_SetPinPol(&pcal6524[Idx], Pin / 8, Pin % 8, Data))
 				goto cmd_err;
 		}
 		else
@@ -478,8 +534,8 @@ static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpSwitch.pca9548a[Idx]));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", Devices.SfpSwitch.pca9548a[Idx].Addr >> 1);
+		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[Idx]));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", pca9548a[Idx].Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -489,7 +545,7 @@ static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			if (PCA9548A_Init(&Devices.SfpSwitch.pca9548a[Idx], Devices.SfpSwitch.pca9548a[Idx].I2C, Devices.SfpSwitch.pca9548a[Idx].Addr >> 1))
+			if (PCA9548A_Init(&pca9548a[Idx], pca9548a[Idx].I2C, pca9548a[Idx].Addr >> 1))
 				goto cmd_err;
 		}
 		else
@@ -504,7 +560,7 @@ static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_
 			Data = strtoul(CmdParamsList[2], &p, 10);
 			if ((*p != 0) || (p == CmdParamsList[2]))
 				goto invalid_cmd;
-			if (Data >= BSP_SFP_I2C_SWITCH_PCA9548_CNT)
+			if (Data >= BSP_PCA9548_CNT)
 				goto invalid_idx;
 			Idx = Data;
 		}
@@ -546,8 +602,8 @@ static void SHELL_CMD_PCA9546Callback(void *Shell, char **CmdParamsList, uint32_
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.SfpSwitch.pca9546a[Idx]));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", Devices.SfpSwitch.pca9546a[Idx].Addr >> 1);
+		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pca9546a[Idx]));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", pca9546a[Idx].Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -557,7 +613,7 @@ static void SHELL_CMD_PCA9546Callback(void *Shell, char **CmdParamsList, uint32_
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			if (PCA9546A_Init(&Devices.SfpSwitch.pca9546a[Idx], Devices.SfpSwitch.pca9546a[Idx].I2C, Devices.SfpSwitch.pca9546a[Idx].Addr >> 1))
+			if (PCA9546A_Init(&pca9546a[Idx], pca9546a[Idx].I2C, pca9546a[Idx].Addr >> 1))
 				goto cmd_err;
 		}
 		else
@@ -572,7 +628,7 @@ static void SHELL_CMD_PCA9546Callback(void *Shell, char **CmdParamsList, uint32_
 			Data = strtoul(CmdParamsList[2], &p, 10);
 			if ((*p != 0) || (p == CmdParamsList[2]))
 				goto invalid_cmd;
-			if (Data >= BSP_SFP_I2C_SWITCH_PCA9546_CNT)
+			if (Data >= BSP_PCA9546_CNT)
 				goto invalid_idx;
 			Idx = Data;
 		}
@@ -619,9 +675,9 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	if (CmdParamsCnt == 1)
 	{		
 		SHELL_Transmit(Shell,   "Index: %d\r", Idx);
-		SHELL_Transmit(Shell,   "Presence: %d (%s)\r", BSP_SFP_GetModAbs(&Devices.Sfp[Idx]), BSP_SFP_GetModAbs(&Devices.Sfp[Idx]) ? "Absent" : "Present");
-		SHELL_Transmit(Shell,   "Init state: %d (%s)\r", BSP_DEV_GET_STATE(&Devices.Sfp[Idx].sfp), BSP_DEV_GET_STATE_STR(&Devices.Sfp[Idx].sfp));
-		SHELL_Transmit(Shell,   "Tx Disable: %d (%s)\r", BSP_SFP_GetTxDisable(&Devices.Sfp[Idx]), BSP_SFP_GetTxDisable(&Devices.Sfp[Idx]) ? "Disable" : "Enable");
+		SHELL_Transmit(Shell,   "Presence: %d (%s)\r", sfp[Idx].Pin.ModAbs, sfp[Idx].Pin.ModAbs ? "Absent" : "Present");
+		SHELL_Transmit(Shell,   "Init state: %d (%s)\r", BSP_DEV_GET_STATE(&sfp[Idx]), BSP_DEV_GET_STATE_STR(&sfp[Idx]));
+		SHELL_Transmit(Shell,   "Tx Disable: %d (%s)\r", sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxDisable ? "Disable" : "Enable");
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -632,43 +688,43 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		else if (!strcmp(CmdParamsList[1], "info"))
 		{
 			/*Check module precence*/
-			if (BSP_SFP_GetModAbs(&Devices.Sfp[Idx]))
+			if (sfp[Idx].Pin.ModAbs)
 				goto mod_abs;
 			/*Check module init state*/
-			if (BSP_DEV_GET_STATE(&Devices.Sfp[Idx].sfp) != BSP_DEV_STATE_OK)
+			if (BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
 				goto invalid_init_state;
-			SHELL_Transmit(Shell,   "Vendor: %s\r", Devices.Sfp[Idx].sfp.Vendor);
-			SHELL_Transmit(Shell,   "Part Number: %s\r", Devices.Sfp[Idx].sfp.PartNumber);
-			SHELL_Transmit(Shell,   "Serial Number: %s\r", Devices.Sfp[Idx].sfp.SerialNumber);
+			SHELL_Transmit(Shell,   "Vendor: %s\r", sfp[Idx].Info.Vendor);
+			SHELL_Transmit(Shell,   "Part Number: %s\r", sfp[Idx].Info.PartNumber);
+			SHELL_Transmit(Shell,   "Serial Number: %s\r", sfp[Idx].Info.SerialNumber);
 		}
 		else if (!strcmp(CmdParamsList[1], "pin"))
 		{
 			SHELL_Transmit(Shell, "MOD_ABS  RX_LOS  TX_DIS  TX_FAULT\r");
 			SHELL_Transmit(Shell,   "   %d       %d       %d     %d\r",
-				BSP_SFP_GetModAbs(&Devices.Sfp[Idx]), BSP_SFP_GetRxLos(&Devices.Sfp[Idx]), BSP_SFP_GetTxDisable(&Devices.Sfp[Idx]), BSP_SFP_GetTxFault(&Devices.Sfp[Idx]));
+				sfp[Idx].Pin.ModAbs, sfp[Idx].Pin.RxLos, sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxFault);
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
 			/*Check module precence*/
-			if (BSP_SFP_GetModAbs(&Devices.Sfp[Idx]))
+			if (sfp[Idx].Pin.ModAbs)
 				goto mod_abs;			
-			if (BSP_SFP_InitDevice(&Devices.Sfp[Idx]))
+			if (SFP_Init(&sfp[Idx], (BSP_I2C_CTRL_T*)&bsp_sfp_i2c_ctrl[Idx], (BSP_PIN_CTRL_T*)&bsp_sfp_pin_ctrl[Idx]))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
 		{
 			/*Check module precence*/
-			if (BSP_SFP_GetModAbs(&Devices.Sfp[Idx]))
+			if (sfp[Idx].Pin.ModAbs)
 				goto mod_abs;
 			/*Check module init state*/
-			if (BSP_DEV_GET_STATE(&Devices.Sfp[Idx].sfp) != BSP_DEV_STATE_OK)
+			if (BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
 				goto invalid_init_state;
 			
-			if (BSP_SFP_UpdateDevice(&Devices.Sfp[Idx]))
+			if (SFP_Update(&sfp[Idx]))
 				goto cmd_err;
-			SHELL_Transmit(Shell,   "Rx Power: %.2f\r", Devices.Sfp[Idx].sfp.RxPwr);
-			SHELL_Transmit(Shell,   "Tx Power: %.2f\r", Devices.Sfp[Idx].sfp.TxPwr);
-			SHELL_Transmit(Shell,   "Temperature: %.2f\r", Devices.Sfp[Idx].sfp.Temp);		
+			SHELL_Transmit(Shell,   "Rx Power: %.2f\r", sfp[Idx].RxPwr);
+			SHELL_Transmit(Shell,   "Tx Power: %.2f\r", sfp[Idx].TxPwr);
+			SHELL_Transmit(Shell,   "Temperature: %.2f\r", sfp[Idx].Temp);		
 		}
 		else
 		{
@@ -693,7 +749,7 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 				goto invalid_cmd;
 			if ((Data != 0) && (Data != 1))
 				goto invalid_cmd;			
-			BSP_SFP_SetTxDisable(&Devices.Sfp[Idx], Data ? 0 : 1);			
+			SFP_SetTxDisable(&sfp[Idx], Data ? 0 : 1);			
 		}
 		else
 		{
@@ -739,9 +795,8 @@ invalid_init_state:
 
 static void TFTP_CLIENT_ProgramFPGA(void *Priv, uint32_t Addr, char *Source, uint32_t Size)
 {
-	S29GL01GS_ProgramSector(&Devices.Flash, Addr, Source, Size);
+	BSP_FPGA_FLASH_ProgramSector(Addr, Source, Size);
 }
-
 
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
@@ -752,7 +807,7 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.Fpga));
+		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&fpga_maxv));
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -768,11 +823,11 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			}
 			else if (Dev == 1)
 			{
-				Addr = BSP_FPGA_CLIENT_1_ADDR + 0xF0;
+				Addr = BSP_FPGA_CLIENT_ADDR(0) + 0xF0;
 			}
 			else if (Dev == 2)
 			{
-				Addr = BSP_FPGA_CLIENT_2_ADDR + 0xF0;
+				Addr = BSP_FPGA_CLIENT_ADDR(1) + 0xF0;
 			}
 			else
 			{
@@ -822,11 +877,11 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			}
 			else if (Dev == 1)
 			{
-				Data = *(uint8_t*)(BSP_FPGA_CLIENT_1_ADDR + Addr);
+				Data = *(uint8_t*)(BSP_FPGA_CLIENT_ADDR(0) + Addr);
 			}
 			else if (Dev == 2)
 			{
-				Data = *(uint8_t*)(BSP_FPGA_CLIENT_2_ADDR + Addr);
+				Data = *(uint8_t*)(BSP_FPGA_CLIENT_ADDR(1) + Addr);
 			}
 			else if (Dev == 3)
 			{
@@ -852,22 +907,22 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 		}
 		else if (!strcmp(CmdParamsList[1], "update"))
 		{
-			IP_ADDR4(&tftp_server_ip,192,168,0,32);
+			IP_ADDR4(&tftp_server_ip,192,168,2,32);
 			
 			
 			if (Dev == 0)
 			{
-				BSP_FLASH_EraseFPGA(&Devices.Flash, 0);
+				BSP_FPGA_FLASH_EraseFPGA(0);
 				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &tftp_server_ip, 69, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_1_FW_ADDR_START);
 			}
 			else if (Dev == 1)
 			{
-				BSP_FLASH_EraseFPGA(&Devices.Flash, 1);
+				BSP_FPGA_FLASH_EraseFPGA(1);
 				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &tftp_server_ip, 69, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_2_FW_ADDR_START);
 			}
 			else if (Dev == 2)
 			{
-				BSP_FLASH_EraseFPGA(&Devices.Flash, 2);
+				BSP_FPGA_FLASH_EraseFPGA(2);
 				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &tftp_server_ip, 69, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_3_FW_ADDR_START);
 			}
 			else
@@ -912,11 +967,11 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			}
 			else if (Dev == 1)
 			{
-				*(uint8_t*)(BSP_FPGA_CLIENT_1_ADDR + Addr) = Data;
+				*(uint8_t*)(BSP_FPGA_CLIENT_ADDR(0) + Addr) = Data;
 			}
 			else if (Dev == 2)
 			{
-				*(uint8_t*)(BSP_FPGA_CLIENT_2_ADDR + Addr) = Data;
+				*(uint8_t*)(BSP_FPGA_CLIENT_ADDR(1) + Addr) = Data;
 			}
 			else if (Dev == 3)
 			{
@@ -965,8 +1020,8 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.Power.ucd90120a));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", Devices.Power.ucd90120a.Addr >> 1);
+		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&ucd90120a));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", ucd90120a.Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -976,13 +1031,13 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
 		{
-			if (UCD90120A_Update(&Devices.Power.ucd90120a))
+			if (UCD90120A_Update(&ucd90120a))
 				goto cmd_err;
-			SHELL_Transmit(Shell, "Device temp: %2.2f\r", Devices.Power.ucd90120a.Mon.Temp);
+			SHELL_Transmit(Shell, "Device temp: %2.2f\r", ucd90120a.Mon.Temp);
 			SHELL_Transmit(Shell,   "Rail   Vout    Iout    Temp\r");
 			for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 			{
-				SHELL_Transmit(Shell,   " %2d    %2.2f    %2.2f    %2.2f\r", i + 1, Devices.Power.ucd90120a.Mon.Rail[i].Vout, Devices.Power.ucd90120a.Mon.Rail[i].Iout, Devices.Power.ucd90120a.Mon.Rail[i].Temp);
+				SHELL_Transmit(Shell,   " %2d    %2.2f    %2.2f    %2.2f\r", i + 1, ucd90120a.Mon.Rail[i].Vout, ucd90120a.Mon.Rail[i].Iout, ucd90120a.Mon.Rail[i].Temp);
 			}
 		}
 		else
@@ -1023,8 +1078,8 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	if (CmdParamsCnt == 1)
 	{	
 		SHELL_Transmit(Shell,   "Index: %d\r", Idx);
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.Power.gdt080a[Idx]));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", Devices.Power.gdt080a[Idx].Addr >> 1);
+		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[Idx]));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", gdt080a[Idx].Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1034,13 +1089,13 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
 		{
-			if (GDT080A_Update(&Devices.Power.gdt080a[(Idx)]))
+			if (GDT080A_Update(&gdt080a[(Idx)]))
 				goto cmd_err;
-			SHELL_Transmit(Shell,   "Set Vout: %2.2f\r", Devices.Power.gdt080a[Idx].Cfg.Vout.Value);
+			SHELL_Transmit(Shell,   "Set Vout: %2.2f\r", gdt080a[Idx].Cfg.Vout.Value);
 			SHELL_Transmit(Shell,   "Vin    Vout    Iout    Temp1    Temp2\r");
 			SHELL_Transmit(Shell,   "%2.2f   %2.2f   %2.2f   %2.2f   %2.2f\r",
-				Devices.Power.gdt080a[Idx].Mon.Vin, Devices.Power.gdt080a[Idx].Mon.Vout, Devices.Power.gdt080a[Idx].Mon.Iout,
-				Devices.Power.gdt080a[Idx].Mon.Temp1, Devices.Power.gdt080a[Idx].Mon.Temp2);
+				gdt080a[Idx].Mon.Vin, gdt080a[Idx].Mon.Vout, gdt080a[Idx].Mon.Iout,
+				gdt080a[Idx].Mon.Temp1, gdt080a[Idx].Mon.Temp2);
 		}
 		else
 		{
@@ -1054,7 +1109,7 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 			Data = strtoul(CmdParamsList[2], &p, 10);
 			if ((*p != 0) || (p == CmdParamsList[2]))
 				goto invalid_idx;
-			if (Data >= BSP_PWR_GDT080A_CNT)
+			if (Data >= BSP_FPGA_PWR_GDT080A_CNT)
 				goto invalid_idx;
 			Idx = Data;
 		}
@@ -1063,7 +1118,7 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 			Vout = strtof(CmdParamsList[2], &p);
 			if ((*p != 0) || (p == CmdParamsList[2]))
 				goto invalid_data;
-			if (GDT080A_SetVout(&Devices.Power.gdt080a[(Idx)], Vout))
+			if (GDT080A_SetVout(&gdt080a[(Idx)], Vout))
 				goto cmd_err;
 		}
 		else
@@ -1114,7 +1169,7 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.EthSw.ksz8895));
+		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&ksz8895));
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1126,17 +1181,17 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		{
 			for (i = 0; i < KSZ8895_PORTS_CNT; i++)
 			{
-				if (KSZ8895_UpdatePortStatus(&Devices.EthSw.ksz8895, i))
+				if (KSZ8895_UpdatePortStatus(&ksz8895, i))
 					goto cmd_err;
 				SHELL_Transmit(Shell, "Port %d:\r", i);
-				SHELL_Transmit(Shell, "    Link - %s\r", KSZ8895_PORT_LINK(&Devices.EthSw.ksz8895, i) ? "Up" : "Down");
-				SHELL_Transmit(Shell, "    Speed - %d M\r", KSZ8895_PORT_SPEED(&Devices.EthSw.ksz8895, i));
-				SHELL_Transmit(Shell, "    Duplex - %s\r", KSZ8895_PORT_DUPLEX(&Devices.EthSw.ksz8895, i) ? "Full" : "Half");
+				SHELL_Transmit(Shell, "    Link - %s\r", KSZ8895_PORT_LINK(&ksz8895, i) ? "Up" : "Down");
+				SHELL_Transmit(Shell, "    Speed - %d M\r", KSZ8895_PORT_SPEED(&ksz8895, i));
+				SHELL_Transmit(Shell, "    Duplex - %s\r", KSZ8895_PORT_DUPLEX(&ksz8895, i) ? "Full" : "Half");
 			}
 		}
 		else if (!strcmp(CmdParamsList[1], "mac"))
 		{
-			if (KSZ8895_ReadMACTable(&Devices.EthSw.ksz8895, ksz_mac_table, KSZ8895_MAC_TABLE_SIZE, &ksz_mac_table_size))
+			if (KSZ8895_ReadMACTable(&ksz8895, ksz_mac_table, KSZ8895_MAC_TABLE_SIZE, &ksz_mac_table_size))
 				goto cmd_err;
 			SHELL_Transmit(Shell, "Idx    Port    Mac\r", i);
 			for (i = 0; i < ksz_mac_table_size; i++)
@@ -1164,7 +1219,7 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 			if (Addr > 0xFF)
 				goto invalid_addr;
 			
-			if (KSZ8895_ReadReg(&Devices.EthSw.ksz8895, Addr, &Data8))
+			if (KSZ8895_ReadReg(&ksz8895, Addr, &Data8))
 				goto cmd_err;
 			
 			SHELL_Transmit(Shell, "0x%x\r", Data8);
@@ -1198,7 +1253,7 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 			if (Data > 0xFF)
 				goto invalid_addr;
 			
-			if (KSZ8895_WriteReg(&Devices.EthSw.ksz8895, Addr, Data))
+			if (KSZ8895_WriteReg(&ksz8895, Addr, Data))
 				goto cmd_err;
 		}
 		else
@@ -1225,6 +1280,7 @@ invalid_data:
 	SHELL_Transmit(Shell, "Error: invalid data\r");
 	return;
 }
+
 #define SHELL_CMD_SDRAM_HELP \
 "Usage:\r"\
 "    sdram <cmd> [<data1> <data2> ...]\r"\
@@ -1247,7 +1303,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&Devices.Sdram));
+		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&mt48lc16m16a2));
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1265,7 +1321,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 		if (!strcmp(CmdParamsList[1], "load"))
 		{
 			memset((char*)BSP_SDRAM_ADDR, 0xFF, BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START);
-			IP_ADDR4(&tftp_server_ip,192,168,0,32);
+			IP_ADDR4(&tftp_server_ip,192,168,2,32);
 			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &tftp_server_ip, 69, TFTP_CLIENT_ProgramSDRAM, NULL, BSP_SDRAM_ADDR);
 		}
 		else if (!strcmp(CmdParamsList[1], "cmp"))
@@ -1281,7 +1337,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 			{
 				for (Addr = 0; Addr < (BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START); Addr += sizeof(Buffer))
 				{
-					BSP_FLASH_Read(&Devices.Flash, BSP_FLASH_FPGA_1_FW_ADDR_START + Addr, Buffer, sizeof(Buffer));
+					BSP_FPGA_FLASH_Read(BSP_FLASH_FPGA_1_FW_ADDR_START + Addr, Buffer, sizeof(Buffer));
 					if (memcmp((char*)(BSP_SDRAM_ADDR + Addr), Buffer, sizeof(Buffer)))
 					{
 						SHELL_Transmit(Shell, "Compare Failed: %d\r", Addr);
@@ -1293,7 +1349,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 			{
 				for (Addr = 0; Addr < (BSP_FLASH_FPGA_2_FW_ADDR_END - BSP_FLASH_FPGA_2_FW_ADDR_START); Addr += sizeof(Buffer))
 				{
-					BSP_FLASH_Read(&Devices.Flash, BSP_FLASH_FPGA_2_FW_ADDR_START + Addr, Buffer, sizeof(Buffer));
+					BSP_FPGA_FLASH_Read(BSP_FLASH_FPGA_2_FW_ADDR_START + Addr, Buffer, sizeof(Buffer));
 					if (memcmp((char*)(BSP_SDRAM_ADDR + Addr), Buffer, sizeof(Buffer)))
 					{
 						SHELL_Transmit(Shell, "Compare Failed: %d\r", Addr);
@@ -1305,7 +1361,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 			{
 				for (Addr = 0; Addr < (BSP_FLASH_FPGA_3_FW_ADDR_END - BSP_FLASH_FPGA_3_FW_ADDR_START); Addr += sizeof(Buffer))
 				{
-					BSP_FLASH_Read(&Devices.Flash, BSP_FLASH_FPGA_3_FW_ADDR_START + Addr, Buffer, sizeof(Buffer));
+					BSP_FPGA_FLASH_Read(BSP_FLASH_FPGA_3_FW_ADDR_START + Addr, Buffer, sizeof(Buffer));
 					if (memcmp((char*)(BSP_SDRAM_ADDR + Addr), Buffer, sizeof(Buffer)))
 					{
 						SHELL_Transmit(Shell, "Compare Failed: %d\r", Addr);

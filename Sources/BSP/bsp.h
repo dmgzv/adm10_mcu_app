@@ -9,17 +9,22 @@
 #include "flash.h"
 #include "bsp_config.h"
 #include "bsp_led.h"
-#include "bsp_pwr_pin.h"
-#include "bsp_pwr.h"
-#include "bsp_sdram.h"
-#include "bsp_fpga.h"
 #include "bsp_flash.h"
+#include "bsp_sdram.h"
+#include "bsp_pwr_pin.h"
+#include "bsp_pwr_in.h"
+#include "bsp_pwr_seq.h"
+#include "bsp_fpga.h"
+#include "bsp_fpga_pwr.h"
+#include "bsp_fpga_flash.h"
+#include "bsp_sfp.h"
 #include "bsp_sfp_i2c_switch.h"
 #include "bsp_sfp_pin.h"
-#include "bsp_sfp.h"
 #include "bsp_clk.h"
+#include "bsp_eth.h"
 #include "bsp_eth_pin.h"
 #include "bsp_eth_sw.h"
+
 
 #define BSP_SLOT_ADDR_GPIO_CNT	4
 
@@ -51,37 +56,16 @@
 #define BSP_SLOT_ADDR_3_GPIO_SPEED						GPIO_SPEED_FAST
 #define BSP_SLOT_ADDR_3_GPIO_CLK_ENABLE()     __HAL_RCC_GPIOA_CLK_ENABLE()
 
-typedef struct {	
-	BSP_LED_T PowerLed;
-	BSP_LED_T AlarmLed;
-	BSP_PWR_PIN_T PowerPin;
-	BSP_PWR_T Power;
-	
-	BSP_SDRAM_T Sdram;
-	BSP_FPGA_T Fpga;
-	BSP_FLASH_T Flash;
-
-	BSP_ETH_PIN_T EthPin;
-	BSP_ETH_SW_T EthSw;
-	
-	BSP_CLK_T Clk;
-	BSP_SFP_I2C_SWITCH_T SfpSwitch;
-	BSP_SFP_PIN_T SfpPin;
-	BSP_SFP_T Sfp[BSP_SFP_CNT];
-}BSP_DEVICES_T;
-
-typedef struct {
-	BSP_SFP_CFG_T Sfp[BSP_SFP_CNT];
-} BSP_DEVICES_CFG_T;
+extern uint8_t SlotAddress;
 
 #define BSP_Reset HAL_NVIC_SystemReset
-int32_t BSP_Init(void);
-int32_t BSP_InitPeriferia(void);
-void BSP_DeinitPeriferia(void);
-int32_t BSP_InitDevices(BSP_DEVICES_T *Devices);
-void BSP_DeinitDevices(BSP_DEVICES_T *Devices);
-int32_t BSP_UpdateDevices(BSP_DEVICES_T *Devices, BSP_DEVICES_CFG_T *Cfg);
+void BSP_Init(void);
 
-uint8_t BSP_GetSlotAddress(void);
+int32_t BSP_InitInterfaces(void);
+void BSP_DeinitInterfaces(void);
+void BSP_InitSlotAddress(void);
+void BSP_InitLeds(void);
+int32_t BSP_InitMemory(void);
+void BSP_UpdateCard(void);
 
 #endif /* __BSP_H */

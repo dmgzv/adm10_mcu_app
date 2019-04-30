@@ -48,7 +48,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>.\Objects\</OutputDirectory>
-          <OutputName>ADM10</OutputName>
+          <OutputName>ADM10_Debug</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -619,6 +619,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\mt48lc16m16a2.c</FilePath>
             </File>
+            <File>
+              <FileName>at45db641e.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\at45db641e.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -675,14 +680,14 @@
               <FilePath>.\Sources\BSP\bsp_led.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_pwr.c</FileName>
+              <FileName>bsp_flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_pwr.c</FilePath>
+              <FilePath>.\Sources\BSP\bsp_flash.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_pwr_cfg.c</FileName>
+              <FileName>bsp_sdram.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_pwr_cfg.c</FilePath>
+              <FilePath>.\Sources\BSP\bsp_sdram.c</FilePath>
             </File>
             <File>
               <FileName>bsp_pwr_pin.c</FileName>
@@ -690,9 +695,19 @@
               <FilePath>.\Sources\BSP\bsp_pwr_pin.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_sfp_i2c_switch.c</FileName>
+              <FileName>bsp_pwr_in.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_sfp_i2c_switch.c</FilePath>
+              <FilePath>.\Sources\BSP\bsp_pwr_in.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_pwr_seq.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_pwr_seq.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_pwr_cfg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_pwr_cfg.c</FilePath>
             </File>
             <File>
               <FileName>bsp_sfp.c</FileName>
@@ -700,14 +715,14 @@
               <FilePath>.\Sources\BSP\bsp_sfp.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_flash.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_sfp_pin.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_sfp_pin.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_sfp_i2c_switch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_sfp_i2c_switch.c</FilePath>
             </File>
             <File>
               <FileName>bsp_clk.c</FileName>
@@ -725,14 +740,24 @@
               <FilePath>.\Sources\BSP\bsp_eth_sw.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_netif.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_netif.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_fpga.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_pwr.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_eth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_eth.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1048,6 +1073,11 @@
               <FileName>shell_telnet.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Shell\shell_telnet.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Shell\shell_uart.c</FilePath>
             </File>
           </Files>
         </Group>

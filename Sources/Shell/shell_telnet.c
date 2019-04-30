@@ -10,7 +10,7 @@ static uint32_t ring_buffer_len = 0;
 
 int32_t SHELL_TELNET_Init(void *Priv)
 {
-		SHELL_TELNET_PRIV_T *Telnet = Priv;
+	SHELL_TELNET_PRIV_T *Telnet = Priv;
   err_t err;
 
   /* Create a new connection identifier. */
@@ -89,8 +89,6 @@ int32_t SHELL_TELNET_Receive(void *Priv, char *Buffer, uint32_t BufferSize)
 		while (netbuf_next(buf) >= 0);
 		netbuf_delete(buf);
 	} while (1);
-	
-	return 0;
 }
 
 int32_t SHELL_TELNET_Transmit(void *Priv, char *Buffer, uint32_t BufferSize)

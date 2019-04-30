@@ -49,6 +49,7 @@ void PERF_Update(PERF_T *Dev, uint32_t Defects, uint32_t Errors, uint32_t Errors
 		else if (Errors)
 		{
 			Dev->EB += Errors;
+			Dev->ES++;
 			Dev->BBE += Errors;
 			Dev->StateTime = 0;
 		}

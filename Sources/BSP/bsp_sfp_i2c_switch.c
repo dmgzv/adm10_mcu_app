@@ -1,34 +1,31 @@
 #include "bsp_sfp_i2c_switch.h"
+#include "bsp_pwr_in.h"
+#include "bsp_pwr_pin.h"
+#include "bsp_pwr_seq.h"
 
-#ifdef BSP_CONFIG_USE_FREERTOS
-#define	BSP_SFP_I2C_SWITCH_msDelay(ms) 		osDelay(ms)
-#else
-#define	BSP_SFP_I2C_SWITCH_msDelay(ms) 		HAL_Delay(ms)
-#endif
-
-static const I2C_TypeDef *pca9548a_i2c[BSP_SFP_I2C_SWITCH_PCA9548_CNT] = 
+static const I2C_TypeDef *pca9548a_i2c[BSP_PCA9548_CNT] = 
 {
-	BSP_SFP_I2C_SWITCH_PCA9548_1_I2C,
-	BSP_SFP_I2C_SWITCH_PCA9548_2_I2C
+	BSP_PCA9548_1_I2C,
+	BSP_PCA9548_2_I2C
 };
 
-static const I2C_TypeDef *pca9546a_i2c[BSP_SFP_I2C_SWITCH_PCA9546_CNT] = 
+static const I2C_TypeDef *pca9546a_i2c[BSP_PCA9546_CNT] = 
 {
-	BSP_SFP_I2C_SWITCH_PCA9546_1_I2C,
+	BSP_PCA9546_1_I2C,
 };
 
-static const uint8_t pca9548a_addr[BSP_SFP_I2C_SWITCH_PCA9548_CNT] =
+static const uint8_t pca9548a_addr[BSP_PCA9548_CNT] =
 {
-	BSP_SFP_I2C_SWITCH_PCA9548_1_I2C_ADDR,
-	BSP_SFP_I2C_SWITCH_PCA9548_2_I2C_ADDR
+	BSP_PCA9548_1_I2C_ADDR,
+	BSP_PCA9548_2_I2C_ADDR
 };
 
-static const uint8_t pca9546a_addr[BSP_SFP_I2C_SWITCH_PCA9546_CNT] =
+static const uint8_t pca9546a_addr[BSP_PCA9546_CNT] =
 {
-	BSP_SFP_I2C_SWITCH_PCA9546_1_I2C_ADDR
+	BSP_PCA9546_1_I2C_ADDR
 };
 
-static const PCA9548A_CH_T pca9548a_ch_set[20][BSP_SFP_I2C_SWITCH_PCA9548_CNT] =
+static const PCA9548A_CH_T pca9548a_ch_set[20][BSP_PCA9548_CNT] =
 {
 	{PCA9548A_CH_0,	PCA9548A_CH_NO}, /*Client 1 SFP*/
 	{PCA9548A_CH_1,	PCA9548A_CH_NO}, /*Client 2 SFP*/
@@ -52,7 +49,7 @@ static const PCA9548A_CH_T pca9548a_ch_set[20][BSP_SFP_I2C_SWITCH_PCA9548_CNT] =
 	{PCA9548A_CH_NO, PCA9548A_CH_NO}, /*Line 4 SFP*/
 };
 
-static const PCA9546A_CH_T pca9546a_ch_set[20][BSP_SFP_I2C_SWITCH_PCA9546_CNT] =
+static const PCA9546A_CH_T pca9546a_ch_set[20][BSP_PCA9546_CNT] =
 {
 	{PCA9546A_CH_NO}, /*Client 1 SFP*/
 	{PCA9546A_CH_NO}, /*Client 2 SFP*/
@@ -76,68 +73,99 @@ static const PCA9546A_CH_T pca9546a_ch_set[20][BSP_SFP_I2C_SWITCH_PCA9546_CNT] =
 	{PCA9546A_CH_3}, /*Line 4 SFP*/
 };
 
-static void BSP_SFP_I2C_SWITCH_InitPins(BSP_SFP_I2C_SWITCH_T *dev)
+PCA9548A_T pca9548a[BSP_PCA9548_CNT];
+PCA9546A_T pca9546a[BSP_PCA9546_CNT];
+
+int32_t BSP_SFP_I2C_SWITCH_SelectChannel(uint32_t Channel)
 {
-	GPIO_InitTypeDef  GPIO_InitStruct;
+	uint32_t i;
 	
-	/* Enable the GPIO Clock */
-	BSP_SFP_I2C_SWITCH_RESET_GPIO_CLK_ENABLE();
-	/* Configure the GPIO pin */
-	GPIO_InitStruct.Pin = BSP_SFP_I2C_SWITCH_RESET_GPIO_PIN;
-	GPIO_InitStruct.Mode = BSP_SFP_I2C_SWITCH_RESET_GPIO_MODE;
-	GPIO_InitStruct.Pull = BSP_SFP_I2C_SWITCH_RESET_GPIO_PULL;
-	GPIO_InitStruct.Speed = BSP_SFP_I2C_SWITCH_RESET_GPIO_SPEED;
-	HAL_GPIO_Init(BSP_SFP_I2C_SWITCH_RESET_GPIO_PORT, &GPIO_InitStruct);
-	HAL_GPIO_WritePin(BSP_SFP_I2C_SWITCH_RESET_GPIO_PORT, BSP_SFP_I2C_SWITCH_RESET_GPIO_PIN, GPIO_PIN_RESET);
-	BSP_SFP_I2C_SWITCH_msDelay(10);
-	HAL_GPIO_WritePin(BSP_SFP_I2C_SWITCH_RESET_GPIO_PORT, BSP_SFP_I2C_SWITCH_RESET_GPIO_PIN, GPIO_PIN_SET);
-	BSP_SFP_I2C_SWITCH_msDelay(10);
+	if (Channel == BSP_SFP_I2C_SWITCH_CH_NO)
+	{
+		for (i = 0; i< BSP_PCA9548_CNT; i++)
+		{
+			if (PCA9548A_SelectChannel(&pca9548a[i], PCA9548A_CH_NO))
+				return -1;
+		}		
+		for (i = 0; i< BSP_PCA9546_CNT; i++)
+		{
+			if (PCA9546A_SelectChannel(&pca9546a[i], PCA9546A_CH_NO))
+				return -1;
+		}
+	}
+	else if (Channel < 20)
+	{	
+		for (i = 0; i< BSP_PCA9548_CNT; i++)
+		{
+			if (PCA9548A_SelectChannel(&pca9548a[i], pca9548a_ch_set[Channel][i]))
+				return -1;
+		}		
+		for (i = 0; i< BSP_PCA9546_CNT; i++)
+		{
+			if (PCA9546A_SelectChannel(&pca9546a[i], pca9546a_ch_set[Channel][i]))
+				return -1;
+		}
+	}
+	else
+	{
+		return -1;
+	}
+
+	return 0;
 }
 
-int32_t BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_T *dev, uint32_t Channel)
+static int32_t BSP_SFP_I2C_SWITCH_CheckConditions(void)
 {
-	uint32_t i;
-	int32_t result = 0;
-	
-	if (Channel > 19)
+	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 		return -1;
-	
-	for (i = 0; i< BSP_SFP_I2C_SWITCH_PCA9548_CNT; i++)
-	{
-		if (PCA9548A_SelectChannel(&dev->pca9548a[i], pca9548a_ch_set[Channel][i]))
-			result = -1;
-	}
-	
-	for (i = 0; i< BSP_SFP_I2C_SWITCH_PCA9546_CNT; i++)
-	{
-		if (PCA9546A_SelectChannel(&dev->pca9546a[i], pca9546a_ch_set[Channel][i]))
-			result = -1;
-	}
-	
-	dev->Channel = Channel;
-	return result;
+	if (BSP_DEV_GET_STATE(&pca9536) != BSP_DEV_STATE_OK)
+		return -1;
+	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
+		return -1;
+	return 0;
 }
-int32_t BSP_SFP_I2C_SWITCH_Init(BSP_SFP_I2C_SWITCH_T *dev)
+
+void BSP_SFP_I2C_SWITCH_Process(void)
 {
 	uint32_t i;
-	int32_t result = 0;
 	
-	BSP_SFP_I2C_SWITCH_InitPins(dev);
-	
-	for (i = 0; i< BSP_SFP_I2C_SWITCH_PCA9548_CNT; i++)
+	if (BSP_SFP_I2C_SWITCH_CheckConditions())
 	{
-		if (PCA9548A_Init(&dev->pca9548a[i], (I2C_TypeDef*)pca9548a_i2c[i], pca9548a_addr[i]))
-			result = -1;
+		for (i = 0; i < BSP_PCA9548_CNT; i++)
+		{
+			/* External faults present */
+			if(BSP_DEV_GET_STATE(&pca9548a[i]) != BSP_DEV_STATE_RESET)
+			{
+				PCA9548A_Deinit(&pca9548a[i]);
+			}
+		}
+		
+		for (i = 0; i < BSP_PCA9546_CNT; i++)
+		{
+			/* External faults present */
+			if(BSP_DEV_GET_STATE(&pca9546a[i]) != BSP_DEV_STATE_RESET)
+			{
+				PCA9546A_Deinit(&pca9546a[i]);
+			}
+		}
 	}
-	
-	for (i = 0; i< BSP_SFP_I2C_SWITCH_PCA9546_CNT; i++)
-	{
-		if (PCA9546A_Init(&dev->pca9546a[i], (I2C_TypeDef*)pca9546a_i2c[i], pca9546a_addr[i]))
-			result = -1;
+	else
+	{		
+		for (i = 0; i < BSP_PCA9548_CNT; i++)
+		{
+			/* External faults present */
+			if(BSP_DEV_GET_STATE(&pca9548a[i]) != BSP_DEV_STATE_OK)
+			{
+				PCA9548A_Init(&pca9548a[i], (I2C_TypeDef*)pca9548a_i2c[i], pca9548a_addr[i]);
+			}
+		}		
+		for (i = 0; i < BSP_PCA9546_CNT; i++)
+		{
+			/* External faults present */
+			if(BSP_DEV_GET_STATE(&pca9546a[i]) != BSP_DEV_STATE_OK)
+			{
+				PCA9546A_Init(&pca9546a[i], (I2C_TypeDef*)pca9546a_i2c[i], pca9546a_addr[i]);
+			}
+		}
 	}
-	
-	//if (BSP_SFP_I2C_SWITCH_SelectChannel(dev, 0))
-	//	return -1;
-	
-	return result;
 }

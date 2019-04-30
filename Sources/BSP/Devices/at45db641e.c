@@ -10,6 +10,9 @@
 #define AT45DB641E_STATUS_COMP_MASK 			(1 << 6)
 #define AT45DB641E_STATUS_READY_MASK 			(1 << 7)
 
+#define AT45DB641E_InitPin(Dev, Pin)							((Dev)->PinCtrl ? BSP_PIN_CTRL_Init((Dev)->PinCtrl, Pin) : 0)	
+#define AT45DB641E_SetPinState(Dev, Pin, State)	((Dev)->PinCtrl ? BSP_PIN_CTRL_SetState((Dev)->PinCtrl, Pin, State) : 0)
+
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define	AT45DB641E_msDelay(ms) 		osDelay(ms)
 #else
@@ -19,7 +22,7 @@
 static void AT45DB641E_SetCS(void *Priv, uint32_t State)
 {
 	AT45DB641E_T *Dev = Priv;
-	Dev->SetPinState(Dev->Priv, AT45DB641E_PIN_SPI_CS, State? AT45DB641E_PIN_STATE_ASSERT : AT45DB641E_PIN_STATE_DEASSERT);
+	AT45DB641E_SetPinState(Dev, AT45DB641E_PIN_SPI_CS, State);
 }
 
 static int32_t AT45DB641E_ReadId(AT45DB641E_T *Dev)
@@ -294,23 +297,28 @@ error:
 }
 
 
-int32_t AT45DB641E_Init(AT45DB641E_T *Dev, SPI_TypeDef *SPI, void (*InitPins)(void *Priv),\
-	void (*SetPinState)(void *Priv, AT45DB641E_PIN_T Pin, AT45DB641E_PIN_STATE_T PinState), void *Priv)
+int32_t AT45DB641E_Init(AT45DB641E_T *Dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl)
 {	
-	if ((!Dev) || (!SPI) || (!InitPins) || (!SetPinState))
+	if ((!Dev) || (!SPI) || (!PinCtrl))
 		return -1;
 	
 	BSP_DEV_INIT(Dev);
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->SPI = SPI;
-	Dev->InitPins = InitPins;
-	Dev->SetPinState = SetPinState;
-	Dev->Priv = Priv;
-	Dev->CS.Priv = Dev;
-	Dev->CS.SetState = &AT45DB641E_SetCS;
+	Dev->PinCtrl = PinCtrl;
 	
-	Dev->InitPins(Dev->Priv);
+	Dev->CS.SetState = &AT45DB641E_SetCS;
+	Dev->CS.Priv = Dev;
+	
+	
+	if (AT45DB641E_InitPin(Dev, AT45DB641E_PIN_SPI_CS))
+		goto error;
+	if (AT45DB641E_InitPin(Dev, AT45DB641E_PIN_WP))
+		goto error;
+	if (AT45DB641E_InitPin(Dev, AT45DB641E_PIN_RESET))
+		goto error;
+	
 	if (AT45DB641E_ReadId(Dev) != 0)
 		goto error;	
 	if (AT45DB641E_ReadStatus(Dev) != 0)
@@ -320,9 +328,9 @@ int32_t AT45DB641E_Init(AT45DB641E_T *Dev, SPI_TypeDef *SPI, void (*InitPins)(vo
 		if (AT45DB641E_SetBinaryPageSize(Dev) != 0)
 			goto error;	
 		AT45DB641E_msDelay(20);
-		Dev->SetPinState(Dev->Priv, AT45DB641E_PIN_RESET, AT45DB641E_PIN_STATE_DEASSERT);
+		AT45DB641E_SetPinState(Dev, AT45DB641E_PIN_RESET, 0);
 		AT45DB641E_msDelay(20);
-		Dev->SetPinState(Dev->Priv, AT45DB641E_PIN_RESET, AT45DB641E_PIN_STATE_ASSERT);
+		AT45DB641E_SetPinState(Dev, AT45DB641E_PIN_RESET, 1);
 		AT45DB641E_msDelay(20);
 	}
 	if (AT45DB641E_ReadStatus(Dev) != 0)

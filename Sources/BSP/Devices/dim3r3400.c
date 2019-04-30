@@ -24,19 +24,19 @@ static int32_t __DIM3R3400_Update(DIM3R3400_T *Dev)
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_VOUT, &Data))
 		return -1;
-	Dev->Vout = Data * 0.398;
+	Dev->Vout = Data * 0.398f;
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_IOUT, &Data))
 		return -1;
-	Dev->Iout = Data * 0.094;
+	Dev->Iout = Data * 0.094f;
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_VIN_1, &Data))
 		return -1;
-	Dev->Vin[0] = Data * 0.325;
+	Dev->Vin[0] = Data * 0.325f;
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_VIN_2, &Data))
 		return -1;
-	Dev->Vin[1] = Data * 0.325;
+	Dev->Vin[1] = Data * 0.325f;
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_TEMP, &Data))
 		return -1;
@@ -67,6 +67,13 @@ error:
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
+}
+
+void DIM3R3400_Deinit(DIM3R3400_T *Dev)
+{
+	if (!Dev)
+		return;	
+	BSP_DEV_DEINIT(Dev);
 }
 
 int32_t DIM3R3400_Update(DIM3R3400_T *Dev)

@@ -1,10 +1,10 @@
 #include "bsp.h"
 #include "mt48lc16m16a2.h"
 
-int32_t BSP_Init(void)
-{
-	int32_t result = 0;
+uint8_t SlotAddress;
 
+void BSP_Init(void)
+{
 	/* STM32F4xx HAL library initialization:
 		 - Configure the Flash prefetch, instruction and Data caches
 		 - Configure the Systick to generate an interrupt each 1 msec
@@ -14,24 +14,22 @@ int32_t BSP_Init(void)
 	HAL_Init();
 	/* Configure the system clock */
 	SystemClock_Config();
-	
-	return result;
 }
 
-int32_t BSP_InitPeriferia(void)
+int32_t BSP_InitInterfaces(void)
 {
 	int32_t result = 0;
-	
 	/* Configure the I2C */
 	result |= I2C_Init();
 	/* Configure the UART */
 	result |= UART_Init();
 	/* Configure the SPI */	
 	result |= SPI_Init();
-	return 0;
+	
+	return result;
 }
 
-void BSP_DeinitPeriferia(void)
+void BSP_DeinitInterfaces(void)
 {
 	/* Deinit the I2C */
 	I2C_Deinit();
@@ -61,6 +59,7 @@ void BSP_InitSlotAddress(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStruct;
 	uint32_t i;
+	uint8_t Addr;
 	
 	/* Enable the GPIO Clock */
 	BSP_SLOT_ADDR_0_GPIO_CLK_ENABLE();
@@ -76,12 +75,6 @@ void BSP_InitSlotAddress(void)
 		GPIO_InitStruct.Speed = SlotAddressGPIOSpeed[i];
 		HAL_GPIO_Init((GPIO_TypeDef*)SlotAddressGPIOPort[i], &GPIO_InitStruct);
 	}
-}
-
-uint8_t BSP_GetSlotAddress(void)
-{
-	uint32_t i;
-	uint8_t Addr;
 	
 	Addr = 0;
 	for (i = 0; i < BSP_SLOT_ADDR_GPIO_CNT; i++)
@@ -89,78 +82,61 @@ uint8_t BSP_GetSlotAddress(void)
 		if (HAL_GPIO_ReadPin((GPIO_TypeDef*)SlotAddressGPIOPort[i], SlotAddressGPIOPin[i]) == GPIO_PIN_SET)
 			Addr |= 1 << i;
 	}
-	return Addr;
+	if (Addr)
+		Addr = (Addr << 1) - 1;
+	SlotAddress = Addr;
 }
 
-int32_t BSP_InitDevices(BSP_DEVICES_T *Devices)
-{
-	uint32_t i;
-	int32_t result = 0;
+void BSP_InitLeds(void)
+{	
+	BSP_LED_Init(BSP_LED_TYPE_POWER);	
+	BSP_LED_Set(BSP_LED_TYPE_POWER, BSP_LED_COLOR_NO);
 	
-	BSP_InitSlotAddress();
-	/* Init Leds */
-	BSP_LED_Init(&Devices->PowerLed, BSP_LED_TYPE_POWER);
-	BSP_LED_Init(&Devices->AlarmLed, BSP_LED_TYPE_ALARM);
-	BSP_LED_Set(&Devices->PowerLed, BSP_LED_COLOR_GREEN);	
-	/* Init Power Pins */
-	if (BSP_PWR_PIN_Init(&Devices->PowerPin))
-		result = -1;
-	/* Init Power*/
-	if (BSP_PWR_Init(&Devices->Power, &Devices->PowerPin))
-		result = -1;
-	osDelay(3000);
-	/* Init SDRAM*/
-	if (BSP_SDRAM_Init(&Devices->Sdram))
-		result = -1;
-	/* Init SDRAM*/
-	if (BSP_FPGA_Init(&Devices->Fpga))
-		result = -1;
-	/* Init Flash*/
-	if (BSP_FLASH_Init(&Devices->Flash))
-		result = -1;
-	
-	/* Init Ethernet Pins*/
-	if (BSP_ETH_PIN_Init(&Devices->EthPin))
-		result = -1;
-	/* Init Ethernet Switch*/
-	if (BSP_ETH_SW_Init(&Devices->EthSw))
-		result = -1;
-	
-	/* Init Clocks*/
-	if (BSP_CLK_Init(&Devices->Clk))
-		result = -1;
-	/* Init SFP I2C Switches*/
-	if (BSP_SFP_I2C_SWITCH_Init(&Devices->SfpSwitch))
-		result = -1;	
-	/* Init SFP Pins*/
-	if (BSP_SFP_PIN_Init(&Devices->SfpPin, &Devices->SfpSwitch))
-		result = -1;
-	/* Init SFP Modules*/
-	for (i = 0; i < BSP_SFP_CNT; i++)
-	{
-		if (BSP_SFP_Init(&Devices->Sfp[i], i, &Devices->SfpPin, &Devices->SfpSwitch))
-			result = -1;
-	}
+	BSP_LED_Init(BSP_LED_TYPE_ALARM);
+	BSP_LED_Set(BSP_LED_TYPE_ALARM, BSP_LED_COLOR_RED);
+}
 
+int32_t BSP_InitMemory(void)
+{
+	int32_t result = 0;
+	/* Init SDRAM */
+	result |= BSP_SDRAM_Init();
+	/* Init Flash */
+	result |= BSP_FLASH_Init();
+	
 	return result;
 }
 
-void BSP_DeinitDevices(BSP_DEVICES_T *Devices)
-{
-	/* Init Leds */
-	BSP_LED_Set(&Devices->AlarmLed, BSP_LED_COLOR_NO);
-	BSP_LED_Set(&Devices->PowerLed, BSP_LED_COLOR_NO);
-}
-
-int32_t BSP_UpdateDevices(BSP_DEVICES_T *Devices, BSP_DEVICES_CFG_T *Cfg)
+void BSP_UpdateCard(void)
 {
 	uint32_t i;
 	
-	BSP_PWR_Update(&Devices->Power);
+	BSP_PWR_IN_Process();
+	
+	BSP_PWR_PIN_Process();
+	
+	BSP_PWR_SEQ_Process();
+		
+	BSP_ETH_PIN_Process();
+	
+	BSP_ETH_SW_Process();
+	
+	BSP_ETH_Process(SlotAddress);
+	
+	BSP_CLK_Process();
+	
+	BSP_SFP_I2C_SWITCH_Process();
+	
+	BSP_SFP_PIN_Process();
+	
+	BSP_FPGA_Process();
+	
+	BSP_FPGA_PWR_Process();
+	
+	BSP_FPGA_FLASH_Process();
+	
 	for (i = 0; i < BSP_SFP_CNT; i++)
 	{
-		BSP_SFP_Update(&Devices->Sfp[i], &Cfg->Sfp[i]);
+		BSP_SFP_Process(i);
 	}
-	BSP_ETH_SW_Update(&Devices->EthSw);
-	return 0;
 }

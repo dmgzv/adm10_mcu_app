@@ -19,9 +19,12 @@ int32_t PCA9536_SetPinDir(PCA9536_T *Dev, uint8_t Pin, uint8_t Dir)
 		Dir = Dev->Dirs | (1 << Pin);
 	else
 		Dir = Dev->Dirs & ~(1 << Pin);
-	if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, sizeof(pca9536_reg_ioc), (char*)&Dir, sizeof(Dir)))
-		goto error;
-	Dev->Dirs = Dir;
+	if (Dir != Dev->Dirs)
+	{
+		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, sizeof(pca9536_reg_ioc), (char*)&Dir, sizeof(Dir)))
+			goto error;
+		Dev->Dirs = Dir;
+	}
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -44,9 +47,12 @@ int32_t PCA9536_SetPinOut(PCA9536_T *Dev, uint8_t Pin, uint8_t Out)
 		Out = Dev->Outs | (1 << Pin);
 	else
 		Out = Dev->Outs & ~(1 << Pin);
-	if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_op, sizeof(pca9536_reg_op), (char*)&Out, sizeof(Out)))
-		goto error;
-	Dev->Outs = Out;
+	if (Dev->Outs != Out)
+	{
+		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_op, sizeof(pca9536_reg_op), (char*)&Out, sizeof(Out)))
+			goto error;
+		Dev->Outs = Out;
+	}
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -69,9 +75,12 @@ int32_t PCA9536_SetPinPol(PCA9536_T *Dev, uint8_t Pin, uint8_t Pol)
 		Pol = Dev->Pols | (1 << Pin);
 	else
 		Pol = Dev->Pols & ~(1 << Pin);
-	if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_pl, sizeof(pca9536_reg_pl), (char*)&Pol, sizeof(Pol)))
-		goto error;
-	Dev->Pols = Pol;
+	if (Dev->Pols != Pol)
+	{
+		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_pl, sizeof(pca9536_reg_pl), (char*)&Pol, sizeof(Pol)))
+			goto error;
+		Dev->Pols = Pol;
+	}
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -83,7 +92,7 @@ error:
 
 int32_t PCA9536_GetBankIn(PCA9536_T *Dev)
 {
-	uint8_t in;
+	uint8_t In;
 	
 	if ((!Dev))
 		return -1;	
@@ -92,9 +101,9 @@ int32_t PCA9536_GetBankIn(PCA9536_T *Dev)
 	
 	BSP_DEV_LOCK(Dev);
 	
-	if (I2C_Sequential_Receive(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ip, sizeof(pca9536_reg_ip), (char*)&in, sizeof(in)))
+	if (I2C_Sequential_Receive(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ip, sizeof(pca9536_reg_ip), (char*)&In, sizeof(In)))
 		goto error;	
-	Dev->Ins = in;	
+	Dev->Ins = In;	
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -106,7 +115,7 @@ error:
 
 int32_t PCA9536_GetBankDir(PCA9536_T *Dev)
 {
-	uint8_t dir;
+	uint8_t Dir;
 	
 	if ((!Dev))
 		return -1;	
@@ -114,9 +123,9 @@ int32_t PCA9536_GetBankDir(PCA9536_T *Dev)
 		return -1;	
 	
 	BSP_DEV_LOCK(Dev);
-	if (I2C_Sequential_Receive(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, sizeof(pca9536_reg_ioc), (char*)&dir, sizeof(dir)))
+	if (I2C_Sequential_Receive(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, sizeof(pca9536_reg_ioc), (char*)&Dir, sizeof(Dir)))
 		goto error;	
-	Dev->Dirs = dir;	
+	Dev->Dirs = Dir;	
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -135,9 +144,12 @@ int32_t PCA9536_SetBankDir(PCA9536_T *Dev, uint8_t Dir)
 	
 	BSP_DEV_LOCK(Dev);
 	
-	if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, sizeof(pca9536_reg_ioc), (char*)&Dir, sizeof(Dir)))
-		goto error;
-	Dev->Dirs = Dir;
+	if (Dev->Dirs != Dir)
+	{
+		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, sizeof(pca9536_reg_ioc), (char*)&Dir, sizeof(Dir)))
+			goto error;
+		Dev->Dirs = Dir;
+	}
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -149,7 +161,7 @@ error:
 
 int32_t PCA9536_GetBankOut(PCA9536_T *Dev)
 {
-	uint8_t out;
+	uint8_t Out;
 	
 	if ((!Dev))
 		return -1;	
@@ -158,9 +170,9 @@ int32_t PCA9536_GetBankOut(PCA9536_T *Dev)
 	
 	BSP_DEV_LOCK(Dev);
 	
-	if (I2C_Sequential_Receive(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_op, sizeof(pca9536_reg_op), (char*)&out, sizeof(out)))
+	if (I2C_Sequential_Receive(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_op, sizeof(pca9536_reg_op), (char*)&Out, sizeof(Out)))
 		goto error;	
-	Dev->Outs = out;	
+	Dev->Outs = Out;	
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -179,9 +191,12 @@ int32_t PCA9536_SetBankOut(PCA9536_T *Dev, uint8_t Out)
 	
 	BSP_DEV_LOCK(Dev);
 	
-	if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_op, sizeof(pca9536_reg_op), (char*)&Out, sizeof(Out)))
-		goto error;
-	Dev->Outs = Out;
+	if (Dev->Outs != Out)
+	{
+		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_op, sizeof(pca9536_reg_op), (char*)&Out, sizeof(Out)))
+			goto error;
+		Dev->Outs = Out;
+	}
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -223,9 +238,12 @@ int32_t PCA9536_SetBankPol(PCA9536_T *Dev, uint8_t Pol)
 	
 	BSP_DEV_LOCK(Dev);
 	
-	if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_pl, sizeof(pca9536_reg_pl), (char*)&Pol, sizeof(Pol)))
-		goto error;
-	Dev->Pols = Pol;
+	if (Dev->Pols != Pol)
+	{
+		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_pl, sizeof(pca9536_reg_pl), (char*)&Pol, sizeof(Pol)))
+			goto error;
+		Dev->Pols = Pol;
+	}
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -257,8 +275,7 @@ int32_t PCA9536_Init(PCA9536_T *Dev, I2C_TypeDef *I2C)
 	if (I2C_Sequential_Receive(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_pl, 1, (char*)&Pols, 1))
 		goto error;	
 	if (I2C_Sequential_Receive(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, 1, (char*)&Dirs, 1))
-		goto error;	
-	
+		goto error;
 
 	Dev->Ins = Ins;
 	Dev->Outs = Outs;
@@ -273,4 +290,11 @@ error:
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
+}
+
+void PCA9536_Deinit(PCA9536_T *Dev)
+{
+	if (!Dev)
+		return;
+	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }

@@ -249,6 +249,13 @@ error:
 	return -1;
 }
 
+void GDT080A_Deinit(GDT080A_T *Dev)
+{
+	if (!Dev)
+		return;
+	BSP_DEV_DEINIT(Dev);
+}
+
 int32_t GDT080A_Update(GDT080A_T *Dev)
 {
 	if (!Dev)

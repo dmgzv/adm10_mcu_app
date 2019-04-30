@@ -2,9 +2,6 @@
 #define __BSP_SFP_H
 
 #include "sfp.h"
-#include "bsp_sfp_pin.h"
-#include "bsp_sfp_i2c_switch.h"
-//#include "bsp_fpga.h"
 
 #define BSP_SFP_CNT	20
 
@@ -36,34 +33,11 @@
 #define BSP_SFP_LINE_IDX(Idx) 	(Idx + 16)
 #define BSP_SFP_CLIENT_IDX(Idx) (Idx)
 	
-typedef struct {
-	uint32_t TxDisable;
-} BSP_SFP_CFG_T;
-	
-typedef struct {	
-	uint32_t Num;	
-  BSP_SFP_I2C_SWITCH_T *i2c_switch;
-  BSP_SFP_PIN_T *pin;
-	//BSP_FPGA_T *fpga;
-	uint32_t ModAbs;
-	uint32_t TxFault;
-	uint32_t LOS;
-	uint32_t TxDisable;
-	SFP_T sfp;
-} BSP_SFP_T;
+extern SFP_T sfp[BSP_SFP_CNT];
+extern const BSP_PIN_CTRL_T bsp_sfp_pin_ctrl[BSP_SFP_CNT];
+extern const BSP_I2C_CTRL_T bsp_sfp_i2c_ctrl[BSP_SFP_CNT];
 
-uint32_t BSP_SFP_GetModAbs(BSP_SFP_T *Dev);
-uint32_t BSP_SFP_GetRxLos(BSP_SFP_T *Dev);
-uint32_t BSP_SFP_GetTxFault(BSP_SFP_T *Dev);
-uint32_t BSP_SFP_GetTxDisable(BSP_SFP_T *Dev);
-int32_t BSP_SFP_SetTxDisable(BSP_SFP_T *Dev, uint32_t TxDisable);
-
-int32_t BSP_SFP_InitDevice(BSP_SFP_T *Dev);
-int32_t BSP_SFP_UpdateDevice(BSP_SFP_T *Dev);
-
-//int32_t BSP_SFP_Init(BSP_SFP_T *Dev, uint32_t Num, BSP_SFP_PIN_T *pin, BSP_SFP_I2C_SWITCH_T *i2c_switch, BSP_FPGA_T *fpga);
-int32_t BSP_SFP_Init(BSP_SFP_T *Dev, uint32_t Num, BSP_SFP_PIN_T *pin, BSP_SFP_I2C_SWITCH_T *i2c_switch);
-void BSP_SFP_Update(BSP_SFP_T *Dev, BSP_SFP_CFG_T *Cfg);
+void BSP_SFP_Process(uint32_t Idx);
 
 
 #endif /* __BSP_SFP_H */

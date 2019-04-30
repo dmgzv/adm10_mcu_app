@@ -49,6 +49,7 @@ typedef struct {
 }GDT080A_T;
 
 int32_t GDT080A_Init(GDT080A_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, float Vout);
+void GDT080A_Deinit(GDT080A_T *Dev);
 int32_t GDT080A_Update(GDT080A_T *Dev);
 int32_t GDT080A_SetVout(GDT080A_T *Dev, float Vout);
 

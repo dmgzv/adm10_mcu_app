@@ -37,18 +37,14 @@ do { \
 do { \
 	(Dev)->DevState = BSP_DEV_STATE_INIT;\
 	(Dev)->DevMutexDef.dummy = 0; \
-	if ((Dev)->DevMutexId) \
-		osMutexDelete((Dev)->DevMutexId); \
-	(Dev)->DevMutexId = osMutexCreate(&(Dev)->DevMutexDef);\
+	if (!(Dev)->DevMutexId) \
+		(Dev)->DevMutexId = osMutexCreate(&(Dev)->DevMutexDef);\
 } while(0)
 
 #define BSP_DEV_DEINIT(Dev)	\
 do { \
 	(Dev)->DevState = BSP_DEV_STATE_RESET;\
 	(Dev)->DevMutexDef.dummy = 0; \
-	if ((Dev)->DevMutexId) \
-		osMutexDelete((Dev)->DevMutexId); \
-	(Dev)->DevMutexId = 0;\
 } while(0)
 
 #endif /* ( configSUPPORT_STATIC_ALLOCATION == 1 ) */

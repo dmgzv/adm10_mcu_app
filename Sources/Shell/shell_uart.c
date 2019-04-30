@@ -3,6 +3,13 @@
 int32_t SHELL_UART_Receive(void *Priv, char *Buffer, uint32_t BufferSize)
 {
 	USART_TypeDef *uart = Priv;
+#if 1
+	uint32_t Len;
+	
+	if (UART_ReceiveCommand(uart, Buffer, BufferSize, '\r',  &Len, osWaitForever))
+		return -1;
+	Buffer[Len - 1] = 0;
+#else	
 	char Byte;
 	uint32_t BytesCnt;
 	
@@ -19,6 +26,7 @@ int32_t SHELL_UART_Receive(void *Priv, char *Buffer, uint32_t BufferSize)
 		if (BytesCnt >= BufferSize)	
 			return -1;
 	};
+#endif
 	return 0;
 }
 

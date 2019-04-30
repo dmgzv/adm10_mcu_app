@@ -374,6 +374,13 @@ error:
 	return -1;
 }
 
+void S29GL01GS_Deinit(S29GL01GS_T *Dev)
+{
+	if (!Dev)
+		return;
+	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
+}
+
 int32_t S29GL01GS_Read(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size)
 {
 	uint16_t Data;

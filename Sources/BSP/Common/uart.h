@@ -137,5 +137,6 @@ int32_t UART_Init(void);
 void UART_Deinit(void);
 int32_t UART_Transmit(USART_TypeDef * Instance, char *Buffer, uint32_t  Size);
 int32_t UART_Receive(USART_TypeDef * Instance, char *Buffer, uint32_t  Size);
+int32_t UART_ReceiveCommand(USART_TypeDef *Instance, char *Buffer, uint32_t Size, char End, uint32_t *Len, uint32_t Timeout);
 
 #endif /* __UART_H */

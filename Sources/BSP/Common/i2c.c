@@ -176,7 +176,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 		/* I2C TX GPIO pin configuration  */
 		GPIO_InitStruct.Pin       = I2C1_SCL_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
-		GPIO_InitStruct.Pull      = GPIO_PULLUP;
+		GPIO_InitStruct.Pull      = GPIO_NOPULL;
 		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
 		GPIO_InitStruct.Alternate = I2C1_SCL_AF;
 		HAL_GPIO_Init(I2C1_SCL_GPIO_PORT, &GPIO_InitStruct);    
@@ -206,7 +206,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 		/* I2C TX GPIO pin configuration  */
 		GPIO_InitStruct.Pin       = I2C2_SCL_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
-		GPIO_InitStruct.Pull      = GPIO_PULLUP;
+		GPIO_InitStruct.Pull      = GPIO_NOPULL;
 		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
 		GPIO_InitStruct.Alternate = I2C2_SCL_AF;
 		HAL_GPIO_Init(I2C2_SCL_GPIO_PORT, &GPIO_InitStruct);    
@@ -236,7 +236,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 		/* I2C TX GPIO pin configuration  */
 		GPIO_InitStruct.Pin       = I2C3_SCL_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_OD;
-		GPIO_InitStruct.Pull      = GPIO_PULLUP;
+		GPIO_InitStruct.Pull      = GPIO_NOPULL;
 		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
 		GPIO_InitStruct.Alternate = I2C3_SCL_AF;
 		HAL_GPIO_Init(I2C3_SCL_GPIO_PORT, &GPIO_InitStruct);    
@@ -427,6 +427,12 @@ int32_t I2C_Init(void)
 	
 	result = 0;
 #ifdef BSP_CONFIG_USE_I2C1
+#ifdef BSP_CONFIG_USE_FREERTOS
+	if (!i2c1_mutex_id)
+		i2c1_mutex_id = osMutexCreate(osMutex(i2c1));
+	if (!i2c1_message_queue_id)
+		i2c1_message_queue_id = osMessageCreate (osMessageQ(i2c1), NULL);
+#endif /*BSP_CONFIG_USE_FREERTOS*/
 	i2c1_handle.Instance             = I2C1;  
 	i2c1_handle.Init.AddressingMode  = I2C1_ADDRESSINGMODE;
 	i2c1_handle.Init.ClockSpeed      = I2C1_CLOCKSPEED;
@@ -441,13 +447,15 @@ int32_t I2C_Init(void)
 	{
 		result = -1;
 	}
-#ifdef BSP_CONFIG_USE_FREERTOS
-	i2c1_mutex_id = osMutexCreate(osMutex(i2c1));
-	i2c1_message_queue_id = osMessageCreate (osMessageQ(i2c1), NULL);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_I2C1*/
 
 #ifdef BSP_CONFIG_USE_I2C2
+#ifdef BSP_CONFIG_USE_FREERTOS
+	if (!i2c2_mutex_id)
+		i2c2_mutex_id = osMutexCreate(osMutex(i2c2));
+	if (!i2c2_message_queue_id)
+		i2c2_message_queue_id = osMessageCreate (osMessageQ(i2c2), NULL);
+#endif /*BSP_CONFIG_USE_FREERTOS*/
 	i2c2_handle.Instance             = I2C2;  
 	i2c2_handle.Init.AddressingMode  = I2C2_ADDRESSINGMODE;
 	i2c2_handle.Init.ClockSpeed      = I2C2_CLOCKSPEED;
@@ -462,13 +470,16 @@ int32_t I2C_Init(void)
 	{
 		result = -1;
 	}
-#ifdef BSP_CONFIG_USE_FREERTOS
-	i2c2_mutex_id = osMutexCreate(osMutex(i2c2));
-	i2c2_message_queue_id = osMessageCreate (osMessageQ(i2c2), NULL);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_I2C2*/
-		
+
 #ifdef BSP_CONFIG_USE_I2C3
+#ifdef BSP_CONFIG_USE_FREERTOS
+	if (!i2c3_mutex_id)
+		i2c3_mutex_id = osMutexCreate(osMutex(i2c3));
+	if (!i2c3_message_queue_id)
+		i2c3_message_queue_id = osMessageCreate (osMessageQ(i2c3), NULL);
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+
 	i2c3_handle.Instance             = I2C3;  
 	i2c3_handle.Init.AddressingMode  = I2C3_ADDRESSINGMODE;
 	i2c3_handle.Init.ClockSpeed      = I2C3_CLOCKSPEED;
@@ -483,10 +494,6 @@ int32_t I2C_Init(void)
 	{
 		result = -1;
 	}
-#ifdef BSP_CONFIG_USE_FREERTOS
-	i2c3_mutex_id = osMutexCreate(osMutex(i2c3));
-	i2c3_message_queue_id = osMessageCreate (osMessageQ(i2c3), NULL);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_I2C3*/
 	return result;
 }

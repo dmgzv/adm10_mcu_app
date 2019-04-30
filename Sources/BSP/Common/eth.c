@@ -155,7 +155,8 @@ int32_t ETH_Init(uint8_t *macaddress)
   HAL_ETH_DMARxDescListInit(&eth.Handle, DMARxDscrTab, &Rx_Buff[0][0], ETH_RXBUFNB);
   
 #ifdef BSP_CONFIG_USE_FREERTOS
-	eth.MessageQId = osMessageCreate (osMessageQ(eth), NULL);	
+	if (!eth.MessageQId)
+		eth.MessageQId = osMessageCreate (osMessageQ(eth), NULL);	
 #endif
 
   /* Enable MAC and DMA transmission and reception */

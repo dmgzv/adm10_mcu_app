@@ -3,172 +3,143 @@
 
 //#define BSP_FLASH_TYPE_AT45DB081D
 //#define BSP_FLASH_TYPE_AT45DB161E
-//#define BSP_FLASH_TYPE_AT45DB641E
-#define BSP_FLASH_TYPE_S29GL01GS
+#define BSP_FLASH_TYPE_AT45DB641E
 
 #if defined(BSP_FLASH_TYPE_AT45DB081D)
 #include "at45db081d.h"
 
-#define BSP_AT45DB081D_SPI	SPI3
+#define BSP_FLASH_AT45DB081D_SPI	SPI1
 
-#ifndef BSP_CONFIG_USE_SPI3
-	#error	Define BSP_CONFIG_USE_SPI3 in bsp_config.h for BSP_FLASH
+#ifndef BSP_CONFIG_USE_SPI1
+	#error	Define BSP_CONFIG_USE_SPI1 in bsp_config.h for BSP_FLASH
 #endif
 
-#define BSP_AT45DB081D_SPI_CS_GPIO_PIN            GPIO_PIN_5
-#define BSP_AT45DB081D_SPI_CS_GPIO_PORT           GPIOE
-#define BSP_AT45DB081D_SPI_CS_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOE_CLK_ENABLE() 
+#define BSP_FLASH_AT45DB081D_SPI_CS_GPIO_PIN            GPIO_PIN_5
+#define BSP_FLASH_AT45DB081D_SPI_CS_GPIO_PORT           GPIOE
+#define BSP_FLASH_AT45DB081D_SPI_CS_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOE_CLK_ENABLE() 
 
-#define BSP_AT45DB081D_WP_GPIO_PIN                GPIO_PIN_6
-#define BSP_AT45DB081D_WP_GPIO_PORT               GPIOE
-#define BSP_AT45DB081D_WP_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOE_CLK_ENABLE()
+#define BSP_FLASH_AT45DB081D_WP_GPIO_PIN                GPIO_PIN_6
+#define BSP_FLASH_AT45DB081D_WP_GPIO_PORT               GPIOE
+#define BSP_FLASH_AT45DB081D_WP_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOE_CLK_ENABLE()
 
-#define BSP_AT45DB081D_RESET_GPIO_PIN             GPIO_PIN_7
-#define BSP_AT45DB081D_RESET_GPIO_PORT            GPIOE
-#define BSP_AT45DB081D_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOE_CLK_ENABLE()
+#define BSP_FLASH_AT45DB081D_RESET_GPIO_PIN             GPIO_PIN_7
+#define BSP_FLASH_AT45DB081D_RESET_GPIO_PORT            GPIOE
+#define BSP_FLASH_AT45DB081D_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOE_CLK_ENABLE()
 
 typedef AT45DB081D_T BSP_FLASH_T;
+extern const BSP_PIN_CTRL_T bsp_flash_at45db081d_pin_ctrl; 
+extern BSP_FLASH_T at45db081d;
 
-void BSP_AT45DB081D_InitPins(void *Priv);
-void BSP_AT45DB081D_SetPinState(void *Priv, AT45DB081D_PIN_T Pin, AT45DB081D_PIN_STATE_T PinState);
+#define BSP_FLASH_PAGE_SIZE												AT45DB081D_PAGE_SIZE
+#define BSP_FLASH_SIZE														AT45DB081D_SIZE
 
-#define BSP_FLASH_PAGE_SIZE															AT45DB081D_PAGE_SIZE
-#define BSP_FLASH_SIZE																	AT45DB081D_SIZE
-#define	BSP_FLASH_Init(Dev)															AT45DB081D_Init((Dev), BSP_AT45DB081D_SPI, BSP_AT45DB081D_InitPins, BSP_AT45DB081D_SetPinState, NULL)
-#define BSP_FLASH_Read(Dev, Addr, Buffer, Size) 				AT45DB081D_Read((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ProgramPage(Dev, Addr, Buffer, Size) 	AT45DB081D_ProgramPage((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ErasePage(Dev, Addr) 									AT45DB081D_ErasePage((Dev), (Addr))
-#define BSP_FLASH_WaitReady(Dev) 												AT45DB081D_WaitReady((Dev))
+/* 0x00000000 - 0x00010000 - CONFIGS   */
+/* 0x00010000 - 0x00080000 - PROGRAMS  */
+/* 0x00080000 - 0x00100000 - LANGPACKS */
+
+#define BSP_FLASH_CFG_ADDR												0x00000000
+#define BSP_FLASH_CFG_SIZE												0x00010000
+#define BSP_FLASH_FW_ADDR													(BSP_FLASH_CFG_ADDR + BSP_FLASH_CFG_SIZE)
+#define BSP_FLASH_FW_SIZE													0x00070000
+#define BSP_FLASH_LANG_ADDR												(BSP_FLASH_FW_ADDR + BSP_FLASH_FW_SIZE)
+#define BSP_FLASH_LANG_SIZE												0x00080000
+
+#define	BSP_FLASH_Init()													AT45DB081D_Init(&at45db081d, BSP_FLASH_AT45DB081D_SPI, (BSP_PIN_CTRL_T*)&bsp_flash_at45db081d_pin_ctrl)
+#define BSP_FLASH_Read(Addr, Buffer, Size) 				AT45DB081D_Read(&at45db081d, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ProgramPage(Addr, Buffer, Size) AT45DB081D_ProgramPage(&at45db081d, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ErasePage(Addr) 								AT45DB081D_ErasePage(&at45db081d, (Addr))
+#define BSP_FLASH_WaitReady() 										AT45DB081D_WaitReady(&at45db081d)
 
 #elif defined(BSP_FLASH_TYPE_AT45DB161E)
 #include "at45db161e.h"
 
-#define BSP_AT45DB161E_SPI	SPI3
+#define BSP_FLASH_AT45DB161E_SPI	SPI1
 
-#ifndef BSP_CONFIG_USE_SPI3
-	#error	Define BSP_CONFIG_USE_SPI3 in bsp_config.h for BSP_FLASH
+#ifndef BSP_CONFIG_USE_SPI1
+	#error	Define BSP_CONFIG_USE_SPI1 in bsp_config.h for BSP_FLASH
 #endif
 
-#define BSP_AT45DB161E_SPI_CS_GPIO_PIN            GPIO_PIN_5
-#define BSP_AT45DB161E_SPI_CS_GPIO_PORT           GPIOE
-#define BSP_AT45DB161E_SPI_CS_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOE_CLK_ENABLE() 
+#define BSP_FLASH_AT45DB161E_SPI_CS_GPIO_PIN            GPIO_PIN_5
+#define BSP_FLASH_AT45DB161E_SPI_CS_GPIO_PORT           GPIOE
+#define BSP_FLASH_AT45DB161E_SPI_CS_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOE_CLK_ENABLE() 
 
-#define BSP_AT45DB161E_WP_GPIO_PIN                GPIO_PIN_6
-#define BSP_AT45DB161E_WP_GPIO_PORT               GPIOE
-#define BSP_AT45DB161E_WP_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOE_CLK_ENABLE()
+#define BSP_FLASH_AT45DB161E_WP_GPIO_PIN                GPIO_PIN_6
+#define BSP_FLASH_AT45DB161E_WP_GPIO_PORT               GPIOE
+#define BSP_FLASH_AT45DB161E_WP_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOE_CLK_ENABLE()
 
-#define BSP_AT45DB161E_RESET_GPIO_PIN             GPIO_PIN_7
-#define BSP_AT45DB161E_RESET_GPIO_PORT            GPIOE
-#define BSP_AT45DB161E_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOE_CLK_ENABLE()
+#define BSP_FLASH_AT45DB161E_RESET_GPIO_PIN             GPIO_PIN_7
+#define BSP_FLASH_AT45DB161E_RESET_GPIO_PORT            GPIOE
+#define BSP_FLASH_AT45DB161E_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOE_CLK_ENABLE()
 
 typedef AT45DB161E_T BSP_FLASH_T;
+extern const BSP_PIN_CTRL_T bsp_flash_at45db161e_pin_ctrl; 
+extern BSP_FLASH_T at45db161e;
 
-void BSP_AT45DB161E_InitPins(void *Priv);
-void BSP_AT45DB161E_SetPinState(void *Priv, AT45DB161E_PIN_T Pin, AT45DB161E_PIN_STATE_T PinState);
+#define BSP_FLASH_PAGE_SIZE												AT45DB161E_PAGE_SIZE
+#define BSP_FLASH_SIZE														AT45DB161E_SIZE
 
-#define BSP_FLASH_PAGE_SIZE															AT45DB161E_PAGE_SIZE
-#define BSP_FLASH_SIZE																	AT45DB161E_SIZE
-#define	BSP_FLASH_Init(Dev)															AT45DB161E_Init((Dev), BSP_AT45DB161E_SPI, BSP_AT45DB161E_InitPins, BSP_AT45DB161E_SetPinState, NULL)
-#define BSP_FLASH_Read(Dev, Addr, Buffer, Size) 				AT45DB161E_Read((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ProgramPage(Dev, Addr, Buffer, Size) 	AT45DB161E_ProgramPage((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ErasePage(Dev, Addr) 									AT45DB161E_ErasePage((Dev), (Addr))
-#define BSP_FLASH_WaitReady(Dev) 												AT45DB161E_WaitReady((Dev))
+/* 0x00000000 - 0x00010000 - CONFIGS   */
+/* 0x00010000 - 0x00080000 - PROGRAMS  */
+/* 0x00080000 - 0x00100000 - LANGPACKS */
+
+#define BSP_FLASH_CFG_ADDR												0x00000000
+#define BSP_FLASH_CFG_SIZE												0x00010000
+#define BSP_FLASH_FW_ADDR													(BSP_FLASH_CFG_ADDR + BSP_FLASH_CFG_SIZE)
+#define BSP_FLASH_FW_SIZE													0x00070000
+#define BSP_FLASH_LANG_ADDR												(BSP_FLASH_FW_ADDR + BSP_FLASH_FW_SIZE)
+#define BSP_FLASH_LANG_SIZE												0x00080000 
+
+#define	BSP_FLASH_Init()													AT45DB161D_Init(&at45db161e, BSP_FLASH_AT45DB161D_SPI, (BSP_PIN_CTRL_T*)&bsp_flash_at45db161e_pin_ctrl)
+#define BSP_FLASH_Read(Addr, Buffer, Size) 				AT45DB161D_Read(&at45db161e, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ProgramPage(Addr, Buffer, Size) AT45DB161D_ProgramPage(&at45db161e, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ErasePage(Addr) 								AT45DB161D_ErasePage(&at45db161e, (Addr))
+#define BSP_FLASH_WaitReady() 										AT45DB161D_WaitReady(&at45db161e)
 
 #elif defined(BSP_FLASH_TYPE_AT45DB641E)
 #include "at45db641e.h"
 
-#define BSP_AT45DB641E_SPI	SPI5
+#define BSP_FLASH_AT45DB641E_SPI	SPI5
 
 #ifndef BSP_CONFIG_USE_SPI5
 	#error	Define BSP_CONFIG_USE_SPI5 in bsp_config.h for BSP_FLASH
 #endif
 
-#define BSP_AT45DB641E_SPI_CS_GPIO_PIN            GPIO_PIN_5
-#define BSP_AT45DB641E_SPI_CS_GPIO_PORT           GPIOE
-#define BSP_AT45DB641E_SPI_CS_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOE_CLK_ENABLE() 
+#define BSP_FLASH_AT45DB641E_SPI_CS_GPIO_PIN            GPIO_PIN_5
+#define BSP_FLASH_AT45DB641E_SPI_CS_GPIO_PORT           GPIOA
+#define BSP_FLASH_AT45DB641E_SPI_CS_GPIO_CLK_ENABLE()   __HAL_RCC_GPIOA_CLK_ENABLE() 
 
-#define BSP_AT45DB641E_WP_GPIO_PIN                GPIO_PIN_6
-#define BSP_AT45DB641E_WP_GPIO_PORT               GPIOE
-#define BSP_AT45DB641E_WP_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOE_CLK_ENABLE()
+#define BSP_FLASH_AT45DB641E_WP_GPIO_PIN                GPIO_PIN_6
+#define BSP_FLASH_AT45DB641E_WP_GPIO_PORT               GPIOA
+#define BSP_FLASH_AT45DB641E_WP_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOA_CLK_ENABLE()
 
-#define BSP_AT45DB641E_RESET_GPIO_PIN             GPIO_PIN_7
-#define BSP_AT45DB641E_RESET_GPIO_PORT            GPIOE
-#define BSP_AT45DB641E_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOE_CLK_ENABLE()
+#define BSP_FLASH_AT45DB641E_RESET_GPIO_PIN             GPIO_PIN_13
+#define BSP_FLASH_AT45DB641E_RESET_GPIO_PORT            GPIOC
+#define BSP_FLASH_AT45DB641E_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOC_CLK_ENABLE()
 
 typedef AT45DB641E_T BSP_FLASH_T;
+extern const BSP_PIN_CTRL_T bsp_flash_at45db641e_pin_ctrl; 
+extern BSP_FLASH_T at45db641e;
+	
+#define BSP_FLASH_PAGE_SIZE												AT45DB641E_PAGE_SIZE
+#define BSP_FLASH_SIZE														AT45DB641E_SIZE
 
-void BSP_AT45DB641E_InitPins(void *Priv);
-void BSP_AT45DB641E_SetPinState(void *Priv, AT45DB641E_PIN_T Pin, AT45DB641E_PIN_STATE_T PinState);
+/* 0x00000000 - 0x00010000 - CONFIGS   */
+/* 0x00010000 - 0x00080000 - PROGRAMS  */
+/* 0x00080000 - 0x00100000 - LANGPACKS */
 
-#define BSP_FLASH_PAGE_SIZE															AT45DB641E_PAGE_SIZE
-#define BSP_FLASH_SIZE																	AT45DB641E_SIZE
-#define	BSP_FLASH_Init(Dev)															AT45DB641E_Init((Dev), BSP_AT45DB641E_SPI, BSP_AT45DB641E_InitPins, BSP_AT45DB641E_SetPinState, NULL)
-#define BSP_FLASH_Read(Dev, Addr, Buffer, Size) 				AT45DB641E_Read((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ProgramPage(Dev, Addr, Buffer, Size) 	AT45DB641E_ProgramPage((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ErasePage(Dev, Addr) 									AT45DB641E_ErasePage((Dev), (Addr))
-#define BSP_FLASH_WaitReady(Dev) 												AT45DB641E_WaitReady((Dev))
+#define BSP_FLASH_CFG_ADDR												0x00000000
+#define BSP_FLASH_CFG_SIZE												0x00010000
+#define BSP_FLASH_FW_ADDR													(BSP_FLASH_CFG_ADDR + BSP_FLASH_CFG_SIZE)
+#define BSP_FLASH_FW_SIZE													0x00070000
+#define BSP_FLASH_LANG_ADDR												(BSP_FLASH_FW_ADDR + BSP_FLASH_FW_SIZE)
+#define BSP_FLASH_LANG_SIZE												0x00080000
 
-#elif defined(BSP_FLASH_TYPE_S29GL01GS)
-
-#include "s29gl01gs.h"
-
-/* 0x00000000 - 0x02000000 - FPGA 1 Firmaware */
-/* 0x02000000 - 0x03000000 - FPGA 2 Firmaware */
-/* 0x03000000 - 0x04000000 - FPGA 3 Firmaware */
-/* 0x04000000 - 0x05000000 - MCU Firmaware*/
-/* 0x05000000 - 0x05040000 - Profiles HEADERS*/
-/* 0x05040000 - 0x06000000 - Profiles CONFIGS*/
-/* 0x06000000 - 0x07000000 - Profiles LANGPACKS*/
-
-
-#define BSP_FLASH_PAGE_SIZE															S29GL01GS_SECTOR_SIZE
-#define BSP_FLASH_PAGES_CNT															S29GL01GS_SECTORS_COUNT
-#define BSP_FLASH_SIZE																	(BSP_FLASH_PAGES_CNT*BSP_FLASH_PAGE_SIZE) /*S29GL01GS_SIZE*/
-
-#define BSP_FLASH_FPGA_1_FW_ADDR_START (0x00000000)
-#define BSP_FLASH_FPGA_1_FW_ADDR_END	 (0x02000000)
-#define BSP_FLASH_FPGA_1_FW_PAGES_CNT	 ((BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
-
-#define BSP_FLASH_FPGA_2_FW_ADDR_START (0x02000000)
-#define BSP_FLASH_FPGA_2_FW_ADDR_END	 (0x03000000)
-#define BSP_FLASH_FPGA_2_FW_PAGES_CNT	 ((BSP_FLASH_FPGA_2_FW_ADDR_END - BSP_FLASH_FPGA_2_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
-
-#define BSP_FLASH_FPGA_3_FW_ADDR_START (0x03000000)
-#define BSP_FLASH_FPGA_3_FW_ADDR_END	 (0x04000000)
-#define BSP_FLASH_FPGA_3_FW_PAGES_CNT	 ((BSP_FLASH_FPGA_2_FW_ADDR_END - BSP_FLASH_FPGA_2_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
-
-#define BSP_FLASH_FPGA_3_FW_ADDR_START (0x03000000)
-#define BSP_FLASH_FPGA_3_FW_ADDR_END	 (0x04000000)
-#define BSP_FLASH_FPGA_3_FW_PAGES_CNT	 ((BSP_FLASH_FPGA_2_FW_ADDR_END - BSP_FLASH_FPGA_2_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
-
-#define BSP_FLASH_MCU_FW_ADDR_START 	(0x04000000)
-#define BSP_FLASH_MCU_FW_ADDR_END	 		(0x05000000)
-#define BSP_FLASH_MCU_FW_PAGES_CNT	 ((BSP_FLASH_MCU_FW_ADDR_END - BSP_FLASH_MCU_FW_ADDR_START) / BSP_FLASH_PAGE_SIZE)
-
-#define BSP_FLASH_PROFILE_HEADERS_ADDR_START 	(0x05000000)
-#define BSP_FLASH_PROFILE_HEADERS_ADDR_END	 	(0x05040000)
-#define BSP_FLASH_PROFILE_HEADERS_PAGES_CNT	 	((BSP_FLASH_PROFILE_HEADERS_ADDR_END - BSP_FLASH_PROFILE_HEADERS_ADDR_START) / BSP_FLASH_PAGE_SIZE)
-
-#define BSP_FLASH_PROFILE_CONFIGS_ADDR_START 	(0x05040000)
-#define BSP_FLASH_PROFILE_CONFIGS_ADDR_END	 	(0x06000000)
-#define BSP_FLASH_PROFILE_CONFIGS_PAGES_CNT	 	((BSP_FLASH_PROFILE_CONFIGS_ADDR_END - BSP_FLASH_PROFILE_CONFIGS_ADDR_START) / BSP_FLASH_PAGE_SIZE)
-
-#define BSP_FLASH_PROFILE_LANGPACKS_ADDR_START 	(0x06000000)
-#define BSP_FLASH_PROFILE_LANGPACKS_ADDR_END	 	(0x07000000)
-#define BSP_FLASH_PROFILE_LANGPACKS_PAGES_CNT	 	((BSP_FLASH_PROFILE_LANGPACKS_ADDR_END - BSP_FLASH_PROFILE_LANGPACKS_ADDR_START) / BSP_FLASH_PAGE_SIZE)
-
-typedef S29GL01GS_T BSP_FLASH_T;
-
-#define	BSP_FLASH_Init(Dev)															S29GL01GS_Init((Dev))
-#define BSP_FLASH_Read(Dev, Addr, Buffer, Size) 				S29GL01GS_Read((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ProgramPage(Dev, Addr, Buffer, Size) 	S29GL01GS_ProgramSector((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ErasePage(Dev, Addr) 									S29GL01GS_EraseSector((Dev), (Addr))
-#define BSP_FLASH_WaitReady(Dev) 												S29GL01GS_WaitReady((Dev))
+#define	BSP_FLASH_Init()													AT45DB641E_Init(&at45db641e, BSP_FLASH_AT45DB641E_SPI, (BSP_PIN_CTRL_T*)&bsp_flash_at45db641e_pin_ctrl)
+#define BSP_FLASH_Read(Addr, Buffer, Size) 				AT45DB641E_Read(&at45db641e, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ProgramPage(Addr, Buffer, Size) AT45DB641E_ProgramPage(&at45db641e, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ErasePage(Addr) 								AT45DB641E_ErasePage(&at45db641e, (Addr))
+#define BSP_FLASH_WaitReady() 										AT45DB641E_WaitReady(&at45db641e)
 
 #endif
-
-int32_t BSP_FLASH_EraseFPGA(BSP_FLASH_T *Dev, uint32_t Idx);
-int32_t BSP_FLASH_EraseChip(BSP_FLASH_T *Dev);
-int32_t BSP_FLASH_RandomTest(BSP_FLASH_T *Dev);
 
 #endif /* __BSP_FLASH_H */

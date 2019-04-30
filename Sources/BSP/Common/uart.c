@@ -9,98 +9,62 @@
 #define UART_TIMEOUT 						(1000)
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 
-#ifdef BSP_CONFIG_USE_UART1
-static UART_HandleTypeDef uart1_handle;
 #ifdef BSP_CONFIG_USE_FREERTOS
-static osMutexId uart1_rx_mutex_id;
-static osMutexId uart1_tx_mutex_id;
-static osMessageQId uart1_rx_message_queue_id;
-static osMessageQId uart1_tx_message_queue_id;
-osMutexDef(uart1_rx);
-osMutexDef(uart1_tx);
-osMessageQDef(uart1_rx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-osMessageQDef(uart1_tx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
+osMutexDef(uart_rx);
+osMutexDef(uart_tx);
+osMessageQDef(uart_rx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
+osMessageQDef(uart_tx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
+
+typedef struct {	
+	UART_HandleTypeDef handle;
+#ifdef BSP_CONFIG_USE_FREERTOS
+	osMutexId rx_mutex_id;	
+	osMessageQId rx_message_queue_id;
+	uint32_t rx_message_queue_full;
+	uint8_t *rx_buffer;
+	uint32_t rx_buffer_size;
+	uint32_t rx_buffer_idx;
+	uint8_t *rx_buffer_end;
+	
+	osMutexId tx_mutex_id;
+	osMessageQId tx_message_queue_id;
+	uint32_t tx_message_queue_full;
+
+	uint32_t error;
+#endif /*BSP_CONFIG_USE_FREERTOS*/	
+} UART_T;
+
+#ifdef BSP_CONFIG_USE_UART1
+static UART_T uart1;
 #endif /*BSP_CONFIG_USE_UART1*/
 
 #ifdef BSP_CONFIG_USE_UART2
-static UART_HandleTypeDef uart2_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-static osMutexId uart2_rx_mutex_id;
-static osMutexId uart2_tx_mutex_id;
-static osMessageQId uart2_rx_message_queue_id;
-static osMessageQId uart2_tx_message_queue_id;
-osMutexDef(uart2_rx);
-osMutexDef(uart2_tx);
-osMessageQDef(uart2_rx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-osMessageQDef(uart2_tx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_UART1*/
+static UART_T uart2;
+#endif /*BSP_CONFIG_USE_UART2*/
 
 #ifdef BSP_CONFIG_USE_UART3
 #error UART3 support is not present in bsp driver
-#endif /*BSP_CONFIG_USE_UART1*/
+#endif /*BSP_CONFIG_USE_UART3*/
 
 #ifdef BSP_CONFIG_USE_UART4
-static UART_HandleTypeDef uart4_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-static osMutexId uart4_rx_mutex_id;
-static osMutexId uart4_tx_mutex_id;
-static osMessageQId uart4_rx_message_queue_id;
-static osMessageQId uart4_tx_message_queue_id;
-osMutexDef(uart4_rx);
-osMutexDef(uart4_tx);
-osMessageQDef(uart4_rx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-osMessageQDef(uart4_tx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_UART1*/
+static UART_T uart4;
+#endif /*BSP_CONFIG_USE_UART4*/
 
 #ifdef BSP_CONFIG_USE_UART5
-static UART_HandleTypeDef uart5_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-static osMutexId uart5_rx_mutex_id;
-static osMutexId uart5_tx_mutex_id;
-static osMessageQId uart5_rx_message_queue_id;
-static osMessageQId uart5_tx_message_queue_id;
-osMutexDef(uart5_rx);
-osMutexDef(uart5_tx);
-osMessageQDef(uart5_rx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-osMessageQDef(uart5_tx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_UART1*/
+static UART_T uart5;
+#endif /*BSP_CONFIG_USE_UART5*/
 
 #ifdef BSP_CONFIG_USE_UART6
-static UART_HandleTypeDef uart6_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-static osMutexId uart6_rx_mutex_id;
-static osMutexId uart6_tx_mutex_id;
-static osMessageQId uart6_rx_message_queue_id;
-static osMessageQId uart6_tx_message_queue_id;
-osMutexDef(uart6_rx);
-osMutexDef(uart6_tx);
-osMessageQDef(uart6_rx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-osMessageQDef(uart6_tx, UART_MESSAGE_QUEUE_SIZE, uint32_t);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_UART1*/
+static UART_T uart6;
+#endif /*BSP_CONFIG_USE_UART6*/
 
-#ifdef BSP_CONFIG_USE_FREERTOS
-static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_HandleTypeDef **uart_handle, \
-	osMutexId *uart_rx_mutex_id, osMessageQId *uart_rx_message_queue_id, \
-	osMutexId *uart_tx_mutex_id, osMessageQId *uart_tx_message_queue_id)
-#else
-static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_HandleTypeDef **Handle)
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_T **uart)
 {	
 	if (Instance == USART1)
 	{
 #ifdef BSP_CONFIG_USE_UART1
-		*uart_handle = &uart1_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*uart_rx_mutex_id = uart1_rx_mutex_id;
-		*uart_rx_message_queue_id = uart1_rx_message_queue_id;
-		*uart_tx_mutex_id = uart1_tx_mutex_id;
-		*uart_tx_message_queue_id = uart1_tx_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+		*uart = &uart1;
 #else
 		return -1;
 #endif /*BSP_CONFIG_USE_UART1*/
@@ -108,13 +72,7 @@ static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_HandleTypeDef **Han
 	else if (Instance == USART2)
 	{
 #ifdef BSP_CONFIG_USE_UART2
-		*uart_handle = &uart2_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*uart_rx_mutex_id = uart2_rx_mutex_id;
-		*uart_rx_message_queue_id = uart2_rx_message_queue_id;
-		*uart_tx_mutex_id = uart2_tx_mutex_id;
-		*uart_tx_message_queue_id = uart2_tx_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+		*uart = &uart2;
 #else
 		return -1;
 #endif /*BSP_CONFIG_USE_UART2*/
@@ -122,13 +80,7 @@ static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_HandleTypeDef **Han
 	else if (Instance == UART4)
 	{
 #ifdef BSP_CONFIG_USE_UART4
-		*uart_handle = &uart4_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*uart_rx_mutex_id = uart4_rx_mutex_id;
-		*uart_rx_message_queue_id = uart4_rx_message_queue_id;
-		*uart_tx_mutex_id = uart4_tx_mutex_id;
-		*uart_tx_message_queue_id = uart4_tx_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+		*uart = &uart4;
 #else
 		return -1;
 #endif /*BSP_CONFIG_USE_UART4*/
@@ -136,13 +88,7 @@ static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_HandleTypeDef **Han
 	else if (Instance == UART5)
 	{
 #ifdef BSP_CONFIG_USE_UART5
-		*uart_handle = &uart5_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*uart_rx_mutex_id = uart5_rx_mutex_id;
-		*uart_rx_message_queue_id = uart5_rx_message_queue_id;
-		*uart_tx_mutex_id = uart5_tx_mutex_id;
-		*uart_tx_message_queue_id = uart5_tx_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+		*uart = &uart5;
 #else
 		return -1;
 #endif /*BSP_CONFIG_USE_UART5*/
@@ -150,13 +96,7 @@ static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_HandleTypeDef **Han
 	else if (Instance == USART6)
 	{
 #ifdef BSP_CONFIG_USE_UART6
-		*uart_handle = &uart6_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*uart_rx_mutex_id = uart6_rx_mutex_id;
-		*uart_rx_message_queue_id = uart6_rx_message_queue_id;
-		*uart_tx_mutex_id = uart6_tx_mutex_id;
-		*uart_tx_message_queue_id = uart6_tx_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+		*uart = &uart6;
 #else
 		return -1;
 #endif /*BSP_CONFIG_USE_UART6*/
@@ -176,7 +116,7 @@ static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_HandleTypeDef **Han
   */
 void USART1_IRQHandler(void)
 {
-  HAL_UART_IRQHandler(&uart1_handle);
+  HAL_UART_IRQHandler(&uart1.handle);
 }
 #endif /*BSP_CONFIG_USE_UART1*/
 
@@ -188,7 +128,7 @@ void USART1_IRQHandler(void)
   */
 void USART2_IRQHandler(void)
 {
-  HAL_UART_IRQHandler(&uart2_handle);
+  HAL_UART_IRQHandler(&uart2.handle);
 }
 #endif /*BSP_CONFIG_USE_UART2*/
 
@@ -200,7 +140,7 @@ void USART2_IRQHandler(void)
   */
 void UART4_IRQHandler(void)
 {
-  HAL_UART_IRQHandler(&uart4_handle);
+  HAL_UART_IRQHandler(&uart4.handle);
 }
 #endif /*BSP_CONFIG_USE_UART4*/
 
@@ -212,7 +152,7 @@ void UART4_IRQHandler(void)
   */
 void UART5_IRQHandler(void)
 {
-  HAL_UART_IRQHandler(&uart5_handle);
+  HAL_UART_IRQHandler(&uart5.handle);
 }
 #endif /*BSP_CONFIG_USE_UART5*/
 
@@ -224,7 +164,7 @@ void UART5_IRQHandler(void)
   */
 void USART6_IRQHandler(void)
 {
-  HAL_UART_IRQHandler(&uart6_handle);
+  HAL_UART_IRQHandler(&uart6.handle);
 }
 #endif /*BSP_CONFIG_USE_UART6*/
 
@@ -264,7 +204,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		HAL_GPIO_Init(UART1_RX_GPIO_PORT, &GPIO_InitStruct);			
 		/*##-3- Configure the NVIC for UART ########################################*/
 		/* NVIC for USART1 */
-		HAL_NVIC_SetPriority(USART1_IRQn, UART1_IRQ_PRIORITY, 1);
+		HAL_NVIC_SetPriority(USART1_IRQn, UART1_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(USART1_IRQn);
 #endif /*BSP_CONFIG_USE_UART1*/
 	}
@@ -291,7 +231,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		HAL_GPIO_Init(UART2_RX_GPIO_PORT, &GPIO_InitStruct);			
 		/*##-3- Configure the NVIC for UART ########################################*/
 		/* NVIC for USART2 */
-		HAL_NVIC_SetPriority(USART2_IRQn, UART2_IRQ_PRIORITY, 1);
+		HAL_NVIC_SetPriority(USART2_IRQn, UART2_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(USART2_IRQn);
 #endif /*BSP_CONFIG_USE_UART2*/
 	}
@@ -372,7 +312,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		HAL_GPIO_Init(UART6_RX_GPIO_PORT, &GPIO_InitStruct);			
 		/*##-3- Configure the NVIC for UART ########################################*/
 		/* NVIC for USART6 */
-		HAL_NVIC_SetPriority(USART6_IRQn, UART6_IRQ_PRIORITY, 1);
+		HAL_NVIC_SetPriority(USART6_IRQn, UART6_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(USART6_IRQn);
 #endif /*BSP_CONFIG_USE_UART6*/
 	}
@@ -476,7 +416,45 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART1
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart1_rx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (uart1.rx_buffer_end)
+		{
+			if (uart1.rx_buffer[uart1.rx_buffer_idx] == *uart1.rx_buffer_end)
+			{
+				if (osMessagePut(uart1.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart1.rx_message_queue_full++;
+			}
+			else if (uart1.rx_buffer_idx == (uart1.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart1.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart1.rx_message_queue_full++;
+			}
+			else if (uart1.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart1.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart1.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart1.handle, (uint8_t*)&uart1.rx_buffer[++uart1.rx_buffer_idx], 1);
+			}
+		}
+		else
+		{
+			if (uart1.rx_buffer_idx == (uart1.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart1.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart1.rx_message_queue_full++;
+			}
+			else if (uart1.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart1.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart1.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart1.handle, (uint8_t*)&uart1.rx_buffer[++uart1.rx_buffer_idx], 1);
+			}
+		}
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART1*/
 	}
@@ -484,7 +462,45 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART2
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart2_rx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (uart2.rx_buffer_end)
+		{
+			if (uart2.rx_buffer[uart2.rx_buffer_idx] == *uart2.rx_buffer_end)
+			{
+				if (osMessagePut(uart2.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart2.rx_message_queue_full++;
+			}
+			else if (uart2.rx_buffer_idx == (uart2.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart2.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart2.rx_message_queue_full++;
+			}
+			else if (uart2.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart2.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart2.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart2.handle, (uint8_t*)&uart2.rx_buffer[++uart2.rx_buffer_idx], 1);
+			}
+		}
+		else
+		{
+			if (uart2.rx_buffer_idx == (uart2.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart2.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart2.rx_message_queue_full++;
+			}
+			else if (uart2.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart2.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart2.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart2.handle, (uint8_t*)&uart2.rx_buffer[++uart2.rx_buffer_idx], 1);
+			}
+		}
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART2*/
 	}
@@ -492,7 +508,45 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART4
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart4_rx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (uart4.rx_buffer_end)
+		{
+			if (uart4.rx_buffer[uart4.rx_buffer_idx] == *uart4.rx_buffer_end)
+			{
+				if (osMessagePut(uart4.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart4.rx_message_queue_full++;
+			}
+			else if (uart4.rx_buffer_idx == (uart4.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart4.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart4.rx_message_queue_full++;
+			}
+			else if (uart4.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart4.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart4.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart4.handle, (uint8_t*)&uart4.rx_buffer[++uart4.rx_buffer_idx], 1);
+			}
+		}
+		else
+		{
+			if (uart4.rx_buffer_idx == (uart4.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart4.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart4.rx_message_queue_full++;
+			}
+			else if (uart4.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart4.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart4.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart4.handle, (uint8_t*)&uart4.rx_buffer[++uart4.rx_buffer_idx], 1);
+			}
+		}
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART4*/
 	}
@@ -500,7 +554,45 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART5
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart5_rx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (uart5.rx_buffer_end)
+		{
+			if (uart5.rx_buffer[uart5.rx_buffer_idx] == *uart5.rx_buffer_end)
+			{
+				if (osMessagePut(uart5.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart5.rx_message_queue_full++;
+			}
+			else if (uart5.rx_buffer_idx == (uart5.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart5.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart5.rx_message_queue_full++;
+			}
+			else if (uart5.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart5.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart5.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart5.handle, (uint8_t*)&uart5.rx_buffer[++uart5.rx_buffer_idx], 1);
+			}
+		}
+		else
+		{
+			if (uart5.rx_buffer_idx == (uart5.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart5.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart5.rx_message_queue_full++;
+			}
+			else if (uart5.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart5.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart5.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart5.handle, (uint8_t*)&uart5.rx_buffer[++uart5.rx_buffer_idx], 1);
+			}
+		}
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART5*/
 	}
@@ -508,7 +600,45 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART6
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart6_rx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (uart6.rx_buffer_end)
+		{
+			if (uart6.rx_buffer[uart6.rx_buffer_idx] == *uart6.rx_buffer_end)
+			{
+				if (osMessagePut(uart6.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart6.rx_message_queue_full++;
+			}
+			else if (uart6.rx_buffer_idx == (uart6.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart6.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart6.rx_message_queue_full++;
+			}
+			else if (uart6.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart6.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart6.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart6.handle, (uint8_t*)&uart6.rx_buffer[++uart6.rx_buffer_idx], 1);
+			}
+		}
+		else
+		{
+			if (uart6.rx_buffer_idx == (uart6.rx_buffer_size - 1))
+			{
+				if (osMessagePut(uart6.rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+					uart6.rx_message_queue_full++;
+			}
+			else if (uart6.handle.ErrorCode != HAL_UART_ERROR_NONE)
+			{
+				if (osMessagePut(uart6.rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+					uart6.rx_message_queue_full++;
+			}
+			else
+			{
+				HAL_UART_Receive_IT(&uart6.handle, (uint8_t*)&uart6.rx_buffer[++uart6.rx_buffer_idx], 1);
+			}
+		}
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART6*/
 	}
@@ -525,7 +655,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART1
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart1_tx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (osMessagePut(uart1.tx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+			uart1.tx_message_queue_full++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART1*/
 	}
@@ -533,7 +664,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART2
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart2_tx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (osMessagePut(uart2.tx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+			uart2.tx_message_queue_full++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART2*/
 	}
@@ -541,7 +673,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART4
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart4_tx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (osMessagePut(uart4.tx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+			uart4.tx_message_queue_full++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART4*/
 	}
@@ -549,7 +682,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART5
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart5_tx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (osMessagePut(uart5.tx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+			uart5.tx_message_queue_full++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART5*/
 	}
@@ -557,7 +691,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART6
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart6_tx_message_queue_id, UART_EVENT_COMPLETE, 0);
+		if (osMessagePut(uart6.tx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+			uart6.tx_message_queue_full++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART6*/
 	}
@@ -574,8 +709,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART1
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart1_rx_message_queue_id, UART_EVENT_ERROR, 0);
-		//osMessagePut(uart1_tx_message_queue_id, UART_EVENT_ERROR, 0);
+		uart1.error++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART1*/
 	}
@@ -583,8 +717,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART2
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart2_rx_message_queue_id, UART_EVENT_ERROR, 0);
-		//osMessagePut(uart2_tx_message_queue_id, UART_EVENT_ERROR, 0);
+		uart2.error++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART2*/
 	}
@@ -592,8 +725,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART4
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart4_rx_message_queue_id, UART_EVENT_ERROR, 0);
-		//osMessagePut(uart4_tx_message_queue_id, UART_EVENT_ERROR, 0);
+		uart4.error++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART4*/
 	}
@@ -601,8 +733,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART5
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart5_rx_message_queue_id, UART_EVENT_ERROR, 0);
-		//osMessagePut(uart5_tx_message_queue_id, UART_EVENT_ERROR, 0);
+		uart5.error++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART5*/
 	}
@@ -610,8 +741,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *hUART)
 	{
 #ifdef BSP_CONFIG_USE_UART6
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(uart6_rx_message_queue_id, UART_EVENT_ERROR, 0);
-		//osMessagePut(uart6_tx_message_queue_id, UART_EVENT_ERROR, 0);
+		uart6.error++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART6*/
 	}
@@ -629,112 +759,132 @@ int32_t UART_Init(void)
 	
 	result = 0;
 #ifdef BSP_CONFIG_USE_UART1
-	uart1_handle.Instance          = USART1;  
-	uart1_handle.Init.BaudRate     = UART1_BAUDRATE;
-	uart1_handle.Init.WordLength   = UART1_WORDLENGTH;
-	uart1_handle.Init.StopBits     = UART1_STOPBITS;
-	uart1_handle.Init.Parity       = UART1_PARITY;
-	uart1_handle.Init.HwFlowCtl    = UART1_HWCONTROL;
-	uart1_handle.Init.Mode         = UART1_MODE;
-	uart1_handle.Init.OverSampling = UART1_OVERSAMPLING;
+	uart1.handle.Instance          = USART1;  
+	uart1.handle.Init.BaudRate     = UART1_BAUDRATE;
+	uart1.handle.Init.WordLength   = UART1_WORDLENGTH;
+	uart1.handle.Init.StopBits     = UART1_STOPBITS;
+	uart1.handle.Init.Parity       = UART1_PARITY;
+	uart1.handle.Init.HwFlowCtl    = UART1_HWCONTROL;
+	uart1.handle.Init.Mode         = UART1_MODE;
+	uart1.handle.Init.OverSampling = UART1_OVERSAMPLING;
 		
-	if(HAL_UART_Init(&uart1_handle) != HAL_OK)
+	if(HAL_UART_Init(&uart1.handle) != HAL_OK)
 	{
 		result = -1;
 	}
 #ifdef BSP_CONFIG_USE_FREERTOS
-	uart1_rx_mutex_id = osMutexCreate(osMutex(uart1_rx));
-	uart1_tx_mutex_id = osMutexCreate(osMutex(uart1_tx));
-	uart1_rx_message_queue_id = osMessageCreate (osMessageQ(uart1_rx), NULL);	
-	uart1_tx_message_queue_id = osMessageCreate (osMessageQ(uart1_tx), NULL);
+	if (!uart1.rx_mutex_id)
+		uart1.rx_mutex_id = osMutexCreate(osMutex(uart_rx));
+	if (!uart1.tx_mutex_id)
+		uart1.tx_mutex_id = osMutexCreate(osMutex(uart_tx));
+	if (!uart1.rx_message_queue_id)
+		uart1.rx_message_queue_id = osMessageCreate (osMessageQ(uart_rx), NULL);	
+	if (!uart1.tx_message_queue_id)
+		uart1.tx_message_queue_id = osMessageCreate (osMessageQ(uart_tx), NULL);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART1*/
 	
 #ifdef BSP_CONFIG_USE_UART2
-	uart2_handle.Instance          = USART2;  
-	uart2_handle.Init.BaudRate     = UART2_BAUDRATE;
-	uart2_handle.Init.WordLength   = UART2_WORDLENGTH;
-	uart2_handle.Init.StopBits     = UART2_STOPBITS;
-	uart2_handle.Init.Parity       = UART2_PARITY;
-	uart2_handle.Init.HwFlowCtl    = UART2_HWCONTROL;
-	uart2_handle.Init.Mode         = UART2_MODE;
-	uart2_handle.Init.OverSampling = UART2_OVERSAMPLING;
+	uart2.handle.Instance          = USART2;  
+	uart2.handle.Init.BaudRate     = UART2_BAUDRATE;
+	uart2.handle.Init.WordLength   = UART2_WORDLENGTH;
+	uart2.handle.Init.StopBits     = UART2_STOPBITS;
+	uart2.handle.Init.Parity       = UART2_PARITY;
+	uart2.handle.Init.HwFlowCtl    = UART2_HWCONTROL;
+	uart2.handle.Init.Mode         = UART2_MODE;
+	uart2.handle.Init.OverSampling = UART2_OVERSAMPLING;
 		
-	if(HAL_UART_Init(&uart2_handle) != HAL_OK)
+	if(HAL_UART_Init(&uart2.handle) != HAL_OK)
 	{
 		result = -1;
 	}
 #ifdef BSP_CONFIG_USE_FREERTOS
-	uart2_rx_mutex_id = osMutexCreate(osMutex(uart2_rx));
-	uart2_tx_mutex_id = osMutexCreate(osMutex(uart2_tx));
-	uart2_rx_message_queue_id = osMessageCreate (osMessageQ(uart2_rx), NULL);	
-	uart2_tx_message_queue_id = osMessageCreate (osMessageQ(uart2_tx), NULL);
+	if (!uart2.rx_mutex_id)
+		uart2.rx_mutex_id = osMutexCreate(osMutex(uart_rx));
+	if (!uart2.tx_mutex_id)
+		uart2.tx_mutex_id = osMutexCreate(osMutex(uart_tx));
+	if (!uart2.rx_message_queue_id)
+		uart2.rx_message_queue_id = osMessageCreate (osMessageQ(uart_rx), NULL);	
+	if (!uart2.tx_message_queue_id)
+		uart2.tx_message_queue_id = osMessageCreate (osMessageQ(uart_tx), NULL);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART2*/
 
 #ifdef BSP_CONFIG_USE_UART4
-	uart4_handle.Instance          = UART4;  
-	uart4_handle.Init.BaudRate     = UART4_BAUDRATE;
-	uart4_handle.Init.WordLength   = UART4_WORDLENGTH;
-	uart4_handle.Init.StopBits     = UART4_STOPBITS;
-	uart4_handle.Init.Parity       = UART4_PARITY;
-	uart4_handle.Init.HwFlowCtl    = UART4_HWCONTROL;
-	uart4_handle.Init.Mode         = UART4_MODE;
-	uart4_handle.Init.OverSampling = UART4_OVERSAMPLING;
+	uart4.handle.Instance          = UART4;  
+	uart4.handle.Init.BaudRate     = UART4_BAUDRATE;
+	uart4.handle.Init.WordLength   = UART4_WORDLENGTH;
+	uart4.handle.Init.StopBits     = UART4_STOPBITS;
+	uart4.handle.Init.Parity       = UART4_PARITY;
+	uart4.handle.Init.HwFlowCtl    = UART4_HWCONTROL;
+	uart4.handle.Init.Mode         = UART4_MODE;
+	uart4.handle.Init.OverSampling = UART4_OVERSAMPLING;
 		
-	if(HAL_UART_Init(&uart4_handle) != HAL_OK)
+	if(HAL_UART_Init(&uart4.handle) != HAL_OK)
 	{
 		result = -1;
 	}
 #ifdef BSP_CONFIG_USE_FREERTOS
-	uart4_rx_mutex_id = osMutexCreate(osMutex(uart4_rx));
-	uart4_tx_mutex_id = osMutexCreate(osMutex(uart4_tx));
-	uart4_rx_message_queue_id = osMessageCreate (osMessageQ(uart4_rx), NULL);	
-	uart4_tx_message_queue_id = osMessageCreate (osMessageQ(uart4_tx), NULL);
+	if (!uart4.rx_mutex_id)
+		uart4.rx_mutex_id = osMutexCreate(osMutex(uart_rx));
+	if (!uart4.tx_mutex_id)
+		uart4.tx_mutex_id = osMutexCreate(osMutex(uart_tx));
+	if (!uart4.rx_message_queue_id)
+		uart4.rx_message_queue_id = osMessageCreate (osMessageQ(uart_rx), NULL);	
+	if (!uart4.tx_message_queue_id)
+		uart4.tx_message_queue_id = osMessageCreate (osMessageQ(uart_tx), NULL);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART4*/
-	
+
 #ifdef BSP_CONFIG_USE_UART5
-	uart5_handle.Instance          = UART5;  
-	uart5_handle.Init.BaudRate     = UART5_BAUDRATE;
-	uart5_handle.Init.WordLength   = UART5_WORDLENGTH;
-	uart5_handle.Init.StopBits     = UART5_STOPBITS;
-	uart5_handle.Init.Parity       = UART5_PARITY;
-	uart5_handle.Init.HwFlowCtl    = UART5_HWCONTROL;
-	uart5_handle.Init.Mode         = UART5_MODE;
-	uart5_handle.Init.OverSampling = UART5_OVERSAMPLING;
+	uart5.handle.Instance          = UART5;  
+	uart5.handle.Init.BaudRate     = UART5_BAUDRATE;
+	uart5.handle.Init.WordLength   = UART5_WORDLENGTH;
+	uart5.handle.Init.StopBits     = UART5_STOPBITS;
+	uart5.handle.Init.Parity       = UART5_PARITY;
+	uart5.handle.Init.HwFlowCtl    = UART5_HWCONTROL;
+	uart5.handle.Init.Mode         = UART5_MODE;
+	uart5.handle.Init.OverSampling = UART5_OVERSAMPLING;
 		
-	if(HAL_UART_Init(&uart5_handle) != HAL_OK)
+	if(HAL_UART_Init(&uart5.handle) != HAL_OK)
 	{
 		result = -1;
 	}
 #ifdef BSP_CONFIG_USE_FREERTOS
-	uart5_rx_mutex_id = osMutexCreate(osMutex(uart5_rx));
-	uart5_tx_mutex_id = osMutexCreate(osMutex(uart5_tx));
-	uart5_rx_message_queue_id = osMessageCreate (osMessageQ(uart5_rx), NULL);	
-	uart5_tx_message_queue_id = osMessageCreate (osMessageQ(uart5_tx), NULL);
+	if (!uart5.rx_mutex_id)
+		uart5.rx_mutex_id = osMutexCreate(osMutex(uart_rx));
+	if (!uart5.tx_mutex_id)
+		uart5.tx_mutex_id = osMutexCreate(osMutex(uart_tx));
+	if (!uart5.rx_message_queue_id)
+		uart5.rx_message_queue_id = osMessageCreate (osMessageQ(uart_rx), NULL);	
+	if (!uart5.tx_message_queue_id)
+		uart5.tx_message_queue_id = osMessageCreate (osMessageQ(uart_tx), NULL);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART5*/
-	
+
 #ifdef BSP_CONFIG_USE_UART6
-	uart6_handle.Instance          = USART6;  
-	uart6_handle.Init.BaudRate     = UART6_BAUDRATE;
-	uart6_handle.Init.WordLength   = UART6_WORDLENGTH;
-	uart6_handle.Init.StopBits     = UART6_STOPBITS;
-	uart6_handle.Init.Parity       = UART6_PARITY;
-	uart6_handle.Init.HwFlowCtl    = UART6_HWCONTROL;
-	uart6_handle.Init.Mode         = UART6_MODE;
-	uart6_handle.Init.OverSampling = UART6_OVERSAMPLING;
+	uart6.handle.Instance          = USART6;  
+	uart6.handle.Init.BaudRate     = UART6_BAUDRATE;
+	uart6.handle.Init.WordLength   = UART6_WORDLENGTH;
+	uart6.handle.Init.StopBits     = UART6_STOPBITS;
+	uart6.handle.Init.Parity       = UART6_PARITY;
+	uart6.handle.Init.HwFlowCtl    = UART6_HWCONTROL;
+	uart6.handle.Init.Mode         = UART6_MODE;
+	uart6.handle.Init.OverSampling = UART6_OVERSAMPLING;
 		
-	if(HAL_UART_Init(&uart6_handle) != HAL_OK)
+	if(HAL_UART_Init(&uart6.handle) != HAL_OK)
 	{
 		result = -1;
 	}
 #ifdef BSP_CONFIG_USE_FREERTOS
-	uart6_rx_mutex_id = osMutexCreate(osMutex(uart6_rx));
-	uart6_tx_mutex_id = osMutexCreate(osMutex(uart6_tx));
-	uart6_rx_message_queue_id = osMessageCreate (osMessageQ(uart6_rx), NULL);	
-	uart6_tx_message_queue_id = osMessageCreate (osMessageQ(uart6_tx), NULL);
+	if (!uart6.rx_mutex_id)
+		uart6.rx_mutex_id = osMutexCreate(osMutex(uart_rx));
+	if (!uart6.tx_mutex_id)
+		uart6.tx_mutex_id = osMutexCreate(osMutex(uart_tx));
+	if (!uart6.rx_message_queue_id)
+		uart6.rx_message_queue_id = osMessageCreate (osMessageQ(uart_rx), NULL);	
+	if (!uart6.tx_message_queue_id)
+		uart6.tx_message_queue_id = osMessageCreate (osMessageQ(uart_tx), NULL);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART6*/
 	return result;
@@ -749,81 +899,81 @@ void UART_Deinit(void)
 {
 #ifdef BSP_CONFIG_USE_UART1
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait(uart1_rx_mutex_id, UART_TIMEOUT);
-	osMutexWait(uart1_tx_mutex_id, UART_TIMEOUT);
+	osMutexWait(uart1.rx_mutex_id, osWaitForever);
+	osMutexWait(uart1.tx_mutex_id, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 	
-	HAL_UART_DeInit(&uart1_handle);	
+	HAL_UART_DeInit(&uart1.handle);	
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease(uart1_rx_mutex_id);
-	osMutexDelete(uart1_rx_mutex_id);
-	osMutexRelease(uart1_tx_mutex_id);
-	osMutexDelete(uart1_tx_mutex_id);
+	osMutexRelease(uart1.rx_mutex_id);
+	osMutexDelete(uart1.rx_mutex_id);
+	osMutexRelease(uart1.tx_mutex_id);
+	osMutexDelete(uart1.tx_mutex_id);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART1*/
 	
 #ifdef BSP_CONFIG_USE_UART2
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait(uart2_rx_mutex_id, UART_TIMEOUT);
-	osMutexWait(uart2_tx_mutex_id, UART_TIMEOUT);
+	osMutexWait(uart2.rx_mutex_id, osWaitForever);
+	osMutexWait(uart2.tx_mutex_id, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 	
-	HAL_UART_DeInit(&uart2_handle);	
+	HAL_UART_DeInit(&uart2.handle);	
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease(uart2_rx_mutex_id);
-	osMutexDelete(uart2_rx_mutex_id);
-	osMutexRelease(uart2_tx_mutex_id);
-	osMutexDelete(uart2_tx_mutex_id);
+	osMutexRelease(uart2.rx_mutex_id);
+	osMutexDelete(uart2.rx_mutex_id);
+	osMutexRelease(uart2.tx_mutex_id);
+	osMutexDelete(uart2.tx_mutex_id);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART2*/
 
 #ifdef BSP_CONFIG_USE_UART4
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait(uart4_rx_mutex_id, UART_TIMEOUT);
-	osMutexWait(uart4_tx_mutex_id, UART_TIMEOUT);
+	osMutexWait(uart4.rx_mutex_id, osWaitForever);
+	osMutexWait(uart4.tx_mutex_id, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 	
-	HAL_UART_DeInit(&uart4_handle);	
+	HAL_UART_DeInit(&uart4.handle);	
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease(uart4_rx_mutex_id);
-	osMutexDelete(uart4_rx_mutex_id);
-	osMutexRelease(uart4_tx_mutex_id);
-	osMutexDelete(uart4_tx_mutex_id);
+	osMutexRelease(uart4.rx_mutex_id);
+	osMutexDelete(uart4.rx_mutex_id);
+	osMutexRelease(uart4.tx_mutex_id);
+	osMutexDelete(uart4.tx_mutex_id);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART4*/
 
 #ifdef BSP_CONFIG_USE_UART5
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait(uart5_rx_mutex_id, UART_TIMEOUT);
-	osMutexWait(uart5_tx_mutex_id, UART_TIMEOUT);
+	osMutexWait(uart5.rx_mutex_id, osWaitForever);
+	osMutexWait(uart5.tx_mutex_id, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 	
-	HAL_UART_DeInit(&uart5_handle);	
+	HAL_UART_DeInit(&uart5.handle);	
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease(uart5_rx_mutex_id);
-	osMutexDelete(uart5_rx_mutex_id);
-	osMutexRelease(uart5_tx_mutex_id);
-	osMutexDelete(uart5_tx_mutex_id);
+	osMutexRelease(uart5.rx_mutex_id);
+	osMutexDelete(uart5.rx_mutex_id);
+	osMutexRelease(uart5.tx_mutex_id);
+	osMutexDelete(uart5.tx_mutex_id);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART5*/
 
 #ifdef BSP_CONFIG_USE_UART6
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait(uart6_rx_mutex_id, UART_TIMEOUT);
-	osMutexWait(uart6_tx_mutex_id, UART_TIMEOUT);
+	osMutexWait(uart6.rx_mutex_id, osWaitForever);
+	osMutexWait(uart6.tx_mutex_id, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 	
-	HAL_UART_DeInit(&uart6_handle);	
+	HAL_UART_DeInit(&uart6.handle);	
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease(uart6_rx_mutex_id);
-	osMutexDelete(uart6_rx_mutex_id);
-	osMutexRelease(uart6_tx_mutex_id);
-	osMutexDelete(uart6_tx_mutex_id);
+	osMutexRelease(uart6.rx_mutex_id);
+	osMutexDelete(uart6.rx_mutex_id);
+	osMutexRelease(uart6.tx_mutex_id);
+	osMutexDelete(uart6.tx_mutex_id);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_UART6*/
 
@@ -839,43 +989,40 @@ void UART_Deinit(void)
 int32_t UART_Transmit(USART_TypeDef * Instance, char *Buffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	UART_HandleTypeDef *uart_handle_p;
+	UART_T *uart;
 	osEvent evt;	
-	osMutexId uart_rx_mutex_id, uart_tx_mutex_id;
-	osMessageQId uart_rx_message_queue_id, uart_tx_message_queue_id;
 	
-	if (UART_GetHandle(Instance, &uart_handle_p, &uart_rx_mutex_id, &uart_rx_message_queue_id, &uart_tx_mutex_id, &uart_tx_message_queue_id))
+	if (UART_GetHandle(Instance, &uart))
 		return -1;
 	
-	if( osMutexWait( uart_tx_mutex_id, UART_TIMEOUT ) != osOK )
+	if( osMutexWait( uart->tx_mutex_id, UART_TIMEOUT ) != osOK )
 		return -1;
-
-	if(HAL_UART_Transmit_IT(uart_handle_p, (uint8_t*)Buffer, Size) != HAL_OK)
+	
+	if(HAL_UART_Transmit_IT(&uart->handle, (uint8_t*)Buffer, Size) != HAL_OK)
 		goto error;
-
-	evt = osMessageGet(uart_tx_message_queue_id, osWaitForever);
+	
+	evt = osMessageGet(uart->tx_message_queue_id, UART_TIMEOUT);
 	if (evt.status != osEventMessage)
-	{
-		HAL_UART_AbortTransmit_IT(uart_handle_p);
-		goto error;
-	}
+		goto abort;
 	
 	if (evt.value.v != UART_EVENT_COMPLETE)
-		goto error;
-
-	osMutexRelease( uart_tx_mutex_id );	
+		goto abort;
+	
+	osMutexRelease( uart->tx_mutex_id );	
 	return 0;
-
+	
+abort:
+	HAL_UART_AbortTransmit_IT(&uart->handle);
 error:
-	osMutexRelease( uart_tx_mutex_id );
+	osMutexRelease( uart->tx_mutex_id );
 	return -1;
 #else /*BSP_CONFIG_USE_FREERTOS*/
-	UART_HandleTypeDef *uart_handle_p;
+	UART_T *uart;
 	
-	if (UART_GetHandle(Instance, &uart_handle_p))
+	if (UART_GetHandle(Instance, &uart))
 		return -1;
 	
-	if(HAL_UART_Transmit(uart_handle_p, (uint8_t*)Buffer, Size, UART_TIMEOUT) != HAL_OK)
+	if(HAL_UART_Transmit(&uart->handle, (uint8_t*)Buffer, Size, UART_TIMEOUT) != HAL_OK)
 		return -1;
 	return 0;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -891,44 +1038,95 @@ error:
 int32_t UART_Receive(USART_TypeDef * Instance, char *Buffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	UART_HandleTypeDef *uart_handle_p;
+	UART_T *uart;
 	osEvent evt;	
-	osMutexId uart_rx_mutex_id, uart_tx_mutex_id;
-	osMessageQId uart_rx_message_queue_id, uart_tx_message_queue_id;
 	
-	if (UART_GetHandle(Instance, &uart_handle_p, &uart_rx_mutex_id, &uart_rx_message_queue_id, &uart_tx_mutex_id, &uart_tx_message_queue_id))
+	if (UART_GetHandle(Instance, &uart))
 		return -1;
 	
-	if( osMutexWait( uart_rx_mutex_id, UART_TIMEOUT ) != osOK )
+	if( osMutexWait( uart->rx_mutex_id, UART_TIMEOUT ) != osOK )
 		return -1;
+	
+	uart->rx_buffer = (uint8_t*)Buffer;
+	uart->rx_buffer_size = Size;
+	uart->rx_buffer_idx = 0;
+	uart->rx_buffer_end = NULL;
 
-	if(HAL_UART_Receive_IT(uart_handle_p, (uint8_t*)Buffer, Size) != HAL_OK)
+	if(HAL_UART_Receive_IT(&uart->handle, uart->rx_buffer, 1) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(uart_rx_message_queue_id, UART_TIMEOUT);
+	evt = osMessageGet(uart->rx_message_queue_id, UART_TIMEOUT);
 	if (evt.status != osEventMessage)
-	{
-		HAL_UART_AbortReceive_IT(uart_handle_p);
-		goto error;
-	}
+		goto abort;
 	
 	if (evt.value.v != UART_EVENT_COMPLETE)
-		goto error;
+		goto abort;
 
-	osMutexRelease( uart_rx_mutex_id );	
+	osMutexRelease( uart->rx_mutex_id );	
 	return 0;
-
+	
+abort:
+	HAL_UART_AbortReceive_IT(&uart->handle);
 error:
-	osMutexRelease( uart_rx_mutex_id );
+	osMutexRelease( uart->rx_mutex_id );
 	return -1;
 #else /*BSP_CONFIG_USE_FREERTOS*/
-	UART_HandleTypeDef *uart_handle_p;
+	UART_T *uart;
 	
-	if (UART_GetHandle(Instance, &uart_handle_p))
+	if (UART_GetHandle(Instance, &uart))
 		return -1;
 	
-	if(HAL_UART_Receive(uart_handle_p, (uint8_t*)Buffer, Size, UART_TIMEOUT) != HAL_OK)
+	if(HAL_UART_Receive(&uart->handle, (uint8_t*)Buffer, Size, UART_TIMEOUT) != HAL_OK)
 		return -1;
 	return 0;
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+}
+
+/**
+  * @brief  Receive an amount of data in blocking mode with Interrupt.
+  * @param  Instance: UART instance
+  * @param  Buffer: pointer to buffer for received data
+  * @param  Size: size of data to receive
+  * @retval 0 on succes, otherwise -1;
+  */
+int32_t UART_ReceiveCommand(USART_TypeDef *Instance, char *Buffer, uint32_t Size, char End, uint32_t *Len, uint32_t Timeout)
+{
+#ifdef BSP_CONFIG_USE_FREERTOS
+	UART_T *uart;
+	osEvent evt;
+	
+	if (UART_GetHandle(Instance, &uart))
+		return -1;
+	
+	if( osMutexWait( uart->rx_mutex_id, Timeout ) != osOK )
+		return -1;		
+	
+	uart->rx_buffer = (uint8_t*)Buffer;
+	uart->rx_buffer_size = Size;
+	uart->rx_buffer_idx = 0;
+	uart->rx_buffer_end = (uint8_t*)&End;
+	
+	if(HAL_UART_Receive_IT(&uart->handle, uart->rx_buffer, 1) != HAL_OK)
+		goto error;
+	
+	evt = osMessageGet(uart->rx_message_queue_id, Timeout);
+	if (evt.status != osEventMessage)
+		goto abort;
+	
+	if (evt.value.v != UART_EVENT_COMPLETE)
+		goto abort;
+	
+	*Len = uart->rx_buffer_idx + 1;
+	
+	osMutexRelease( uart->rx_mutex_id );	
+	return 0;
+
+abort:
+	HAL_UART_AbortReceive_IT(&uart->handle);
+error:
+	osMutexRelease( uart->rx_mutex_id );
+	return -1;
+#else /*BSP_CONFIG_USE_FREERTOS*/
+	return -1;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 }

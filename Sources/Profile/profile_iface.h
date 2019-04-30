@@ -10,17 +10,22 @@
 #define PROFILE_IFACE_CMD_MAX_SIZE			PROFILE_PROTOCOL_CMD_MAX_SIZE
 #define PROFILE_IFACE_RSP_MAX_SIZE			PROFILE_PROTOCOL_RSP_MAX_SIZE
 
+#define PROFILE_IFACE_CMD_QUEUE_SIZE 3
+
 typedef struct {
 	PROFILE_T *Profile;
 	USART_TypeDef *Uart;
 	uint8_t StartByte;
-	osThreadId ThreadId;
-	char Command[PROFILE_IFACE_CMD_MAX_SIZE];
-	uint32_t CommandLen;
+	osThreadId ReceiveThreadId;
+	osThreadId ProcessThreadId;
+	osMessageQId ProcessQId;
+	osMessageQId ReceiveQId;
+	char Commands[PROFILE_IFACE_CMD_QUEUE_SIZE][PROFILE_IFACE_CMD_MAX_SIZE];
+	uint32_t CommandsLen[PROFILE_IFACE_CMD_QUEUE_SIZE];
 	char Responce[PROFILE_IFACE_RSP_MAX_SIZE];
 	uint32_t ResponceLen;
 } PROFILE_IFACE_T;
 
-int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *Name, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile);
+int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveName, char *ProcessName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile);
 
 #endif /* __PROFILE_UART_H */

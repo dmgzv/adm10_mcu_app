@@ -3,7 +3,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "bsp_config.h"
-#include "bsp_dev.h"
+#include "bsp_Dev.h"
 #ifdef BSP_CONFIG_USE_FREERTOS
 #include "cmsis_os.h"
 #endif
@@ -18,10 +18,11 @@ typedef struct {
 	NOR_IDTypeDef Id;
 } S29GL01GS_T;
 
-int32_t S29GL01GS_Init(S29GL01GS_T *dev);
-int32_t S29GL01GS_Read(S29GL01GS_T *dev, uint32_t Addr, void *Buffer, uint32_t Size);
-int32_t S29GL01GS_ProgramSector(S29GL01GS_T *dev, uint32_t Addr, void *Buffer, uint32_t Size);
-int32_t S29GL01GS_EraseSector(S29GL01GS_T *dev, uint32_t Addr);
-int32_t S29GL01GS_WaitReady(S29GL01GS_T *dev);
+int32_t S29GL01GS_Init(S29GL01GS_T *Dev);
+void S29GL01GS_Deinit(S29GL01GS_T *Dev);
+int32_t S29GL01GS_Read(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size);
+int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size);
+int32_t S29GL01GS_EraseSector(S29GL01GS_T *Dev, uint32_t Addr);
+int32_t S29GL01GS_WaitReady(S29GL01GS_T *Dev);
 
 #endif /* __S29GL01GS_H */
