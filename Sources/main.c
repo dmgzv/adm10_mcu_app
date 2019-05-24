@@ -186,16 +186,16 @@ static void System_Thread(void const *argument)
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Protocol*/
-	//PROFILE_IFACE_Init(&ProfileIfaceUart4, "Receive UART4", "Process UART4", PROFILE_IFACE_UART_4, SlotAddress, &Profile);
-	//WATCHDOG_Refresh();
+	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Receive UART4", "Process UART4", PROFILE_IFACE_UART_4, SlotAddress, &Profile);
+	WATCHDOG_Refresh();
 	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Receive UART5", "Process UART5", PROFILE_IFACE_UART_5, SlotAddress, &Profile);
 	WATCHDOG_Refresh();
 
 	BSP_ETH_Init();
 	TFTP_CLIENT_Init();
 	SHELL_Init(&ShellTelnet, "Shell Telnet" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellTelnetIface);
-	WATCHDOG_Refresh();
-	SHELL_Init(&ShellUart4, "Shell UART4" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart4Iface);
+	//WATCHDOG_Refresh();
+	//SHELL_Init(&ShellUart4, "Shell UART4" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart4Iface);
 	//WATCHDOG_Refresh();
 	//SHELL_Init(&ShellUart5, "Shell UART5" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart5Iface);
 	

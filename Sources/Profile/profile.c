@@ -376,12 +376,14 @@ int32_t PROFILE_CheckThresholdValue(PROFILE_T *Profile, uint8_t Table, uint16_t 
 			case PROFILE_TYPE_HEX32:
 				if((uint32_t*)ParamValue == &((uint32_t*)ParamValueThr)[i])
 				{
-					if ((i == PROFILE_THR_CMIN) && (*(uint32_t*)Value > ((uint32_t*)ParamValueThr)[i + 1]))
+					if ((i == PROFILE_THR_CMIN) && (*(uint32_t*)Value > ((uint32_t*)ParamValueThr)[PROFILE_THR_WMIN]))
 						return -1;
-					else if ((i == PROFILE_THR_CMAX) && (*(uint32_t*)Value < ((uint32_t*)ParamValueThr)[i - 1]))
+					else if ((i == PROFILE_THR_CMAX) && (*(uint32_t*)Value < ((uint32_t*)ParamValueThr)[PROFILE_THR_WMAX]))
 						return -1;
-					else if (((i == PROFILE_THR_WMAX) || (i == PROFILE_THR_WMIN)) && ((*(uint32_t*)Value > ((uint32_t*)ParamValueThr)[i + 1]) || (*(uint32_t*)Value < ((uint32_t*)ParamValueThr)[i - 1])))
-						return -1;			
+					else if ((i == PROFILE_THR_WMAX) && ((*(uint32_t*)Value > ((uint32_t*)ParamValueThr)[PROFILE_THR_CMAX]) || (*(uint32_t*)Value < ((uint32_t*)ParamValueThr)[PROFILE_THR_WMIN])))
+						return -1;
+					else if ((i == PROFILE_THR_WMIN) && ((*(uint32_t*)Value > ((uint32_t*)ParamValueThr)[PROFILE_THR_WMAX]) || (*(uint32_t*)Value < ((uint32_t*)ParamValueThr)[PROFILE_THR_CMIN])))
+						return -1;
 					return 0;
 				}
 				break;
@@ -389,12 +391,14 @@ int32_t PROFILE_CheckThresholdValue(PROFILE_T *Profile, uint8_t Table, uint16_t 
 			case PROFILE_TYPE_INT32:
 				if((int32_t*)ParamValue == &((int32_t*)ParamValueThr)[i])
 				{
-					if ((i == PROFILE_THR_CMIN) && (*(int32_t*)Value > ((int32_t*)ParamValueThr)[i + 1]))
+					if ((i == PROFILE_THR_CMIN) && (*(int32_t*)Value > ((int32_t*)ParamValueThr)[PROFILE_THR_WMIN]))
 						return -1;
-					else if ((i == PROFILE_THR_CMAX) && (*(int32_t*)Value < ((int32_t*)ParamValueThr)[i - 1]))
+					else if ((i == PROFILE_THR_CMAX) && (*(int32_t*)Value < ((int32_t*)ParamValueThr)[PROFILE_THR_WMAX]))
 						return -1;
-					else if (((i == PROFILE_THR_WMAX) || (i == PROFILE_THR_WMIN)) && ((*(int32_t*)Value > ((int32_t*)ParamValueThr)[i + 1]) || (*(int32_t*)Value < ((int32_t*)ParamValueThr)[i - 1])))
-						return -1;			
+					else if ((i == PROFILE_THR_WMAX) && ((*(int32_t*)Value > ((int32_t*)ParamValueThr)[PROFILE_THR_CMAX]) || (*(int32_t*)Value < ((int32_t*)ParamValueThr)[PROFILE_THR_WMIN])))
+						return -1;
+					else if ((i == PROFILE_THR_WMIN) && ((*(int32_t*)Value > ((int32_t*)ParamValueThr)[PROFILE_THR_WMAX]) || (*(int32_t*)Value < ((int32_t*)ParamValueThr)[PROFILE_THR_CMIN])))
+						return -1;
 					return 0;
 				}
 				break;
@@ -404,12 +408,14 @@ int32_t PROFILE_CheckThresholdValue(PROFILE_T *Profile, uint8_t Table, uint16_t 
 			case PROFILE_TYPE_FLOAT_E:
 				if((float*)ParamValue == &((float*)ParamValueThr)[i])
 				{
-					if ((i == PROFILE_THR_CMIN) && (*(float*)Value > ((float*)ParamValueThr)[i + 1]))
+					if ((i == PROFILE_THR_CMIN) && (*(float*)Value > ((float*)ParamValueThr)[PROFILE_THR_WMIN]))
 						return -1;
-					else if ((i == PROFILE_THR_CMAX) && (*(float*)Value < ((float*)ParamValueThr)[i - 1]))
+					else if ((i == PROFILE_THR_CMAX) && (*(float*)Value < ((float*)ParamValueThr)[PROFILE_THR_WMAX]))
 						return -1;
-					else if (((i == PROFILE_THR_WMAX) || (i == PROFILE_THR_WMIN)) && ((*(float*)Value > ((float*)ParamValueThr)[i + 1]) || (*(float*)Value < ((float*)ParamValueThr)[i - 1])))
-						return -1;			
+					else if ((i == PROFILE_THR_WMAX) && ((*(float*)Value > ((float*)ParamValueThr)[PROFILE_THR_CMAX]) || (*(float*)Value < ((float*)ParamValueThr)[PROFILE_THR_WMIN])))
+						return -1;
+					else if ((i == PROFILE_THR_WMIN) && ((*(float*)Value > ((float*)ParamValueThr)[PROFILE_THR_WMAX]) || (*(float*)Value < ((float*)ParamValueThr)[PROFILE_THR_CMIN])))
+						return -1;
 					return 0;
 				}
 				break;
@@ -523,7 +529,7 @@ int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 		case PROFILE_TYPE_STRING:// произвольная строка
 			osMutexWait( Profile->Values.Mutex, osWaitForever );
 			strncpy( (char*)GetValue, (char*)Value, PROFILE_STRING_MAX_LEN);
-			((char*)Value)[ PROFILE_STRING_MAX_LEN - 1 ] = 0;
+			((char*)GetValue)[ PROFILE_STRING_MAX_LEN - 1 ] = 0;
 			osMutexRelease( Profile->Values.Mutex );
 			break;
 		default:
@@ -827,10 +833,16 @@ void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 		case PROFILE_TYPE_ENUM:
 		case PROFILE_TYPE_CNT:
 		case PROFILE_TYPE_BITMSK:
-			if (ParamValue)
-				memcpy(ParamValue, Value, 4);
 			if (ParamState)
 				*ParamState = State;
+			if (ParamValue)
+			{
+				memcpy(ParamValue, Value, 4);
+				if ((!ParamState) || (*ParamState != PROFILE_STATE_OOS))
+				{
+					Profile->TablesChanges |= 1 << Table;
+				}
+			}
 			if ((ColorType == PROFILE_COLOR_TYPE_AUTO) && (ParamThr) && (ParamColor) && (ParamDegradeColor) && (ParamFailureColor))
 			{
 				if ((*(uint32_t*)ParamValue > ((uint32_t*)ParamThr)[PROFILE_THR_CMAX]) ||\
@@ -856,10 +868,16 @@ void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 			}
 			break;
 		case PROFILE_TYPE_INT32:
-			if (ParamValue)
-				memcpy(ParamValue, Value, 4);
 			if (ParamState)
 				*ParamState = State;
+			if (ParamValue)
+			{
+				memcpy(ParamValue, Value, 4);
+				if ((!ParamState) || (*ParamState != PROFILE_STATE_OOS))
+				{
+					Profile->TablesChanges |= 1 << Table;
+				}
+			}
 			if ((ColorType == PROFILE_COLOR_TYPE_AUTO) && (ParamThr) && (ParamColor) && (ParamDegradeColor) && (ParamFailureColor))
 			{
 				if ((*(int32_t*)ParamValue > ((int32_t*)ParamThr)[PROFILE_THR_CMAX]) ||\
@@ -888,10 +906,16 @@ void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 		case PROFILE_TYPE_FLOAT_2:
 		case PROFILE_TYPE_FLOAT_3:
 		case PROFILE_TYPE_FLOAT_E:
-			if (ParamValue)
-				memcpy(ParamValue, Value, 4);
 			if (ParamState)
 				*ParamState = State;
+			if (ParamValue)
+			{
+				memcpy(ParamValue, Value, 4);
+				if ((!ParamState) || (*ParamState != PROFILE_STATE_OOS))
+				{
+					Profile->TablesChanges |= 1 << Table;
+				}
+			}
 			if ((ColorType == PROFILE_COLOR_TYPE_AUTO) && (ParamThr) && (ParamColor) && (ParamDegradeColor) && (ParamFailureColor))
 			{
 				if ((*(float*)ParamValue > ((float*)ParamThr)[PROFILE_THR_CMAX]) ||\
@@ -918,13 +942,17 @@ void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 			break;
 		case PROFILE_TYPE_OID:
 		case PROFILE_TYPE_STRING:
+			if (ParamState)
+				*ParamState = State;
 			if (ParamValue)
 			{
 				strncpy( (char*)ParamValue, (char*)Value, PROFILE_STRING_MAX_LEN);
 				((char*)ParamValue)[ PROFILE_STRING_MAX_LEN - 1 ] = 0;
+				if ((!ParamState) || (*ParamState != PROFILE_STATE_OOS))
+				{
+					Profile->TablesChanges |= 1 << Table;
+				}
 			}
-			if (ParamState)
-				*ParamState = State;
 			if ((ColorType == PROFILE_COLOR_TYPE_DEGRADE) && (ParamColor) && (ParamDegradeColor))
 			{
 				*ParamColor = *ParamDegradeColor;
@@ -939,7 +967,7 @@ void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 			}
 			break;
 		default:
-			return;
+			break;
 	}
 	osMutexRelease( Profile->Values.Mutex );
 	

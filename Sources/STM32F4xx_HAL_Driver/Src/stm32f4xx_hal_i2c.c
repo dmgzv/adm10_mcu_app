@@ -3518,6 +3518,9 @@ void HAL_I2C_ER_IRQHandler(I2C_HandleTypeDef *hi2c)
   /* Call the Error Callback in case of Error detected -----------------------*/
   if(hi2c->ErrorCode != HAL_I2C_ERROR_NONE)
   {
+    /* Disable EVT, BUF and ERR interrupt */
+    __HAL_I2C_DISABLE_IT(hi2c, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
+		
     I2C_ITError(hi2c);
   }
 }
@@ -4658,7 +4661,6 @@ static void I2C_ITError(I2C_HandleTypeDef *hi2c)
       /* Read data from DR */
       (*hi2c->pBuffPtr++) = hi2c->Instance->DR;
     }
-
     /* Call user error callback */
     HAL_I2C_ErrorCallback(hi2c);
   }

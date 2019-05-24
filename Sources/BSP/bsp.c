@@ -107,36 +107,40 @@ int32_t BSP_InitMemory(void)
 	return result;
 }
 
+uint32_t UpdateCardStep;
+
 void BSP_UpdateCard(void)
 {
 	uint32_t i;
 	
+	UpdateCardStep = 0;	
 	BSP_PWR_IN_Process();
-	
+	UpdateCardStep++;
 	BSP_PWR_PIN_Process();
-	
+	UpdateCardStep++;
 	BSP_PWR_SEQ_Process();
-		
+	UpdateCardStep++;	
 	BSP_ETH_PIN_Process();
-	
+	UpdateCardStep++;
 	BSP_ETH_SW_Process();
-	
+	UpdateCardStep++;
 	BSP_ETH_Process(SlotAddress);
-	
-	BSP_CLK_Process();
-	
+	UpdateCardStep++;
+	//BSP_CLK_Process();
+	UpdateCardStep++;
 	BSP_SFP_I2C_SWITCH_Process();
-	
+	UpdateCardStep++;
 	BSP_SFP_PIN_Process();
-	
+	UpdateCardStep++;
 	BSP_FPGA_Process();
-	
+	UpdateCardStep++;
 	BSP_FPGA_PWR_Process();
-	
+	UpdateCardStep++;
 	BSP_FPGA_FLASH_Process();
-	
+	UpdateCardStep++;
 	for (i = 0; i < BSP_SFP_CNT; i++)
 	{
 		BSP_SFP_Process(i);
+		UpdateCardStep++;
 	}
 }

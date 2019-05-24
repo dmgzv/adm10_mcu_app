@@ -391,8 +391,8 @@ static const uint32_t ProfileADMPortClCatIdx[PROFILE_ADM_CLIENT_PORTS] =
 	PROFILE_ADM_PTCLIENT13CAT_IDX, PROFILE_ADM_PTCLIENT14CAT_IDX, PROFILE_ADM_PTCLIENT15CAT_IDX, PROFILE_ADM_PTCLIENT16CAT_IDX
 };
 
-static PERF_T ClOTU1Perf[PROFILE_ADM_CLIENT_PORTS];
-static PERF_T ClODU1Perf[PROFILE_ADM_CLIENT_PORTS];
+//static PERF_T ClOTU1Perf[PROFILE_ADM_CLIENT_PORTS];
+//static PERF_T ClODU1Perf[PROFILE_ADM_CLIENT_PORTS];
 static PERF_T ClSDHRSPerf[PROFILE_ADM_CLIENT_PORTS];
 static uint32_t ClEthRxPkts[PROFILE_ADM_CLIENT_PORTS];
 static uint32_t ClEthRxOcts[PROFILE_ADM_CLIENT_PORTS];
@@ -429,6 +429,15 @@ static int32_t PROFILE_ADM_CLIENT_CheckClSFPEnableTxValue(PROFILE_T *Profile, ui
 	return 0;
 }
 
+static int32_t PROFILE_ADM_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+{	
+	if ((*(uint32_t*)Value == 130) && (Idx % 2))
+	{
+			return -1;
+	}
+	return 0;
+}
+
 int32_t PROFILE_ADM_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value)
 {
 	uint32_t i;
@@ -444,6 +453,12 @@ int32_t PROFILE_ADM_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, u
 		if (TableIdx == ProfileADMConfigClSFPEnableTxIdx[i])
 		{
 			if (PROFILE_ADM_CLIENT_CheckClSFPEnableTxValue(Profile, Table, TableIdx, Value, i))
+				return -1;
+			return 0;
+		}
+		if (TableIdx == ProfileADMConfigClSetDataTypeIdx[i])
+		{
+			if (PROFILE_ADM_CLIENT_CheckClSetDataTypeValue(Profile, Table, TableIdx, Value, i))
 				return -1;
 			return 0;
 		}
@@ -892,30 +907,33 @@ static void PROFILE_ADM_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint32
 		}
 		else
 		{
-			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHAlarms & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_BIP8_MASK)
+			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP8)
 			{
 				SDHRSAlarms |= 1 << 2;
 				ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 			}					
-			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHAlarms & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_BIP24_MASK)
-			{
-				SDHRSAlarms |= 1 << 4;
-				ColorType = PROFILE_COLOR_TYPE_DEGRADE;
-			}
 			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHAlarms & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_AIS_MASK)
 			{
 				SDHRSAlarms |= 1 << 5;
 				ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 			}
-			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHAlarms & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSRDI_MASK)
+			else
 			{
-				SDHRSAlarms |= 1 << 6;
-				ColorType = PROFILE_COLOR_TYPE_DEGRADE;
-			}
-			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHAlarms & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSREI_MASK)
-			{
-				SDHRSAlarms |= 1 << 7;
-				ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP24)
+				{
+					SDHRSAlarms |= 1 << 4;
+					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+				}
+				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHAlarms & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSRDI_MASK)
+				{
+					SDHRSAlarms |= 1 << 6;
+					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+				}
+				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHAlarms & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSREI_MASK)
+				{
+					SDHRSAlarms |= 1 << 7;
+					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+				}
 			}
 		}			
 	}
@@ -1129,10 +1147,10 @@ static void PROFILE_ADM_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint32_
 		}
 		else
 		{
-			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP )
+			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP8 )
 			{
 				Defects = 0;
-				Errors = fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP;
+				Errors = fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP8;
 			}
 			else
 			{
