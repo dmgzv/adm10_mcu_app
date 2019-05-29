@@ -22,10 +22,11 @@
 
 #include "si5332.h"
 
-#define BSP_CLK_2_CFG_NUM_REGS				101
+#define BSP_CLK_2_CFG_NUM_REGS				103
 
 const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
 {
+		/* Start configuration registers */
 	{ 0x17, 0x41 },
 	{ 0x18, 0x44 },
 	{ 0x19, 0x4D },
@@ -87,10 +88,11 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
 	{ 0x8F, 0x01 },
 	{ 0x90, 0x00 },
 	{ 0x91, 0x00 },
-	{ 0x93, 0x07 },
-	{ 0x94, 0x01 },
+	{ 0x93, 0x03 },
+	{ 0x94, 0x04 },
 	{ 0x95, 0x00 },
 	{ 0x96, 0x00 },
+	{ 0x97, 0x04 },
 	{ 0x98, 0x07 },
 	{ 0x99, 0x01 },
 	{ 0x9A, 0x00 },
@@ -99,10 +101,11 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
 	{ 0x9E, 0x01 },
 	{ 0x9F, 0x00 },
 	{ 0xA0, 0x00 },
-	{ 0xA2, 0x07 },
+	{ 0xA2, 0x03 },
 	{ 0xA3, 0x02 },
 	{ 0xA4, 0x00 },
-	{ 0xA5, 0x00 },
+	{ 0xA5, 0x20 },
+	{ 0xA6, 0x04 },
 	{ 0xA7, 0x07 },
 	{ 0xA8, 0x01 },
 	{ 0xA9, 0x00 },
@@ -134,10 +137,10 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * Overview
  * ========
  * Part:               Si5332-GM3 Rev C
- * Project File:       E:\Design\Cadence\CYC10GX_r2\si5332\Si5332-40.00.slabtimeproj
+ * Project File:       E:\Design\Cadence\CYC10GX_r2\si5332\Si5332-40.00-ADM10.slabtimeproj
  * Design ID:          ADM10
  * Created By:         ClockBuilder Pro v2.33 [2019-05-12]
- * Timestamp:          2019-05-23 16:12:45 GMT+03:00
+ * Timestamp:          2019-05-29 12:21:40 GMT+03:00
  * 
  * Design Rule Check
  * =================
@@ -171,10 +174,11 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  *    OUT2: 125 MHz LVDS Fast 1.8 V, Disabled: Stop Low
  *    OUT3: 106.25 MHz LVDS Fast 1.8 V, Disabled: Stop Low
  *    OUT4: 106.25 MHz LVDS Fast 1.8 V, Disabled: Stop Low
- *    OUT5: 106.25 MHz LVDS Fast 1.8 V, Disabled: Stop Low
+ *    OUT5: 26.5625 MHz LVCMOS (in-phase) 1.8 V 25 Ohms, Disabled: Stop Low
+ *          [ OUT3/4 ]
  *    OUT6: 100 MHz LVDS Fast 1.8 V, Disabled: Stop Low
  *    OUT7: 100 MHz LVDS Fast 1.8 V, Disabled: Stop Low
- *    OUT8: 50 MHz LVDS Fast 1.8 V, Disabled: Stop Low
+ *    OUT8: 50 MHz LVCMOS (comp) 1.8 V 25 Ohms, Disabled: Stop Low
  *    OUT9: 155.52 MHz LVDS Fast 1.8 V, Disabled: Stop Low
  *   OUT10: 155.52 MHz LVDS Fast 1.8 V, Disabled: Stop Low
  *   OUT11: 155.52 MHz LVDS Fast 1.8 V, Disabled: Stop Low
@@ -191,7 +195,7 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  *       Value: 23.5294117647058823... [ 23 + 9/17 ]
  *       OUT3: 106.25 MHz [ 106 + 1/4 MHz ], Error: 0 ppm
  *       OUT4: 106.25 MHz [ 106 + 1/4 MHz ], Error: 0 ppm
- *       OUT5: 106.25 MHz [ 106 + 1/4 MHz ], Error: 0 ppm
+ *       OUT5: 26.5625 MHz [ 26 + 9/16 MHz ], Error: 0 ppm
  *    N1:
  *       Value: 16.0751028806584362... [ 16 + 73/972 ]
  *       OUT9: 155.52 MHz [ 155 + 13/25 MHz ], Error: 0 ppm
@@ -222,7 +226,7 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  *    R2 = 1
  *    R3 = 1
  *    R4 = 1
- *    R5 = 1
+ *    R5 = 4
  *    R6 = 1
  *    R7 = 1
  *    R8 = 2
@@ -232,33 +236,33 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * 
  * Estimated Power
  * ===============
- * Total Power: 319 mW, Tj: 32 °C
+ * Total Power: 303 mW, Tj: 32 °C
  * 
- *                   Frequency    Format   Voltage   Current     Power
- *                  ----------  --------  --------  --------  --------
- * VDD                                       1.8 V   37.5 mA     68 mW
- * VDD Dig                                   1.8 V    7.9 mA     14 mW
- * VDD Xtal                                  1.8 V    2.3 mA      4 mW
- * VDDO0                                                              
- *            OUT0     125 MHz  LVDSFast     1.8 V   10.9 mA     20 mW
- * VDDO1                                                              
- *            OUT1     125 MHz  LVDSFast     1.8 V   10.9 mA     20 mW
- *            OUT2     125 MHz  LVDSFast     1.8 V   10.9 mA     20 mW
- * VDDO2                                                              
- *            OUT3  106.25 MHz  LVDSFast     1.8 V   10.7 mA     19 mW
- *            OUT4  106.25 MHz  LVDSFast     1.8 V   10.7 mA     19 mW
- *            OUT5  106.25 MHz  LVDSFast     1.8 V   10.7 mA     19 mW
- * VDDO3                                                              
- *            OUT6     100 MHz  LVDSFast     1.8 V   10.7 mA     19 mW
- *            OUT7     100 MHz  LVDSFast     1.8 V   10.7 mA     19 mW
- *            OUT8      50 MHz  LVDSFast     1.8 V   10.2 mA     18 mW
- * VDDO4                                                              
- *            OUT9  155.52 MHz  LVDSFast     1.8 V   11.1 mA     20 mW
- * VDDO5                                                              
- *           OUT10  155.52 MHz  LVDSFast     1.8 V   11.1 mA     20 mW
- *           OUT11  155.52 MHz  LVDSFast     1.8 V   11.1 mA     20 mW
- *                                                  --------  --------
- *                                           Total  177.4 mA    319 mW
+ *                    Frequency             Format   Voltage   Current     Power
+ *                  -----------  -----------------  --------  --------  --------
+ * VDD                                                 1.8 V   37.5 mA     68 mW
+ * VDD Dig                                             1.8 V    7.9 mA     14 mW
+ * VDD Xtal                                            1.8 V    2.3 mA      4 mW
+ * VDDO0                                                                        
+ *            OUT0      125 MHz           LVDSFast     1.8 V   10.9 mA     20 mW
+ * VDDO1                                                                        
+ *            OUT1      125 MHz           LVDSFast     1.8 V   10.9 mA     20 mW
+ *            OUT2      125 MHz           LVDSFast     1.8 V   10.9 mA     20 mW
+ * VDDO2                                                                        
+ *            OUT3   106.25 MHz           LVDSFast     1.8 V   10.7 mA     19 mW
+ *            OUT4   106.25 MHz           LVDSFast     1.8 V   10.7 mA     19 mW
+ *            OUT5  26.5625 MHz             LVCMOS     1.8 V    4.4 mA      8 mW
+ * VDDO3                                                                        
+ *            OUT6      100 MHz           LVDSFast     1.8 V   10.7 mA     19 mW
+ *            OUT7      100 MHz           LVDSFast     1.8 V   10.7 mA     19 mW
+ *            OUT8       50 MHz             LVCMOS     1.8 V    7.2 mA     13 mW
+ * VDDO4                                                                        
+ *            OUT9   155.52 MHz           LVDSFast     1.8 V   11.1 mA     20 mW
+ * VDDO5                                                                        
+ *           OUT10   155.52 MHz           LVDSFast     1.8 V   11.1 mA     20 mW
+ *           OUT11   155.52 MHz           LVDSFast     1.8 V   11.1 mA     20 mW
+ *                                                            --------  --------
+ *                                                     Total  168.1 mA    303 mW
  * 
  * Note:
  * 
@@ -343,12 +347,14 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * 0x91[0]     OUT4_STOP_HIGHZ   0                  0x0              
  * 0x91[5:4]   OUT4_CMOS_INV     0                  0x0              
  * 0x91[6]     OUT4_DIFF_INV     0                  0x0              
- * 0x93[3:0]   OUT5_MODE         7                  0x7              
- * 0x94[5:0]   OUT5_DIV          1                  0x01             
+ * 0x93[3:0]   OUT5_MODE         3                  0x3              
+ * 0x94[5:0]   OUT5_DIV          4                  0x04             
  * 0x95[2:0]   OUT5_SKEW         0                  0x0              
  * 0x96[0]     OUT5_STOP_HIGHZ   0                  0x0              
  * 0x96[5:4]   OUT5_CMOS_INV     0                  0x0              
  * 0x96[6]     OUT5_DIFF_INV     0                  0x0              
+ * 0x97[2]     OUT5_CMOS_STR     1                  0x1              
+ * 0x97[1:0]   OUT5_CMOS_SLEW    0                  0x0              
  * 0x98[3:0]   OUT6_MODE         7                  0x7              
  * 0x99[5:0]   OUT6_DIV          1                  0x01             
  * 0x9A[2:0]   OUT6_SKEW         0                  0x0              
@@ -361,12 +367,14 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * 0xA0[0]     OUT7_STOP_HIGHZ   0                  0x0              
  * 0xA0[5:4]   OUT7_CMOS_INV     0                  0x0              
  * 0xA0[6]     OUT7_DIFF_INV     0                  0x0              
- * 0xA2[3:0]   OUT8_MODE         7                  0x7              
+ * 0xA2[3:0]   OUT8_MODE         3                  0x3              
  * 0xA3[5:0]   OUT8_DIV          2                  0x02             
  * 0xA4[2:0]   OUT8_SKEW         0                  0x0              
  * 0xA5[0]     OUT8_STOP_HIGHZ   0                  0x0              
- * 0xA5[5:4]   OUT8_CMOS_INV     0                  0x0              
+ * 0xA5[5:4]   OUT8_CMOS_INV     2                  0x2              
  * 0xA5[6]     OUT8_DIFF_INV     0                  0x0              
+ * 0xA6[2]     OUT8_CMOS_STR     1                  0x1              
+ * 0xA6[1:0]   OUT8_CMOS_SLEW    0                  0x0              
  * 0xA7[3:0]   OUT9_MODE         7                  0x7              
  * 0xA8[5:0]   OUT9_DIV          1                  0x01             
  * 0xA9[2:0]   OUT9_SKEW         0                  0x0              
