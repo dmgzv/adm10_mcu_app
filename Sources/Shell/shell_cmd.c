@@ -17,7 +17,6 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
-static void SHELL_CMD_PCA9546Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 
@@ -34,7 +33,6 @@ const SHELL_CMD_T ShellCmdList[] =
 	{ "pca9536", 	"PCA9536 control", &SHELL_CMD_PCA9536Callback},
 	{ "pcal6524", "PCAL6524 control", &SHELL_CMD_PCAL6524Callback},
 	{ "pca9548", 	"PCA9548 control", &SHELL_CMD_PCA9548Callback},
-	{ "pca9546", 	"PCA9546 control", &SHELL_CMD_PCA9546Callback},
 	{ "ksz", 			"KSZ8895 control", &SHELL_CMD_KSZCallback},
 	{ "sdram", 		"SDRAM control", &SHELL_CMD_SDRAMCallback}
 };
@@ -75,28 +73,41 @@ static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t C
 	SHELL_Transmit(Shell,  "SW Time: %s \r", BSP_SW_TIME);
 }
 
+const char *pca9536_pcb_id[BSP_SFP_PIN_PCA9536_CNT] = 
+{
+	"D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", 
+	"D13", "D14", "D15", "D16", "D17", "D18", "D19", "D20",
+	"D9", "D10", "D11", "D12"
+};
+
 static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	uint32_t i;
 	
 	SHELL_Transmit(Shell,  "Device     PCB  Presence  Init\r");
-	SHELL_Transmit(Shell,   "PCA9536    D107     1     %s\r", BSP_DEV_GET_STATE_STR(&pca9536));
+	SHELL_Transmit(Shell,   "PCA9536    D107     1     %s\r", BSP_DEV_GET_STATE_STR(&pwr_pca9536));
 	SHELL_Transmit(Shell,   "DIM3R3400  A5       1     %s\r", BSP_DEV_GET_STATE_STR(&dim3r3400));
 	SHELL_Transmit(Shell,   "UCD90120A  D108     1     %s\r", BSP_DEV_GET_STATE_STR(&ucd90120a));
 	SHELL_Transmit(Shell,   "GDT080A    A6       1     %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[0]));
 	SHELL_Transmit(Shell,   "GDT080A    A7       1     %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[1]));
 	SHELL_Transmit(Shell,   "SI5332     D83      1     %s\r", BSP_DEV_GET_STATE_STR(&si5332[0]));
 	SHELL_Transmit(Shell,   "SI5332     D84      1     %s\r", BSP_DEV_GET_STATE_STR(&si5332[1]));
-	SHELL_Transmit(Shell,   "FPGA       D12      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_maxv));
+	SHELL_Transmit(Shell,   "FPGA_MAXV  D85      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_maxv));
+	SHELL_Transmit(Shell,   "FPGA_LN    D92      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_line));
+	SHELL_Transmit(Shell,   "FPGA_CL1   D88      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_client[0]));
+	SHELL_Transmit(Shell,   "FPGA_CL2   D90      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_client[0]));
 	SHELL_Transmit(Shell,   "PCA9548    D72      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[0]));
 	SHELL_Transmit(Shell,   "PCA9548    D73      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[1]));
-	SHELL_Transmit(Shell,   "PCA9546    D74      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9546a[0]));
+	SHELL_Transmit(Shell,   "PCA9548    D74      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[2]));
 	SHELL_Transmit(Shell,   "PCAL6624   D67      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[0]));
 	SHELL_Transmit(Shell,   "PCAL6624   D58      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[1]));
 	SHELL_Transmit(Shell,   "PCAL6624   D57      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[2]));
+	for (i = 0; i < BSP_SFP_PIN_PCA9536_CNT; i++)
+		SHELL_Transmit(Shell,   "PCA9536    %3s      1     %s\r", pca9536_pcb_id[i], BSP_DEV_GET_STATE_STR(&pca9536[i]));
 	for (i = 0; i < BSP_SFP_CNT; i++)
 		SHELL_Transmit(Shell,   "SFP        ---      %d     %s\r", sfp[i].Pin.ModAbs ? 0 : 1, BSP_DEV_GET_STATE_STR(&sfp[i]));
 	SHELL_Transmit(Shell,   "KSZ8895    D99      1     %s\r", BSP_DEV_GET_STATE_STR(&ksz8895));
+	SHELL_Transmit(Shell,   "AT45DB641E D94      1     %s\r", BSP_DEV_GET_STATE_STR(&at45db641e));
 }
 
 #define SHELL_CMD_DIM3R_HELP \
@@ -180,7 +191,7 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pca9536));
+		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pwr_pca9536));
 		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r", PCA9536_I2C_ADDR >> 1);
 	}
 	else if (CmdParamsCnt == 2)
@@ -191,23 +202,23 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 		}
 		else if (!strcmp(CmdParamsList[1], "pin"))
 		{
-			if (PCA9536_GetBankDir(&pca9536))
+			if (PCA9536_GetBankDir(&pwr_pca9536))
 				goto cmd_err;
-			if (PCA9536_GetBankIn(&pca9536))
+			if (PCA9536_GetBankIn(&pwr_pca9536))
 				goto cmd_err;
-			if (PCA9536_GetBankOut(&pca9536))
+			if (PCA9536_GetBankOut(&pwr_pca9536))
 				goto cmd_err;
-			if (PCA9536_GetBankPol(&pca9536))
+			if (PCA9536_GetBankPol(&pwr_pca9536))
 				goto cmd_err;
 			SHELL_Transmit(Shell,   "Idx  In  Dir  Out  Pol  Info\r");
 			for (i = 0; i < 4; i++)
 			{
 				SHELL_Transmit(Shell,   "%3d  %2d  %3d  %3d  %3d  %s\r",
 					i,
-					(pca9536.Ins >> (i % 8)) & 0x01,
-					(pca9536.Dirs >> (i % 8)) & 0x01,
-					(pca9536.Outs >> (i % 8)) & 0x01,
-					(pca9536.Pols >> (i % 8)) & 0x01,
+					(pwr_pca9536.Ins >> (i % 8)) & 0x01,
+					(pwr_pca9536.Dirs >> (i % 8)) & 0x01,
+					(pwr_pca9536.Outs >> (i % 8)) & 0x01,
+					(pwr_pca9536.Pols >> (i % 8)) & 0x01,
 					shell_pca9536_pin_info[i]);
 			}
 		}
@@ -230,7 +241,7 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCA9536_SetPinOut(&pca9536, Pin, Data))
+			if (PCA9536_SetPinOut(&pwr_pca9536, Pin, Data))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "dir"))
@@ -245,7 +256,7 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCA9536_SetPinDir(&pca9536, Pin, Data))
+			if (PCA9536_SetPinDir(&pwr_pca9536, Pin, Data))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "pol"))
@@ -260,7 +271,7 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 				goto invalid_data;
 			if (Data > 1)
 				goto invalid_data;
-			if (PCA9536_SetPinPol(&pca9536, Pin, Data))
+			if (PCA9536_SetPinPol(&pwr_pca9536, Pin, Data))
 				goto cmd_err;
 		}
 		else
@@ -561,74 +572,6 @@ static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_
 			if ((*p != 0) || (p == CmdParamsList[2]))
 				goto invalid_cmd;
 			if (Data >= BSP_PCA9548_CNT)
-				goto invalid_idx;
-			Idx = Data;
-		}
-		else
-		{
-			goto invalid_cmd;
-		}
-	}
-	else 
-	{
-		goto invalid_cmd;
-	}
-	
-	return;
-invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
-	return;
-invalid_idx:
-	SHELL_Transmit(Shell, "Error: invalid index\r");
-	return;
-cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
-	return;
-}
-
-#define SHELL_CMD_PCA9546_HELP \
-"Usage:\r"\
-"    pca9546 <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    init - Init device.\r"\
-"    select <idx> - Select device. <idx>: 0, 1\r"\
-
-static void SHELL_CMD_PCA9546Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
-{
-	static uint32_t Idx = 0;
-	uint32_t Data;
-	char *p;
-	
-	if (CmdParamsCnt == 1)
-	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pca9546a[Idx]));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", pca9546a[Idx].Addr >> 1);
-	}
-	else if (CmdParamsCnt == 2)
-	{
-		if (!strcmp(CmdParamsList[1], "help"))
-		{
-			SHELL_Transmit(Shell, SHELL_CMD_PCA9546_HELP);
-		}
-		else if (!strcmp(CmdParamsList[1], "init"))
-		{
-			if (PCA9546A_Init(&pca9546a[Idx], pca9546a[Idx].I2C, pca9546a[Idx].Addr >> 1))
-				goto cmd_err;
-		}
-		else
-		{
-			goto invalid_cmd;
-		}
-	}
-	else if (CmdParamsCnt == 3)
-	{
-		if (!strcmp(CmdParamsList[1], "select"))
-		{
-			Data = strtoul(CmdParamsList[2], &p, 10);
-			if ((*p != 0) || (p == CmdParamsList[2]))
-				goto invalid_cmd;
-			if (Data >= BSP_PCA9546_CNT)
 				goto invalid_idx;
 			Idx = Data;
 		}

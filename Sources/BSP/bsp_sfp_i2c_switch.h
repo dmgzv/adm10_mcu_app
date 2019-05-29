@@ -2,22 +2,20 @@
 #define __BSP_SFP_I2C_SWITCH_H
 
 #include "pca9548a.h"
-#include "pca9546a.h"
 
-#define	BSP_PCA9548_CNT	2
-#define	BSP_PCA9546_CNT	1
+#define	BSP_PCA9548_CNT	3
 
-#define BSP_PCA9548_1_I2C				I2C3
+#define BSP_PCA9548_1_I2C				I2C2
 #define BSP_PCA9548_1_I2C_ADDR	0x70
 
-#define BSP_PCA9548_2_I2C				I2C3
+#define BSP_PCA9548_2_I2C				I2C2
 #define BSP_PCA9548_2_I2C_ADDR	0x72
 
-#define BSP_PCA9546_1_I2C				I2C3
-#define BSP_PCA9546_1_I2C_ADDR	0x71
+#define BSP_PCA9548_3_I2C				I2C2
+#define BSP_PCA9548_3_I2C_ADDR	0x74
 
-#ifndef BSP_CONFIG_USE_I2C3
-	#error	Define BSP_CONFIG_USE_I2C3 in bsp_config.h for BSP_SFP_I2C_SWITCH
+#ifndef BSP_CONFIG_USE_I2C2
+	#error	Define BSP_CONFIG_USE_I2C2 in bsp_config.h for BSP_SFP_I2C_SWITCH
 #endif
 	
 #define BSP_SFP_I2C_SWITCH_RESET_GPIO_PIN          		GPIO_PIN_4
@@ -27,10 +25,12 @@
 #define BSP_SFP_I2C_SWITCH_RESET_GPIO_SPEED						GPIO_SPEED_FAST
 #define BSP_SFP_I2C_SWITCH_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOA_CLK_ENABLE() 
 
+#define BSP_SFP_I2C_SWITCH_SFP_CH(SfpIdx) 			((SfpIdx) < 16 ? (SfpIdx) : ((SfpIdx) + 4))
+#define BSP_SFP_I2C_SWITCH_GDT_CH(GdtIdx) 			(17 - (GdtIdx))
+#define BSP_SFP_I2C_SWITCH_SI5332_CH(Si5332Idx) ((Si5332Idx) + 18)
 #define BSP_SFP_I2C_SWITCH_CH_NO	0xFFFFFFFF
 	
 extern PCA9548A_T pca9548a[BSP_PCA9548_CNT];
-extern PCA9546A_T pca9546a[BSP_PCA9546_CNT];
 
 int32_t BSP_SFP_I2C_SWITCH_SelectChannel(uint32_t Channel);	
 void BSP_SFP_I2C_SWITCH_Process(void);

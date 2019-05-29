@@ -68,8 +68,6 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
 				MII_RXD2 ---------------------> PB0
 				MII_RXD3 ---------------------> PB1
 				MII_TXD3 ---------------------> PB8
-				MII_RX_ER --------------------> PB10
-        MII_TX_EN --------------------> PB11
         MII_TXD0 ---------------------> PB12
         MII_TXD1 ---------------------> PB13
 	
@@ -79,6 +77,8 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
         MII_RXD0 ---------------------> PC4
         MII_RXD1 ---------------------> PC5
 				MII_INT ----------------------> PC6
+				
+        MII_TX_EN --------------------> PG11
 	
   */
 	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_7;
@@ -88,7 +88,7 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
 	GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_8|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12|GPIO_PIN_13;
+	GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_8|GPIO_PIN_12|GPIO_PIN_13;
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -101,6 +101,13 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+	
+	GPIO_InitStruct.Pin = GPIO_PIN_11;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
+	HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 	
 	/* Enable ETHERNET clock  */
   __HAL_RCC_ETH_CLK_ENABLE();

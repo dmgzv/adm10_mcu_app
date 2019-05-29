@@ -13,7 +13,7 @@
 #define BSP_PWR_PIN_UCD_CTL					(1)
 #define BSP_PWR_PIN_12V_PWR					(2)
 
-extern PCA9536_T pca9536;
+extern PCA9536_T pwr_pca9536;
 	
 void BSP_PWR_PIN_Process(void);
 int32_t BSP_PWR_PIN_Init(uint32_t Pin);

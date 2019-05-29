@@ -142,7 +142,7 @@ static void PROFILE_ADM_UpdateHwAlarmsValue(PROFILE_T *Profile)
 	Value = 0;
 	ColorType = PROFILE_COLOR_TYPE_NORMAL;
 	
-	if (BSP_DEV_GET_STATE(&s29gl01gs) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		Value |= 1 << 0;
 	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 		Value |= 1 << 1;

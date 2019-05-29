@@ -560,11 +560,6 @@
               <FilePath>.\Sources\BSP\Devices\pca9548a.c</FilePath>
             </File>
             <File>
-              <FileName>pca9546a.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\pca9546a.c</FilePath>
-            </File>
-            <File>
               <FileName>dim3r3400.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\dim3r3400.c</FilePath>

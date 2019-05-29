@@ -66,7 +66,7 @@ static int32_t __BSP_SFP_ConfigSwitch(void *Priv)
 {
 	uint32_t Idx = (uint32_t)Priv;
 	
-	return BSP_SFP_I2C_SWITCH_SelectChannel(Idx);
+	return BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_SFP_CH(Idx));
 }
 
 static int32_t __BSP_SFP_ResetSwitch(void *Priv)
@@ -152,7 +152,7 @@ static int32_t BSP_SFP_CheckConditions(uint32_t Idx)
 	
 	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 		return -1;
-	if (BSP_DEV_GET_STATE(&pca9536) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;
 	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 		return -1;
@@ -161,11 +161,6 @@ static int32_t BSP_SFP_CheckConditions(uint32_t Idx)
 	for (i = 0; i < BSP_PCA9548_CNT; i++)
 	{
 		if (BSP_DEV_GET_STATE(&pca9548a[i]) != BSP_DEV_STATE_OK)
-			return -1;
-	}
-	for (i = 0; i < BSP_PCA9546_CNT; i++)
-	{
-		if (BSP_DEV_GET_STATE(&pca9546a[i]) != BSP_DEV_STATE_OK)
 			return -1;
 	}
 	for (i = 0; i < BSP_SFP_PIN_PCAL6524_CNT; i++)
