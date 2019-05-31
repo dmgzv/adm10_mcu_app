@@ -180,7 +180,7 @@ static int32_t UCD90120A_UpdateCML(UCD90120A_T *Dev)
 {
 	uint8_t Data;
 		
-	if(PMBUS_ReadByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_STATUS_WORD, &Data))
+	if(PMBUS_ReadByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_STATUS_CML, &Data))
 		return -1;
 	Dev->Mon.CML = Data;
 	
