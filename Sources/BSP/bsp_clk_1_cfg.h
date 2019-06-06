@@ -26,7 +26,7 @@
 
 const SI5332_CFG_T bsp_clk_1_cfg[BSP_CLK_1_CFG_NUM_REGS] =
 {
-	{ 0x17, 0x41 },
+{ 0x17, 0x41 },
 	{ 0x18, 0x44 },
 	{ 0x19, 0x4D },
 	{ 0x1A, 0x31 },
@@ -118,8 +118,8 @@ const SI5332_CFG_T bsp_clk_1_cfg[BSP_CLK_1_CFG_NUM_REGS] =
 	{ 0xBD, 0x02 },
 	{ 0xBE, 0x20 },
 	{ 0xBF, 0x00 },
-	{ 0xC0, 0x26 },
-	{ 0xC1, 0x26 },
+	{ 0xC0, 0x1F },
+	{ 0xC1, 0x1F },
 };
 
 
@@ -129,10 +129,10 @@ const SI5332_CFG_T bsp_clk_1_cfg[BSP_CLK_1_CFG_NUM_REGS] =
  * Overview
  * ========
  * Part:               Si5332-GM3 Rev C
- * Project File:       E:\Design\Cadence\CYC10GX_r2\si5332\Si5332-38.88.slabtimeproj
+ * Project File:       E:\Design\Cadence\CYC10GX_r2\si5332\Si5332-38.88-ADM10.slabtimeproj
  * Design ID:          ADM10
- * Created By:         ClockBuilder Pro v2.33 [2019-05-12]
- * Timestamp:          2019-05-23 16:08:04 GMT+03:00
+ * Created By:         ClockBuilder Pro v2.34.1 [2019-05-31]
+ * Timestamp:          2019-06-04 18:21:44 GMT+03:00
  * 
  * Design Rule Check
  * =================
@@ -156,7 +156,7 @@ const SI5332_CFG_T bsp_clk_1_cfg[BSP_CLK_1_CFG_NUM_REGS] =
  * Inputs:
  *    XAXB: 38.88 MHz
  *          Crystal Mode
- *          Adjusted Capacitance: 11.5 pF
+ *          Adjusted Capacitance: 10 pF
  *  CLKIN2: Unused
  *  CLKIN3: Unused
  * 
@@ -420,10 +420,10 @@ const SI5332_CFG_T bsp_clk_1_cfg[BSP_CLK_1_CFG_NUM_REGS] =
  * 0xBD[3]     OUT11_DIS         0                  0x0              
  * 0xBE[7:0]   PLL_MODE          32                 0x20             
  * 0xBF[0]     XOSC_CINT_ENA     0                  0x0              
- * 0xC0[5:0]   XOSC_CTRIM_XIN    38                 0x26             
- * 0xC1[5:0]   XOSC_CTRIM_XOUT   38                 0x26
+ * 0xC0[5:0]   XOSC_CTRIM_XIN    31                 0x1F             
+ * 0xC1[5:0]   XOSC_CTRIM_XOUT   31                 0x1F
  * 
  *
  */
-
+ 
 #endif
