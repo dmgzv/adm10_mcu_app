@@ -171,75 +171,65 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dim3r3400_power_good</ItemText>
+          <ItemText>ucd90120a</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ucd90120a</ItemText>
+          <ItemText>fpga_client</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>fpga_client</ItemText>
+          <ItemText>fpga_line</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>fpga_line</ItemText>
+          <ItemText>fpga_maxv</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>fpga_maxv</ItemText>
+          <ItemText>sfp</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sfp</ItemText>
+          <ItemText>dim3r3400</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dim3r3400</ItemText>
+          <ItemText>pca9548a</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>UpdateCardStep</ItemText>
+          <ItemText>pca9546a</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pca9548a</ItemText>
+          <ItemText>ksz8895</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pca9546a</ItemText>
+          <ItemText>fpga_line</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ksz8895</ItemText>
+          <ItemText>pca9536</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>fpga_line</ItemText>
-        </Ww>
-        <Ww>
-          <count>16</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>pca9536</ItemText>
-        </Ww>
-        <Ww>
-          <count>17</count>
-          <WinNumber>1</WinNumber>
           <ItemText>at45db641e</ItemText>
         </Ww>
         <Ww>
-          <count>18</count>
+          <count>16</count>
           <WinNumber>1</WinNumber>
           <ItemText>mt48lc16m16a2</ItemText>
         </Ww>
@@ -248,7 +238,7 @@
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x68002000</ItemText>
+          <ItemText>0x68000000</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
@@ -1121,7 +1111,7 @@
       <GroupNumber>6</GroupNumber>
       <FileNumber>64</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Sources\BSP\bsp_clk.c</PathWithFileName>
@@ -1169,7 +1159,7 @@
       <GroupNumber>6</GroupNumber>
       <FileNumber>68</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Sources\BSP\bsp_fpga_pwr.c</PathWithFileName>

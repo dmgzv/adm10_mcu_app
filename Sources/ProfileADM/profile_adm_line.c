@@ -506,7 +506,6 @@ void PROFILE_ADM_LINE_UpdateConfigs(PROFILE_T *Profile)
 		{
 			BSP_FPGA_LINE_LOOPBACK_SET(i, BSP_FPGA_LINE_LOOPBACK_SERIAL);
 		}
-		
 	}
 }
 
