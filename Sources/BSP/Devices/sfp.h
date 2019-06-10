@@ -16,7 +16,16 @@
 #define SFP_PIN_TX_FAULT		2
 #define SFP_PIN_RX_LOS			3
 
+#define SFP_PRODUCT_OPTS_RDT_MASK					(1 << 7)
+#define SFP_PRODUCT_OPTS_TX_TUNABLE_MASK	(1 << 6)
+#define SFP_PRODUCT_OPTS_RATE_SELECT_MASK	(1 << 5)
+#define SFP_PRODUCT_OPTS_TX_DISABLE_MASK	(1 << 4)
+#define SFP_PRODUCT_OPTS_TX_FAULT_MASK		(1 << 3)
+#define SFP_PRODUCT_OPTS_RX_LOS_INV_MASK	(1 << 2)
+#define SFP_PRODUCT_OPTS_RX_LOS_MASK			(1 << 1)
+
 typedef struct {
+	uint8_t ProductOpts;
 	char Vendor[17];
 	char SerialNumber[17];
 	char PartNumber[17];
@@ -36,12 +45,20 @@ typedef struct {
 } SFP_THR_T;
 
 typedef struct {
+	uint32_t Min;
+	uint32_t Max;
+	uint16_t Spacing;
+	uint16_t Channel;
+} SFP_FREQ_T;
+
+typedef struct {
 	BSP_DEV;
 	BSP_I2C_CTRL_T *I2CCtrl;
 	BSP_PIN_CTRL_T *PinCtrl;
 	SFP_PIN_T Pin;	
 	SFP_INFO_T Info;
-	SFP_THR_T Thr;	
+	SFP_THR_T Thr;
+	SFP_FREQ_T Freq;
 	float Temp;
 	float RxPwr;
 	float TxPwr;
@@ -54,12 +71,15 @@ int32_t SFP_GetTxPwr(SFP_T *Dev, float *TxPwr);
 int32_t SFP_GetTemp(SFP_T *Dev, float *Temp);
 int32_t SFP_GetModAbs(SFP_T *Dev, uint32_t *ModAbs);
 int32_t SFP_GetRxLos(SFP_T *Dev, uint32_t *RxLos);
-int32_t SFP_GetTxDisable(SFP_T *Dev, uint32_t *TxDisable);
 int32_t SFP_GetTxFault(SFP_T *Dev, uint32_t *TxFault);
 
+int32_t SFP_GetTxDisable(SFP_T *Dev, uint32_t *TxDisable);
 int32_t SFP_SetTxDisable(SFP_T *Dev, uint32_t TxDisable);
-
 int32_t SFP_ConfigTxDisable(SFP_T *Dev, uint32_t TxDisable);
+
+int32_t SFP_ReadFreq(SFP_T *Dev, uint32_t *Freq);
+int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq);
+int32_t SFP_ConfigFreq(SFP_T *Dev, uint32_t Freq);
 
 int32_t SFP_Update(SFP_T *Dev);
 int32_t SFP_Init(SFP_T *Dev, BSP_I2C_CTRL_T *I2CCtrl, BSP_PIN_CTRL_T *PinCtrl);

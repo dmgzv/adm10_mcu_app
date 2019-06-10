@@ -10,6 +10,16 @@
 #define SFP_I2C_ConfigSwitch(Dev)					((Dev)->I2CCtrl ? BSP_I2C_CTRL_ConfigSwitch((Dev)->I2CCtrl) : 0)
 #define SFP_I2C_ResetSwitch(Dev)					((Dev)->I2CCtrl ? BSP_I2C_CTRL_ResetSwitch((Dev)->I2CCtrl) : 0)
 
+static int32_t SFP_ReadProductOpts(SFP_T *Dev)
+{
+	uint8_t Addr;	
+	
+	Addr = 65;
+	if (I2C_Sequential_Receive(SFP_I2C(Dev), 0xA0, &Addr, 1, (char*)&Dev->Info.ProductOpts, 1))
+		return -1;	
+	return 0;
+}
+
 static int32_t SFP_ReadVendor(SFP_T *Dev)
 {
 	uint8_t Addr;	
@@ -41,6 +51,160 @@ static int32_t SFP_ReadSerialNumber(SFP_T *Dev)
 		return -1;	
 	Dev->Info.SerialNumber[16] = 0;
 	return 0;
+}
+
+int32_t SFP_ReadFreq(SFP_T *Dev, uint32_t *Freq)
+{
+	uint8_t Addr;
+	uint8_t Data[2];
+	
+	if (Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK)
+	{
+		Addr = 127;
+		Data[0] = 0x02;
+		if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 1))
+			return -1;
+		
+		osDelay(1);
+		
+		Addr = 132;
+		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+			return -1;
+		Dev->Freq.Min = ((Data[0] << 8) | Data[1]) * 1000000;
+		Addr = 134;
+		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+			return -1;
+		Dev->Freq.Min += ((Data[0] << 8) | Data[1]) * 100;
+		
+		Addr = 136;
+		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+			return -1;
+		Dev->Freq.Max = ((Data[0] << 8) | Data[1]) * 1000000;
+		Addr = 138;
+		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+			return -1;
+		Dev->Freq.Max += ((Data[0] << 8) | Data[1]) * 100;
+		
+		Addr = 140;
+		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+			return -1;
+		Dev->Freq.Spacing = ((Data[0] << 8) | Data[1]) * 100;
+		
+		Addr = 144;
+		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+			return -1;
+		Dev->Freq.Channel = (Data[0] << 8) | Data[1];		
+	}
+	else
+	{
+		Dev->Freq.Min = 0;
+		Dev->Freq.Max = 0;
+		Dev->Freq.Spacing = 0;
+	}
+	return 0;
+}
+
+static int32_t SFP_UpdateFreq(SFP_T *Dev)
+{
+	uint8_t Addr;
+	uint8_t Data[2];
+	uint16_t Channel;
+	
+	if (!Dev)
+		return -1;
+	
+	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK))
+		return 0;;
+	
+	Addr = 127;
+	Data[0] = 0x02;
+	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 1))
+		return -1;
+	
+	osDelay(1);
+	
+	Addr = 144;
+	if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+		return -1;
+	Channel = (Data[0] << 8) | Data[1];
+	
+	if (Channel == Dev->Freq.Channel)
+		return 0;
+	
+	Data[0] = Dev->Freq.Channel >> 8;
+	Data[1] = Dev->Freq.Channel;	
+	Addr = 144;
+	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+		return -1;
+	
+	return 0;
+}
+
+int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq)
+{
+	uint8_t Addr;
+	uint8_t Data[2];
+	uint16_t Channel;
+	
+	if (!Dev)
+		return -1;
+	
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK))
+		goto error;
+	
+	if ((Freq < Dev->Freq.Min) || (Freq > Dev->Freq.Max) ||(Freq % Dev->Freq.Spacing))
+		goto error;
+	
+	Addr = 127;
+	Data[0] = 0x02;
+	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 1))
+		return -1;
+	
+	osDelay(1);
+	
+	Channel = 1 + (Freq -  Dev->Freq.Min) / Dev->Freq.Spacing;
+	Data[0] = Channel >> 8;
+	Data[1] = Channel;
+	Addr = 144;
+	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
+		return -1;
+	Dev->Freq.Channel = Channel;	
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+int32_t SFP_ConfigFreq(SFP_T *Dev, uint32_t Freq)
+{	
+	if (!Dev)
+		return -1;
+	
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK))
+		goto error;
+	
+	if ((Freq < Dev->Freq.Min) || (Freq > Dev->Freq.Max) ||(Freq % Dev->Freq.Spacing))
+		goto error;
+	
+	Dev->Freq.Channel = 1 + (Freq -  Dev->Freq.Min) / Dev->Freq.Spacing;
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
 }
 
 static int32_t SFP_ReadTempThrs(SFP_T *Dev)
@@ -185,141 +349,6 @@ static int32_t SFP_ReadTxPwr(SFP_T *Dev)
 	return 0;
 }
 
-int32_t SFP_GetModAbs(SFP_T *Dev, uint32_t *ModAbs)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	*ModAbs = Dev->Pin.ModAbs;
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
-int32_t SFP_GetRxLos(SFP_T *Dev, uint32_t *RxLos)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	*RxLos = Dev->Pin.RxLos;
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
-int32_t SFP_GetTxDisable(SFP_T *Dev, uint32_t *TxDisable)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	*TxDisable = Dev->Pin.TxDisable;
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
-int32_t SFP_GetTxFault(SFP_T *Dev, uint32_t *TxFault)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	*TxFault = Dev->Pin.TxFault;
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
-int32_t SFP_GetInfo(SFP_T *Dev, SFP_INFO_T *Info)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	memcpy(Info, &Dev->Info, sizeof(Dev->Info));
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
-int32_t SFP_GetThr(SFP_T *Dev, SFP_THR_T *Thr)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	memcpy(Thr, &Dev->Thr, sizeof(Dev->Thr));
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
-int32_t SFP_GetRxPwr(SFP_T *Dev, float *RxPwr)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	memcpy(RxPwr, &Dev->RxPwr, sizeof(Dev->RxPwr));
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
-int32_t SFP_GetTxPwr(SFP_T *Dev, float *TxPwr)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	memcpy(TxPwr, &Dev->TxPwr, sizeof(Dev->TxPwr));
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
-int32_t SFP_GetTemp(SFP_T *Dev, float *Temp)
-{
-	if (!Dev)
-		return -1;
-	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_LOCK(Dev);
-	
-	memcpy(Temp, &Dev->Temp, sizeof(Dev->Temp));
-	
-	BSP_DEV_UNLOCK(Dev);
-	return 0;
-}
-
 int32_t SFP_SetTxDisable(SFP_T *Dev, uint32_t TxDisable)
 {
 	if (!Dev)
@@ -380,6 +409,8 @@ int32_t SFP_Update(SFP_T *Dev)
 	if (SFP_I2C_ConfigSwitch(Dev))
 		goto error;
 	
+	if (SFP_UpdateFreq(Dev))
+		goto error;	
 	if (SFP_ReadTemp(Dev))
 		goto error;
 	if (SFP_ReadRxPwr(Dev))
@@ -438,11 +469,15 @@ int32_t SFP_Init(SFP_T *Dev, BSP_I2C_CTRL_T *I2CCtrl, BSP_PIN_CTRL_T *PinCtrl)
 	if (SFP_I2C_ConfigSwitch(Dev))
 		goto error;
 	
+	if (SFP_ReadProductOpts(Dev))
+		goto error;
 	if (SFP_ReadVendor(Dev))
 		goto error;
 	if (SFP_ReadPartNumber(Dev))
 		goto error;
 	if (SFP_ReadSerialNumber(Dev))
+		goto error;
+	if (SFP_ReadFreq(Dev, NULL))
 		goto error;
 	if (SFP_ReadTempThrs(Dev))
 		goto error;
