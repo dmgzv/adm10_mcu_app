@@ -466,14 +466,14 @@ static int32_t PROFILE_ADM_CLIENT_CheckClSFPSetFreqValue(PROFILE_T *Profile, uin
 	float __MinFreq, __MaxFreq, __FreqSp;
 	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMInfoClSFPMinFreqIdx[Idx], &__MinFreq);
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMInfoClSFPMaxFreqIdx[Idx], &__MaxFreq);
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMInfoClSFPFreqSpIdx[Idx], &__FreqSp);
+	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPMinFreqIdx[Idx], &__MinFreq);
+	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPMaxFreqIdx[Idx], &__MaxFreq);
+	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPFreqSpIdx[Idx], &__FreqSp);
 	
 	Freq = *((float*)Value) * 1000000;
 	MinFreq = __MinFreq * 1000000;
 	MaxFreq = __MaxFreq * 1000000;
-	FreqSp = FreqSp * 1000;
+	FreqSp = __FreqSp * 1000;
 	
 	if ((Freq < MinFreq) || (Freq > MaxFreq) || (Freq % FreqSp))
 		return -1;
@@ -634,13 +634,13 @@ void PROFILE_ADM_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 	{
 		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[i], &State);
 		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPEnableTxIdx[i], &SFPEnableTx);
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPEnableTxIdx[i], &SFPSetFreq);
+		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqIdx[i], &SFPSetFreq);
 		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[i], &DataType);
 		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetLoopbackIdx[i], &Loopback);
 		
 		
 		SFP_ConfigTxDisable(&sfp[BSP_SFP_CLIENT_IDX(i)], SFPEnableTx ? 0 : 1);
-		SFP_ConfigFreq(&sfp[BSP_SFP_CLIENT_IDX(i)], SFPSetFreq * 1000);
+		SFP_ConfigFreq(&sfp[BSP_SFP_CLIENT_IDX(i)], SFPSetFreq * 1000000);
 		
 		if (DataType == 128)
 		{
@@ -695,7 +695,7 @@ static void PROFILE_ADM_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, uin
 	char Tmp[PROFILE_STRING_MAX_LEN];
 	uint32_t UpdateFlag;
 	uint32_t State;
-	float __MinFreq, __MaxFreq, __FreqSp;
+	float __Freq, __MinFreq, __MaxFreq, __FreqSp;
 	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
 	
 	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
@@ -743,7 +743,8 @@ static void PROFILE_ADM_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, uin
 				MinFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Min;
 				MaxFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Max;
 				FreqSp = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Spacing;
-				PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqIdx[Idx], &Freq);
+				PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqIdx[Idx], &__Freq);
+				Freq = __Freq * 1000000;
 				
 				__MinFreq = MinFreq / 1000000.0f;
 				__MaxFreq = MaxFreq / 1000000.0f;

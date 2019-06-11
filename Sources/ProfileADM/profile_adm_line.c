@@ -348,14 +348,14 @@ static int32_t PROFILE_ADM_LINE_CheckLnSFPSetFreqValue(PROFILE_T *Profile, uint8
 	float __MinFreq, __MaxFreq, __FreqSp;
 	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMInfoLnSFPMinFreqIdx[Idx], &__MinFreq);
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMInfoLnSFPMaxFreqIdx[Idx], &__MaxFreq);
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMInfoLnSFPFreqSpIdx[Idx], &__FreqSp);
+	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMinFreqIdx[Idx], &__MinFreq);
+	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMaxFreqIdx[Idx], &__MaxFreq);
+	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPFreqSpIdx[Idx], &__FreqSp);
 	
 	Freq = *((float*)Value) * 1000000;
 	MinFreq = __MinFreq * 1000000;
 	MaxFreq = __MaxFreq * 1000000;
-	FreqSp = FreqSp * 1000;
+	FreqSp = __FreqSp * 1000;
 	
 	if ((Freq < MinFreq) || (Freq > MaxFreq) || (Freq % FreqSp))
 		return -1;
@@ -545,7 +545,7 @@ void PROFILE_ADM_LINE_UpdateConfigs(PROFILE_T *Profile)
 		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetLoopbackIdx[i], &Loopback);
 		
 		SFP_ConfigTxDisable(&sfp[BSP_SFP_LINE_IDX(i)], SFPEnableTx ? 0 : 1);
-		SFP_ConfigFreq(&sfp[BSP_SFP_LINE_IDX(i)], SFPSetFreq * 1000);
+		SFP_ConfigFreq(&sfp[BSP_SFP_LINE_IDX(i)], SFPSetFreq * 1000000);
 		
 		if (Loopback == 0)
 		{
@@ -567,7 +567,7 @@ static void PROFILE_ADM_LINE_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint3
 	char Tmp[PROFILE_STRING_MAX_LEN];
 	uint32_t UpdateFlag;
 	uint32_t State;
-	float __MinFreq, __MaxFreq, __FreqSp;
+	float __Freq, __MinFreq, __MaxFreq, __FreqSp;
 	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
 	
 	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetStateIdx[Idx], &State);
@@ -616,7 +616,8 @@ static void PROFILE_ADM_LINE_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint3
 				MinFreq = sfp[BSP_SFP_LINE_IDX(Idx)].Freq.Min;
 				MaxFreq = sfp[BSP_SFP_LINE_IDX(Idx)].Freq.Max;
 				FreqSp = sfp[BSP_SFP_LINE_IDX(Idx)].Freq.Spacing;
-				PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqIdx[Idx], &Freq);
+				PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqIdx[Idx], &__Freq);
+				Freq = __Freq * 1000000;
 				
 				__MinFreq = MinFreq / 1000000.0f;
 				__MaxFreq = MaxFreq / 1000000.0f;
