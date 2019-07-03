@@ -21,7 +21,7 @@
 #define PROFILE_TYPE_OID 			10
 #define PROFILE_TYPE_IP 			11
 #define PROFILE_TYPE_CNT 			12
-#define PROFILE_TYPE_CNT64 		13
+#define PROFILE_TYPE_UINT64 	13
 #define PROFILE_TYPE_BITMSK 	14
 
 #define PROFILE_COLOR_NA 				0 //- параметр не может иметь соответствующего типа аварии. Цвет для данного параметра не определен.

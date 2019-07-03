@@ -99,14 +99,8 @@ void BSP_SFP_PIN_Process(void)
 			{
 				for (i = 0; i < 20; i++)
 				{
-					if (!BSP_SFP_PIN_InitLinkLed(i))
-					{
-						BSP_SFP_PIN_SetLinkLed(i, BSP_SFP_PIN_LED_GREEN);
-					}
-					if (!BSP_SFP_PIN_InitLed(i))
-					{
-						BSP_SFP_PIN_SetLed(i, BSP_SFP_PIN_LED_YELLOW);
-					}
+					BSP_SFP_PIN_InitAlarmLed(i);
+					BSP_SFP_PIN_InitTxEnableLed(i);
 				}
 			}
 		}		
@@ -194,7 +188,7 @@ int32_t BSP_SFP_PIN_GetTxDisable(uint32_t SfpNum, uint32_t *TxDisable)
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_InitLinkLed(uint32_t SfpNum)
+int32_t BSP_SFP_PIN_InitTxEnableLed(uint32_t SfpNum)
 {
 	uint32_t bank, pin;
 	
@@ -211,7 +205,7 @@ int32_t BSP_SFP_PIN_InitLinkLed(uint32_t SfpNum)
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_SetLinkLed(uint32_t SfpNum, uint32_t Color)
+int32_t BSP_SFP_PIN_SetTxEnableLed(uint32_t SfpNum, uint32_t Color)
 {
 	uint32_t bank, pin, out;
 	
@@ -236,7 +230,7 @@ int32_t BSP_SFP_PIN_SetLinkLed(uint32_t SfpNum, uint32_t Color)
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_GetLinkLed(uint32_t SfpNum, uint32_t *Color)
+int32_t BSP_SFP_PIN_GetTxEnableLed(uint32_t SfpNum, uint32_t *Color)
 {
 	uint32_t bank, pin;
 	
@@ -255,7 +249,7 @@ int32_t BSP_SFP_PIN_GetLinkLed(uint32_t SfpNum, uint32_t *Color)
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_InitLed(uint32_t SfpNum)
+int32_t BSP_SFP_PIN_InitAlarmLed(uint32_t SfpNum)
 {
 	if (SfpNum > 19)
 		return -1;
@@ -271,7 +265,7 @@ int32_t BSP_SFP_PIN_InitLed(uint32_t SfpNum)
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_SetLed(uint32_t SfpNum, uint32_t Color)
+int32_t BSP_SFP_PIN_SetAlarmLed(uint32_t SfpNum, uint32_t Color)
 {
 	uint8_t Out;
 	
@@ -303,7 +297,7 @@ int32_t BSP_SFP_PIN_SetLed(uint32_t SfpNum, uint32_t Color)
 	return 0;
 }
 
-int32_t BSP_SFP_PIN_GetLed(uint32_t SfpNum, uint32_t *Color)
+int32_t BSP_SFP_PIN_GetAlarmLed(uint32_t SfpNum, uint32_t *Color)
 {	
 	if ((SfpNum > 19) || (!Color))
 		return -1;

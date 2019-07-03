@@ -42,7 +42,7 @@
 	#error	Define BSP_CONFIG_USE_UART5 in bsp_config.h for SHELL_IFACE
 #endif
 
-SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellUart4;
+SHELL_T __attribute__((section ("CCM_DATA"))) ShellUart4;
 const SHELL_IFACE_T ShellUart4Iface = 
 {
 	NULL,
@@ -53,7 +53,7 @@ const SHELL_IFACE_T ShellUart4Iface =
 	SHELL_IFACE_UART4
 };
 
-SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellUart5;
+SHELL_T __attribute__((section ("CCM_DATA"))) ShellUart5;
 const SHELL_IFACE_T ShellUart5Iface = 
 {
 	NULL,
@@ -64,8 +64,8 @@ const SHELL_IFACE_T ShellUart5Iface =
 	SHELL_IFACE_UART5
 };
 
-SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnet;
-SHELL_TELNET_PRIV_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnetPriv;
+SHELL_T __attribute__((section ("CCM_DATA"))) ShellTelnet;
+SHELL_TELNET_PRIV_T __attribute__((section ("CCM_DATA"))) ShellTelnetPriv;
 const SHELL_IFACE_T ShellTelnetIface = 
 {
 	&SHELL_TELNET_Init,
@@ -88,13 +88,20 @@ typedef union {
 }PROFILE_VALUES_STATIC_T;
 
 extern PROFILE_DESCR_T ProfileADMDescr;
-PROFILE_DESCR_T /*__attribute__((section ("CCM_DATA")))*/ *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADMDescr};
+PROFILE_DESCR_T __attribute__((section ("CCM_DATA"))) *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADMDescr};
 
-PROFILE_T /*__attribute__((section ("CCM_DATA")))*/ Profile;
-PROFILE_VALUES_STATIC_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValuesStatic;
-PROFILE_VALUES_DYNAMIC_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValuesDynamic;
-PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart4;
-PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart5;
+PROFILE_T __attribute__((section ("CCM_DATA"))) Profile;
+PROFILE_VALUES_STATIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesStatic;
+PROFILE_VALUES_DYNAMIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesDynamic;
+PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart4;
+PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart5;
+
+const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= {
+	BSP_PROJECT,
+	BSP_HW_VERSION,
+	BSP_SW_VERSION,
+	0xFFFF
+};
 
 osThreadId SystemThreadHandle;
 /* Private functions */

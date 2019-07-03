@@ -6,27 +6,14 @@
 
 #ifdef BSP_CONFIG_USE_LOG
 
-char LogLines[LOG_LINES_CNT][LOG_LINE_SIZE];
+char __attribute__((section ("CCM_DATA"))) LogLines[LOG_LINES_CNT][LOG_LINE_SIZE];
 uint32_t LogLineIndex = 0;
 uint32_t LogLinesCnt = 0;
 #ifdef BSP_CONFIG_USE_FREERTOS
 static osMutexId LogMutexId;
 osMutexDef(Log);
-uint32_t LogLinesTime[LOG_LINES_CNT];
+uint32_t __attribute__((section ("CCM_DATA"))) LogLinesTime[LOG_LINES_CNT];
 #endif /*BSP_CONFIG_USE_FREERTOS*/
-
-static void __LOG_Increment(void)
-{
-#ifdef BSP_CONFIG_USE_FREERTOS
-	LogLinesTime[LogLineIndex] = osKernelSysTick();
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	if (LogLineIndex == (LOG_LINES_CNT - 1))
-		LogLineIndex = 0;
-	else
-		LogLineIndex++;
-	if (LogLinesCnt != LOG_LINES_CNT)
-		LogLinesCnt++;
-}
 
 void __LOG_Init(void)
 {
@@ -46,10 +33,14 @@ void __LOG_Add(char *str, ...)
 	osMutexWait( LogMutexId, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 	va_start(va, str);
-	vsnprintf(LogLines[LogLineIndex], LOG_LINE_SIZE, str, va);
+	vsnprintf(LogLines[LogLineIndex % LOG_LINES_CNT], LOG_LINE_SIZE, str, va);
 	va_end(va);
-	LogLines[LogLineIndex][LOG_LINE_SIZE - 1] = 0;
-	__LOG_Increment();
+	LogLines[LogLineIndex % LOG_LINES_CNT][LOG_LINE_SIZE - 1] = 0;
+#ifdef BSP_CONFIG_USE_FREERTOS
+	LogLinesTime[LogLineIndex % LOG_LINES_CNT] = osKernelSysTick();
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+	LogLineIndex++;
+	LogLinesCnt = LogLineIndex < LOG_LINES_CNT ? LogLineIndex : LOG_LINES_CNT;
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexRelease( LogMutexId);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -62,9 +53,13 @@ void __LOG_AddLine(char *Line)
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexWait( LogMutexId, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
-	strncpy(LogLines[LogLineIndex], Line, LOG_LINE_SIZE);
-	LogLines[LogLineIndex][LOG_LINE_SIZE - 1] = 0;
-	__LOG_Increment();
+	strncpy(LogLines[LogLineIndex % LOG_LINES_CNT], Line, LOG_LINE_SIZE);
+	LogLines[LogLineIndex % LOG_LINES_CNT][LOG_LINE_SIZE - 1] = 0;
+#ifdef BSP_CONFIG_USE_FREERTOS
+	LogLinesTime[LogLineIndex % LOG_LINES_CNT] = osKernelSysTick();
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+	LogLineIndex++;
+	LogLinesCnt = LogLineIndex < LOG_LINES_CNT ? LogLineIndex : LOG_LINES_CNT;
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexRelease( LogMutexId);
 #endif /*BSP_CONFIG_USE_FREERTOS*/

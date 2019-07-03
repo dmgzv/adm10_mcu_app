@@ -40,13 +40,13 @@ int32_t BSP_SFP_PIN_InitTxDisable(uint32_t SfpNum);
 int32_t BSP_SFP_PIN_SetTxDisable(uint32_t SfpNum, uint32_t TxDisable);
 int32_t BSP_SFP_PIN_GetTxDisable(uint32_t SfpNum, uint32_t *TxDisable);
 	
-int32_t BSP_SFP_PIN_InitLinkLed(uint32_t SfpNum);
-int32_t BSP_SFP_PIN_SetLinkLed(uint32_t SfpNum, uint32_t Color);
-int32_t BSP_SFP_PIN_GetLinkLed(uint32_t SfpNum, uint32_t *Color);
+int32_t BSP_SFP_PIN_InitTxEnableLed(uint32_t SfpNum);
+int32_t BSP_SFP_PIN_SetTxEnableLed(uint32_t SfpNum, uint32_t Color);
+int32_t BSP_SFP_PIN_GetTxEnableLed(uint32_t SfpNum, uint32_t *Color);
 	
-int32_t BSP_SFP_PIN_InitLed(uint32_t SfpNum);
-int32_t BSP_SFP_PIN_SetLed(uint32_t SfpNum, uint32_t Color);
-int32_t BSP_SFP_PIN_GetLed(uint32_t SfpNum, uint32_t *Color);
+int32_t BSP_SFP_PIN_InitAlarmLed(uint32_t SfpNum);
+int32_t BSP_SFP_PIN_SetAlarmLed(uint32_t SfpNum, uint32_t Color);
+int32_t BSP_SFP_PIN_GetAlarmLed(uint32_t SfpNum, uint32_t *Color);
 	
 int32_t BSP_SFP_PIN_InitRateSel(uint32_t SfpNum);
 int32_t BSP_SFP_PIN_SetRateSel(uint32_t SfpNum, uint32_t RateSel);

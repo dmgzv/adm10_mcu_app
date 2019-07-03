@@ -217,7 +217,7 @@ static const uint32_t ProfileADMPerfLnODU2BBEIdx[PROFILE_ADM_LINE_PORTS] =
 
 static const uint32_t ProfileADMPerfLnODU2UASIdx[PROFILE_ADM_LINE_PORTS] = 
 { 
-	PROFILE_ADM_LN_1_ODU2_UAS_IDX, PROFILE_ADM_LN_2_ODU2_UAS_IDX, PROFILE_ADM_LN_3_ODU2_UAS_IDX, PROFILE_ADM_LN_4_ODU2_UAS_IDX
+	PROFILE_ADM_LN_1_ENABLETXLED_IDX, PROFILE_ADM_LN_2_ENABLETXLED_IDX, PROFILE_ADM_LN_3_ENABLETXLED_IDX, PROFILE_ADM_LN_4_ENABLETXLED_IDX
 };
 
 static const uint32_t ProfileADMPerfLnODU1EBIdx[PROFILE_ADM_LINE_PORTS][4] = 
@@ -298,6 +298,16 @@ static const uint32_t ProfileADMPerfLnODU0UASIdx[PROFILE_ADM_LINE_PORTS][8] =
 	PROFILE_ADM_LN_2_ODU0_1_UAS_IDX, PROFILE_ADM_LN_2_ODU0_2_UAS_IDX, PROFILE_ADM_LN_2_ODU0_3_UAS_IDX, PROFILE_ADM_LN_2_ODU0_4_UAS_IDX, PROFILE_ADM_LN_2_ODU0_5_UAS_IDX, PROFILE_ADM_LN_2_ODU0_6_UAS_IDX, PROFILE_ADM_LN_2_ODU0_7_UAS_IDX, PROFILE_ADM_LN_2_ODU0_8_UAS_IDX,
 	PROFILE_ADM_LN_3_ODU0_1_UAS_IDX, PROFILE_ADM_LN_3_ODU0_2_UAS_IDX, PROFILE_ADM_LN_3_ODU0_3_UAS_IDX, PROFILE_ADM_LN_3_ODU0_4_UAS_IDX, PROFILE_ADM_LN_3_ODU0_5_UAS_IDX, PROFILE_ADM_LN_3_ODU0_6_UAS_IDX, PROFILE_ADM_LN_3_ODU0_7_UAS_IDX, PROFILE_ADM_LN_3_ODU0_8_UAS_IDX,
 	PROFILE_ADM_LN_4_ODU0_1_UAS_IDX, PROFILE_ADM_LN_4_ODU0_2_UAS_IDX, PROFILE_ADM_LN_4_ODU0_3_UAS_IDX, PROFILE_ADM_LN_4_ODU0_4_UAS_IDX, PROFILE_ADM_LN_4_ODU0_5_UAS_IDX, PROFILE_ADM_LN_4_ODU0_6_UAS_IDX, PROFILE_ADM_LN_4_ODU0_7_UAS_IDX, PROFILE_ADM_LN_4_ODU0_8_UAS_IDX,
+};
+
+static const uint32_t ProfileADMLedLnAlarmIdx[PROFILE_ADM_LINE_PORTS] = 
+{ 
+	PROFILE_ADM_LN_1_ALARMLED_IDX, PROFILE_ADM_LN_2_ALARMLED_IDX, PROFILE_ADM_LN_3_ALARMLED_IDX, PROFILE_ADM_LN_4_ALARMLED_IDX
+};
+
+static const uint32_t ProfileADMLedLnEnableTxIdx[PROFILE_ADM_LINE_PORTS] = 
+{ 
+	PROFILE_ADM_LN_1_ENABLETXLED_IDX, PROFILE_ADM_LN_2_ENABLETXLED_IDX, PROFILE_ADM_LN_3_ENABLETXLED_IDX, PROFILE_ADM_LN_4_ENABLETXLED_IDX
 };
 
 static const uint32_t ProfileADMPortLnInfoIdx[PROFILE_ADM_LINE_PORTS] = 
@@ -1375,6 +1385,134 @@ static void PROFILE_ADM_LINE_UpdatePerfValues(PROFILE_T *Profile, uint32_t Idx)
 		PROFILE_ADM_LINE_UpdateODU0PerfValues(Profile, Idx, i);
 }
 
+static void PROFILE_ADM_LINE_UpdateAlarmLedValue(PROFILE_T *Profile, uint32_t Idx)
+{
+	uint32_t State, LedColor, i;
+	uint8_t Color, ParamColor, ParamState;
+	
+	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetStateIdx[Idx], &State);
+	if (State == PROFILE_STATE_IS)
+	{
+		Color = PROFILE_COLOR_NORMAL;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPStateIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPStateIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPTempIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPTempIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPRxPwrIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPRxPwrIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPTxPwrIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPTxPwrIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnOTU2AlarmsIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnOTU2AlarmsIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnODU2AlarmsIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnODU2AlarmsIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnOPU2AlarmsIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnOPU2AlarmsIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		for (i = 0; i < 4; i++)
+		{
+			PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnODU1AlarmsIdx[Idx][i], &ParamColor);
+			PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnODU1AlarmsIdx[Idx][i], &ParamState);
+			if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+				Color = ParamColor;
+		}
+		
+		for (i = 0; i < 4; i++)
+		{
+			PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnOPU1AlarmsIdx[Idx][i], &ParamColor);
+			PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnOPU1AlarmsIdx[Idx][i], &ParamState);
+			if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+				Color = ParamColor;
+		}
+		
+		for (i = 0; i < 8; i++)
+		{
+			PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnODU0AlarmsIdx[Idx][i], &ParamColor);
+			PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnODU0AlarmsIdx[Idx][i], &ParamState);
+			if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+				Color = ParamColor;
+		}
+		
+		if (Color == 7)
+		{
+			BSP_SFP_PIN_SetAlarmLed(BSP_SFP_LINE_IDX(Idx), BSP_SFP_PIN_LED_RED);
+			LedColor = 2;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedLnAlarmIdx[Idx], &LedColor);
+		}
+		else if ((Color > 3) && (Color < 7))
+		{
+			BSP_SFP_PIN_SetAlarmLed(BSP_SFP_LINE_IDX(Idx), BSP_SFP_PIN_LED_YELLOW);
+			LedColor = 3;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedLnAlarmIdx[Idx], &LedColor);
+		}
+		else if (Color == 3)
+		{
+			BSP_SFP_PIN_SetAlarmLed(BSP_SFP_LINE_IDX(Idx), BSP_SFP_PIN_LED_GREEN);
+			LedColor = 1;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedLnAlarmIdx[Idx], &LedColor);
+		}
+		else
+		{
+			BSP_LED_Set(BSP_LED_TYPE_ALARM, BSP_LED_COLOR_NO);
+			LedColor = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedLnAlarmIdx[Idx], &LedColor);
+		}
+	}
+	else
+	{
+		BSP_SFP_PIN_SetAlarmLed(BSP_SFP_LINE_IDX(Idx), BSP_SFP_PIN_LED_OFF);
+		LedColor = 0;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedLnAlarmIdx[Idx], &LedColor);
+	}
+}
+
+static void PROFILE_ADM_LINE_UpdateEnableTxLedValue(PROFILE_T *Profile, uint32_t Idx)
+{
+	uint32_t EnableTx, LedColor;
+	
+	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPEnableTxIdx[Idx], &EnableTx);
+	
+	if (EnableTx)
+	{
+		BSP_SFP_PIN_SetTxEnableLed(BSP_SFP_LINE_IDX(Idx), BSP_SFP_PIN_LED_GREEN);
+		LedColor = 1;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedLnEnableTxIdx[Idx], &LedColor);
+	}
+	else
+	{
+		BSP_SFP_PIN_SetTxEnableLed(BSP_SFP_LINE_IDX(Idx), BSP_SFP_PIN_LED_OFF);
+		LedColor = 0;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedLnEnableTxIdx[Idx], &LedColor);
+	}
+}
+
+static void PROFILE_ADM_LINE_UpdateLeds(PROFILE_T *Profile, uint32_t Idx)
+{
+	PROFILE_ADM_LINE_UpdateAlarmLedValue(Profile, Idx);
+	PROFILE_ADM_LINE_UpdateEnableTxLedValue(Profile, Idx);
+}
+
 void PROFILE_ADM_LINE_UpdateValues(PROFILE_T *Profile)
 {
 	uint32_t i;
@@ -1384,5 +1522,6 @@ void PROFILE_ADM_LINE_UpdateValues(PROFILE_T *Profile)
 		PROFILE_ADM_LINE_UpdateInfoAndStaticValues(Profile, i);
 		PROFILE_ADM_LINE_UpdateDynamicValues(Profile, i);
 		PROFILE_ADM_LINE_UpdatePerfValues(Profile, i);
+		PROFILE_ADM_LINE_UpdateLeds(Profile, i);
 	}
 }

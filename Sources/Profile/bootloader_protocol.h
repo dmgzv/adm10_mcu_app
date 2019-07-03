@@ -3,6 +3,9 @@
 
 #include "bootloader.h"
 
+#define BOOTLOADER_PROTOCOL_CMD_MAX_SIZE		512
+#define BOOTLOADER_PROTOCOL_RSP_MAX_SIZE		(6*1024)
+
 uint32_t BOOTLOADER_PROTOCOL_UpdateFw(BOOTLOADER_T *Bootloader, char *cmd, char *rsp, uint32_t *complete);
 uint32_t BOOTLOADER_PROTOCOL_ParseCommand(BOOTLOADER_T *Bootloader, char *cmd, char *rsp, uint32_t *complete);
 

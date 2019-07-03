@@ -18,6 +18,8 @@ typedef struct {
 	PROFILE_VALUES_T Values;
 	uint32_t TablesChanges;
 	uint32_t SetEnable;
+	uint32_t ValuesLock;
+	uint16_t ValuesCRC16;
 	PROFILE_FLASH_T ProfileFlash;
 	BOOTLOADER_T Bootloader;
 } PROFILE_T;
@@ -33,22 +35,22 @@ int32_t PROFILE_SetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *GetValue);
 int32_t PROFILE_SetFactoryValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
 
-void PROFILE_SetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t DegradeColor, uint8_t FailureColor);
-void PROFILE_GetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *DegradeColor, uint8_t *FailureColor);
-void PROFILE_SetFactoryAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
+int32_t PROFILE_SetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t DegradeColor, uint8_t FailureColor);
+int32_t PROFILE_GetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *DegradeColor, uint8_t *FailureColor);
+int32_t PROFILE_SetFactoryAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
 	
-void PROFILE_SetFactory(PROFILE_T *Profile, uint8_t Table);
-void PROFILE_SetDefault(PROFILE_T *Profile);
+int32_t PROFILE_SetFactory(PROFILE_T *Profile, uint8_t Table);
+int32_t PROFILE_SetDefault(PROFILE_T *Profile);
 
-void PROFILE_GetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetColor);
-void PROFILE_SetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetColor);
-void PROFILE_SetColorToThresholds(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
-void PROFILE_SetColorToDegrade(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
-void PROFILE_SetColorToFailure(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
+int32_t PROFILE_GetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetColor);
+int32_t PROFILE_SetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetColor);
+int32_t PROFILE_SetColorToThresholds(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
+int32_t PROFILE_SetColorToDegrade(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
+int32_t PROFILE_SetColorToFailure(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
 
-void PROFILE_GetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetState);
-void PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetState);
+int32_t PROFILE_GetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetState);
+int32_t PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetState);
 
-void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint8_t ColorType, uint8_t State);
+int32_t PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint8_t ColorType, uint8_t State);
 
 #endif /* __PROFILE_H */

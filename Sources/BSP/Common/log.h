@@ -8,7 +8,7 @@
 #ifdef BSP_CONFIG_USE_LOG
 
 #define LOG_LINE_SIZE	64
-#define LOG_LINES_CNT	160
+#define LOG_LINES_CNT	256
 
 void __LOG_Init(void);
 void __LOG_Add(char *str, ...);

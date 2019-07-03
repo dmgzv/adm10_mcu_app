@@ -342,6 +342,12 @@ error:
 	return -1;
 }
 
+int32_t PROFILE_FLASH_LastRecordLoad(PROFILE_FLASH_T *ProfileFlash)
+{
+	uint32_t Dummy;
+	return PROFILE_FLASH_RecordLoad(ProfileFlash, ProfileFlash->ConfigIdx -1, &Dummy);
+}
+
 int32_t PROFILE_FLASH_ParamsLoad(PROFILE_FLASH_T *ProfileFlash)
 {
 	uint32_t i;

@@ -55,6 +55,7 @@ int32_t PROFILE_FLASH_ProfileIdxSave(PROFILE_FLASH_T *ProfileFlash, uint32_t Pro
 
 void PROFILE_FLASH_ParamsSave(PROFILE_FLASH_T *ProfileFlash);
 int32_t PROFILE_FLASH_ParamsLoad(PROFILE_FLASH_T *ProfileFlash);
+int32_t PROFILE_FLASH_LastRecordLoad(PROFILE_FLASH_T *ProfileFlash);
 
 void PROFILE_FLASH_LangpackSave(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index);
 void PROFILE_FLASH_LangpackLoad(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index);

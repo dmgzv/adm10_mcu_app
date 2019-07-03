@@ -408,6 +408,22 @@ static const uint32_t ProfileADMPerfClEthTxErrsIdx[PROFILE_ADM_CLIENT_PORTS] =
 	PROFILE_ADM_CL_13_ETH_TXERRS_IDX, PROFILE_ADM_CL_14_ETH_TXERRS_IDX, PROFILE_ADM_CL_15_ETH_TXERRS_IDX,	PROFILE_ADM_CL_16_ETH_TXERRS_IDX
 };
 
+static const uint32_t ProfileADMLedClAlarmIdx[PROFILE_ADM_CLIENT_PORTS] = 
+{
+	PROFILE_ADM_CL_1_ALARMLED_IDX, PROFILE_ADM_CL_2_ALARMLED_IDX, PROFILE_ADM_CL_3_ALARMLED_IDX, PROFILE_ADM_CL_4_ALARMLED_IDX,
+	PROFILE_ADM_CL_5_ALARMLED_IDX, PROFILE_ADM_CL_6_ALARMLED_IDX, PROFILE_ADM_CL_7_ALARMLED_IDX, PROFILE_ADM_CL_8_ALARMLED_IDX,
+	PROFILE_ADM_CL_9_ALARMLED_IDX, PROFILE_ADM_CL_10_ALARMLED_IDX, PROFILE_ADM_CL_11_ALARMLED_IDX, PROFILE_ADM_CL_12_ALARMLED_IDX,
+	PROFILE_ADM_CL_13_ALARMLED_IDX, PROFILE_ADM_CL_14_ALARMLED_IDX, PROFILE_ADM_CL_15_ALARMLED_IDX,	PROFILE_ADM_CL_16_ALARMLED_IDX
+};
+
+static const uint32_t ProfileADMLedClEnableTxIdx[PROFILE_ADM_CLIENT_PORTS] = 
+{
+	PROFILE_ADM_CL_1_ENABLETXLED_IDX, PROFILE_ADM_CL_2_ENABLETXLED_IDX, PROFILE_ADM_CL_3_ENABLETXLED_IDX, PROFILE_ADM_CL_4_ENABLETXLED_IDX,
+	PROFILE_ADM_CL_5_ENABLETXLED_IDX, PROFILE_ADM_CL_6_ENABLETXLED_IDX, PROFILE_ADM_CL_7_ENABLETXLED_IDX, PROFILE_ADM_CL_8_ENABLETXLED_IDX,
+	PROFILE_ADM_CL_9_ENABLETXLED_IDX, PROFILE_ADM_CL_10_ENABLETXLED_IDX, PROFILE_ADM_CL_11_ENABLETXLED_IDX, PROFILE_ADM_CL_12_ENABLETXLED_IDX,
+	PROFILE_ADM_CL_13_ENABLETXLED_IDX, PROFILE_ADM_CL_14_ENABLETXLED_IDX, PROFILE_ADM_CL_15_ENABLETXLED_IDX,	PROFILE_ADM_CL_16_ENABLETXLED_IDX
+};
+
 static const uint32_t ProfileADMPortClInfoIdx[PROFILE_ADM_CLIENT_PORTS] = 
 { 
 	PROFILE_ADM_PTCLIENT1INFO_IDX, PROFILE_ADM_PTCLIENT2INFO_IDX, PROFILE_ADM_PTCLIENT3INFO_IDX, PROFILE_ADM_PTCLIENT4INFO_IDX,
@@ -1344,6 +1360,105 @@ static void PROFILE_ADM_CLIENT_UpdatePerfValues(PROFILE_T *Profile, uint32_t Idx
 	PROFILE_ADM_CLIENT_UpdateEthPerfValues(Profile, Idx);
 }
 
+static void PROFILE_ADM_CLIENT_UpdateAlarmLedValue(PROFILE_T *Profile, uint32_t Idx)
+{
+	uint32_t State, LedColor;
+	uint8_t Color, ParamColor, ParamState;
+	
+	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
+	if (State == PROFILE_STATE_IS)
+	{
+		Color = PROFILE_COLOR_NORMAL;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPStateIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPStateIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPTempIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPTempIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPRxPwrIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPRxPwrIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPTxPwrIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPTxPwrIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSDHRSAlarmsIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSDHRSAlarmsIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicClEthAlarmsIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicClEthAlarmsIdx[Idx], &ParamState);
+		if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		if (Color == 7)
+		{
+			BSP_SFP_PIN_SetAlarmLed(BSP_SFP_CLIENT_IDX(Idx), BSP_SFP_PIN_LED_RED);
+			LedColor = 2;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedClAlarmIdx[Idx], &LedColor);
+		}
+		else if ((Color > 3) && (Color < 7))
+		{
+			BSP_SFP_PIN_SetAlarmLed(BSP_SFP_CLIENT_IDX(Idx), BSP_SFP_PIN_LED_YELLOW);
+			LedColor = 3;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedClAlarmIdx[Idx], &LedColor);
+		}
+		else if (Color == 3)
+		{
+			BSP_SFP_PIN_SetAlarmLed(BSP_SFP_CLIENT_IDX(Idx), BSP_SFP_PIN_LED_GREEN);
+			LedColor = 1;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedClAlarmIdx[Idx], &LedColor);
+		}
+		else
+		{
+			BSP_LED_Set(BSP_LED_TYPE_ALARM, BSP_LED_COLOR_NO);
+			LedColor = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedClAlarmIdx[Idx], &LedColor);
+		}
+	}
+	else
+	{
+		BSP_SFP_PIN_SetAlarmLed(BSP_SFP_CLIENT_IDX(Idx), BSP_SFP_PIN_LED_OFF);
+		LedColor = 0;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedClAlarmIdx[Idx], &LedColor);
+	}
+}
+
+static void PROFILE_ADM_CLIENT_UpdateEnableTxLedValue(PROFILE_T *Profile, uint32_t Idx)
+{
+	uint32_t EnableTx, LedColor;
+	
+	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPEnableTxIdx[Idx], &EnableTx);
+	
+	if (EnableTx)
+	{
+		BSP_SFP_PIN_SetTxEnableLed(BSP_SFP_CLIENT_IDX(Idx), BSP_SFP_PIN_LED_GREEN);
+		LedColor = 1;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedClEnableTxIdx[Idx], &LedColor);
+	}
+	else
+	{
+		BSP_SFP_PIN_SetTxEnableLed(BSP_SFP_CLIENT_IDX(Idx), BSP_SFP_PIN_LED_OFF);
+		LedColor = 0;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_5, ProfileADMLedClEnableTxIdx[Idx], &LedColor);
+	}
+}
+
+static void PROFILE_ADM_CLIENT_UpdateLeds(PROFILE_T *Profile, uint32_t Idx)
+{
+	PROFILE_ADM_CLIENT_UpdateAlarmLedValue(Profile, Idx);
+	PROFILE_ADM_CLIENT_UpdateEnableTxLedValue(Profile, Idx);
+}
+
 void PROFILE_ADM_CLIENT_UpdateValues(PROFILE_T *Profile)
 {
 	uint32_t i;
@@ -1353,5 +1468,6 @@ void PROFILE_ADM_CLIENT_UpdateValues(PROFILE_T *Profile)
 		PROFILE_ADM_CLIENT_UpdateInfoAndStaticValues(Profile, i);
 		PROFILE_ADM_CLIENT_UpdateDynamicValues(Profile, i);
 		PROFILE_ADM_CLIENT_UpdatePerfValues(Profile, i);
+		PROFILE_ADM_CLIENT_UpdateLeds(Profile, i);
 	}
 }

@@ -2,76 +2,90 @@
 #include "crc.h"
 #include <string.h>
 
-#define BOOTLOADER_FW_UPDATE_FLAG	0x12345678
-
-static int32_t BOOTLOADER_CheckFw(BOOTLOADER_T *Bootloader, uint32_t *FwSize, uint16_t *FwCRC16)
+static int32_t BOOTLOADER_CheckEraseFlag(BOOTLOADER_T *Bootloader)
 {
-	uint32_t ReadFwSize;
-	uint16_t ReadFwCRC16, CheckFwCRC16;
-	
-	/*Check FW Size*/
-	ReadFwSize = *(uint32_t*)(BOOTLOADER_FW_ADDR + BOOTLOADER_FW_SIZE - sizeof(Bootloader->FwCRC16) - sizeof(Bootloader->FwSize));	
-	if ((ReadFwSize >= BOOTLOADER_FW_SIZE) || (ReadFwSize == 0))
+	BOOTLOADER_INFO_T *BootloaderInfo;
+	/*Check Erase FW Size*/
+	BootloaderInfo = (BOOTLOADER_INFO_T*)(BOOTLOADER_INFO);
+	if (BootloaderInfo->CRC16 == 0xFFFF)
 		return -1;
-	/*Check FW CRC16*/
-	ReadFwCRC16 = *(uint16_t*)(BOOTLOADER_FW_ADDR + BOOTLOADER_FW_SIZE - sizeof(Bootloader->FwCRC16));
-	CheckFwCRC16 = Calc_CRC16((char*)BOOTLOADER_FW_ADDR, ReadFwSize, 0);
-	if (CheckFwCRC16 != ReadFwCRC16)
-		return -1;
-	*FwSize = ReadFwSize;
-	*FwCRC16 = ReadFwCRC16;
 	return 0;
 }
 
-static int32_t BOOTLOADER_CheckNewFw(BOOTLOADER_T *Bootloader, uint32_t *FwSize, uint16_t *FwCRC16)
+static int32_t BOOTLOADER_ResetEraseFlag(BOOTLOADER_T *Bootloader)
 {
-	uint32_t ReadFwSize, FwUpdateFlag;
-	uint32_t FlashFwAddr, i, ReadSize, Size;
-	uint16_t ReadFwCRC16, CheckFwCRC16;
+	BOOTLOADER_INFO_T *BootloaderInfo;
+	uint16_t CRC16;
 	
-	/*Check FW Update Flag*/
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + BOOTLOADER_FLASH_FW_SIZE  - sizeof(Bootloader->FwCRC16) - sizeof(Bootloader->FwSize) - sizeof(uint32_t);;
-	if (BSP_FLASH_Read(FlashFwAddr, (char*)&FwUpdateFlag, sizeof(FwUpdateFlag)))
+	BootloaderInfo = (BOOTLOADER_INFO_T*)(BOOTLOADER_INFO);
+	CRC16 = 0x1234;
+	if (FLASH_Program((uint32_t)&BootloaderInfo->CRC16, (uint8_t*)&CRC16, sizeof(CRC16)))
 		return -1;
-	if (FwUpdateFlag != BOOTLOADER_FW_UPDATE_FLAG)
+	return 0;
+}
+
+static int32_t BOOTLOADER_CheckFw(BOOTLOADER_T *Bootloader)
+{
+	BOOTLOADER_INFO_T *FwInfo;
+	uint16_t CRC16;
+	
+	FwInfo = (BOOTLOADER_INFO_T*)(BOOTLOADER_FW_INFO);	
+	/*Check Project*/
+	if (memcmp(FwInfo->Project, BSP_PROJECT, sizeof(BSP_PROJECT)))
 		return -1;
-	/*Check FW Size*/
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + BOOTLOADER_FLASH_FW_SIZE - sizeof(Bootloader->FwCRC16) - sizeof(Bootloader->FwSize);
-	if (BSP_FLASH_Read(FlashFwAddr, (char*)&ReadFwSize, sizeof(ReadFwSize)))
-		return -1;
-	if ((ReadFwSize >= BOOTLOADER_FLASH_FW_SIZE) || (ReadFwSize == 0))
+	/*Check HW Version*/
+	if (memcmp(FwInfo->HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION)))
 		return -1;
 	/*Check FW CRC16*/
-	Size = ReadFwSize;
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR;
-	CheckFwCRC16 = 0;
-	while (Size)
+	CRC16 = Calc_CRC16((char*)BOOTLOADER_FW_ADDR, BOOTLOADER_FW_INFO - BOOTLOADER_FW_ADDR, 0);
+	if (CRC16 != FwInfo->CRC16)
+		return -1;
+	return 0;
+}
+
+static int32_t BOOTLOADER_CheckNewFw(BOOTLOADER_T *Bootloader)
+{
+	BOOTLOADER_INFO_T FwInfo;
+	uint32_t Addr, i;
+	uint16_t CRC16;
+	
+	/*Check FW Size*/
+	Addr = BSP_FLASH_FW_INFO;
+	if (BSP_FLASH_Read(BSP_FLASH_FW_INFO, (char*)&FwInfo, sizeof(FwInfo)))
+		return -1;
+	/*Check Project*/
+	if (memcmp(FwInfo.Project, BSP_PROJECT, sizeof(BSP_PROJECT)))
+		return -1;
+	/*Check HW Version*/
+	if (memcmp(FwInfo.HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION)))
+		return -1;
+	/*Check FW CRC16*/
+	CRC16 = 0;
+	for (Addr = BSP_FLASH_FW_ADDR; Addr < BSP_FLASH_FW_INFO; Addr += BSP_FLASH_PAGE_SIZE)
 	{
-		ReadSize = Size > BSP_FLASH_PAGE_SIZE ? BSP_FLASH_PAGE_SIZE : Size;
-		if (BSP_FLASH_Read(FlashFwAddr, (char*)Bootloader->Buffer, ReadSize))
-			return -1;
-		for (i = 0; i < ReadSize; i++)
-			CheckFwCRC16 = Calc_CRC16_Value(Bootloader->Buffer[i], CheckFwCRC16);
-		FlashFwAddr += ReadSize;
-		Size -= ReadSize;
+		if (BSP_FLASH_Read(Addr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
+			return -1;		
+		for (i = 0; i < BSP_FLASH_PAGE_SIZE; i++)
+			CRC16 = Calc_CRC16_Value(Bootloader->Buffer[i], CRC16);
 	}
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + BOOTLOADER_FLASH_FW_SIZE - sizeof(Bootloader->FwCRC16);
-	if (BSP_FLASH_Read(FlashFwAddr, (char*)&ReadFwCRC16, sizeof(ReadFwCRC16)))
+	if (CRC16 != FwInfo.CRC16)
 		return -1;
-	if (CheckFwCRC16 != ReadFwCRC16)
-		return -1;
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + BOOTLOADER_FLASH_FW_SIZE  - sizeof(Bootloader->FwCRC16) - sizeof(Bootloader->FwSize) - sizeof(uint32_t);;
-	if (BSP_FLASH_Read(FlashFwAddr, (char*)&ReadFwCRC16, sizeof(ReadFwCRC16)))
-		return -1;
-	*FwSize = ReadFwSize;
-	*FwCRC16 = ReadFwCRC16;
 	return 0;
 }
 
-static int32_t BOOTLOADER_UpdateFw(BOOTLOADER_T *Bootloader, uint32_t NewFwSize, uint16_t NewFwCRC16)
+static int32_t BOOTLOADER_EraseNewFw(BOOTLOADER_T *Bootloader)
 {
-	uint32_t FlashFwAddr, FwAddr, i, ReadSize, Size;
-	uint16_t CheckFwCRC16;
+	if (BSP_FLASH_WaitReady())
+		return -1;
+	if (BSP_FLASH_ErasePage(BSP_FLASH_FW_INFO))
+		return -1;
+	if (BSP_FLASH_WaitReady())
+		return -1;
+	return 0;
+}
+
+static int32_t BOOTLOADER_EraseFw(BOOTLOADER_T *Bootloader)
+{
 	uint32_t FirstSector, LastSector;
 	
 	if (FLASH_GetSector(BOOTLOADER_FW_ADDR, &FirstSector))
@@ -81,140 +95,141 @@ static int32_t BOOTLOADER_UpdateFw(BOOTLOADER_T *Bootloader, uint32_t NewFwSize,
 	if (FLASH_EraseSectors(FirstSector, LastSector - FirstSector + 1))
 		return -1;
 	
-	Size = NewFwSize;
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR;
+	return 0;
+}
+
+static int32_t BOOTLOADER_ResetFw(BOOTLOADER_T *Bootloader)
+{
+	BOOTLOADER_INFO_T *BootloaderInfo;
+	uint16_t CRC16;
+	
+	BootloaderInfo = (BOOTLOADER_INFO_T*)(BOOTLOADER_FW_INFO);
+	CRC16 = 0x0000;
+	if (FLASH_Program((uint32_t)&BootloaderInfo->CRC16, (uint8_t*)&CRC16, sizeof(CRC16)))
+		return -1;
+	return 0;
+}
+
+static int32_t BOOTLOADER_UpdateFw(BOOTLOADER_T *Bootloader)
+{
+	uint32_t FlashFwAddr, FwAddr;
+	
 	FwAddr = BOOTLOADER_FW_ADDR;
-	CheckFwCRC16 = 0;
-	while (Size)
+	for (FlashFwAddr = BSP_FLASH_FW_ADDR; FlashFwAddr < (BSP_FLASH_FW_ADDR + BSP_FLASH_FW_SIZE); FlashFwAddr += BSP_FLASH_PAGE_SIZE)
 	{
-		ReadSize = Size > BSP_FLASH_PAGE_SIZE ? BSP_FLASH_PAGE_SIZE : Size;
-		if (BSP_FLASH_Read(FlashFwAddr, (char*)Bootloader->Buffer, ReadSize))
+		if (BSP_FLASH_Read(FlashFwAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
 			return -1;
-		if (FLASH_Program(FwAddr, Bootloader->Buffer, ReadSize))
+		if (FLASH_Program(FwAddr, Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
 			return -1;
-		for (i = 0; i < ReadSize; i++)
-		{
-			if (*(uint8_t*)FwAddr != Bootloader->Buffer[i])
-				return -1;
-			CheckFwCRC16 = Calc_CRC16_Value(*(uint8_t*)FwAddr, CheckFwCRC16);
-			FwAddr++;
-		}
-		FlashFwAddr += ReadSize;
-		Size -= ReadSize;
+		FwAddr += BSP_FLASH_PAGE_SIZE;
 	}
-	if (CheckFwCRC16 != NewFwCRC16)
-		return -1;
-	FwAddr = (BOOTLOADER_FW_ADDR + BOOTLOADER_FW_SIZE - sizeof(Bootloader->FwCRC16) - sizeof(Bootloader->FwSize));
-	if (FLASH_Program(FwAddr, (uint8_t*)&NewFwSize, sizeof(NewFwSize)))
-		return -1;
-	if (*(uint32_t*)FwAddr != NewFwSize)
-		return -1;
-	FwAddr = (BOOTLOADER_FW_ADDR + BOOTLOADER_FW_SIZE - sizeof(Bootloader->FwCRC16));
-	if (FLASH_Program(FwAddr, (uint8_t*)&CheckFwCRC16, sizeof(CheckFwCRC16)))
-		return -1;
-	if (*(uint16_t*)FwAddr != CheckFwCRC16)
-		return -1;
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + BOOTLOADER_FLASH_FW_SIZE - BSP_FLASH_PAGE_SIZE;
-	if (BSP_FLASH_ErasePage(FlashFwAddr))
-		return -1;
+	
 	return 0;
 }
 
 void BOOTLOADER_StartFw(BOOTLOADER_T *Bootloader)
 {
 	// В нормальном режиме копия равна оригиналу и обе целостные, попадаем сюда
-	uint32_t SP = *(uint32_t*)( BOOTLOADER_FLASH_FW_ADDR );
+	uint32_t SP = *(uint32_t*)( BSP_FLASH_FW_ADDR );
 	uint32_t FwAddr;
 	if( ( SP & 0x2FFE0000 ) == 0x20000000 )
 	{
 		__disable_irq();
 		__set_MSP( SP );// инициализируем SP значением из основной программы (первые 4 байта)
-		FwAddr = *(uint32_t*)( BOOTLOADER_FLASH_FW_ADDR + 4 );//стартовый адрес в следующих 4 байтах
+		FwAddr = *(uint32_t*)( BSP_FLASH_FW_ADDR + 4 );//стартовый адрес в следующих 4 байтах
 		( (void (*)(void))FwAddr )();//Запуск программы
 	}
 }
 
-void BOOTLOADER_Init(BOOTLOADER_T *Bootloader)
-{
-	
-}
-
 int32_t BOOTLOADER_CheckAndUpdateFw(BOOTLOADER_T *Bootloader)
-{
-	uint32_t FwSize, NewFwSize;
-	uint16_t FwCRC16, NewFwCRC16;
-	
-	if (!BOOTLOADER_CheckNewFw(Bootloader, &NewFwSize, &NewFwCRC16))
+{	
+	if (BOOTLOADER_CheckEraseFlag(Bootloader))
 	{
-		return BOOTLOADER_UpdateFw(Bootloader, NewFwSize, NewFwCRC16);
+		BOOTLOADER_EraseFw(Bootloader);
+		BOOTLOADER_EraseNewFw(Bootloader);
+		BOOTLOADER_ResetEraseFlag(Bootloader);
 	}
 	
-	if (!BOOTLOADER_CheckFw(Bootloader, &FwSize, &FwCRC16))
+	if (!BOOTLOADER_CheckFw(Bootloader))
 	{
+		/* No need to update*/
 		return 0;
 	}
-	
+	else if (!BOOTLOADER_CheckNewFw(Bootloader))
+	{
+		/*Need to update*/
+		if( BOOTLOADER_EraseFw(Bootloader))
+			return -1;
+		if( BOOTLOADER_UpdateFw(Bootloader))
+			return -1;
+		if (BOOTLOADER_CheckFw(Bootloader))
+			return -1;
+		if( BOOTLOADER_EraseNewFw(Bootloader))
+			return -1;
+		return 0;
+	}
+	/* No valid FW images*/
 	return -1;
 }
 
-void BOOTLOADER_UpdateNewFwStart(BOOTLOADER_T *Bootloader)
-{
+int32_t BOOTLOADER_UpdateNewFwStart(BOOTLOADER_T *Bootloader)
+{	
 	Bootloader->FwCRC16 = 0;
-	Bootloader->FwSize = 0;
+	Bootloader->FlashAddr = BSP_FLASH_FW_ADDR;
 	Bootloader->BufferAddr = 0;
+	return 0;
 }
 
 int32_t BOOTLOADER_UpdateNewFwByte(BOOTLOADER_T *Bootloader, uint8_t FwByte)
-{
-	uint32_t FlashFwAddr;
+{	
+	/*Check that FW is not too big*/
+	if (Bootloader->FlashAddr > BSP_FLASH_FW_INFO)
+		return -1;
+	
 	Bootloader->Buffer[Bootloader->BufferAddr] = FwByte;
-	Bootloader->FwCRC16 = Calc_CRC16_Value(FwByte, Bootloader->FwCRC16);	
-	if (Bootloader->BufferAddr == (BSP_FLASH_PAGE_SIZE - 1))
+	if (Bootloader->FlashAddr < (BSP_FLASH_FW_INFO))
+		Bootloader->FwCRC16 = Calc_CRC16_Value(FwByte, Bootloader->FwCRC16);
+	Bootloader->BufferAddr++;
+	
+	if (Bootloader->BufferAddr == BSP_FLASH_PAGE_SIZE)
 	{
 		if (BSP_FLASH_WaitReady())
 			return -1;
-		FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + Bootloader->FwSize;
-		if (BSP_FLASH_ProgramPage(FlashFwAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
+		if (BSP_FLASH_ProgramPage(Bootloader->FlashAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
 			return -1;
 		Bootloader->BufferAddr = 0;
-		Bootloader->FwSize += BSP_FLASH_PAGE_SIZE;				
-	}
-	else
-	{
-		Bootloader->BufferAddr++;
+		Bootloader->FlashAddr += BSP_FLASH_PAGE_SIZE;
 	}
 	return 0;
 }
 
 int32_t BOOTLOADER_UpdateNewFwComplete(BOOTLOADER_T *Bootloader)
 {
-	uint32_t FlashFwAddr;
-	uint32_t BufferAddr;
+	BOOTLOADER_INFO_T *FwInfo;
 	
-	if (Bootloader->BufferAddr)
-	{
-		if (BSP_FLASH_WaitReady())
-			return -1;
-		FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + Bootloader->FwSize;
-		if (BSP_FLASH_ProgramPage(FlashFwAddr, (char*)Bootloader->Buffer, Bootloader->BufferAddr))
-			return -1;
-		Bootloader->FwSize += Bootloader->BufferAddr;
-	}	
+	/* Check if fw image is too small*/
+	if (Bootloader->FlashAddr != BSP_FLASH_FW_INFO)
+		return -1;
+	/*Get fw info*/
+	FwInfo = (BOOTLOADER_INFO_T*)Bootloader->Buffer;
+	/*Check Project*/
+	if (memcmp(FwInfo->Project, BSP_PROJECT, sizeof(BSP_PROJECT)))
+		return -1;
+	/*Check HW Version*/
+	if (memcmp(FwInfo->HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION)))
+		return -1;
+	/*Write fw CRC16*/
+	FwInfo->CRC16 = Bootloader->FwCRC16;
+	/*Write fw info to flash*/
 	if (BSP_FLASH_WaitReady())
-		return -1;	
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + BOOTLOADER_FLASH_FW_SIZE - BSP_FLASH_PAGE_SIZE;
-	if (BSP_FLASH_Read(FlashFwAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
-		return -1;	
-	BufferAddr = BSP_FLASH_PAGE_SIZE - sizeof(Bootloader->FwCRC16);
-	memcpy(&Bootloader->Buffer[BufferAddr], &Bootloader->FwCRC16, sizeof(Bootloader->FwCRC16));
-	BufferAddr = BSP_FLASH_PAGE_SIZE - sizeof(Bootloader->FwCRC16) - sizeof(Bootloader->FwSize);
-	memcpy(&Bootloader->Buffer[BufferAddr], &Bootloader->FwSize, sizeof(Bootloader->FwSize));
-	BufferAddr = BSP_FLASH_PAGE_SIZE - sizeof(Bootloader->FwCRC16) - sizeof(Bootloader->FwSize) - sizeof(uint32_t);
-	*(uint32_t*)&Bootloader->Buffer[BufferAddr] = BOOTLOADER_FW_UPDATE_FLAG;
-	FlashFwAddr = BOOTLOADER_FLASH_FW_ADDR + BOOTLOADER_FLASH_FW_SIZE - BSP_FLASH_PAGE_SIZE;
-	if (BSP_FLASH_ProgramPage(FlashFwAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
+		return -1;
+	if (BSP_FLASH_ProgramPage(Bootloader->FlashAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
 		return -1;
 	if (BSP_FLASH_WaitReady())
+		return -1;
+	if (BOOTLOADER_CheckNewFw(Bootloader))
+		return -1;
+	if( BOOTLOADER_ResetFw(Bootloader))
 		return -1;
 	return 0;
 }

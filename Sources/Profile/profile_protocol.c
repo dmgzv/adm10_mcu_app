@@ -4,6 +4,7 @@
 #include <string.h>
 #include "string_fnc.h"
 #include "crc.h"
+#include "log.h"
 
 #define PROFILE_PROTOCOL_LANG_PACKET_SIZE 256
 
@@ -185,7 +186,7 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 	char TempValue[PROFILE_STRING_MAX_LEN];
 	
 	if( !StrToUint( cmd + 2, &TableId, ';' ) )
-		TableId = 0xFFFFFFFF;
+		goto error;
 
 	//начинаем формировать ответ
 	p = rsp;
@@ -237,11 +238,17 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 		
 		for(Item = 1 ; Item <= TableSize; Item++ )//перебор параметров секции	с их печатью
 		{
-			PROFILE_GetState(Profile, TableId, Item, &State);
-			PROFILE_GetColor(Profile, TableId, Item, &Color);
+			if (PROFILE_GetState(Profile, TableId, Item, &State))
+				goto error;
+			if (PROFILE_GetColor(Profile, TableId, Item, &Color))
+				goto error;
 			//if (State != PROFILE_STATE_OOS)
 			{
-				if (PROFILE_GetValue(Profile, TableId, Item, TempValue) == 0)
+				if (PROFILE_GetValue(Profile, TableId, Item, TempValue))
+				{
+					goto error;
+				}
+				else
 				{
 					if (PROFILE_ValueToString( Profile, TableId, Item, TempValue, p , &len) == 0)
 						p += len;
@@ -264,6 +271,18 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 		p += 3;
 	}
 	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+	
+error:
+	p = rsp;
+	*p++ = cmd[0];
+	*p++ = cmd[1];
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ = ';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -345,19 +364,24 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 		break;
 	}
 	
-	if (( (!error) && (Profile->SetEnable) && (TableId != 0xFFFFFFFF))		//Есть доступ на установку параметров
-		&& ( ( cmd[ 1 ] == 0x72 && TableId != PROFILE_TABLE_6 ) || ( cmd[ 1 ] == 0x76 && TableId == PROFILE_TABLE_6 ) ) ) //Проверка номера таблицы и команды
+	if ((!error) && (Profile->SetEnable) && (TableId != 0xFFFFFFFF))
 	{	
 		if (PROFILE_StringToValue(Profile, TableId, Item, TempValue, Value) == 0)
 		{
 			if (PROFILE_CheckValue(Profile, TableId, Item, TempValue) == 0)
 			{
-				PROFILE_SetValue(Profile, TableId, Item, TempValue);
-				PROFILE_SetValueDependencies(Profile, TableId, Item, TempValue);
+				if (PROFILE_SetValue(Profile, TableId, Item, TempValue))
+					goto error;
+				if (PROFILE_SetValueDependencies(Profile, TableId, Item, TempValue))
+					goto error;
 				PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
 			}				
 		}
-		if (PROFILE_GetValue(Profile, TableId, Item, TempValue) == 0)
+		if (PROFILE_GetValue(Profile, TableId, Item, TempValue))
+		{
+			goto error;
+		}
+		else
 		{
 			if (PROFILE_ValueToString(Profile, TableId, Item, TempValue, p , &len) == 0)
 				p += len;
@@ -370,6 +394,18 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 	}
 	*p++ = ';';
 	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+
+error:
+	p = rsp;
+	*p++ = cmd[0];
+	*p++ = cmd[1];
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ = ';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -427,9 +463,11 @@ int32_t PROFILE_PROTOCOL_SetColor(PROFILE_T *Profile, char * cmd, char * rsp)
 	// установка при отсутствии ошибок в запросе
 	if( !error && Profile->SetEnable && TableId == 2 && Item && Item <= ParamsCnt)
 	{
-		PROFILE_SetAlarmColors(Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure);
+		if (PROFILE_SetAlarmColors(Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure))
+			goto error;
 		PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
-		PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, Item, &ColorDegrade, &ColorFailure);
+		if (PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, Item, &ColorDegrade, &ColorFailure))
+			goto error;
 		p = UintToStr( p, TableId );
 		*p++ = ';';
 		p = UintToStr( p, Item );
@@ -452,6 +490,18 @@ int32_t PROFILE_PROTOCOL_SetColor(PROFILE_T *Profile, char * cmd, char * rsp)
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
+
+error:
+	p = rsp;
+	*p++ = cmd[0];
+	*p++ = cmd[1];
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ = ';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;	
 }
 
 int32_t PROFILE_PROTOCOL_GetColors(PROFILE_T *Profile, char * cmd, char * rsp)
@@ -465,7 +515,7 @@ int32_t PROFILE_PROTOCOL_GetColors(PROFILE_T *Profile, char * cmd, char * rsp)
 	uint8_t ColorFailure; //Failure цвет
 	
 	if( !StrToUint( cmd + 2, &TableId, ';' ) )
-		TableId = 0xFFFFFFFF;
+		goto error;
 	
 	memcpy(p ,cmd ,2);
 	p += 2;	
@@ -478,7 +528,8 @@ int32_t PROFILE_PROTOCOL_GetColors(PROFILE_T *Profile, char * cmd, char * rsp)
 		{
 			if( Param[i-1].Color )
 			{
-				PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, i, &ColorDegrade, &ColorFailure);
+				if (PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, i, &ColorDegrade, &ColorFailure))
+					goto error;
 				p = UintToStr( p, ColorDegrade );//Degrade цвет
 				*p++ = '@';
 				p = UintToStr( p, ColorFailure );//Failure цвет
@@ -497,6 +548,18 @@ int32_t PROFILE_PROTOCOL_GetColors(PROFILE_T *Profile, char * cmd, char * rsp)
 		p += 3;
 	}
 	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+
+error:
+	p = rsp;
+	*p++ = cmd[0];
+	*p++ = cmd[1];
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ = ';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -580,6 +643,473 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_T *Profile, char * cmd, char * rsp
 	return p - rsp;
 }
 
+#define PROFILE_PROTOCOL_CONFIG_STARTREAD "STARTREAD"
+#define PROFILE_PROTOCOL_CONFIG_READBLOCK "READBLOCK"
+#define PROFILE_PROTOCOL_CONFIG_FINISHREAD "FINISHREAD"
+#define PROFILE_PROTOCOL_CONFIG_STARTWRITE "STARTWRITE"
+#define PROFILE_PROTOCOL_CONFIG_WRITEBLOCK "WRITEBLOCK"
+#define PROFILE_PROTOCOL_CONFIG_FINISHWRITE "FINISHWRITE"
+
+int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
+{
+	char *s, *p, *Data, c;
+	uint32_t CRCRead, Index, DataSize, i;
+	uint16_t CRCCalc;
+	uint32_t BlocksCnt;
+	
+	s = cmd;
+	p = rsp;
+	memcpy(p, cmd, 2);
+	p += 2;
+	s += 2;
+	
+	if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_STARTREAD, sizeof(PROFILE_PROTOCOL_CONFIG_STARTREAD) - 1))
+	{
+		LOG_Add("%s", s);
+		s += sizeof(PROFILE_PROTOCOL_CONFIG_STARTREAD) - 1;
+		if (*s != ';')
+		{
+			LOG_Add("1 %s", s);
+			goto error;
+		}
+		
+		s++;
+		if( !StrToUint( s, &CRCRead, ';' ) ) 
+		{
+			LOG_Add("2 %s", s);
+			goto error;
+		}
+		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
+		if( CRCRead != CRCCalc )
+		{
+			LOG_Add("3 %04x != %04x", CRCRead, CRCCalc);
+			goto error;
+		}
+		
+		BlocksCnt = Profile->Values.StaticSize % 256 ? (Profile->Values.StaticSize / 256) + 1 : Profile->Values.StaticSize / 256;
+		BlocksCnt += 1;
+		
+		Profile->ValuesLock = 1;
+		osMutexWait( Profile->Values.Mutex, osWaitForever );
+		Profile->ValuesCRC16 = Calc_CRC16( Profile->Values.Static, Profile->Values.StaticSize, 0);
+		osMutexRelease( Profile->Values.Mutex );
+		
+		
+		*p++ = 'O';
+		*p++ = 'K';
+		*p++ =';';
+		memcpy(p, PROFILE_PROTOCOL_CONFIG_STARTREAD, sizeof(PROFILE_PROTOCOL_CONFIG_STARTREAD) - 1);
+		p += sizeof(PROFILE_PROTOCOL_CONFIG_STARTREAD) - 1;
+		*p++ =';';
+		p = UintToStr( p, BlocksCnt);
+	}
+	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_READBLOCK, sizeof(PROFILE_PROTOCOL_CONFIG_READBLOCK) - 1))
+	{
+		LOG_Add("%s", s);
+		s += sizeof(PROFILE_PROTOCOL_CONFIG_READBLOCK) - 1;
+		if (*s != ';')
+		{
+			LOG_Add("1 %s", s);
+			goto error;
+		}
+		
+		BlocksCnt = Profile->Values.StaticSize % 256 ? (Profile->Values.StaticSize / 256) + 1 : Profile->Values.StaticSize / 256;
+		BlocksCnt += 1;
+		
+		s++;		
+		if( !StrToUint( s, &Index, ';' ) ) 
+		{
+			LOG_Add("2 %s", s);
+			goto error;
+		}
+		if (Index >= BlocksCnt)
+		{
+			LOG_Add("3 %d > %d ", Index, BlocksCnt);
+			goto error;
+		}
+		s = strchr( s, ';' );		
+		if (*s != ';')
+		{
+			LOG_Add("4 %s", s);
+			goto error;
+		}
+		
+		s++;
+		if( !StrToUint( s, &CRCRead, ';' ) ) 
+		{
+			LOG_Add("5 %s", s);
+			goto error;
+		}
+		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
+		if( CRCRead != CRCCalc )
+		{
+			LOG_Add("6 %04x != %04x", CRCRead, CRCCalc);
+			goto error;
+		}
+		
+		*p++ = 'O';
+		*p++ = 'K';
+		*p++ =';';
+		memcpy(p, PROFILE_PROTOCOL_CONFIG_READBLOCK, sizeof(PROFILE_PROTOCOL_CONFIG_READBLOCK) - 1);
+		p += sizeof(PROFILE_PROTOCOL_CONFIG_READBLOCK) - 1;
+		*p++ =';';
+		p = UintToStr( p, Index );
+		*p++ =';';
+		
+		if (Index == 0)
+		{
+			Data = p;
+			
+			for (i = 0; i < sizeof(BSP_PROJECT); i++)
+			{
+				Data = ByteToHexStr(Data, BSP_PROJECT[i]);
+			}
+			
+			for (i = 0; i < sizeof(BSP_HW_VERSION); i++)
+			{
+				Data = ByteToHexStr(Data, BSP_HW_VERSION[i]);
+			}
+			
+			for (i = 0; i < sizeof(BSP_SW_VERSION); i++)
+			{
+				Data = ByteToHexStr(Data, BSP_SW_VERSION[i]);
+			}
+			
+			for (i = 0; i < sizeof(BSP_MCU_SW_VERSION); i++)
+			{
+				Data = ByteToHexStr(Data, BSP_MCU_SW_VERSION[i]);
+			}
+			
+			for (i = 0; i < sizeof(BSP_SW_DATE); i++)
+			{
+				Data = ByteToHexStr(Data, BSP_SW_DATE[i]);
+			}
+			
+			for (i = 0; i < sizeof(BSP_SW_TIME); i++)
+			{
+				Data = ByteToHexStr(Data, BSP_SW_TIME[i]);
+			}
+			
+			Data = WordToHexStr(Data, Profile->ValuesCRC16);
+			
+			memset(Data, '0', 512 - (Data - p));
+			p += 512;
+		}
+		else
+		{
+			osMutexWait( Profile->Values.Mutex, osWaitForever );
+			Data = &((char*)Profile->Values.Static)[(Index - 1) * 256];
+			DataSize = Profile->Values.StaticSize - ((Index - 1) * 256);
+			for (i = 0; i < 256; i++)
+			{
+				if (i < DataSize)
+				{
+					p = ByteToHexStr(p, Data[i]);
+				}
+				else
+				{
+					*p++ = '0';
+					*p++ = '0';
+				}
+			}
+			osMutexRelease( Profile->Values.Mutex );
+		}
+	}
+	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_FINISHREAD, sizeof(PROFILE_PROTOCOL_CONFIG_FINISHREAD) - 1))
+	{
+		LOG_Add("%s", s);
+		s += sizeof(PROFILE_PROTOCOL_CONFIG_FINISHREAD) - 1;
+		if (*s != ';')
+		{
+			LOG_Add("1 %s", s);
+			goto error;
+		}
+		
+		s++;
+		if( !StrToUint( s, &CRCRead, ';' ) )
+		{
+			LOG_Add("2 %s", s);
+			goto error;
+		}
+		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
+		if( CRCRead != CRCCalc )
+		{
+			LOG_Add("3 %04x != %04x", CRCRead, CRCCalc);
+			goto error;
+		}
+		
+		Profile->ValuesLock = 0;
+		
+		*p++ = 'O';
+		*p++ = 'K';
+		*p++ =';';
+		memcpy(p, PROFILE_PROTOCOL_CONFIG_FINISHREAD, sizeof(PROFILE_PROTOCOL_CONFIG_FINISHREAD) - 1);
+		p += sizeof(PROFILE_PROTOCOL_CONFIG_FINISHREAD) - 1;
+	}
+	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_STARTWRITE, sizeof(PROFILE_PROTOCOL_CONFIG_STARTWRITE) - 1))
+	{
+		LOG_Add("%s", s);
+		s += sizeof(PROFILE_PROTOCOL_CONFIG_STARTWRITE) - 1;
+		if (*s != ';')
+		{
+			LOG_Add("1 %s", s);
+			goto error;
+		}
+		
+		s++;
+		if( !StrToUint( s, &CRCRead, ';' ) ) 
+		{
+			LOG_Add("2 %s", s);
+			goto error;
+		}
+		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
+		if( CRCRead != CRCCalc )
+		{
+			LOG_Add("3 %04x != %04x", CRCRead, CRCCalc);
+			goto error;
+		}
+		
+		Profile->ValuesLock = 1;
+		osMutexWait( Profile->Values.Mutex, osWaitForever );
+		Profile->ValuesCRC16 = Calc_CRC16( Profile->Values.Static, Profile->Values.StaticSize, 0 );
+		osMutexRelease( Profile->Values.Mutex );
+		
+		BlocksCnt = Profile->Values.StaticSize % 256 ? (Profile->Values.StaticSize / 256) + 1 : Profile->Values.StaticSize / 256;
+		BlocksCnt += 1;
+		
+		*p++ = 'O';
+		*p++ = 'K';
+		*p++ =';';
+		memcpy(p, PROFILE_PROTOCOL_CONFIG_STARTWRITE, sizeof(PROFILE_PROTOCOL_CONFIG_STARTWRITE) - 1);
+		p += sizeof(PROFILE_PROTOCOL_CONFIG_STARTWRITE) - 1;
+		*p++ =';';
+		p = UintToStr( p, BlocksCnt);
+	}
+	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_WRITEBLOCK, sizeof(PROFILE_PROTOCOL_CONFIG_WRITEBLOCK) - 1))
+	{
+		LOG_Add("%s", s);
+		s += sizeof(PROFILE_PROTOCOL_CONFIG_WRITEBLOCK) - 1;
+		if (*s != ';')
+		{
+			LOG_Add("1 %s", s);
+			goto error;
+		}
+		
+		BlocksCnt = Profile->Values.StaticSize % 256 ? (Profile->Values.StaticSize / 256) + 1 : Profile->Values.StaticSize / 256;
+		BlocksCnt += 1;
+		
+		s++;		
+		if( !StrToUint( s, &Index, ';' ) ) 
+		{
+			LOG_Add("2 %s", s);
+			goto error;
+		}
+		if (Index >= BlocksCnt)
+		{
+			LOG_Add("3 %d > %d ", Index, BlocksCnt);
+			goto error;
+		}
+		s = strchr( s, ';' );		
+		if (*s != ';')
+		{
+			LOG_Add("4 %s", s);
+			goto error;
+		}
+		
+		s++;
+		Data = s;
+		s = strchr( s, ';' );		
+		if (*s != ';')
+		{
+			LOG_Add("5 %s", s);
+			goto error;
+		}
+		if ((s - Data) != 512)
+		{
+			LOG_Add("6 %d != 512", (s - Data));
+			goto error;
+		}
+		
+		s++;
+		if( !StrToUint( s, &CRCRead, ';' ) ) 
+		{
+			LOG_Add("7 %s", s);
+			goto error;
+		}
+		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
+		if( CRCRead != CRCCalc )
+		{
+			LOG_Add("8 %04x != %04x", CRCRead, CRCCalc);
+			goto error;
+		}
+		
+		if (Index == 0)
+		{
+			for (i = 0; i < sizeof(BSP_PROJECT); i++)
+			{
+				if (!HexStr2ToByte(Data, (uint8_t*)&c))
+					goto error;
+				if (c != BSP_PROJECT[i])
+					goto error;
+				Data += 2;
+			}
+			
+			for (i = 0; i < sizeof(BSP_HW_VERSION); i++)
+			{
+				if (!HexStr2ToByte(Data, (uint8_t*)&c))
+					goto error;
+				if (c != BSP_HW_VERSION[i])
+					goto error;
+				Data += 2;
+			}
+			
+			for (i = 0; i < sizeof(BSP_SW_VERSION); i++)
+			{
+				if (!HexStr2ToByte(Data, (uint8_t*)&c))
+					goto error;
+				if (c != BSP_SW_VERSION[i])
+					goto error;
+				Data += 2;
+			}
+			
+			for (i = 0; i < sizeof(BSP_MCU_SW_VERSION); i++)
+			{
+				if (!HexStr2ToByte(Data, (uint8_t*)&c))
+					goto error;
+				if (c != BSP_MCU_SW_VERSION[i])
+					goto error;
+				Data += 2;
+			}
+			
+			for (i = 0; i < sizeof(BSP_SW_DATE); i++)
+			{
+				if (!HexStr2ToByte(Data, (uint8_t*)&c))
+					goto error;
+				if (c != BSP_SW_DATE[i])
+					goto error;
+				Data += 2;
+			}
+			
+			for (i = 0; i < sizeof(BSP_SW_TIME); i++)
+			{
+				if (!HexStr2ToByte(Data, (uint8_t*)&c))
+					goto error;
+				if (c != BSP_SW_TIME[i])
+					goto error;
+				Data += 2;
+			}
+			
+			if (!HexStr4ToWord(Data, (uint16_t*)&CRCRead))
+				goto error;
+			Profile->ValuesCRC16 = CRCRead;
+		}
+		else
+		{
+			osMutexWait( Profile->Values.Mutex, osWaitForever );		
+			for (i = 0; i < 256; i++)
+			{
+				HexStr2ToByte(Data, (uint8_t*)&c);
+				if ((((Index - 1) * 256) + i) < Profile->Values.StaticSize)
+					((char*)Profile->Values.Static)[((Index - 1) * 256) + i] = c;
+				Data += 2;
+			}
+			osMutexRelease( Profile->Values.Mutex );
+		}
+		
+		*p++ = 'O';
+		*p++ = 'K';
+		*p++ =';';
+		memcpy(p, PROFILE_PROTOCOL_CONFIG_WRITEBLOCK, sizeof(PROFILE_PROTOCOL_CONFIG_WRITEBLOCK) - 1);
+		p += sizeof(PROFILE_PROTOCOL_CONFIG_WRITEBLOCK) - 1;
+		*p++ =';';
+		p = UintToStr( p, Index );
+	}
+	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_FINISHWRITE, sizeof(PROFILE_PROTOCOL_CONFIG_FINISHWRITE) - 1))
+	{
+		LOG_Add("%s", s);
+		s += sizeof(PROFILE_PROTOCOL_CONFIG_FINISHWRITE) - 1;
+		if (*s != ';')
+		{
+			LOG_Add("1 %s", s);
+			goto error;
+		}
+		
+		s++;
+		if( !StrToUint( s, &CRCRead, ';' ) )
+		{
+			LOG_Add("2 %s", s);
+			goto error;
+		}
+		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
+		if( CRCRead != CRCCalc )
+		{
+			LOG_Add("3 %04x != %04x", CRCRead, CRCCalc);
+			goto error;
+		}
+		
+		osMutexWait( Profile->Values.Mutex, osWaitForever );	
+		CRCCalc = Calc_CRC16( Profile->Values.Static, Profile->Values.StaticSize, 0 );
+		osMutexRelease( Profile->Values.Mutex );
+		
+		if (Profile->ValuesCRC16 != CRCCalc)
+		{
+			LOG_Add("4 %04x != %04x", Profile->ValuesCRC16, CRCCalc);
+			if (PROFILE_FLASH_LastRecordLoad(&Profile->ProfileFlash))
+			{
+				PROFILE_SetFactory(Profile, PROFILE_TABLE_1);
+				PROFILE_SetFactory(Profile, PROFILE_TABLE_2);
+				PROFILE_SetFactory(Profile, PROFILE_TABLE_3);
+				PROFILE_SetFactory(Profile, PROFILE_TABLE_4);
+				PROFILE_SetFactory(Profile, PROFILE_TABLE_103);
+			}
+			PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
+			Profile->ValuesLock = 0;		
+			*p++ = 'N';
+			*p++ = 'A';
+			*p++ =';';
+			memcpy(p, PROFILE_PROTOCOL_CONFIG_FINISHWRITE, sizeof(PROFILE_PROTOCOL_CONFIG_FINISHWRITE) - 1);
+			p += sizeof(PROFILE_PROTOCOL_CONFIG_FINISHWRITE) - 1;
+			*p++ =';';
+			*p++ = '2';
+		}
+		else
+		{
+			Profile->TablesChanges |= (1 << PROFILE_TABLE_1) | (1 << PROFILE_TABLE_2) | (1 << PROFILE_TABLE_3) | (1 << PROFILE_TABLE_4) | (1 << PROFILE_TABLE_103);
+			PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
+			Profile->ValuesLock = 0;			
+			*p++ = 'O';
+			*p++ = 'K';
+			*p++ =';';
+			memcpy(p, PROFILE_PROTOCOL_CONFIG_FINISHWRITE, sizeof(PROFILE_PROTOCOL_CONFIG_FINISHWRITE) - 1);
+			p += sizeof(PROFILE_PROTOCOL_CONFIG_FINISHWRITE) - 1;
+			*p++ =';';
+			*p++ = '0';
+		}
+	}
+	else
+	{
+		LOG_Add("%s", s);
+		goto error;
+	}
+	
+	*p++ =';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	LOG_Add("%s", rsp + 2);
+	return p - rsp;
+
+error:
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ =';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	LOG_Add("%s", rsp + 2);
+	return p - rsp;
+}
+
 uint32_t PROFILE_PROTOCOL_Command(PROFILE_T *Profile, char *cmd, char *rsp, uint32_t *complete)
 {
 	uint32_t len = 0;
@@ -623,6 +1153,9 @@ uint32_t PROFILE_PROTOCOL_Command(PROFILE_T *Profile, char *cmd, char *rsp, uint
 			break;
 		case 0x0F:
 			len = BOOTLOADER_PROTOCOL_UpdateFw(&Profile->Bootloader, cmd, rsp, complete);
+			break;
+		case 0x63://Расширенное чтение/запись конфигурации устройства
+			//len = PROFILE_PROTOCOL_ConfigExt(Profile, cmd, rsp);
 			break;
 	}
 	if( len == 0 )// если нет ответа, отвечаем об ошибке

@@ -39,8 +39,6 @@ static void PROFILE_IFACE_ReceiveThread(void const *argument)
 static void PROFILE_IFACE_ProcessThread(void const *argument)
 {
 	PROFILE_IFACE_T *Iface = (PROFILE_IFACE_T*)argument;
-	uint32_t MaxResponceLen = 0;
-	uint32_t ParseTimeMax = 0, TransmitTimeMax = 0;
 	uint32_t TimeStart, TimeEnd;
 	uint32_t Complete;
 	osEvent Event;
@@ -58,11 +56,17 @@ static void PROFILE_IFACE_ProcessThread(void const *argument)
 		Iface->ResponceLen = PROFILE_PROTOCOL_Command(Iface->Profile, Iface->Commands[Event.value.v], Iface->Responce, &Complete);		
 		
 		TimeEnd = osKernelSysTick();		
-		if (ParseTimeMax < (TimeEnd - TimeStart))
-			ParseTimeMax = TimeEnd - TimeStart;
+		if (Iface->MaxParseTime < (TimeEnd - TimeStart))
+		{
+			Iface->MaxParseTime = TimeEnd - TimeStart;
+			Iface->MaxParseTimeCommand = Iface->Commands[Event.value.v][1];
+		}
 		
-		if (MaxResponceLen < Iface->ResponceLen)
-			MaxResponceLen = Iface->ResponceLen;
+		if (Iface->MaxResponceLen < Iface->ResponceLen)
+		{
+			Iface->MaxResponceLen = Iface->ResponceLen;
+			Iface->MaxResponceLenCommand = Iface->Commands[Event.value.v][1];
+		}
 		
 		TimeStart = osKernelSysTick();
 		if (Iface->ResponceLen)
@@ -70,8 +74,11 @@ static void PROFILE_IFACE_ProcessThread(void const *argument)
 		
 		TimeEnd = osKernelSysTick();
 		
-		if (TransmitTimeMax < (TimeEnd - TimeStart))
-			TransmitTimeMax = TimeEnd - TimeStart;
+		if (Iface->MaxTransmitTime < (TimeEnd - TimeStart))
+		{
+			Iface->MaxTransmitTime = TimeEnd - TimeStart;
+			Iface->MaxTransmitTimeCommand = Iface->Commands[Event.value.v][1];
+		}
 		
 		if (Complete)
 		{
@@ -98,6 +105,11 @@ int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveThreadName, char
 	Iface->Uart = Uart;
 	Iface->Profile = Profile;
 	Iface->ReceiveQId = osMessageCreate (osMessageQ(Receive), NULL);
+	Iface->MaxParseTime = 0;
+	Iface->MaxParseTimeCommand = 0;
+	Iface->MaxResponceLen = 0;
+	Iface->MaxResponceLenCommand = 0;
+	Iface->MaxTransmitTime = 0;
 	if (!Iface->ReceiveQId)
 		return -1;
 	for (i = 0; i < PROFILE_IFACE_CMD_QUEUE_SIZE; i++)

@@ -24,6 +24,12 @@ typedef struct {
 	uint32_t CommandsLen[PROFILE_IFACE_CMD_QUEUE_SIZE];
 	char Responce[PROFILE_IFACE_RSP_MAX_SIZE];
 	uint32_t ResponceLen;
+	uint32_t MaxResponceLen;
+	uint8_t MaxResponceLenCommand;
+	uint32_t MaxParseTime;
+	uint8_t MaxParseTimeCommand;
+	uint32_t MaxTransmitTime;
+	uint8_t MaxTransmitTimeCommand;
 } PROFILE_IFACE_T;
 
 int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveName, char *ProcessName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile);

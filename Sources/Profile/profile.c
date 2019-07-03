@@ -228,10 +228,10 @@ int32_t PROFILE_Init(PROFILE_T *Profile, PROFILE_DESCR_T **Descr, void *Static, 
 	Profile->Descr = Descr;
 	Profile->TablesChanges = 0;
 	Profile->SetEnable = 0;
+	Profile->ValuesLock = 0;
 	if (PROFILE_InitValues(&Profile->Values, Static, StaticSize, Dynamic, DynamicSize))
 		return -1;
 	
-	BOOTLOADER_Init(&Profile->Bootloader);
 	if( PROFILE_FLASH_Init(&Profile->ProfileFlash, "Profile Flash", Profile->Values.Static, Profile->Values.StaticSize, Profile->Values.Mutex))
 		goto error;
 	
@@ -300,6 +300,10 @@ int32_t PROFILE_ValueToString(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, v
 		case PROFILE_TYPE_IP://массив из 4 байтов, выводится на печать в формате ххх.ххх.ххх.ххх
 			p = IPToStr( p, *(unsigned int*)Value);
 			break;
+		case PROFILE_TYPE_UINT64:
+			sprintf( p, "%llu", *(uint64_t*)Value );
+			p += strlen(Str);
+			break;
 		default:
 			return -1;		
 	}
@@ -348,6 +352,9 @@ int32_t PROFILE_StringToValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, v
 		case PROFILE_TYPE_IP:		
 			if( !StrToIP( Str, Value ))
 				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+			break;
+		case PROFILE_TYPE_UINT64:
+			*(uint64_t*)Value = strtoull(Str, &Str, 10);
 			break;
 		default:
 			return -1;
@@ -419,6 +426,20 @@ int32_t PROFILE_CheckThresholdValue(PROFILE_T *Profile, uint8_t Table, uint16_t 
 					return 0;
 				}
 				break;
+			case PROFILE_TYPE_UINT64:
+				if((uint64_t*)ParamValue == &((uint64_t*)ParamValueThr)[i])
+				{
+					if ((i == PROFILE_THR_CMIN) && (*(uint64_t*)Value > ((uint64_t*)ParamValueThr)[PROFILE_THR_WMIN]))
+						return -1;
+					else if ((i == PROFILE_THR_CMAX) && (*(uint64_t*)Value < ((uint64_t*)ParamValueThr)[PROFILE_THR_WMAX]))
+						return -1;
+					else if ((i == PROFILE_THR_WMAX) && ((*(uint64_t*)Value > ((uint64_t*)ParamValueThr)[PROFILE_THR_CMAX]) || (*(uint64_t*)Value < ((uint64_t*)ParamValueThr)[PROFILE_THR_WMIN])))
+						return -1;
+					else if ((i == PROFILE_THR_WMIN) && ((*(uint64_t*)Value > ((uint64_t*)ParamValueThr)[PROFILE_THR_WMAX]) || (*(uint64_t*)Value < ((uint64_t*)ParamValueThr)[PROFILE_THR_CMIN])))
+						return -1;
+					return 0;
+				}
+				break;
 			default:
 				return -1;			
 		}
@@ -448,6 +469,9 @@ int32_t PROFILE_SetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 	uint8_t Type;
 	uint8_t *State;
 	
+	if (Profile->ValuesLock)
+		return -1;
+	
 	__PROFILE_GetValue(Profile, Table, Idx, &Value);
 	__PROFILE_GetType(Profile, Table, Idx, &Type);
 	__PROFILE_GetState(Profile, Table, Idx, &State);
@@ -470,6 +494,18 @@ int32_t PROFILE_SetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 			if (memcmp(Value, SetValue, 4))
 			{
 				memcpy(Value, SetValue, 4);
+				if ((!State) || (*State != PROFILE_STATE_OOS))
+				{
+					Profile->TablesChanges |= 1 << Table;
+				}
+			}
+			osMutexRelease( Profile->Values.Mutex );
+			break;
+		case PROFILE_TYPE_UINT64:
+			osMutexWait( Profile->Values.Mutex, osWaitForever );
+			if (memcmp(Value, SetValue, sizeof(uint64_t)))
+			{
+				memcpy(Value, SetValue, sizeof(uint64_t));
 				if ((!State) || (*State != PROFILE_STATE_OOS))
 				{
 					Profile->TablesChanges |= 1 << Table;
@@ -503,6 +539,9 @@ int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 	uint8_t Type;
 	uint8_t *State;
 	
+	if (Profile->ValuesLock)
+		return -1;
+	
 	__PROFILE_GetValue(Profile, Table, Idx, &Value);
 	__PROFILE_GetType(Profile, Table, Idx, &Type);
 	__PROFILE_GetState(Profile, Table, Idx, &State);
@@ -525,6 +564,11 @@ int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 			memcpy(GetValue, Value, 4);
 			osMutexRelease( Profile->Values.Mutex );
 			break;
+		case PROFILE_TYPE_UINT64:
+			osMutexWait( Profile->Values.Mutex, osWaitForever );
+			memcpy(GetValue, Value, sizeof(uint64_t));
+			osMutexRelease( Profile->Values.Mutex );
+			break;
 		case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
 		case PROFILE_TYPE_STRING:// произвольная строка
 			osMutexWait( Profile->Values.Mutex, osWaitForever );
@@ -542,14 +586,20 @@ int32_t PROFILE_SetFactoryValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 {
 	void *DefaultValue;
 	
+	if (Profile->ValuesLock)
+		return -1;
+	
 	__PROFILE_GetDefaultValue(Profile, Table, Idx, &DefaultValue);
 	
 	return PROFILE_SetValue(Profile, Table, Idx, DefaultValue);	
 }
 
-void PROFILE_SetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetDegradeColor, uint8_t SetFailureColor)
+int32_t PROFILE_SetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetDegradeColor, uint8_t SetFailureColor)
 {
 	uint8_t *DegradeColor, *FailureColor;
+	
+	if (Profile->ValuesLock)
+		return-1;
 	
 	__PROFILE_GetDegradeColor(Profile, Table, Idx, &DegradeColor);
 	__PROFILE_GetFailureColor(Profile, Table, Idx, &FailureColor);
@@ -560,11 +610,15 @@ void PROFILE_SetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uin
 	if ((FailureColor) && (SetFailureColor != PROFILE_COLOR_NA) && (SetFailureColor <= PROFILE_COLOR_CRITICAL))
 		*FailureColor = SetFailureColor;
 	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_GetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetDegradeColor, uint8_t *GetFailureColor)
+int32_t PROFILE_GetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetDegradeColor, uint8_t *GetFailureColor)
 {
 	uint8_t *DegradeColor, *FailureColor;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetDegradeColor(Profile, Table, Idx, &DegradeColor);
 	__PROFILE_GetFailureColor(Profile, Table, Idx, &FailureColor);
@@ -579,21 +633,28 @@ void PROFILE_GetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uin
 	else if ((GetFailureColor) && (!FailureColor))
 		*GetFailureColor = PROFILE_COLOR_NA;
 	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_SetFactoryAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
+int32_t PROFILE_SetFactoryAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 {
 	uint8_t *DefaultDegradeColor, *DefaultFailureColor;
+	
+	if (Profile->ValuesLock)
+		return -1;
 		
 	__PROFILE_GetDefaultDegradeColor(Profile, Table, Idx, &DefaultDegradeColor);
 	__PROFILE_GetDefaultFailureColor(Profile, Table, Idx, &DefaultFailureColor);
 	
-	PROFILE_SetAlarmColors(Profile, Table, Idx, DefaultDegradeColor ? *DefaultDegradeColor : PROFILE_COLOR_NA, DefaultFailureColor ? *DefaultFailureColor : PROFILE_COLOR_NA);
+	return PROFILE_SetAlarmColors(Profile, Table, Idx, DefaultDegradeColor ? *DefaultDegradeColor : PROFILE_COLOR_NA, DefaultFailureColor ? *DefaultFailureColor : PROFILE_COLOR_NA);
 }
 
-void PROFILE_SetFactory(PROFILE_T *Profile, uint8_t Table)
+int32_t PROFILE_SetFactory(PROFILE_T *Profile, uint8_t Table)
 {
 	uint32_t Idx;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	if (Table == PROFILE_TABLE_1)
 	{
@@ -646,18 +707,26 @@ void PROFILE_SetFactory(PROFILE_T *Profile, uint8_t Table)
 			PROFILE_SetFactoryValue(Profile, Table, Idx);
 		}
 	}
+	return 0;
 }
 
-void PROFILE_SetDefault(PROFILE_T *Profile)
+int32_t PROFILE_SetDefault(PROFILE_T *Profile)
 {
+	if (Profile->ValuesLock)
+		return - 1;
+	
 	osMutexWait( Profile->Values.Mutex, osWaitForever );
 	memcpy(Profile->Values.Static, Profile->Descr[Profile->Idx]->DefaultValues, Profile->Values.StaticSize);
 	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_GetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetColor)
+int32_t PROFILE_GetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetColor)
 {
 	uint8_t *Color;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetColor(Profile, Table, Idx, &Color);
 	
@@ -667,27 +736,35 @@ void PROFILE_GetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *
 	else
 		*GetColor = PROFILE_COLOR_NA;
 	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_SetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetColor)
+int32_t PROFILE_SetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetColor)
 {
 	uint8_t *Color;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetColor(Profile, Table, Idx, &Color);
 	
 	osMutexWait( Profile->Values.Mutex, osWaitForever );
 	if (Color)
 		*Color = SetColor;
-	osMutexRelease( Profile->Values.Mutex );;
+	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_SetColorToThresholds(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
+int32_t PROFILE_SetColorToThresholds(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 {
 	void *ParamValue, *ParamValueThr;
 	uint8_t Type;
 	uint8_t *Color;
 	uint8_t *DegradeColor;
 	uint8_t *FailureColor;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetType(Profile, Table, Idx, &Type);
 	__PROFILE_GetValue(Profile, Table, Idx, &ParamValue);
@@ -697,7 +774,7 @@ void PROFILE_SetColorToThresholds(PROFILE_T *Profile, uint8_t Table, uint16_t Id
 	__PROFILE_GetFailureColor(Profile, Table, Idx, &FailureColor);
 	
 	if ((!ParamValue) || (!ParamValueThr) || (!Color) || (!DegradeColor) || (!FailureColor))
-		return;
+		return -1;
 	
 	switch( Type )
 	{
@@ -742,15 +819,31 @@ void PROFILE_SetColorToThresholds(PROFILE_T *Profile, uint8_t Table, uint16_t Id
 				*Color = PROFILE_COLOR_NORMAL;		
 			osMutexRelease( Profile->Values.Mutex );
 			break;
+		case PROFILE_TYPE_UINT64:
+			osMutexWait( Profile->Values.Mutex, osWaitForever );
+			if ((*(uint64_t*)ParamValue > ((uint64_t*)ParamValueThr)[PROFILE_THR_CMAX]) ||\
+				(*(uint64_t*)ParamValue < ((uint64_t*)ParamValueThr)[PROFILE_THR_CMIN]))
+				*Color = *FailureColor;
+			else if ((*(uint64_t*)ParamValue > ((uint64_t*)ParamValueThr)[PROFILE_THR_WMAX]) ||\
+				(*(uint64_t*)ParamValue < ((uint64_t*)ParamValueThr)[PROFILE_THR_WMIN]))
+				*Color = *DegradeColor;
+			else
+				*Color = PROFILE_COLOR_NORMAL;		
+			osMutexRelease( Profile->Values.Mutex );
+			break;
 		default:
-			return;
+			return -1;
 	}
+	return 0;
 }
 
-void PROFILE_SetColorToDegrade(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
+int32_t PROFILE_SetColorToDegrade(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 {
 	uint8_t *Color;
 	uint8_t *DegradeColor;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetColor(Profile, Table, Idx, &Color);
 	__PROFILE_GetDegradeColor(Profile, Table, Idx, &DegradeColor);
@@ -759,12 +852,16 @@ void PROFILE_SetColorToDegrade(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 	if ((Color) && (DegradeColor))
 		*Color = *DegradeColor;
 	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_SetColorToFailure(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
+int32_t PROFILE_SetColorToFailure(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 {
 	uint8_t *Color;
 	uint8_t *FailureColor;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetColor(Profile, Table, Idx, &Color);
 	__PROFILE_GetFailureColor(Profile, Table, Idx, &FailureColor);
@@ -773,11 +870,15 @@ void PROFILE_SetColorToFailure(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 	if ((Color) && (FailureColor))
 		*Color = *FailureColor;
 	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_GetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetState)
+int32_t PROFILE_GetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetState)
 {
 	uint8_t *State;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetState(Profile, Table, Idx, &State);
 	
@@ -787,11 +888,15 @@ void PROFILE_GetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *
 	else
 		*GetState = PROFILE_STATE_IS;
 	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetState)
+int32_t PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetState)
 {
 	uint8_t *State;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetState(Profile, Table, Idx, &State);
 	
@@ -802,9 +907,10 @@ void PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t S
 		Profile->TablesChanges |= 1 << Table;
 	}
 	osMutexRelease( Profile->Values.Mutex );
+	return 0;
 }
 
-void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint8_t ColorType, uint8_t State)
+int32_t PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint8_t ColorType, uint8_t State)
 {
 	void *ParamValue, *ParamThr;
 	uint8_t ParamType;
@@ -812,6 +918,9 @@ void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 	uint8_t *ParamColor;
 	uint8_t *ParamDegradeColor;
 	uint8_t *ParamFailureColor;
+	
+	if (Profile->ValuesLock)
+		return -1;
 	
 	__PROFILE_GetType(Profile, Table, Idx, &ParamType);
 	__PROFILE_GetValue(Profile, Table, Idx, &ParamValue);
@@ -822,7 +931,7 @@ void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 	__PROFILE_GetFailureColor(Profile, Table, Idx, &ParamFailureColor);
 	
 	if (!ParamValue)
-		return;
+		return -1;
 	
 	osMutexWait( Profile->Values.Mutex, osWaitForever );
 	switch( ParamType )
@@ -966,9 +1075,44 @@ void PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 				*ParamColor = PROFILE_COLOR_NORMAL;	
 			}
 			break;
+		case PROFILE_TYPE_UINT64:
+			if (ParamState)
+				*ParamState = State;
+			if (ParamValue)
+			{
+				memcpy(ParamValue, Value, 4);
+				if ((!ParamState) || (*ParamState != PROFILE_STATE_OOS))
+				{
+					Profile->TablesChanges |= 1 << Table;
+				}
+			}
+			if ((ColorType == PROFILE_COLOR_TYPE_AUTO) && (ParamThr) && (ParamColor) && (ParamDegradeColor) && (ParamFailureColor))
+			{
+				if ((*(uint64_t*)ParamValue > ((uint64_t*)ParamThr)[PROFILE_THR_CMAX]) ||\
+					(*(uint64_t*)ParamValue < ((uint64_t*)ParamThr)[PROFILE_THR_CMIN]))
+					*ParamColor = *ParamFailureColor;
+				else if ((*(uint64_t*)ParamValue > ((uint64_t*)ParamThr)[PROFILE_THR_WMAX]) ||\
+					(*(uint64_t*)ParamValue < ((uint64_t*)ParamThr)[PROFILE_THR_WMIN]))
+					*ParamColor = *ParamDegradeColor;
+				else
+					*ParamColor = PROFILE_COLOR_NORMAL;		
+			}
+			else if ((ColorType == PROFILE_COLOR_TYPE_DEGRADE) && (ParamColor) && (ParamDegradeColor))
+			{
+				*ParamColor = *ParamDegradeColor;
+			}
+			else if ((ColorType == PROFILE_COLOR_TYPE_FAILURE) && (ParamColor) && (ParamFailureColor))
+			{
+				*ParamColor = *ParamFailureColor;
+			}
+			else if ((ColorType == PROFILE_COLOR_TYPE_NORMAL) && (ParamColor))
+			{
+				*ParamColor = PROFILE_COLOR_NORMAL;	
+			}
+			break;
 		default:
 			break;
 	}
 	osMutexRelease( Profile->Values.Mutex );
-	
+	return 0;
 }
