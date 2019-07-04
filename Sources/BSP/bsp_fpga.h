@@ -210,6 +210,7 @@ typedef struct {
 typedef struct {
 	BSP_DEV;
 	char SwVersion[16];
+	float Temp;
 	BSP_FPGA_LINE_IFACE_T Iface[BSP_FPGA_LINE_IFACE_CNT];
 	BSP_FPGA_LINE_MUX_T Mux;
 } BSP_FPGA_LINE_T;
@@ -220,6 +221,8 @@ typedef struct {
 	uint8_t __Mode;
 	uint8_t PMAStatus;
 	uint8_t __PMAStatus;
+	uint8_t __PCSStatus;
+	uint8_t __CDRStatus;
 	
 	uint16_t SDHAlarms;
 	uint16_t SDHBIP8;
@@ -244,8 +247,9 @@ typedef struct {
 
 typedef struct {
 	BSP_DEV;
-	char SwVersion[16];
 	uint32_t Idx;
+	char SwVersion[16];
+	float Temp;
 	BSP_FPGA_CLIENT_IFACE_T Iface[BSP_FPGA_CLIENT_IFACE_CNT];
 } BSP_FPGA_CLIENT_T;
 

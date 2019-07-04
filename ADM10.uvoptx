@@ -150,9 +150,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>757</LineNumber>
+          <LineNumber>802</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134275964</Address>
+          <Address>134277170</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -161,23 +161,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>.\Sources\ProfileADM\profile_adm_client.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\ADM10_Debug\Sources/ProfileADM/profile_adm_client.c\757</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>773</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134276208</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\Sources\ProfileADM\profile_adm_client.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\ADM10_Debug\Sources/ProfileADM/profile_adm_client.c\773</Expression>
+          <Expression>\\ADM10_Debug\Sources/ProfileADM/profile_adm_client.c\802</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -271,7 +255,7 @@
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x68002000</ItemText>
+          <ItemText>0x68000000</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
@@ -479,6 +463,22 @@
           <Filename>.\Sources\ProfileADM\profile_adm_client.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\ADM10_Release\Sources/ProfileADM/profile_adm_client.c\773</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>802</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>.\Sources\ProfileADM\profile_adm_client.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -1537,7 +1537,7 @@
       <GroupNumber>7</GroupNumber>
       <FileNumber>71</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Sources\main.c</PathWithFileName>

@@ -15,6 +15,7 @@
 #define SFP_PIN_TX_DISABLE	1
 #define SFP_PIN_TX_FAULT		2
 #define SFP_PIN_RX_LOS			3
+#define SFP_PIN_RATE_SEL		4
 
 #define SFP_PRODUCT_OPTS_RDT_MASK					(1 << 7)
 #define SFP_PRODUCT_OPTS_TX_TUNABLE_MASK	(1 << 6)
@@ -36,6 +37,7 @@ typedef struct {
 	uint32_t TxDisable;
 	uint32_t TxFault;
 	uint32_t RxLos;
+	uint32_t RateSel;
 } SFP_PIN_T;
 
 typedef struct {
@@ -72,6 +74,10 @@ int32_t SFP_GetTemp(SFP_T *Dev, float *Temp);
 int32_t SFP_GetModAbs(SFP_T *Dev, uint32_t *ModAbs);
 int32_t SFP_GetRxLos(SFP_T *Dev, uint32_t *RxLos);
 int32_t SFP_GetTxFault(SFP_T *Dev, uint32_t *TxFault);
+
+int32_t SFP_GetRateSel(SFP_T *Dev, uint32_t *RateSel);
+int32_t SFP_SetRateSel(SFP_T *Dev, uint32_t RateSel);
+int32_t SFP_ConfigRateSel(SFP_T *Dev, uint32_t RateSel);
 
 int32_t SFP_GetTxDisable(SFP_T *Dev, uint32_t *TxDisable);
 int32_t SFP_SetTxDisable(SFP_T *Dev, uint32_t TxDisable);
