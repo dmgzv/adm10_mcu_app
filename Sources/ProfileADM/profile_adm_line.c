@@ -24,6 +24,11 @@ static const uint32_t ProfileADMDynamicLnSFPTxPwrIdx[PROFILE_ADM_LINE_PORTS] =
 	PROFILE_ADM_LN_1_SFP_TXPWR_IDX, PROFILE_ADM_LN_2_SFP_TXPWR_IDX, PROFILE_ADM_LN_3_SFP_TXPWR_IDX, PROFILE_ADM_LN_4_SFP_TXPWR_IDX,
 };
 
+static const uint32_t ProfileADMDynamicLnPMAStatusIdx[PROFILE_ADM_LINE_PORTS] = 
+{
+	PROFILE_ADM_LN_1_PMASTATUS_IDX, PROFILE_ADM_LN_2_PMASTATUS_IDX, PROFILE_ADM_LN_3_PMASTATUS_IDX, PROFILE_ADM_LN_4_PMASTATUS_IDX,
+};
+
 static const uint32_t ProfileADMDynamicLnOTU2AlarmsIdx[PROFILE_ADM_LINE_PORTS] = 
 {
 	PROFILE_ADM_LN_1_OTU2_ALARMS_IDX, PROFILE_ADM_LN_2_OTU2_ALARMS_IDX, PROFILE_ADM_LN_3_OTU2_ALARMS_IDX, PROFILE_ADM_LN_4_OTU2_ALARMS_IDX,
@@ -556,6 +561,7 @@ void PROFILE_ADM_LINE_UpdateConfigs(PROFILE_T *Profile)
 		
 		SFP_ConfigTxDisable(&sfp[BSP_SFP_LINE_IDX(i)], SFPEnableTx ? 0 : 1);
 		SFP_ConfigFreq(&sfp[BSP_SFP_LINE_IDX(i)], SFPSetFreq * 1000000);
+		SFP_ConfigRateSel(&sfp[BSP_SFP_LINE_IDX(i)], 1);
 		
 		if (Loopback == 0)
 		{
@@ -778,6 +784,24 @@ static void PROFILE_ADM_LINE_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_t Id
 			break;
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnSFPTxPwrIdx[Idx], &Value, ColorType, State);
+}
+
+static void PROFILE_ADM_LINE_UpdatePMAStatusValue(PROFILE_T *Profile, uint32_t Idx)
+{
+	uint32_t PMAStatus;
+	uint32_t State;
+	
+	if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK))
+	{
+		PMAStatus = 0;
+		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetStateIdx[Idx], &State);
+	}
+	else
+	{
+		PMAStatus = fpga_line.Iface[Idx].__PMAStatus;
+		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetStateIdx[Idx], &State);
+	}
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnPMAStatusIdx[Idx], &PMAStatus, PROFILE_COLOR_TYPE_NO, State);
 }
 
 static void PROFILE_ADM_LINE_UpdateOTU2AlarmsValue(PROFILE_T *Profile, uint32_t Idx)
@@ -1155,6 +1179,7 @@ static void PROFILE_ADM_LINE_UpdateDynamicValues(PROFILE_T *Profile, uint32_t Id
 	PROFILE_ADM_LINE_UpdateSFPTempValue(Profile, Idx);
 	PROFILE_ADM_LINE_UpdateSFPRxPwrValue(Profile, Idx);
 	PROFILE_ADM_LINE_UpdateSFPTxPwrValue(Profile, Idx);
+	PROFILE_ADM_LINE_UpdatePMAStatusValue(Profile, Idx);
 	PROFILE_ADM_LINE_UpdateOTU2AlarmsValue(Profile, Idx);
 	PROFILE_ADM_LINE_UpdateOTU2FECBERValue(Profile, Idx);
 	PROFILE_ADM_LINE_UpdateODU2AlarmsValue(Profile, Idx);

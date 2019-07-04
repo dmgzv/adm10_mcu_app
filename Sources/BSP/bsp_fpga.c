@@ -349,7 +349,7 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev)
 	
 	for (i = 0; i < 4; i++)
 	{
-		SwVersion[i] = *((char*)BSP_FPGA_LINE_ADDR + i);
+		SwVersion[i] = *((char*)(BSP_FPGA_LINE_ADDR + i));
 	}
 	sprintf(Dev->SwVersion, "%d.%d.%d.%d", SwVersion[1], SwVersion[0], SwVersion[3], SwVersion[2]);
 	
@@ -362,7 +362,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 {
 	uint32_t i, j;
 	uint8_t Status;
-	uint16_t OTU2BIP, OTU2FECUncorr, ODU2BIP, ODU1BIP, ODU0BIP;
+	uint16_t Temp, OTU2BIP, OTU2FECUncorr, ODU2BIP, ODU1BIP, ODU0BIP;
 	uint32_t OTU2FECCorr;
 	
 	if (!Dev)
@@ -371,6 +371,9 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 		return -1;
 	
 	BSP_DEV_LOCK(Dev);
+	
+	Temp = *((uint16_t*)(BSP_FPGA_LINE_ADDR + 0x06));
+	Dev->Temp = (((Temp & 0x3FF) * 693.0f) / 1024.0f) - 265.0f;
 	
 	for (i = 0; i < BSP_FPGA_LINE_IFACE_CNT; i++)
 	{
@@ -605,7 +608,7 @@ int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx)
 	Dev->Idx = Idx;
 	for (i = 0; i < 4; i++)
 	{
-		SwVersion[i] = *((char*)BSP_FPGA_CLIENT_ADDR(Dev->Idx) + i);
+		SwVersion[i] = *((char*)(BSP_FPGA_CLIENT_ADDR(Dev->Idx) + i));
 	}
 	sprintf(Dev->SwVersion, "%d.%d.%d.%d", SwVersion[1], SwVersion[0], SwVersion[3], SwVersion[2]);
 	
@@ -618,7 +621,7 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 {
 	uint32_t i;
 	uint8_t Status;
-	uint16_t SDHBIP8, SDHBIP24, EthRxErrs, EthTxErrs;
+	uint16_t Temp, SDHBIP8, SDHBIP24, EthRxErrs, EthTxErrs;
 	uint32_t EthRxPkts, EthRxOcts, EthTxPkts, EthTxOcts;
 	
 	if (!Dev)
@@ -628,12 +631,17 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 	
 	BSP_DEV_LOCK(Dev);
 	
+	Temp = *((uint16_t*)(BSP_FPGA_CLIENT_ADDR(Dev->Idx) + 0x06));
+	Dev->Temp = (((Temp & 0x3FF) * 693.0f) / 1024.0f) - 265.0f;
+	
 	for (i = 0; i < BSP_FPGA_CLIENT_IFACE_CNT; i++)
 	{
 		//if (i > 0)
 		//	continue;
 		Dev->Iface[i].__Mode = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x00));
 		Dev->Iface[i].__PMAStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x01));
+		Dev->Iface[i].__PCSStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x02));
+		Dev->Iface[i].__CDRStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x03));
 		
 		Dev->Iface[i].SDHAlarms = *((uint16_t*)(BSP_FPGA_CLIENT_IFACE_STAT_ADDR(Dev->Idx, i)+ 0x02));
 		

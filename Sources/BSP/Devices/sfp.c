@@ -385,6 +385,21 @@ int32_t SFP_ConfigTxDisable(SFP_T *Dev, uint32_t TxDisable)
 	return 0;
 }
 
+int32_t SFP_ConfigRateSel(SFP_T *Dev, uint32_t RateSel)
+{
+	if (!Dev)
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	Dev->Pin.RateSel = RateSel;
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+}
+
 int32_t SFP_Update(SFP_T *Dev)
 {
 	if (!Dev)
@@ -400,6 +415,8 @@ int32_t SFP_Update(SFP_T *Dev)
 		goto reset;
 	
 	if (SFP_SetPinState(Dev, SFP_PIN_TX_DISABLE, Dev->Pin.TxDisable))
+		goto error;
+	if (SFP_SetPinState(Dev, SFP_PIN_TX_DISABLE, Dev->Pin.RateSel))
 		goto error;
 	if (SFP_GetPinState(Dev, SFP_PIN_TX_FAULT, &Dev->Pin.TxFault))
 		goto error;
@@ -456,6 +473,11 @@ int32_t SFP_Init(SFP_T *Dev, BSP_I2C_CTRL_T *I2CCtrl, BSP_PIN_CTRL_T *PinCtrl)
 	if (SFP_GetPinState(Dev, SFP_PIN_TX_DISABLE, &Dev->Pin.TxDisable))
 		goto error;
 	
+	if (SFP_InitPin(Dev, SFP_PIN_RATE_SEL))
+		goto error;
+	if (SFP_GetPinState(Dev, SFP_PIN_RATE_SEL, &Dev->Pin.RateSel))
+		goto error;
+	
 	if (SFP_InitPin(Dev, SFP_PIN_TX_FAULT))
 		goto error;
 	if (SFP_GetPinState(Dev, SFP_PIN_TX_FAULT, &Dev->Pin.TxFault))
@@ -464,7 +486,7 @@ int32_t SFP_Init(SFP_T *Dev, BSP_I2C_CTRL_T *I2CCtrl, BSP_PIN_CTRL_T *PinCtrl)
 	if (SFP_InitPin(Dev, SFP_PIN_RX_LOS))
 		goto error;
 	if (SFP_GetPinState(Dev, SFP_PIN_RX_LOS, &Dev->Pin.RxLos))
-		goto error;	
+		goto error;
 	
 	if (SFP_I2C_ConfigSwitch(Dev))
 		goto error;

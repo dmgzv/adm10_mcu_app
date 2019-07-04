@@ -70,9 +70,7 @@ static int32_t __BSP_SFP_ConfigSwitch(void *Priv)
 }
 
 static int32_t __BSP_SFP_ResetSwitch(void *Priv)
-{
-	//uint32_t Idx = (uint32_t)Priv;
-	
+{	
 	return BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
 }
 
@@ -88,6 +86,10 @@ int32_t __BSP_SFP_InitPin(void *Priv, uint32_t Pin)
 			break;
 		case SFP_PIN_TX_DISABLE:
 			if (BSP_SFP_PIN_InitTxDisable(Idx))
+				return -1;
+			break;
+		case SFP_PIN_RATE_SEL:
+			if (BSP_SFP_PIN_InitRateSel(Idx))
 				return -1;
 			break;
 		case SFP_PIN_TX_FAULT:
@@ -112,6 +114,10 @@ int32_t __BSP_SFP_SetPinState(void *Priv, uint32_t Pin, uint32_t State)
 			if (BSP_SFP_PIN_SetTxDisable(Idx, State))
 				return -1;
 			break;
+		case SFP_PIN_RATE_SEL:
+			if (BSP_SFP_PIN_SetRateSel(Idx, State))
+				return -1;
+			break;
 		case SFP_PIN_TX_FAULT:
 			break;
 		case SFP_PIN_RX_LOS:
@@ -132,6 +138,10 @@ int32_t __BSP_SFP_GetPinState(void *Priv, uint32_t Pin, uint32_t *State)
 			break;
 		case SFP_PIN_TX_DISABLE:
 			if (BSP_SFP_PIN_GetTxDisable(Idx, State))
+				return -1;
+			break;
+		case SFP_PIN_RATE_SEL:
+			if (BSP_SFP_PIN_GetRateSel(Idx, State))
 				return -1;
 			break;
 		case SFP_PIN_TX_FAULT:

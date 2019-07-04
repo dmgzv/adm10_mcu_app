@@ -73,7 +73,6 @@ static void PROFILE_ADM_UpdateHwNumber(PROFILE_T *Profile)
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM_HWNUMBER_IDX, BSP_HW_VERSION, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
 }
 
-
 static void PROFILE_ADM_UpdateTCaseValue(PROFILE_T *Profile)
 {
 	float TCase;
@@ -153,6 +152,51 @@ static void PROFILE_ADM_UpdateHwAlarmsValue(PROFILE_T *Profile)
 		ColorType = PROFILE_COLOR_TYPE_FAILURE;
 	
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM_HWALARMS_IDX, &Value, ColorType, PROFILE_STATE_IS);
+}
+
+static void PROFILE_ADM_UpdateLineFPGATemp(PROFILE_T *Profile)
+{
+	float Temp;
+	
+	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
+	{
+		Temp = 0;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM_LINEFPGATEMP_IDX, &Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	}
+	else
+	{
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM_LINEFPGATEMP_IDX, &fpga_line.Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	}
+}
+
+static void PROFILE_ADM_UpdateClient1FPGATemp(PROFILE_T *Profile)
+{
+	float Temp;
+	
+	if (BSP_DEV_GET_STATE(&fpga_client[0]) != BSP_DEV_STATE_OK)
+	{
+		Temp = 0;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM_CLIENT1FPGATEMP_IDX, &Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	}
+	else
+	{
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM_CLIENT1FPGATEMP_IDX, &fpga_client[0].Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	}
+}
+
+static void PROFILE_ADM_UpdateClient2FPGATemp(PROFILE_T *Profile)
+{
+	float Temp;
+	
+	if (BSP_DEV_GET_STATE(&fpga_client[1]) != BSP_DEV_STATE_OK)
+	{
+		Temp = 0;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM_CLIENT2FPGATEMP_IDX, &Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	}
+	else
+	{
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM_CLIENT2FPGATEMP_IDX, &fpga_client[1].Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	}
 }
 
 static void PROFILE_ADM_UpdateBlockStateValue(PROFILE_T *Profile)
@@ -262,6 +306,12 @@ void PROFILE_ADM_UpdateValues(PROFILE_T *Profile)
 	PROFILE_ADM_UpdatePowerAlarmsValue(Profile);
 
 	PROFILE_ADM_UpdateHwAlarmsValue(Profile);
+	
+	PROFILE_ADM_UpdateLineFPGATemp(Profile);
+	
+	PROFILE_ADM_UpdateClient1FPGATemp(Profile);
+	
+	PROFILE_ADM_UpdateClient2FPGATemp(Profile);
 
 	PROFILE_ADM_UpdateBlockStateValue(Profile);
 	
