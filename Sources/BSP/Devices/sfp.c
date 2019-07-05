@@ -416,7 +416,7 @@ int32_t SFP_Update(SFP_T *Dev)
 	
 	if (SFP_SetPinState(Dev, SFP_PIN_TX_DISABLE, Dev->Pin.TxDisable))
 		goto error;
-	if (SFP_SetPinState(Dev, SFP_PIN_TX_DISABLE, Dev->Pin.RateSel))
+	if (SFP_SetPinState(Dev, SFP_PIN_RATE_SEL, Dev->Pin.RateSel))
 		goto error;
 	if (SFP_GetPinState(Dev, SFP_PIN_TX_FAULT, &Dev->Pin.TxFault))
 		goto error;
