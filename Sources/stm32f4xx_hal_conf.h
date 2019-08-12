@@ -60,8 +60,8 @@
 #define HAL_DMA_MODULE_ENABLED
 #define HAL_DMA2D_MODULE_ENABLED
 #define HAL_ETH_MODULE_ENABLED
-#define HAL_FLASH_MODULE_ENABLED
-/* #define HAL_NAND_MODULE_ENABLED      */
+#define HAL_FLASH_MODULE_ENABLED 
+/* #define HAL_NAND_MODULE_ENABLED     */
 #define HAL_NOR_MODULE_ENABLED
 /* #define HAL_PCCARD_MODULE_ENABLED   */
 #define HAL_SRAM_MODULE_ENABLED
@@ -150,7 +150,7 @@
   */     
 #define  VDD_VALUE                    (3300U) /*!< Value of VDD in mv */
 #define  TICK_INT_PRIORITY            (0x0FU) /*!< tick interrupt priority */
-#define  USE_RTOS                     0U
+#define  USE_RTOS                     1U
 #define  PREFETCH_ENABLE              0U /* The prefetch will be enabled in SystemClock_Config(), depending on the used 
                                             STM32F405/415/07/417 device: RevA (prefetch must be off) or RevZ (prefetch can be on/off) */
 #define  INSTRUCTION_CACHE_ENABLE     1U

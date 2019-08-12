@@ -10,107 +10,70 @@
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 
 #ifdef BSP_CONFIG_USE_SPI1
-static SPI_HandleTypeDef spi1_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-//static osMutexId spi1_mutex_id;
-//osMutexDef(spi1);
-static osMessageQId spi1_message_queue_id;
-osMessageQDef(spi1, SPI_MESSAGE_QUEUE_SIZE, uint32_t);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+SPI_T spi1;
 #endif /*BSP_CONFIG_USE_SPI1*/
 
 #ifdef BSP_CONFIG_USE_SPI2
-static SPI_HandleTypeDef spi2_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-//static osMutexId spi2_mutex_id;
-//osMutexDef(spi2);
-static osMessageQId spi2_message_queue_id;
-osMessageQDef(spi2, SPI_MESSAGE_QUEUE_SIZE, uint32_t);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+SPI_T spi2;
 #endif /*BSP_CONFIG_USE_SPI2*/
 
 #ifdef BSP_CONFIG_USE_SPI3
-static SPI_HandleTypeDef spi3_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-//static osMutexId spi3_mutex_id;
-//osMutexDef(spi3);
-static osMessageQId spi3_message_queue_id;
-osMessageQDef(spi3, SPI_MESSAGE_QUEUE_SIZE, uint32_t);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+SPI_T spi3;
 #endif /*BSP_CONFIG_USE_SPI3*/
 
+#ifdef BSP_CONFIG_USE_SPI4
+SPI_T spi4;
+#endif /*BSP_CONFIG_USE_SPI4*/
+
 #ifdef BSP_CONFIG_USE_SPI5
-static SPI_HandleTypeDef spi5_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-//static osMutexId spi5_mutex_id;
-//osMutexDef(spi5);
-static osMessageQId spi5_message_queue_id;
-osMessageQDef(spi5, SPI_MESSAGE_QUEUE_SIZE, uint32_t);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+SPI_T spi5;
 #endif /*BSP_CONFIG_USE_SPI5*/
 
-#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || defined(BSP_CONFIG_USE_SPI5)
+#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || defined(BSP_CONFIG_USE_SPI4) || defined(BSP_CONFIG_USE_SPI5)
 #ifdef BSP_CONFIG_USE_FREERTOS
 static osMutexId spi_com_mutex_id;
 osMutexDef(spi);
+osMessageQDef(spi, SPI_MESSAGE_QUEUE_SIZE, uint32_t);
 #endif
 #endif
 
-#ifdef BSP_CONFIG_USE_FREERTOS
-static int32_t SPI_GetHandle( SPI_TypeDef* Instance, SPI_HandleTypeDef **spi_handle, osMutexId *spi_mutex_id, osMessageQId *spi_message_queue_id)
-#else
-static int32_t SPI_GetHandle( SPI_TypeDef* Instance, SPI_HandleTypeDef **Handle)
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-{	
+static int32_t SPI_GetHandle( SPI_TypeDef* Instance, SPI_T **spi)
+{
+#ifdef BSP_CONFIG_USE_SPI1
 	if (Instance == SPI1)
 	{
-#ifdef BSP_CONFIG_USE_SPI1
-		*spi_handle = &spi1_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*spi_mutex_id = spi_com_mutex_id;
-		*spi_message_queue_id = spi1_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#else
-		return -1;
-#endif /*BSP_CONFIG_USE_SPI1*/
-	}
-	else if (Instance == SPI2)
-	{
-#ifdef BSP_CONFIG_USE_SPI2
-		*spi_handle = &spi2_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*spi_mutex_id = spi_com_mutex_id;
-		*spi_message_queue_id = spi2_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#else
-		return -1;
-#endif /*BSP_CONFIG_USE_SPI2*/
-	}
-	else if (Instance == SPI3)
-	{
-#ifdef BSP_CONFIG_USE_SPI3
-		*spi_handle = &spi3_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*spi_mutex_id = spi_com_mutex_id;
-		*spi_message_queue_id = spi3_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#else
-		return -1;
-#endif /*BSP_CONFIG_USE_SPI3*/
-	}
-	else if (Instance == SPI5)
-	{
-#ifdef BSP_CONFIG_USE_SPI5
-		*spi_handle = &spi5_handle;
-#ifdef BSP_CONFIG_USE_FREERTOS
-		*spi_mutex_id = spi_com_mutex_id;
-		*spi_message_queue_id = spi5_message_queue_id;
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#else
-		return -1;
-#endif /*BSP_CONFIG_USE_SPI5*/
+		*spi = &spi1;
 	}
 	else
+#endif /*BSP_CONFIG_USE_SPI1*/
+#ifdef BSP_CONFIG_USE_SPI2
+	if (Instance == SPI2)
+	{
+		*spi = &spi2;
+	}
+	else
+#endif /*BSP_CONFIG_USE_SPI2*/
+#ifdef BSP_CONFIG_USE_SPI3
+	if (Instance == SPI3)
+	{
+		*spi = &spi3;
+	}
+	else
+#endif /*BSP_CONFIG_USE_SPI3*/
+#ifdef BSP_CONFIG_USE_SPI4
+	if (Instance == SPI4)
+	{
+		*spi = &spi4;
+	}
+	else
+#endif /*BSP_CONFIG_USE_SPI4*/
+#ifdef BSP_CONFIG_USE_SPI5
+	if (Instance == SPI5)
+	{
+		*spi = &spi5;
+	}
+	else
+#endif /*BSP_CONFIG_USE_SPI5*/
 	{
 		return -1;
 	}
@@ -125,7 +88,7 @@ static int32_t SPI_GetHandle( SPI_TypeDef* Instance, SPI_HandleTypeDef **Handle)
   */
 void SPI1_IRQHandler(void)
 {
-  HAL_SPI_IRQHandler(&spi1_handle);
+  HAL_SPI_IRQHandler(&spi1.handle);
 }
 #endif /*BSP_CONFIG_USE_SPI1*/
 
@@ -137,7 +100,7 @@ void SPI1_IRQHandler(void)
   */
 void SPI2_IRQHandler(void)
 {
-  HAL_SPI_IRQHandler(&spi2_handle);
+  HAL_SPI_IRQHandler(&spi2.handle);
 }
 #endif /*BSP_CONFIG_USE_SPI2*/
 
@@ -149,9 +112,21 @@ void SPI2_IRQHandler(void)
   */
 void SPI3_IRQHandler(void)
 {
-  HAL_SPI_IRQHandler(&spi3_handle);
+  HAL_SPI_IRQHandler(&spi3.handle);
 }
 #endif /*BSP_CONFIG_USE_SPI3*/
+
+#ifdef BSP_CONFIG_USE_SPI4
+/**
+  * @brief  SPI4 interrupt Handler.  
+  * @param  None
+  * @retval None  
+  */
+void SPI4_IRQHandler(void)
+{
+  HAL_SPI_IRQHandler(&spi4.handle);
+}
+#endif /*BSP_CONFIG_USE_SPI4*/
 
 #ifdef BSP_CONFIG_USE_SPI5
 /**
@@ -161,7 +136,7 @@ void SPI3_IRQHandler(void)
   */
 void SPI5_IRQHandler(void)
 {
-  HAL_SPI_IRQHandler(&spi5_handle);
+  HAL_SPI_IRQHandler(&spi5.handle);
 }
 #endif /*BSP_CONFIG_USE_SPI5*/
 
@@ -173,10 +148,10 @@ void SPI5_IRQHandler(void)
 void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 {
   GPIO_InitTypeDef  GPIO_InitStruct;
-  
+
+#ifdef BSP_CONFIG_USE_SPI1
 	if (hspi->Instance == SPI1)
 	{
-#ifdef BSP_CONFIG_USE_SPI1
 		/* Enable GPIO Clocks */
 		SPI1_SCK_GPIO_CLK_ENABLE();
 		SPI1_MISO_GPIO_CLK_ENABLE();
@@ -199,13 +174,14 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Alternate = SPI1_MOSI_AF;			
 		HAL_GPIO_Init(SPI1_MOSI_GPIO_PORT, &GPIO_InitStruct);				
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI1_IRQn, SPI1_IRQ_PRIORITY, 1);
+		HAL_NVIC_SetPriority(SPI1_IRQn, SPI1_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(SPI1_IRQn);
-#endif /*BSP_CONFIG_USE_SPI1*/
 	}
-	else if (hspi->Instance == SPI2)
-	{
+	else
+#endif /*BSP_CONFIG_USE_SPI1*/
 #ifdef BSP_CONFIG_USE_SPI2
+	if (hspi->Instance == SPI2)
+	{
 		/* Enable GPIO Clocks */
 		SPI2_SCK_GPIO_CLK_ENABLE();
 		SPI2_MISO_GPIO_CLK_ENABLE();
@@ -228,13 +204,14 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Alternate = SPI2_MOSI_AF;			
 		HAL_GPIO_Init(SPI2_MOSI_GPIO_PORT, &GPIO_InitStruct);				
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI2_IRQn, SPI2_IRQ_PRIORITY, 1);
+		HAL_NVIC_SetPriority(SPI2_IRQn, SPI2_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(SPI2_IRQn);
-#endif /*BSP_CONFIG_USE_SPI2*/
 	}
-	else if (hspi->Instance == SPI3)
-	{
+	else
+#endif /*BSP_CONFIG_USE_SPI2*/
 #ifdef BSP_CONFIG_USE_SPI3
+	if (hspi->Instance == SPI3)
+	{
 		/* Enable GPIO Clocks */
 		SPI3_SCK_GPIO_CLK_ENABLE();
 		SPI3_MISO_GPIO_CLK_ENABLE();
@@ -257,13 +234,44 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Alternate = SPI3_MOSI_AF;			
 		HAL_GPIO_Init(SPI3_MOSI_GPIO_PORT, &GPIO_InitStruct);				
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI3_IRQn, SPI3_IRQ_PRIORITY, 1);
+		HAL_NVIC_SetPriority(SPI3_IRQn, SPI3_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(SPI3_IRQn);
-#endif /*BSP_CONFIG_USE_SPI3*/
 	}
-	else if (hspi->Instance == SPI5)
+	else
+#endif /*BSP_CONFIG_USE_SPI3*/
+#ifdef BSP_CONFIG_USE_SPI4
+	if (hspi->Instance == SPI4)
 	{
+		/* Enable GPIO Clocks */
+		SPI4_SCK_GPIO_CLK_ENABLE();
+		SPI4_MISO_GPIO_CLK_ENABLE();
+		SPI4_MOSI_GPIO_CLK_ENABLE();
+		/* Enable SPI clock */
+		__HAL_RCC_SPI4_CLK_ENABLE(); 		
+		/* SPI SCK GPIO pin configuration  */
+		GPIO_InitStruct.Pin       = SPI4_SCK_PIN;
+		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+		GPIO_InitStruct.Pull      = GPIO_PULLUP;
+		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+		GPIO_InitStruct.Alternate = SPI4_SCK_AF;		
+		HAL_GPIO_Init(SPI4_SCK_GPIO_PORT, &GPIO_InitStruct);			
+		/* SPI MISO GPIO pin configuration  */
+		GPIO_InitStruct.Pin = SPI4_MISO_PIN;
+		GPIO_InitStruct.Alternate = SPI4_MISO_AF;		
+		HAL_GPIO_Init(SPI4_MISO_GPIO_PORT, &GPIO_InitStruct);		
+		/* SPI MOSI GPIO pin configuration  */
+		GPIO_InitStruct.Pin = SPI4_MOSI_PIN;
+		GPIO_InitStruct.Alternate = SPI4_MOSI_AF;			
+		HAL_GPIO_Init(SPI4_MOSI_GPIO_PORT, &GPIO_InitStruct);				
+		/* Configure the NVIC for SPI */
+		HAL_NVIC_SetPriority(SPI4_IRQn, SPI4_IRQ_PRIORITY, 0);
+		HAL_NVIC_EnableIRQ(SPI4_IRQn);
+	}
+	else
+#endif /*BSP_CONFIG_USE_SPI4*/
 #ifdef BSP_CONFIG_USE_SPI5
+	if (hspi->Instance == SPI5)
+	{
 		/* Enable GPIO Clocks */
 		SPI5_SCK_GPIO_CLK_ENABLE();
 		SPI5_MISO_GPIO_CLK_ENABLE();
@@ -286,9 +294,12 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Alternate = SPI5_MOSI_AF;			
 		HAL_GPIO_Init(SPI5_MOSI_GPIO_PORT, &GPIO_InitStruct);				
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI5_IRQn, SPI5_IRQ_PRIORITY, 1);
+		HAL_NVIC_SetPriority(SPI5_IRQn, SPI5_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(SPI5_IRQn);
+	}
+	else
 #endif /*BSP_CONFIG_USE_SPI5*/
+	{
 	}
 }
 
@@ -299,9 +310,9 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
   */
 void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 {
+#ifdef BSP_CONFIG_USE_SPI1
 	if (hspi->Instance == SPI1)
 	{
-#ifdef BSP_CONFIG_USE_SPI1
 		/* Reset peripherals */
 		__HAL_RCC_SPI1_FORCE_RESET();
 		__HAL_RCC_SPI1_RELEASE_RESET();
@@ -314,11 +325,12 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 		HAL_GPIO_DeInit(SPI1_MOSI_GPIO_PORT, SPI1_MOSI_PIN);		
 		/* Disable the NVIC for SPI */
 		HAL_NVIC_DisableIRQ(SPI1_IRQn);
-#endif /*BSP_CONFIG_USE_SPI1*/
 	}
-	else if (hspi->Instance == SPI2)
-	{
+	else
+#endif /*BSP_CONFIG_USE_SPI1*/
 #ifdef BSP_CONFIG_USE_SPI2
+	if (hspi->Instance == SPI2)
+	{
 		/* Reset peripherals */
 		__HAL_RCC_SPI2_FORCE_RESET();
 		__HAL_RCC_SPI2_RELEASE_RESET();
@@ -331,11 +343,12 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 		HAL_GPIO_DeInit(SPI2_MOSI_GPIO_PORT, SPI2_MOSI_PIN);		
 		/* Disable the NVIC for SPI */
 		HAL_NVIC_DisableIRQ(SPI2_IRQn);
-#endif /*BSP_CONFIG_USE_SPI2*/
 	}
-	else if (hspi->Instance == SPI3)
-	{
+	else
+#endif /*BSP_CONFIG_USE_SPI2*/
 #ifdef BSP_CONFIG_USE_SPI3
+	if (hspi->Instance == SPI3)
+	{
 		/* Reset peripherals */
 		__HAL_RCC_SPI3_FORCE_RESET();
 		__HAL_RCC_SPI3_RELEASE_RESET();
@@ -348,11 +361,30 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 		HAL_GPIO_DeInit(SPI3_MOSI_GPIO_PORT, SPI3_MOSI_PIN);		
 		/* Disable the NVIC for SPI */
 		HAL_NVIC_DisableIRQ(SPI3_IRQn);
-#endif /*BSP_CONFIG_USE_SPI3*/
 	}
-	else if (hspi->Instance == SPI5)
+	else
+#endif /*BSP_CONFIG_USE_SPI3*/
+#ifdef BSP_CONFIG_USE_SPI4
+	if (hspi->Instance == SPI4)
 	{
+		/* Reset peripherals */
+		__HAL_RCC_SPI4_FORCE_RESET();
+		__HAL_RCC_SPI4_RELEASE_RESET();
+		/* Disable peripherals and GPIO Clocks */
+		/* Configure SPI SCK as alternate function  */
+		HAL_GPIO_DeInit(SPI4_SCK_GPIO_PORT, SPI4_SCK_PIN);
+		/* Configure SPI MISO as alternate function  */
+		HAL_GPIO_DeInit(SPI4_MISO_GPIO_PORT, SPI4_MISO_PIN);
+		/* Configure SPI MOSI as alternate function  */
+		HAL_GPIO_DeInit(SPI4_MOSI_GPIO_PORT, SPI4_MOSI_PIN);		
+		/* Disable the NVIC for SPI */
+		HAL_NVIC_DisableIRQ(SPI4_IRQn);
+	}
+	else
+#endif /*BSP_CONFIG_USE_SPI4*/
 #ifdef BSP_CONFIG_USE_SPI5
+	if (hspi->Instance == SPI5)
+	{
 		/* Reset peripherals */
 		__HAL_RCC_SPI5_FORCE_RESET();
 		__HAL_RCC_SPI5_RELEASE_RESET();
@@ -365,7 +397,10 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
 		HAL_GPIO_DeInit(SPI5_MOSI_GPIO_PORT, SPI5_MOSI_PIN);		
 		/* Disable the NVIC for SPI */
 		HAL_NVIC_DisableIRQ(SPI5_IRQn);
+	}
+	else
 #endif /*BSP_CONFIG_USE_SPI5*/
+	{
 	}
 }
 
@@ -376,38 +411,15 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef *hspi)
   */
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	if (hspi->Instance == SPI1)
-	{
-#ifdef BSP_CONFIG_USE_SPI1
+	SPI_T *spi;
+	
+	if (SPI_GetHandle(hspi->Instance, &spi))
+		return;
+	
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi1_message_queue_id, SPI_EVENT_COMPLETE, 0);
+	if (osMessagePut(spi->message_queue_id, SPI_EVENT_COMPLETE, 0) != osOK)
+		spi->message_queue_overflow_errors++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI1*/
-	}
-	else if (hspi->Instance == SPI2)
-	{
-#ifdef BSP_CONFIG_USE_SPI2
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi2_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI2*/
-	}
-	else if (hspi->Instance == SPI3)
-	{
-#ifdef BSP_CONFIG_USE_SPI3
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi3_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI3*/
-	}
-	else if (hspi->Instance == SPI5)
-	{
-#ifdef BSP_CONFIG_USE_SPI5
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi5_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI5*/
-	}
 }
 
 /**
@@ -417,38 +429,15 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
   */
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	if (hspi->Instance == SPI1)
-	{
-#ifdef BSP_CONFIG_USE_SPI1
+	SPI_T *spi;
+	
+	if (SPI_GetHandle(hspi->Instance, &spi))
+		return;
+	
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi1_message_queue_id, SPI_EVENT_COMPLETE, 0);
+	if (osMessagePut(spi->message_queue_id, SPI_EVENT_COMPLETE, 0) != osOK)
+		spi->message_queue_overflow_errors++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI1*/
-	}
-	else if (hspi->Instance == SPI2)
-	{
-#ifdef BSP_CONFIG_USE_SPI2
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi2_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI2*/
-	}
-	else if (hspi->Instance == SPI3)
-	{
-#ifdef BSP_CONFIG_USE_SPI3
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi3_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI3*/
-	}
-	else if (hspi->Instance == SPI5)
-	{
-#ifdef BSP_CONFIG_USE_SPI5
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi5_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI5*/
-	}
 }
 
 /**
@@ -458,38 +447,15 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
   */
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-	if (hspi->Instance == SPI1)
-	{
-#ifdef BSP_CONFIG_USE_SPI1
+	SPI_T *spi;
+	
+	if (SPI_GetHandle(hspi->Instance, &spi))
+		return;
+	
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi1_message_queue_id, SPI_EVENT_COMPLETE, 0);
+	if (osMessagePut(spi->message_queue_id, SPI_EVENT_COMPLETE, 0) != osOK)
+		spi->message_queue_overflow_errors++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI1*/
-	}
-	else if (hspi->Instance == SPI2)
-	{
-#ifdef BSP_CONFIG_USE_SPI2
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi2_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI2*/
-	}
-	else if (hspi->Instance == SPI3)
-	{
-#ifdef BSP_CONFIG_USE_SPI3
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi3_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI3*/
-	}
-	else if (hspi->Instance == SPI5)
-	{
-#ifdef BSP_CONFIG_USE_SPI5
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi5_message_queue_id, SPI_EVENT_COMPLETE, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI5*/
-	}
 }
 
 /**
@@ -499,38 +465,26 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
   */
  void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
 {
-	if (hspi->Instance == SPI1)
-	{
-#ifdef BSP_CONFIG_USE_SPI1
+	SPI_T *spi;
+	
+	if (SPI_GetHandle(hspi->Instance, &spi))
+		return;
+	
+	if (spi->handle.ErrorCode & HAL_SPI_ERROR_MODF)
+		spi->mode_fault_errors++;
+	if (spi->handle.ErrorCode & HAL_SPI_ERROR_CRC)
+		spi->crc_errors++;
+	if (spi->handle.ErrorCode & HAL_SPI_ERROR_OVR)
+		spi->overrun_errors++;
+	if (spi->handle.ErrorCode & HAL_SPI_ERROR_FRE)
+		spi->frame_errors++;
+	if (spi->handle.ErrorCode & HAL_SPI_ERROR_DMA)
+		spi->dma_errors++;
+	
 #ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi1_message_queue_id, SPI_EVENT_ERROR, 0);
+	if (osMessagePut(spi->message_queue_id, SPI_EVENT_ERROR, 0) != osOK)
+		spi->message_queue_overflow_errors++;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI1*/
-	}
-	else if (hspi->Instance == SPI2)
-	{
-#ifdef BSP_CONFIG_USE_SPI2
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi2_message_queue_id, SPI_EVENT_ERROR, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI2*/
-	}
-	else if (hspi->Instance == SPI3)
-	{
-#ifdef BSP_CONFIG_USE_SPI3
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi3_message_queue_id, SPI_EVENT_ERROR, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI3*/
-	}
-	else if (hspi->Instance == SPI5)
-	{
-#ifdef BSP_CONFIG_USE_SPI5
-#ifdef BSP_CONFIG_USE_FREERTOS
-		osMessagePut(spi5_message_queue_id, SPI_EVENT_ERROR, 0);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-#endif /*BSP_CONFIG_USE_SPI5*/
-	}
 }
 
 /**
@@ -541,101 +495,134 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 int32_t SPI_Init(void)
 {
 	int32_t result;
-	
+
+#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || defined(BSP_CONFIG_USE_SPI4) || defined(BSP_CONFIG_USE_SPI5)
+#ifdef BSP_CONFIG_USE_FREERTOS
+	if (!spi_com_mutex_id)
+		spi_com_mutex_id = osMutexCreate(osMutex(spi));
+#endif
+#endif	
+
 	result = 0;
 #ifdef BSP_CONFIG_USE_SPI1
-	spi1_handle.Instance               = SPI1;
-	spi1_handle.Init.BaudRatePrescaler = SPI1_BAUDRATEPRESCALER;
-	spi1_handle.Init.Direction         = SPI1_DIRECTION;
-	spi1_handle.Init.CLKPhase          = SPI1_PHASE;
-	spi1_handle.Init.CLKPolarity       = SPI1_POLARITY;
-	spi1_handle.Init.CRCCalculation    = SPI1_CRCCALCULATION;
-	spi1_handle.Init.CRCPolynomial     = SPI1_CRCPOLYNOMIAL;
-	spi1_handle.Init.DataSize          = SPI1_DATASIZE;
-	spi1_handle.Init.FirstBit          = SPI1_FIRSTBIT;
-	spi1_handle.Init.NSS               = SPI1_NSS;
-	spi1_handle.Init.TIMode            = SPI1_TIMODE;
-	spi1_handle.Init.Mode              = SPI1_MODE;		
-	if(HAL_SPI_Init(&spi1_handle) != HAL_OK)
+	spi1.handle.Instance               = SPI1;
+	spi1.handle.Init.BaudRatePrescaler = SPI1_BAUDRATEPRESCALER;
+	spi1.handle.Init.Direction         = SPI1_DIRECTION;
+	spi1.handle.Init.CLKPhase          = SPI1_PHASE;
+	spi1.handle.Init.CLKPolarity       = SPI1_POLARITY;
+	spi1.handle.Init.CRCCalculation    = SPI1_CRCCALCULATION;
+	spi1.handle.Init.CRCPolynomial     = SPI1_CRCPOLYNOMIAL;
+	spi1.handle.Init.DataSize          = SPI1_DATASIZE;
+	spi1.handle.Init.FirstBit          = SPI1_FIRSTBIT;
+	spi1.handle.Init.NSS               = SPI1_NSS;
+	spi1.handle.Init.TIMode            = SPI1_TIMODE;
+	spi1.handle.Init.Mode              = SPI1_MODE;		
+	if(HAL_SPI_Init(&spi1.handle) != HAL_OK)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi1_mutex_id = osMutexCreate(osMutex(spi1));
-	spi1_message_queue_id = osMessageCreate (osMessageQ(spi1), NULL);	
+	//spi1.mutex_id = osMutexCreate(osMutex(spi));
+	spi1.mutex_id = spi_com_mutex_id;
+	if (!spi1.message_queue_id)
+		spi1.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_SPI1*/
 	
 #ifdef BSP_CONFIG_USE_SPI2
-	spi2_handle.Instance               = SPI2;
-	spi2_handle.Init.BaudRatePrescaler = SPI2_BAUDRATEPRESCALER;
-	spi2_handle.Init.Direction         = SPI2_DIRECTION;
-	spi2_handle.Init.CLKPhase          = SPI2_PHASE;
-	spi2_handle.Init.CLKPolarity       = SPI2_POLARITY;
-	spi2_handle.Init.CRCCalculation    = SPI2_CRCCALCULATION;
-	spi2_handle.Init.CRCPolynomial     = SPI2_CRCPOLYNOMIAL;
-	spi2_handle.Init.DataSize          = SPI2_DATASIZE;
-	spi2_handle.Init.FirstBit          = SPI2_FIRSTBIT;
-	spi2_handle.Init.NSS               = SPI2_NSS;
-	spi2_handle.Init.TIMode            = SPI2_TIMODE;
-	spi2_handle.Init.Mode              = SPI2_MODE;		
-	if(HAL_SPI_Init(&spi2_handle) != HAL_OK)
+	spi2.handle.Instance               = SPI2;
+	spi2.handle.Init.BaudRatePrescaler = SPI2_BAUDRATEPRESCALER;
+	spi2.handle.Init.Direction         = SPI2_DIRECTION;
+	spi2.handle.Init.CLKPhase          = SPI2_PHASE;
+	spi2.handle.Init.CLKPolarity       = SPI2_POLARITY;
+	spi2.handle.Init.CRCCalculation    = SPI2_CRCCALCULATION;
+	spi2.handle.Init.CRCPolynomial     = SPI2_CRCPOLYNOMIAL;
+	spi2.handle.Init.DataSize          = SPI2_DATASIZE;
+	spi2.handle.Init.FirstBit          = SPI2_FIRSTBIT;
+	spi2.handle.Init.NSS               = SPI2_NSS;
+	spi2.handle.Init.TIMode            = SPI2_TIMODE;
+	spi2.handle.Init.Mode              = SPI2_MODE;		
+	if(HAL_SPI_Init(&spi2.handle) != HAL_OK)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi2_mutex_id = osMutexCreate(osMutex(spi2));
-	spi2_message_queue_id = osMessageCreate (osMessageQ(spi2), NULL);	
+	//spi2.mutex_id = osMutexCreate(osMutex(spi));
+	spi2.mutex_id = spi_com_mutex_id;
+	if (!spi2.message_queue_id)
+		spi2.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_SPI2*/
 
 #ifdef BSP_CONFIG_USE_SPI3
-	spi3_handle.Instance               = SPI3;
-	spi3_handle.Init.BaudRatePrescaler = SPI3_BAUDRATEPRESCALER;
-	spi3_handle.Init.Direction         = SPI3_DIRECTION;
-	spi3_handle.Init.CLKPhase          = SPI3_PHASE;
-	spi3_handle.Init.CLKPolarity       = SPI3_POLARITY;
-	spi3_handle.Init.CRCCalculation    = SPI3_CRCCALCULATION;
-	spi3_handle.Init.CRCPolynomial     = SPI3_CRCPOLYNOMIAL;
-	spi3_handle.Init.DataSize          = SPI3_DATASIZE;
-	spi3_handle.Init.FirstBit          = SPI3_FIRSTBIT;
-	spi3_handle.Init.NSS               = SPI3_NSS;
-	spi3_handle.Init.TIMode            = SPI3_TIMODE;
-	spi3_handle.Init.Mode              = SPI3_MODE;		
-	if(HAL_SPI_Init(&spi3_handle) != HAL_OK)
+	spi3.handle.Instance               = SPI3;
+	spi3.handle.Init.BaudRatePrescaler = SPI3_BAUDRATEPRESCALER;
+	spi3.handle.Init.Direction         = SPI3_DIRECTION;
+	spi3.handle.Init.CLKPhase          = SPI3_PHASE;
+	spi3.handle.Init.CLKPolarity       = SPI3_POLARITY;
+	spi3.handle.Init.CRCCalculation    = SPI3_CRCCALCULATION;
+	spi3.handle.Init.CRCPolynomial     = SPI3_CRCPOLYNOMIAL;
+	spi3.handle.Init.DataSize          = SPI3_DATASIZE;
+	spi3.handle.Init.FirstBit          = SPI3_FIRSTBIT;
+	spi3.handle.Init.NSS               = SPI3_NSS;
+	spi3.handle.Init.TIMode            = SPI3_TIMODE;
+	spi3.handle.Init.Mode              = SPI3_MODE;		
+	if(HAL_SPI_Init(&spi3.handle) != HAL_OK)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi3_mutex_id = osMutexCreate(osMutex(spi3));
-	spi3_message_queue_id = osMessageCreate (osMessageQ(spi3), NULL);	
+	//spi3.mutex_id = osMutexCreate(osMutex(spi));
+	spi3.mutex_id = spi_com_mutex_id;
+	if (!spi3.message_queue_id)
+		spi3.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_SPI3*/
-	
-#ifdef BSP_CONFIG_USE_SPI5
-	spi5_handle.Instance               = SPI5;
-	spi5_handle.Init.BaudRatePrescaler = SPI5_BAUDRATEPRESCALER;
-	spi5_handle.Init.Direction         = SPI5_DIRECTION;
-	spi5_handle.Init.CLKPhase          = SPI5_PHASE;
-	spi5_handle.Init.CLKPolarity       = SPI5_POLARITY;
-	spi5_handle.Init.CRCCalculation    = SPI5_CRCCALCULATION;
-	spi5_handle.Init.CRCPolynomial     = SPI5_CRCPOLYNOMIAL;
-	spi5_handle.Init.DataSize          = SPI5_DATASIZE;
-	spi5_handle.Init.FirstBit          = SPI5_FIRSTBIT;
-	spi5_handle.Init.NSS               = SPI5_NSS;
-	spi5_handle.Init.TIMode            = SPI5_TIMODE;
-	spi5_handle.Init.Mode              = SPI5_MODE;		
-	if(HAL_SPI_Init(&spi5_handle) != HAL_OK)
+
+#ifdef BSP_CONFIG_USE_SPI4
+	spi4.handle.Instance               = SPI4;
+	spi4.handle.Init.BaudRatePrescaler = SPI4_BAUDRATEPRESCALER;
+	spi4.handle.Init.Direction         = SPI4_DIRECTION;
+	spi4.handle.Init.CLKPhase          = SPI4_PHASE;
+	spi4.handle.Init.CLKPolarity       = SPI4_POLARITY;
+	spi4.handle.Init.CRCCalculation    = SPI4_CRCCALCULATION;
+	spi4.handle.Init.CRCPolynomial     = SPI4_CRCPOLYNOMIAL;
+	spi4.handle.Init.DataSize          = SPI4_DATASIZE;
+	spi4.handle.Init.FirstBit          = SPI4_FIRSTBIT;
+	spi4.handle.Init.NSS               = SPI4_NSS;
+	spi4.handle.Init.TIMode            = SPI4_TIMODE;
+	spi4.handle.Init.Mode              = SPI4_MODE;		
+	if(HAL_SPI_Init(&spi4.handle) != HAL_OK)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi5_mutex_id = osMutexCreate(osMutex(spi5));
-	spi5_message_queue_id = osMessageCreate (osMessageQ(spi5), NULL);	
+	//spi4.mutex_id = osMutexCreate(osMutex(spi));
+	spi4.mutex_id = spi_com_mutex_id;
+	if (!spi4.message_queue_id)
+		spi4.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+#endif /*BSP_CONFIG_USE_SPI4*/
+	
+#ifdef BSP_CONFIG_USE_SPI5
+	spi5.handle.Instance               = SPI5;
+	spi5.handle.Init.BaudRatePrescaler = SPI5_BAUDRATEPRESCALER;
+	spi5.handle.Init.Direction         = SPI5_DIRECTION;
+	spi5.handle.Init.CLKPhase          = SPI5_PHASE;
+	spi5.handle.Init.CLKPolarity       = SPI5_POLARITY;
+	spi5.handle.Init.CRCCalculation    = SPI5_CRCCALCULATION;
+	spi5.handle.Init.CRCPolynomial     = SPI5_CRCPOLYNOMIAL;
+	spi5.handle.Init.DataSize          = SPI5_DATASIZE;
+	spi5.handle.Init.FirstBit          = SPI5_FIRSTBIT;
+	spi5.handle.Init.NSS               = SPI5_NSS;
+	spi5.handle.Init.TIMode            = SPI5_TIMODE;
+	spi5.handle.Init.Mode              = SPI5_MODE;		
+	if(HAL_SPI_Init(&spi5.handle) != HAL_OK)
+		result = -1;
+	
+#ifdef BSP_CONFIG_USE_FREERTOS
+	//spi5.mutex_id = osMutexCreate(osMutex(spi));
+	spi5.mutex_id = spi_com_mutex_id;
+	if (!spi5.message_queue_id)
+		spi5.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 #endif /*BSP_CONFIG_USE_SPI5*/
-	
-#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || defined(BSP_CONFIG_USE_SPI5)
-#ifdef BSP_CONFIG_USE_FREERTOS
-	spi_com_mutex_id = osMutexCreate(osMutex(spi));
-#endif
-#endif
 	
 	return result;
 }
@@ -646,73 +633,26 @@ int32_t SPI_Init(void)
   * @retval None
   */
 void SPI_Deinit(void)
-{
-	
-#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || defined(BSP_CONFIG_USE_SPI5)
-#ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait(spi_com_mutex_id, SPI_TIMEOUT);
-#endif
-#endif
-	
+{	
 #ifdef BSP_CONFIG_USE_SPI1
-#ifdef BSP_CONFIG_USE_FREERTOS
-	//osMutexWait(spi1_mutex_id, SPI_TIMEOUT);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	
-	HAL_SPI_DeInit(&spi1_handle);	
-	
-#ifdef BSP_CONFIG_USE_FREERTOS
-	//osMutexRelease(spi1_mutex_id);
-	//osMutexDelete(spi1_mutex_id);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+	HAL_SPI_DeInit(&spi1.handle);	
 #endif /*BSP_CONFIG_USE_SPI1*/
 	
 #ifdef BSP_CONFIG_USE_SPI2
-#ifdef BSP_CONFIG_USE_FREERTOS
-	//osMutexWait(spi2_mutex_id, SPI_TIMEOUT);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	
-	HAL_SPI_DeInit(&spi2_handle);
-	
-#ifdef BSP_CONFIG_USE_FREERTOS
-	//osMutexRelease(spi2_mutex_id);
-	//osMutexDelete(spi2_mutex_id);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+	HAL_SPI_DeInit(&spi2.handle);
 #endif /*BSP_CONFIG_USE_SPI2*/
 	
 #ifdef BSP_CONFIG_USE_SPI3
-#ifdef BSP_CONFIG_USE_FREERTOS
-	//osMutexWait(spi3_mutex_id, SPI_TIMEOUT);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	
-	HAL_SPI_DeInit(&spi3_handle);
-	
-#ifdef BSP_CONFIG_USE_FREERTOS
-	//osMutexRelease(spi3_mutex_id);
-	//osMutexDelete(spi3_mutex_id);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+	HAL_SPI_DeInit(&spi3.handle);
 #endif /*BSP_CONFIG_USE_SPI3*/
-
+	
+#ifdef BSP_CONFIG_USE_SPI4
+	HAL_SPI_DeInit(&spi4.handle);
+#endif /*BSP_CONFIG_USE_SPI4*/
+	
 #ifdef BSP_CONFIG_USE_SPI5
-#ifdef BSP_CONFIG_USE_FREERTOS
-	//osMutexWait(spi5_mutex_id, SPI_TIMEOUT);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	
-	HAL_SPI_DeInit(&spi5_handle);
-	
-#ifdef BSP_CONFIG_USE_FREERTOS
-	//osMutexRelease(spi5_mutex_id);
-	//osMutexDelete(spi5_mutex_id);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+	HAL_SPI_DeInit(&spi5.handle);
 #endif /*BSP_CONFIG_USE_SPI5*/
-
-#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || defined(BSP_CONFIG_USE_SPI5)
-#ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease(spi_com_mutex_id);
-	osMutexDelete(spi_com_mutex_id);
-#endif
-#endif
-
 }
 
 /**
@@ -725,45 +665,37 @@ void SPI_Deinit(void)
   * @param  TxSize2: size of data to transmit last
   * @retval 0 on succes, otherwise -1;
   */
-int32_t SPI_SequentialTransmit(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer1, uint32_t  TxSize1, char *TxBuffer2, uint32_t  TxSize2)
+int32_t SPI_SequentialTransmit(SPI_TypeDef *Instance, SPI_CS_T *CS, char *TxBuffer1, uint32_t  TxSize1, char *TxBuffer2, uint32_t  TxSize2)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	osEvent evt;	
-	osMutexId spi_mutex_id;
-	osMessageQId spi_message_queue_id;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p, &spi_mutex_id, &spi_message_queue_id))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 
-	if( osMutexWait( spi_mutex_id, SPI_TIMEOUT ) != osOK )
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
 		return -1;
 
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_Transmit_IT(spi_handle_p, (uint8_t*)TxBuffer1, TxSize1) != HAL_OK)
+	if(HAL_SPI_Transmit_IT(&spi->handle, (uint8_t*)TxBuffer1, TxSize1) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(spi_message_queue_id, SPI_TIMEOUT);
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
 	if (evt.status != osEventMessage) 
-	{
-		HAL_SPI_Abort_IT(spi_handle_p);
-		goto error;
-	}
+		goto timeout;
 	
 	if (evt.value.v != SPI_EVENT_COMPLETE)
 		goto error;
 	
-	if(HAL_SPI_Transmit_IT(spi_handle_p, (uint8_t*)TxBuffer2, TxSize2) != HAL_OK)
+	if(HAL_SPI_Transmit_IT(&spi->handle, (uint8_t*)TxBuffer2, TxSize2) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(spi_message_queue_id, SPI_TIMEOUT);
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
 	if (evt.status != osEventMessage) 
-	{
-		HAL_SPI_Abort_IT(spi_handle_p);
-		goto error;
-	}
+		goto timeout;
 	
 	if (evt.value.v != SPI_EVENT_COMPLETE)
 		goto error;
@@ -771,29 +703,32 @@ int32_t SPI_SequentialTransmit(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuf
 	if (CS)
 		CS->SetState(CS->Priv, 1);
 
-	osMutexRelease( spi_mutex_id );	
+	osMutexRelease( spi->mutex_id );	
 	return 0;
 
+timeout:
+	spi->seq_tx_timeout_errors++;
 error:
-	HAL_SPI_DeInit(spi_handle_p);
-	HAL_SPI_Init(spi_handle_p);
+	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
 	if (CS)
 		CS->SetState(CS->Priv, 1);
-	osMutexRelease( spi_mutex_id );
+	osMutexRelease( spi->mutex_id );
 	return -1;	
 #else /*BSP_CONFIG_USE_FREERTOS*/
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_Transmit(spi_handle_p, (uint8_t *)TxBuffer1, TxSize1, SPI_TIMEOUT) != HAL_OK)
+	if(HAL_SPI_Transmit(&spi->handle, (uint8_t *)TxBuffer1, TxSize1, SPI_TIMEOUT) != HAL_OK)
 		goto error;
 	
-	if(HAL_SPI_Transmit(spi_handle_p, (uint8_t *)TxBuffer2, TxSize2, SPI_TIMEOUT) != HAL_OK)
+	if(HAL_SPI_Transmit(&spi->handle, (uint8_t *)TxBuffer2, TxSize2, SPI_TIMEOUT) != HAL_OK)
 		goto error;
 	
 	if (CS)
@@ -820,42 +755,34 @@ error:
 int32_t SPI_SequentialReceive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, uint32_t  TxSize, char * RxBuffer, uint32_t  RxSize)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	SPI_HandleTypeDef *spi_handle_p;
-	osEvent evt;	
-	osMutexId spi_mutex_id;
-	osMessageQId spi_message_queue_id;
+	SPI_T *spi;
+	osEvent evt;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p, &spi_mutex_id, &spi_message_queue_id))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 
-	if( osMutexWait( spi_mutex_id, SPI_TIMEOUT ) != osOK )
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
 		return -1;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_Transmit_IT(spi_handle_p, (uint8_t*)TxBuffer, TxSize) != HAL_OK)
+	if(HAL_SPI_Transmit_IT(&spi->handle, (uint8_t*)TxBuffer, TxSize) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(spi_message_queue_id, SPI_TIMEOUT);
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
 	if (evt.status != osEventMessage) 
-	{
-		HAL_SPI_Abort_IT(spi_handle_p);
-		goto error;
-	}
+		goto timeout;
 	
 	if (evt.value.v != SPI_EVENT_COMPLETE)
 		goto error;
 	
-	if(HAL_SPI_Receive_IT(spi_handle_p, (uint8_t *)RxBuffer, RxSize) != HAL_OK)
+	if(HAL_SPI_Receive_IT(&spi->handle, (uint8_t *)RxBuffer, RxSize) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(spi_message_queue_id, SPI_TIMEOUT);
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
 	if (evt.status != osEventMessage)
-	{
-		HAL_SPI_Abort_IT(spi_handle_p);
-		goto error;
-	}
+		goto timeout;
 	
 	if (evt.value.v != SPI_EVENT_COMPLETE)
 		goto error;
@@ -863,29 +790,32 @@ int32_t SPI_SequentialReceive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuff
 	if (CS)
 		CS->SetState(CS->Priv, 1);
 	
-	osMutexRelease( spi_mutex_id );	
+	osMutexRelease( spi->mutex_id );	
 	return 0;
 
+timeout:
+	spi->seq_rx_timeout_errors++;
 error:
-	HAL_SPI_DeInit(spi_handle_p);
-	HAL_SPI_Init(spi_handle_p);
+	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
 	if (CS)
 		CS->SetState(CS->Priv, 1);
-	osMutexRelease( spi_mutex_id );
+	osMutexRelease( spi->mutex_id );
 	return -1;	
 #else /*BSP_CONFIG_USE_FREERTOS*/
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_Transmit(spi_handle_p, (uint8_t*)TxBuffer, TxSize, SPI_TIMEOUT) != HAL_OK)
+	if(HAL_SPI_Transmit(&spi->handle, (uint8_t*)TxBuffer, TxSize, SPI_TIMEOUT) != HAL_OK)
 		goto error;
 	
-	if(HAL_SPI_Receive(spi_handle_p, (uint8_t *)RxBuffer, RxSize, SPI_TIMEOUT) != HAL_OK)
+	if(HAL_SPI_Receive(&spi->handle, (uint8_t *)RxBuffer, RxSize, SPI_TIMEOUT) != HAL_OK)
 		goto error;
 	
 	if (CS)
@@ -911,29 +841,24 @@ error:
 int32_t SPI_TransmitReceive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, char * RxBuffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	osEvent evt;	
-	osMutexId spi_mutex_id;
-	osMessageQId spi_message_queue_id;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p, &spi_mutex_id, &spi_message_queue_id))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 
-	if( osMutexWait( spi_mutex_id, SPI_TIMEOUT ) != osOK )
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
 		return -1;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_TransmitReceive_IT(spi_handle_p, (uint8_t*)TxBuffer, (uint8_t *)RxBuffer, Size) != HAL_OK)
+	if(HAL_SPI_TransmitReceive_IT(&spi->handle, (uint8_t*)TxBuffer, (uint8_t *)RxBuffer, Size) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(spi_message_queue_id, SPI_TIMEOUT);
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
 	if (evt.status != osEventMessage)
-	{
-		HAL_SPI_Abort_IT(spi_handle_p);
-		goto error;
-	}
+		goto timeout;
 	
 	if (evt.value.v != SPI_EVENT_COMPLETE)
 		goto error;
@@ -941,26 +866,29 @@ int32_t SPI_TransmitReceive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer
 	if (CS)
 		CS->SetState(CS->Priv, 1);
 	
-	osMutexRelease( spi_mutex_id );	
+	osMutexRelease( spi->mutex_id );	
 	return 0;
 
+timeout:
+	spi->tx_rx_timeout_errors++;
 error:
-	HAL_SPI_DeInit(spi_handle_p);
-	HAL_SPI_Init(spi_handle_p);
+	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
 	if (CS)
 		CS->SetState(CS->Priv, 1);
-	osMutexRelease( spi_mutex_id );
+	osMutexRelease( spi->mutex_id );
 	return -1;	
 #else /*BSP_CONFIG_USE_FREERTOS*/
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_TransmitReceive(spi_handle_p, (uint8_t*)TxBuffer, (uint8_t *)RxBuffer, Size, SPI_TIMEOUT) != HAL_OK)
+	if(HAL_SPI_TransmitReceive(&spi->handle, (uint8_t*)TxBuffer, (uint8_t *)RxBuffer, Size, SPI_TIMEOUT) != HAL_OK)
 		goto error;
 	
 	if (CS)
@@ -985,56 +913,53 @@ error:
 int32_t SPI_Transmit(SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	osEvent evt;	
-	osMutexId spi_mutex_id;
-	osMessageQId spi_message_queue_id;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p, &spi_mutex_id, &spi_message_queue_id))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 
-	if( osMutexWait( spi_mutex_id, SPI_TIMEOUT ) != osOK )
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
 		return -1;
 
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_Transmit_IT(spi_handle_p, (uint8_t*)Buffer, Size) != HAL_OK)
+	if(HAL_SPI_Transmit_IT(&spi->handle, (uint8_t*)Buffer, Size) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(spi_message_queue_id, SPI_TIMEOUT);
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
 	if (evt.status != osEventMessage) 
-	{
-		HAL_SPI_Abort_IT(spi_handle_p);
-		goto error;
-	}
-	
+		goto timeout;
 	if (evt.value.v != SPI_EVENT_COMPLETE)
 		goto error;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 1);
 
-	osMutexRelease( spi_mutex_id );	
+	osMutexRelease( spi->mutex_id );	
 	return 0;
 
+timeout:
+	spi->tx_timeout_errors++;
 error:
-	HAL_SPI_DeInit(spi_handle_p);
-	HAL_SPI_Init(spi_handle_p);
+	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
 	if (CS)
 		CS->SetState(CS->Priv, 1);
-	osMutexRelease( spi_mutex_id );
+	osMutexRelease( spi->mutex_id );
 	return -1;	
 #else /*BSP_CONFIG_USE_FREERTOS*/
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_Transmit(spi_handle_p, (uint8_t *)Buffer, Size, SPI_TIMEOUT) != HAL_OK)
+	if(HAL_SPI_Transmit(&spi->handle, (uint8_t *)Buffer, Size, SPI_TIMEOUT) != HAL_OK)
 		goto error;
 	
 	if (CS)
@@ -1059,29 +984,24 @@ error:
 int32_t SPI_Receive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	osEvent evt;	
-	osMutexId spi_mutex_id;
-	osMessageQId spi_message_queue_id;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p, &spi_mutex_id, &spi_message_queue_id))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 
-	if( osMutexWait( spi_mutex_id, SPI_TIMEOUT ) != osOK )
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
 		return -1;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 
-	if(HAL_SPI_Receive_IT(spi_handle_p, (uint8_t *)Buffer, Size) != HAL_OK)
+	if(HAL_SPI_Receive_IT(&spi->handle, (uint8_t *)Buffer, Size) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(spi_message_queue_id, SPI_TIMEOUT);
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
 	if (evt.status != osEventMessage) 
-	{
-		HAL_SPI_Abort_IT(spi_handle_p);
-		goto error;
-	}
+		goto timeout;
 	
 	if (evt.value.v != SPI_EVENT_COMPLETE)
 		goto error;
@@ -1089,26 +1009,29 @@ int32_t SPI_Receive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t
 	if (CS)
 		CS->SetState(CS->Priv, 1);
 	
-	osMutexRelease( spi_mutex_id );	
+	osMutexRelease( spi->mutex_id );	
 	return 0;
 
+timeout:
+	spi->rx_timeout_errors++;
 error:
-	HAL_SPI_DeInit(spi_handle_p);
-	HAL_SPI_Init(spi_handle_p);
+	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
 	if (CS)
 		CS->SetState(CS->Priv, 1);
-	osMutexRelease( spi_mutex_id );
+	osMutexRelease( spi->mutex_id );
 	return -1;
 #else /*BSP_CONFIG_USE_FREERTOS*/
-	SPI_HandleTypeDef *spi_handle_p;
+	SPI_T *spi;
 	
-	if (SPI_GetHandle(Instance, &spi_handle_p))
+	if (SPI_GetHandle(Instance, &spi))
 		return -1;
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
 	
-	if(HAL_SPI_Receive(spi_handle_p, (uint8_t *)Buffer, Size, SPI_TIMEOUT) != HAL_OK)
+	if(HAL_SPI_Receive(&spi->handle, (uint8_t *)Buffer, Size, SPI_TIMEOUT) != HAL_OK)
 		goto error;
 	
 	if (CS)

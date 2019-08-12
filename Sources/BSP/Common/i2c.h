@@ -83,6 +83,37 @@
 #define I2C3_NOSTRETCH				I2C_NOSTRETCH_DISABLE
 #define I2C3_ADDRESS 					(0x3E)
 
+typedef struct {
+	I2C_HandleTypeDef handle;
+#ifdef BSP_CONFIG_USE_FREERTOS
+	osMutexId mutex_id;
+	osMessageQId message_queue_id;
+	uint32_t message_queue_overflow_errors;
+	uint32_t tx_timeout_errors;
+	uint32_t rx_timeout_errors;
+	uint32_t seq_tx_timeout_errors;
+	uint32_t seq_rx_timeout_errors;
+#endif
+	uint32_t berr_errors;
+	uint32_t arlo_errors;
+	uint32_t af_errors;
+	uint32_t overrun_errors;
+	uint32_t dma_errors;
+	
+} I2C_T;
+
+#ifdef BSP_CONFIG_USE_I2C1
+extern I2C_T i2c1;
+#endif /*BSP_CONFIG_USE_I2C1*/
+
+#ifdef BSP_CONFIG_USE_I2C2
+extern I2C_T i2c2;
+#endif /*BSP_CONFIG_USE_I2C2*/
+
+#ifdef BSP_CONFIG_USE_I2C3
+extern I2C_T i2c3;
+#endif /*BSP_CONFIG_USE_I2C3*/
+
 int32_t I2C_Init(void);
 void I2C_Deinit(void);
 

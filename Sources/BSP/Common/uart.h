@@ -58,6 +58,31 @@
 #define UART2_MODE 					UART_MODE_TX_RX
 #define UART2_OVERSAMPLING 	UART_OVERSAMPLING_16
 
+/* Definition for USART3 */
+#define UART3_TX_PIN        GPIO_PIN_10
+#define UART3_TX_GPIO_PORT  GPIOB  
+#define UART3_TX_AF         GPIO_AF7_USART3
+#define UART3_RX_PIN        GPIO_PIN_11
+#define UART3_RX_GPIO_PORT  GPIOB 
+#define UART3_RX_AF         GPIO_AF7_USART3
+
+#define UART3_RX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOB_CLK_ENABLE()
+#define UART3_TX_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOB_CLK_ENABLE() 
+
+#ifdef BSP_CONFIG_USE_FREERTOS
+#define UART3_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
+#else
+#define UART3_IRQ_PRIORITY               (0)
+#endif
+
+#define UART3_BAUDRATE			(115300)
+#define UART3_WORDLENGTH 		UART_WORDLENGTH_8B
+#define UART3_STOPBITS 			UART_STOPBITS_1
+#define UART3_PARITY 				UART_PARITY_NONE
+#define UART3_HWCONTROL 		UART_HWCONTROL_NONE
+#define UART3_MODE 					UART_MODE_TX_RX
+#define UART3_OVERSAMPLING 	UART_OVERSAMPLING_16
+
 /* Definition for UART4 */
 #define UART4_TX_PIN        GPIO_PIN_10
 #define UART4_TX_GPIO_PORT  GPIOC  
@@ -132,6 +157,56 @@
 #define UART6_HWCONTROL 		UART_HWCONTROL_NONE
 #define UART6_MODE 					UART_MODE_TX_RX
 #define UART6_OVERSAMPLING 	UART_OVERSAMPLING_16
+
+typedef struct {	
+	UART_HandleTypeDef handle;
+#ifdef BSP_CONFIG_USE_FREERTOS
+	osMutexId rx_mutex_id;	
+	osMessageQId rx_message_queue_id;
+	uint32_t rx_message_queue_overflow_errors;
+	uint8_t *rx_buffer;
+	uint32_t rx_buffer_size;
+	uint32_t rx_buffer_idx;
+	uint8_t *rx_buffer_end;
+	
+	osMutexId tx_mutex_id;
+	osMessageQId tx_message_queue_id;
+	uint32_t tx_message_queue_overflow_errors;
+
+	uint32_t rx_timeout_errors;
+	uint32_t rx_cmd_timeout_errors;
+	uint32_t tx_timeout_errors;
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+	uint32_t overrun_errors;
+	uint32_t parity_errors;
+	uint32_t noise_errors;
+	uint32_t frame_errors;
+	uint32_t dma_errors;
+} UART_T;
+
+#ifdef BSP_CONFIG_USE_UART1
+extern UART_T uart1;
+#endif /*BSP_CONFIG_USE_UART1*/
+
+#ifdef BSP_CONFIG_USE_UART2
+extern UART_T uart2;
+#endif /*BSP_CONFIG_USE_UART2*/
+
+#ifdef BSP_CONFIG_USE_UART3
+extern UART_T uart3;
+#endif /*BSP_CONFIG_USE_UART3*/
+
+#ifdef BSP_CONFIG_USE_UART4
+extern UART_T uart4;
+#endif /*BSP_CONFIG_USE_UART4*/
+
+#ifdef BSP_CONFIG_USE_UART5
+extern UART_T uart5;
+#endif /*BSP_CONFIG_USE_UART5*/
+
+#ifdef BSP_CONFIG_USE_UART6
+extern UART_T uart6;
+#endif /*BSP_CONFIG_USE_UART6*/
 
 int32_t UART_Init(void);
 void UART_Deinit(void);

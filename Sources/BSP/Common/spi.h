@@ -107,6 +107,39 @@
 #define SPI3_TIMODE											SPI_TIMODE_DISABLE
 #define	SPI3_MODE												SPI_MODE_MASTER
 
+/* Definition for SPI4 Pins */
+#define SPI4_SCK_PIN                     GPIO_PIN_10
+#define SPI4_SCK_GPIO_PORT               GPIOC
+#define SPI4_SCK_AF                      GPIO_AF6_SPI4
+#define SPI4_MISO_PIN                    GPIO_PIN_11
+#define SPI4_MISO_GPIO_PORT              GPIOC
+#define SPI4_MISO_AF                     GPIO_AF6_SPI4
+#define SPI4_MOSI_PIN                    GPIO_PIN_12
+#define SPI4_MOSI_GPIO_PORT              GPIOC
+#define SPI4_MOSI_AF                     GPIO_AF6_SPI4
+
+#define SPI4_SCK_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOC_CLK_ENABLE()
+#define SPI4_MISO_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE() 
+#define SPI4_MOSI_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE()
+
+#ifdef BSP_CONFIG_USE_FREERTOS
+#define SPI4_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
+#else
+#define SPI4_IRQ_PRIORITY               0
+#endif
+
+#define SPI4_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_42
+#define SPI4_DIRECTION									SPI_DIRECTION_2LINES
+#define SPI4_PHASE											SPI_PHASE_2EDGE
+#define SPI4_POLARITY										SPI_POLARITY_HIGH
+#define SPI4_CRCCALCULATION							SPI_CRCCALCULATION_DISABLE
+#define SPI4_CRCPOLYNOMIAL							(7)
+#define SPI4_DATASIZE										SPI_DATASIZE_8BIT
+#define SPI4_FIRSTBIT										SPI_FIRSTBIT_MSB
+#define SPI4_NSS												SPI_NSS_SOFT
+#define SPI4_TIMODE											SPI_TIMODE_DISABLE
+#define	SPI4_MODE												SPI_MODE_MASTER
+
 /* Definition for SPI5 Pins */
 #define SPI5_SCK_PIN                     GPIO_PIN_7
 #define SPI5_SCK_GPIO_PORT               GPIOF
@@ -144,6 +177,45 @@ typedef struct {
 	void (*SetState)(void *Priv, uint32_t State);
 	void *Priv;
 } SPI_CS_T;
+
+typedef struct {
+	SPI_HandleTypeDef handle;
+#ifdef BSP_CONFIG_USE_FREERTOS
+	osMutexId mutex_id;
+	osMessageQId message_queue_id;
+	uint32_t message_queue_overflow_errors;
+	uint32_t rx_timeout_errors;
+	uint32_t tx_timeout_errors;
+	uint32_t seq_rx_timeout_errors;
+	uint32_t seq_tx_timeout_errors;
+	uint32_t tx_rx_timeout_errors;
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+	uint32_t mode_fault_errors;
+	uint32_t crc_errors;
+	uint32_t frame_errors;
+	uint32_t overrun_errors;
+	uint32_t dma_errors;
+} SPI_T;
+
+#ifdef BSP_CONFIG_USE_SPI1
+extern SPI_T spi1;
+#endif /*BSP_CONFIG_USE_SPI1*/
+
+#ifdef BSP_CONFIG_USE_SPI2
+extern SPI_T spi2;
+#endif /*BSP_CONFIG_USE_SPI2*/
+
+#ifdef BSP_CONFIG_USE_SPI3
+extern SPI_T spi3;
+#endif /*BSP_CONFIG_USE_SPI3*/
+
+#ifdef BSP_CONFIG_USE_SPI4
+extern SPI_T spi4;
+#endif /*BSP_CONFIG_USE_SPI4*/
+
+#ifdef BSP_CONFIG_USE_SPI5
+extern SPI_T spi5;
+#endif /*BSP_CONFIG_USE_SPI5*/
 
 int32_t SPI_Init(void);
 void SPI_Deinit(void);

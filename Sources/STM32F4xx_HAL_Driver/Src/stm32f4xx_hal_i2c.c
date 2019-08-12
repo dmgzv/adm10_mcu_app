@@ -3518,7 +3518,7 @@ void HAL_I2C_ER_IRQHandler(I2C_HandleTypeDef *hi2c)
   /* Call the Error Callback in case of Error detected -----------------------*/
   if(hi2c->ErrorCode != HAL_I2C_ERROR_NONE)
   {
-    /* Disable EVT, BUF and ERR interrupt */
+		/* Disable EVT, BUF and ERR interrupt */
     __HAL_I2C_DISABLE_IT(hi2c, I2C_IT_EVT | I2C_IT_BUF | I2C_IT_ERR);
 		
     I2C_ITError(hi2c);

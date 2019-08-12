@@ -800,7 +800,7 @@ HAL_StatusTypeDef HAL_UART_Transmit_IT(UART_HandleTypeDef *huart, uint8_t *pData
     huart->TxXferSize = Size;
     huart->TxXferCount = Size;
 
-    huart->ErrorCode = HAL_UART_ERROR_NONE;
+    //huart->ErrorCode = HAL_UART_ERROR_NONE;
     huart->gState = HAL_UART_STATE_BUSY_TX;
 
     /* Process Unlocked */
@@ -1527,19 +1527,9 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
    uint32_t cr3its     = READ_REG(huart->Instance->CR3);
    uint32_t errorflags = 0x00U;
    uint32_t dmarequest = 0x00U;
-
-  /* If no error occurs */
+ 
   errorflags = (isrflags & (uint32_t)(USART_SR_PE | USART_SR_FE | USART_SR_ORE | USART_SR_NE));
-  if(errorflags == RESET)
-  {
-    /* UART in mode Receiver -------------------------------------------------*/
-    if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
-    {
-      UART_Receive_IT(huart);
-      return;
-    }
-  }  
-
+	
   /* If some errors occur */
   if((errorflags != RESET) && (((cr3its & USART_CR3_EIE) != RESET) || ((cr1its & (USART_CR1_RXNEIE | USART_CR1_PEIE)) != RESET)))
   {
@@ -1566,7 +1556,6 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     { 
       huart->ErrorCode |= HAL_UART_ERROR_ORE;
     }
-
     /* Call UART Error Call back function if need be --------------------------*/    
     if(huart->ErrorCode != HAL_UART_ERROR_NONE)
     {
@@ -1587,7 +1576,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
         UART_EndRxTransfer(huart);
         
         /* Disable the UART DMA Rx request if enabled */
-        if(HAL_IS_BIT_SET(huart->Instance->CR3, USART_CR3_DMAR))
+				if(HAL_IS_BIT_SET(huart->Instance->CR3, USART_CR3_DMAR))
         {
           CLEAR_BIT(huart->Instance->CR3, USART_CR3_DMAR);
           
@@ -1625,8 +1614,15 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     }
     return;
   } /* End if some error occurs */
-
-  /* UART in mode Transmitter ------------------------------------------------*/
+	
+	/* UART in mode Receiver -------------------------------------------------*/
+	if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
+	{
+		UART_Receive_IT(huart);
+		return;
+	}
+	
+	/* UART in mode Transmitter ------------------------------------------------*/
   if(((isrflags & USART_SR_TXE) != RESET) && ((cr1its & USART_CR1_TXEIE) != RESET))
   {
     UART_Transmit_IT(huart);
@@ -2370,7 +2366,7 @@ static HAL_StatusTypeDef UART_EndTransmit_IT(UART_HandleTypeDef *huart)
 static HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef *huart)
 {
   uint16_t* tmp;
-  
+
   /* Check that a Rx process is ongoing */
   if(huart->RxState == HAL_UART_STATE_BUSY_RX) 
   {

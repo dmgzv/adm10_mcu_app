@@ -177,7 +177,8 @@ static void ETH_Delay(uint32_t mdelay);
   */
 HAL_StatusTypeDef HAL_ETH_Init(ETH_HandleTypeDef *heth)
 {
-  uint32_t tmpreg1 = 0U, phyreg = 0U;
+  uint32_t tmpreg1 = 0U;
+	//uint32_t phyreg = 0U;
   uint32_t hclk = 60000000U;
   uint32_t tickstart = 0U;
   uint32_t err = ETH_SUCCESS;
@@ -272,9 +273,7 @@ HAL_StatusTypeDef HAL_ETH_Init(ETH_HandleTypeDef *heth)
   
   /* Write to ETHERNET MAC MIIAR: Configure the ETHERNET CSR Clock Range */
   (heth->Instance)->MACMIIAR = (uint32_t)tmpreg1;
-
-#if 0
-  
+#if 0 
   /*-------------------- PHY initialization and configuration ----------------*/
   /* Put the PHY in reset mode */
   if((HAL_ETH_WritePHYRegister(heth, PHY_BCR, PHY_RESET)) != HAL_OK)
