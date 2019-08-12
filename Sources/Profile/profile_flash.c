@@ -266,7 +266,7 @@ error:
 
 int32_t PROFILE_FLASH_Init(PROFILE_FLASH_T *ProfileFlash, char *Name, void *Values, uint32_t ValuesSize, osMutexId ValuesMutex)
 {	
-	osThreadDef_t ProfileFlash_osThreadDef = { Name, ProfileFlash_Thread, osPriorityNormal, 0, 1024};
+	osThreadDef_t ProfileFlash_osThreadDef = { Name, ProfileFlash_Thread, osPriorityNormal, 0, 512};
 	osMessageQDef_t ProfileFlash_osMessageQDef = {PROFILE_FLASH_MESSAGE_QUEUE_SIZE, sizeof(uint32_t)};
 	
 	ProfileFlash->Values = Values;

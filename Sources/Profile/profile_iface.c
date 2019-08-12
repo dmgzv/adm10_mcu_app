@@ -2,9 +2,9 @@
 #include "profile_protocol.h"
 #include "bsp.h"
 
+#ifdef PROFILE_IFACE_MULTITHREAD
 #define PROFILE_IFACE_TransmitResponce(Iface) UART_Transmit((Iface)->Uart, (Iface)->Responce, (Iface)->ResponceLen)
 #define PROFILE_IFACE_ReceiveCommand(Iface, Idx) UART_ReceiveCommand((Iface)->Uart, (Iface)->Commands[(Idx)], sizeof((Iface)->Commands[(Idx)]), PROFILE_IFACE_STOP_BYTE, &(Iface)->CommandsLen[(Idx)], osWaitForever)
-
 static void PROFILE_IFACE_ReceiveThread(void const *argument)
 {
 	PROFILE_IFACE_T *Iface = (PROFILE_IFACE_T*)argument;
@@ -82,6 +82,7 @@ static void PROFILE_IFACE_ProcessThread(void const *argument)
 		
 		if (Complete)
 		{
+			BSP_DeinitInterfaces();
 			BSP_Reset();
 		}
 
@@ -95,8 +96,8 @@ static void PROFILE_IFACE_ProcessThread(void const *argument)
 
 int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveThreadName, char *ProcessThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile)
 {
-	osThreadDef_t ReceiveThreadDef = { ReceiveThreadName, PROFILE_IFACE_ReceiveThread, osPriorityHigh, 0, 1024};
-	osThreadDef_t ProcessThreadDef = { ProcessThreadName, PROFILE_IFACE_ProcessThread, osPriorityHigh, 0, 1024};
+	osThreadDef_t ReceiveThreadDef = { ReceiveThreadName, PROFILE_IFACE_ReceiveThread, osPriorityHigh, 0, 512};
+	osThreadDef_t ProcessThreadDef = { ProcessThreadName, PROFILE_IFACE_ProcessThread, osPriorityHigh, 0, 512};
 	osMessageQDef(Receive, PROFILE_IFACE_CMD_QUEUE_SIZE, uint32_t);
 	osMessageQDef(Process, PROFILE_IFACE_CMD_QUEUE_SIZE, uint32_t);
 	uint32_t i;	
@@ -110,6 +111,7 @@ int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveThreadName, char
 	Iface->MaxResponceLen = 0;
 	Iface->MaxResponceLenCommand = 0;
 	Iface->MaxTransmitTime = 0;
+	Iface->MaxTransmitTimeCommand = 0;
 	if (!Iface->ReceiveQId)
 		return -1;
 	for (i = 0; i < PROFILE_IFACE_CMD_QUEUE_SIZE; i++)
@@ -127,3 +129,82 @@ int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveThreadName, char
 		return -1;
 	return 0;
 }
+
+
+#else
+#define PROFILE_IFACE_TransmitResponce(Iface) UART_Transmit((Iface)->Uart, (Iface)->Responce, (Iface)->ResponceLen)
+#define PROFILE_IFACE_ReceiveCommand(Iface) UART_ReceiveCommand((Iface)->Uart, (Iface)->Command, sizeof((Iface)->Command), PROFILE_IFACE_STOP_BYTE, &(Iface)->CommandLen, osWaitForever)
+
+static void PROFILE_IFACE_Thread(void const *argument)
+{
+	PROFILE_IFACE_T *Iface = (PROFILE_IFACE_T*)argument;
+	uint32_t TimeStart, TimeEnd;
+	uint32_t Complete;
+	
+  for(;;)
+  {
+		
+		if (PROFILE_IFACE_ReceiveCommand(Iface))
+			continue;
+		
+		if (Iface->Command[0] != Iface->StartByte)
+			continue;
+		
+		TimeStart = osKernelSysTick();
+		Complete = 0;
+		
+		Iface->ResponceLen = PROFILE_PROTOCOL_Command(Iface->Profile, Iface->Command, Iface->Responce, &Complete);		
+		
+		TimeEnd = osKernelSysTick();		
+		if (Iface->MaxParseTime < (TimeEnd - TimeStart))
+		{
+			Iface->MaxParseTime = TimeEnd - TimeStart;
+			Iface->MaxParseTimeCommand = Iface->Command[1];
+		}
+		
+		if (Iface->MaxResponceLen < Iface->ResponceLen)
+		{
+			Iface->MaxResponceLen = Iface->ResponceLen;
+			Iface->MaxResponceLenCommand = Iface->Command[1];
+		}
+		
+		TimeStart = osKernelSysTick();
+		if (Iface->ResponceLen)
+			PROFILE_IFACE_TransmitResponce(Iface);
+		
+		TimeEnd = osKernelSysTick();
+		
+		if (Iface->MaxTransmitTime < (TimeEnd - TimeStart))
+		{
+			Iface->MaxTransmitTime = TimeEnd - TimeStart;
+			Iface->MaxTransmitTimeCommand = Iface->Command[1];
+		}
+		
+		if (Complete)
+		{
+			BSP_DeinitInterfaces();
+			BSP_Reset();
+		}
+  }	
+}
+
+int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile)
+{
+	osThreadDef_t ThreadDef = { ThreadName, PROFILE_IFACE_Thread, osPriorityHigh, 0, 512};
+	
+	Iface->StartByte = 0x80 + SlotAddress;
+	Iface->Uart = Uart;
+	Iface->Profile = Profile;
+	Iface->MaxParseTime = 0;
+	Iface->MaxParseTimeCommand = 0;
+	Iface->MaxResponceLen = 0;
+	Iface->MaxResponceLenCommand = 0;
+	Iface->MaxTransmitTime = 0;
+	Iface->MaxTransmitTimeCommand = 0;
+	Iface->ThreadId = osThreadCreate (&ThreadDef, Iface);
+	if (!Iface->ThreadId)
+		return -1;
+	return 0;
+}
+
+#endif

@@ -23,6 +23,9 @@ static uint32_t BOOTLOADER_PROTOCOL_FwConfig(char *cmd, char *rsp)
 	strcpy( str, ";FWRESSIZE:" );
 	str += strlen( str );
 	str = UintToHexStr( str, BOOTLOADER_FW_SIZE );//размер основной программы
+	strcpy( str, ";LANGRESSIZE:" );
+	str += strlen( str );
+	str = UintToHexStr( str, BSP_FLASH_LANG_SIZE );//размер основной программы
 	*str++ = ';';
 	str = WordToHexStr( str, Calc_CRC16( rsp, str - rsp, 0 ) );//Контрольная сумма и OD
 	*str++ = '\r';
