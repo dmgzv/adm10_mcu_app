@@ -193,9 +193,9 @@ static void System_Thread(void const *argument)
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Protocol*/
-	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Receive UART4", "Process UART4", PROFILE_IFACE_UART_4, SlotAddress, &Profile);
+	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", PROFILE_IFACE_UART_4, SlotAddress, &Profile);
 	WATCHDOG_Refresh();
-	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Receive UART5", "Process UART5", PROFILE_IFACE_UART_5, SlotAddress, &Profile);
+	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Profile UART5", PROFILE_IFACE_UART_5, SlotAddress, &Profile);
 	WATCHDOG_Refresh();
 
 	BSP_ETH_Init();
