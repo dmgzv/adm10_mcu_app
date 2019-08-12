@@ -296,13 +296,13 @@ int32_t BSP_FPGA_MAXV_Init(BSP_FPGA_MAXV_T *Dev)
 	BSP_DEV_INIT(Dev);
 	BSP_DEV_LOCK(Dev);
 	
-	PowerUpMarker = *((uint8_t*)BSP_FPGA_MAXV_ADDR + 0x03);
+	PowerUpMarker = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x03));
 	if (PowerUpMarker != 0xA5)
 		goto error;
 	
 	SwVersion = *((uint8_t*)BSP_FPGA_MAXV_ADDR);
 	snprintf(Dev->SwVersion, sizeof(Dev->SwVersion), "%d", SwVersion);
-	Dev->Status = *((uint8_t*)BSP_FPGA_MAXV_ADDR + 0x01);
+	Dev->Status = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x01));
 	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
@@ -323,7 +323,7 @@ int32_t BSP_FPGA_MAXV_Update(BSP_FPGA_MAXV_T *Dev)
 	
 	BSP_DEV_LOCK(Dev);
 	
-	Dev->Status = *((uint8_t*)BSP_FPGA_MAXV_ADDR + 0x01);
+	Dev->Status = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x01));
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -338,7 +338,7 @@ void BSP_FPGA_MAXV_Deinit(BSP_FPGA_MAXV_T *Dev)
 
 int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev)
 {
-	uint8_t SwVersion[4];
+	uint8_t Status, SwVersion[4];
 	uint32_t i;
 	
 	if (!Dev)
@@ -347,6 +347,10 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev)
 	BSP_DEV_INIT(Dev);
 	BSP_DEV_LOCK(Dev);
 	
+	Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+	if (Status == 0)
+		goto error;
+	
 	for (i = 0; i < 4; i++)
 	{
 		SwVersion[i] = *((char*)(BSP_FPGA_LINE_ADDR + i));
@@ -354,6 +358,11 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev)
 	sprintf(Dev->SwVersion, "%d.%d.%d.%d", SwVersion[1], SwVersion[0], SwVersion[3], SwVersion[2]);
 	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+
+error:
+	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 }
@@ -383,7 +392,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 		
 		Dev->Iface[i].__PMAStatus = *((uint8_t*)(BSP_FPGA_LINE_IFACE_ADDR(i)+ 0x0E));
 		
-		Dev->Iface[i].OTU2Alarms = *((uint16_t*)BSP_FPGA_LINE_IFACE_ADDR(i));
+		Dev->Iface[i].__OTU2Alarms = *((uint16_t*)BSP_FPGA_LINE_IFACE_ADDR(i));
 		
 		OTU2BIP = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x02));
 		Dev->Iface[i].OTU2BIP = OTU2BIP - Dev->Iface[i].__OTU2BIP;
@@ -419,6 +428,32 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			ODU0BIP = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x38 + (0x08 * j) + 2));
 			Dev->Iface[i].ODU0BIP[j] = ODU0BIP - Dev->Iface[i].__ODU0BIP[j];
 			Dev->Iface[i].__ODU0BIP[j] = ODU0BIP;
+		}
+		
+		if ((Dev->Iface[i].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARM_FEC_DISABLED_MASK) != (Dev->Iface[i].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARM_FEC_DISABLED_MASK))
+		{
+			if ((Dev->Iface[i].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARM_FEC_DISABLED_MASK))
+			{
+				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+				if (Status == 0)
+					continue;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = 0x01;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x30;
+				osDelay(5);
+			}
+			else
+			{
+				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+				if (Status == 0)
+					continue;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = 0x00;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x30;
+				osDelay(5);
+			}
 		}
 		
 		if ((Dev->Iface[i].PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_LOOPBACK_MASK) != (Dev->Iface[i].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_LOOPBACK_MASK))
@@ -597,7 +632,7 @@ void BSP_FPGA_LINE_Deinit(BSP_FPGA_LINE_T *Dev)
 int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx)
 {
 	uint32_t i;
-	uint8_t SwVersion[4];
+	uint8_t Status, SwVersion[4];
 	
 	if (!Dev)
 		return -1;
@@ -606,6 +641,11 @@ int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx)
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->Idx = Idx;
+	
+	Status = *((uint8_t*)BSP_FPGA_CLIENT_STATUS_ADDR(Dev->Idx));
+	if (Status == 0)
+		goto error;
+	
 	for (i = 0; i < 4; i++)
 	{
 		SwVersion[i] = *((char*)(BSP_FPGA_CLIENT_ADDR(Dev->Idx) + i));
@@ -613,6 +653,11 @@ int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx)
 	sprintf(Dev->SwVersion, "%d.%d.%d.%d", SwVersion[1], SwVersion[0], SwVersion[3], SwVersion[2]);
 	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+
+error:
+	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 }
