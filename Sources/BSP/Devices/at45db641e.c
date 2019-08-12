@@ -1,4 +1,5 @@
 #include "at45db641e.h"
+#include "log.h"
 
 #define AT45DB641E_PAGE_PROGRAM_TIMEOUT	(35)
 #define AT45DB641E_PAGE_ERASE_TIMEOUT		(32)
@@ -338,11 +339,13 @@ int32_t AT45DB641E_Init(AT45DB641E_T *Dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *Pin
 	if ((Dev->Status & AT45DB641E_STATUS_PAGE_SIZE_MASK) == 0)
 		goto error;	
 	
+	LOG_Add("AT45DB641E Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
+	LOG_Add("AT45DB641E Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;

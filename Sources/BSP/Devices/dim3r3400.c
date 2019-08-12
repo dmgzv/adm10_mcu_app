@@ -1,4 +1,5 @@
 #include "dim3r3400.h"
+#include "log.h"
 
 #define DIM3R3400_REG_STATUS	0x1E
 #define DIM3R3400_REG_VOUT		0x1F
@@ -24,19 +25,19 @@ static int32_t __DIM3R3400_Update(DIM3R3400_T *Dev)
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_VOUT, &Data))
 		return -1;
-	Dev->Vout = Data * 0.398f;
+	Dev->Vout = Data * 0.398;
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_IOUT, &Data))
 		return -1;
-	Dev->Iout = Data * 0.094f;
+	Dev->Iout = Data * 0.094;
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_VIN_1, &Data))
 		return -1;
-	Dev->Vin[0] = Data * 0.325f;
+	Dev->Vin[0] = Data * 0.325;
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_VIN_2, &Data))
 		return -1;
-	Dev->Vin[1] = Data * 0.325f;
+	Dev->Vin[1] = Data * 0.325;
 
 	if (DIM3R3400_ReadReg(Dev, DIM3R3400_REG_TEMP, &Data))
 		return -1;
@@ -59,11 +60,13 @@ int32_t DIM3R3400_Init(DIM3R3400_T *Dev, I2C_TypeDef *I2C, uint8_t Addr)
 	if (__DIM3R3400_Update(Dev))
 		goto error;	
 	
+	LOG_Add("DIM3R3400 Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
+	LOG_Add("DIM3R3400 Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -72,7 +75,8 @@ error:
 void DIM3R3400_Deinit(DIM3R3400_T *Dev)
 {
 	if (!Dev)
-		return;	
+		return;
+	LOG_Add("DIM3R3400 Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 

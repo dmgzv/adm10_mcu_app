@@ -1,4 +1,5 @@
 #include "pca9555.h"
+#include "log.h"
 
 static const uint8_t pca9555_reg_ip[PCA9555_BANKS_CNT] = {0x00, 0x01};
 static const uint8_t pca9555_reg_op[PCA9555_BANKS_CNT] = {0x02, 0x03};
@@ -25,6 +26,7 @@ int32_t PCA9555_SetPinDir(PCA9555_T *Dev, uint32_t Bank, uint8_t Pin, uint8_t Di
 	
 	if (Dir != Dev->Dirs[Bank])
 	{
+		LOG_Add("PCA9555 Write: 0x%02x 0x%02x", cmd, Dir);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Dir, sizeof(Dir)))
 			goto error;
 		Dev->Dirs[Bank] = Dir;
@@ -56,6 +58,7 @@ int32_t PCA9555_SetPinOut(PCA9555_T *Dev, uint32_t Bank, uint8_t Pin, uint8_t Ou
 		Out = Dev->Outs[Bank] & ~(1 << Pin);
 	if (Out != Dev->Outs[Bank])
 	{
+		LOG_Add("PCA9555 Write: 0x%02x 0x%02x", cmd, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Out, sizeof(Out)))
 			goto error;
 		Dev->Outs[Bank] = Out;
@@ -88,6 +91,7 @@ int32_t PCA9555_SetPinPol(PCA9555_T *Dev, uint32_t Bank, uint8_t Pin, uint8_t Po
 	
 	if (Pol != Dev->Pols[Bank])
 	{
+		LOG_Add("PCA9555 Write: 0x%02x 0x%02x", cmd, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Pol, sizeof(Pol)))
 			goto error;
 		Dev->Pols[Bank] = Pol;
@@ -165,6 +169,7 @@ int32_t PCA9555_SetBankDir(PCA9555_T *Dev, uint32_t Bank, uint8_t Dir)
 	cmd = pca9555_reg_ioc[Bank];
 	if (Dir != Dev->Dirs[Bank])
 	{
+		LOG_Add("PCA9555 Write: 0x%02x 0x%02x", cmd, Dir);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Dir, sizeof(Dir)))
 			goto error;
 		Dev->Dirs[Bank] = Dir;
@@ -217,6 +222,7 @@ int32_t PCA9555_SetBankOut(PCA9555_T *Dev, uint32_t Bank, uint8_t Out)
 	cmd = pca9555_reg_op[Bank];
 	if (Out != Dev->Outs[Bank])
 	{
+		LOG_Add("PCA9555 Write: 0x%02x 0x%02x", cmd, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Out, sizeof(Out)))
 			goto error;
 		Dev->Outs[Bank] = Out;
@@ -269,6 +275,7 @@ int32_t PCA9555_SetBankPol(PCA9555_T *Dev, uint32_t Bank, uint8_t Pol)
 	cmd = pca9555_reg_pl[Bank];
 	if (Pol != Dev->Pols[Bank])
 	{
+		LOG_Add("PCA9555 Write: 0x%02x 0x%02x", cmd, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Pol, sizeof(Pol)))
 			goto error;
 		Dev->Pols[Bank] = Pol;
@@ -319,11 +326,14 @@ int32_t PCA9555_Init(PCA9555_T *Dev, I2C_TypeDef *I2C, uint8_t Addr)
 		Dev->Pols[i] = Pols[i];
 	}
 	
+	LOG_Add("PCA9555 Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
+	
+	LOG_Add("PCA9555 Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -333,6 +343,7 @@ void PCA9555_Deinit(PCA9555_T *Dev)
 {
 	if (!Dev)
 		return;
+	LOG_Add("PCA9555 Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 

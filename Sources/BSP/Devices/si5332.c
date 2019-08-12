@@ -1,5 +1,5 @@
 #include "si5332.h"
-
+#include "log.h"
 
 int32_t SI5332_Init(SI5332_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, SI5332_CFG_T *Config, uint32_t ConfigSize)
 {
@@ -36,11 +36,13 @@ int32_t SI5332_Init(SI5332_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, SI5332_CFG_T 
 	if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Reg, 1, (char*)&Data, 1))
 		goto error;
 	
+	LOG_Add("SI5332 Init: OK");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
+	LOG_Add("SI5332 Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -50,5 +52,6 @@ void SI5332_Deinit(SI5332_T *Dev)
 {
 	if (!Dev)
 		return;
+	LOG_Add("SI5332 Deinit");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }

@@ -1,4 +1,5 @@
 #include "gdt080a.h"
+#include "log.h"
 
 #define GDT080A_ADDR_VOUT_SCALE_MONITOR 0x2A
 #define GDT080A_ADDR_VOUT_TRIM 0x22
@@ -239,11 +240,13 @@ int32_t GDT080A_Init(GDT080A_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, float Vout)
 	if (GDT080A_GetVoutMargins(Dev))
 		goto error;
 	
+	LOG_Add("GDT080A Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
+	LOG_Add("GDT080A Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -253,6 +256,7 @@ void GDT080A_Deinit(GDT080A_T *Dev)
 {
 	if (!Dev)
 		return;
+	LOG_Add("GDT080A Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 

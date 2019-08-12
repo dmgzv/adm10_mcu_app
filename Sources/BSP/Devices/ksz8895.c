@@ -1,4 +1,5 @@
 #include "ksz8895.h"
+#include "log.h"
 #include <string.h>
 
 #define KSZ8895_REG_PORT_STATUS_0(Idx)	(0x19 + (0x10 * (Idx)))
@@ -93,11 +94,13 @@ int32_t KSZ8895_Init(KSZ8895_T *Dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl)
 	if (__KSZ8895_ReadReg(Dev, 0x01, &Dev->ChipId))
 		goto error;
 	
+	LOG_Add("KSZ8895 Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);	
 	return 0;
 	
 error:
+	LOG_Add("KSZ8895 Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -107,6 +110,7 @@ void KSZ8895_Deinit(KSZ8895_T *Dev)
 {
 	if (!Dev)
 		return;
+	LOG_Add("KSZ8895 Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 

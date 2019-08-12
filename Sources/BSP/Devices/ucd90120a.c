@@ -1,4 +1,5 @@
 #include "ucd90120a.h"
+#include "log.h"
 #include <string.h>
 #include <math.h>
 
@@ -265,11 +266,13 @@ int32_t UCD90120A_Init(UCD90120A_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, BSP_PIN
 			goto error;
 	}
 	
+	LOG_Add("UCD90120A Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
+	LOG_Add("UCD90120A Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -279,6 +282,7 @@ void UCD90120A_Deinit(UCD90120A_T *Dev)
 {
 	if (!Dev)
 		return;
+	LOG_Add("UCD90120A Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 
@@ -315,8 +319,146 @@ int32_t UCD90120A_Update(UCD90120A_T *Dev)
 		if (Dev->Mon.Rail[i].Vout < Dev->Thr.Rail[i].Vout[UCD90120A_THR_CMIN])
 			PowerGood &= ~(1 << i);
 	}
-	Dev->PowerGood = PowerGood;
+	if (Dev->__PowerGood != PowerGood)
+	{
+		LOG_Add("UCD90120A PowerGood: 0x%04x", PowerGood);
+		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
+		{
+			if (Dev->Cfg.Rail[i].VoutScale == 0)
+				continue;
+			LOG_Add("UCD90120A Rail %d: %.2f", i, Dev->Mon.Rail[i].Vout);
+		}
+		Dev->__PowerGood = PowerGood;
+	}
+	for (i = 0; i < UCD90120A_RAILS_CNT; i++)
+	{
+		Dev->PowerGood |= 1 << i;
+	}
 
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+#define UCD90120A_CMD_LOGGED_FAULT							0xEA
+#define UCD90120A_CMD_LOGGED_FAULT_DETAIL_INDEX	0xEB
+#define UCD90120A_CMD_LOGGED_FAULT_DETAIL				0xEC
+
+int32_t UCD90120A_ReadFaultLogSize(UCD90120A_T *Dev, uint32_t *Size)
+{
+	uint8_t Data[2];
+	
+	if ((!Dev) || (!Size))
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT_DETAIL_INDEX, Data))
+		goto error;
+	
+	*Size = Data[0];
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+int32_t UCD90120A_ClearFaultLog(UCD90120A_T *Dev)
+{
+	uint8_t Data[14];
+	
+	if (!Dev)
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	memset(Data, 0, sizeof(Data));
+	
+	if(PMBUS_WriteBlock(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT, Data, sizeof(Data)))
+		goto error;
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+int32_t UCD90120A_ReadFaultLog(UCD90120A_T *Dev, uint8_t *FaultLog)
+{
+	uint8_t Data[14];
+	
+	if ((!Dev) || (!FaultLog))
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	if(PMBUS_ReadBlock(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT, Data, sizeof(Data)))
+		goto error;
+	
+	memcpy(FaultLog, Data, sizeof(Data));
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+int32_t UCD90120A_ReadFaultLogRecord(UCD90120A_T *Dev, uint32_t RecordIdx, UCD90120A_FAULT_LOG_RECORD_T *Record)
+{
+	uint8_t Data[10];
+	
+	if ((!Dev) || (!Record) || (RecordIdx >= 16))
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	Data[0] = RecordIdx;
+	if(PMBUS_WriteByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT_DETAIL_INDEX, Data))
+		goto error;
+	
+	if(PMBUS_ReadBlock(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT_DETAIL, Data, sizeof(Data)))
+		goto error;
+	
+	Record->Time = (Data[0] << 24) + (Data[1] << 16) + (Data[2] << 8) + (Data[3] << 0);
+	Record->Day = ((Data[4] << 24) + (Data[5] << 16) + (Data[6] << 8) + (Data[7] << 0)) & 0x7FFFFF;
+	Record->Type = (Data[4] >> 3) & 0x0F;
+	Record->Rail = ((Data[4] << 1) & 0x0E) + (Data[3] >> 7) & 0x01;
+	
+	switch (Record->Type)
+	{
+		case UCD90120A_FAULT_LOG_RECORD_TYPE_FAN:
+		case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_IOUT_OC:
+		case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_IOUT_UC:
+		case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_TEMP_OT:
+			Record->Value.f = PMBUS_LinearToFloat(Data[0] + (Data[1] << 8));
+			break;
+		case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_VOUT_OV:
+		case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_VOUT_UV:
+		case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_TON_MAX:
+			Record->Value.f = (Data[0] + (Data[1] << 8)) * pow(2, Dev->Cfg.Rail[Record->Rail].VoutExp);
+			break;
+		default:
+			Record->Value.u = (Data[0] + (Data[1] << 8));
+			break;
+	}	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
