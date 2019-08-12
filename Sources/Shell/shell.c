@@ -145,7 +145,7 @@ static void SHELL_Thread(void const *argument)
 		SHELL_IFACE_TransmitPointer(Shell);
 		while (1) {
 			if (SHELL_IFACE_Receive(Shell, Shell->RxBuffer, sizeof(Shell->RxBuffer)))
-				continue;
+				break;
 			if (SHELL_ParseCmd(Shell))
 				break;
 			SHELL_IFACE_TransmitPointer(Shell);

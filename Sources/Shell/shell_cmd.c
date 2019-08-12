@@ -8,6 +8,12 @@
 
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+#ifdef BSP_CONFIG_USE_LOG
+static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+#endif
+static void SHELL_CMD_I2CCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_SPICallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -24,6 +30,12 @@ const SHELL_CMD_T ShellCmdList[] =
 {
 	{ "system", 	"System information", &SHELL_CMD_SystemCallback},
 	{ "info", 		"Project information", &SHELL_CMD_InfoCallback},
+#ifdef BSP_CONFIG_USE_LOG
+	{ "log", 			"Log control", &SHELL_CMD_LOGCallback},
+#endif
+	{ "i2c", 			"I2C statistics", &SHELL_CMD_I2CCallback},
+	{ "spi", 			"SPI statistics", &SHELL_CMD_SPICallback},
+	{ "uart", 		"UART statistics", &SHELL_CMD_UARTCallback},
 	{ "status", 	"Status of devices", &SHELL_CMD_StatusCallback},
 	{ "dim3r", 		"DIM3R3400 control", &SHELL_CMD_DIM3RCallback},
 	{ "ucd", 			"UCD90120A control", &SHELL_CMD_UCDCallback},
@@ -71,6 +83,224 @@ static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t C
 	SHELL_Transmit(Shell,  "SW Version: %s \r", BSP_SW_VERSION);
 	SHELL_Transmit(Shell,  "SW Date: %s \r", BSP_SW_DATE);
 	SHELL_Transmit(Shell,  "SW Time: %s \r", BSP_SW_TIME);
+}
+
+#ifdef BSP_CONFIG_USE_LOG
+static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{
+	uint32_t i, LinesCnt, LineTime;
+	float Time;
+	char Line[LOG_LINE_SIZE];
+	
+	LinesCnt = LOG_GetLinesCnt();
+	SHELL_Transmit(Shell, "Size: %d\r", LOG_LINES_CNT);
+	SHELL_Transmit(Shell, "Records Count: %d\r", LOG_GetLinesCnt());
+	for (i = 0; i < LinesCnt; i++)
+	{
+		LOG_GetLine(i, &LineTime, Line);
+		Time = (float)LineTime / osKernelSysTickFrequency;
+		SHELL_Transmit(Shell, "[%4.4f] %s\r", Time, Line);		
+	}	
+}
+#endif
+
+static void SHELL_CMD_I2CCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{
+#ifdef BSP_CONFIG_USE_I2C1
+	SHELL_Transmit(Shell, "I2C1:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", i2c1.overrun_errors);
+	SHELL_Transmit(Shell, "  BERR errors: %d\r", i2c1.berr_errors);
+	SHELL_Transmit(Shell, "  ARLO errors: %d\r", i2c1.arlo_errors);
+	SHELL_Transmit(Shell, "  AF errors: %d\r", i2c1.af_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", i2c1.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", i2c1.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", i2c1.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", i2c1.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", i2c1.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r", i2c1.message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_I2C2
+	SHELL_Transmit(Shell, "I2C2:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", i2c2.overrun_errors);
+	SHELL_Transmit(Shell, "  BERR errors: %d\r", i2c2.berr_errors);
+	SHELL_Transmit(Shell, "  ARLO errors: %d\r", i2c2.arlo_errors);
+	SHELL_Transmit(Shell, "  AF errors: %d\r", i2c2.af_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", i2c2.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", i2c2.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", i2c2.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", i2c2.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", i2c2.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r", i2c2.message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_I2C3
+	SHELL_Transmit(Shell, "I2C3:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", i2c3.overrun_errors);
+	SHELL_Transmit(Shell, "  BERR errors: %d\r", i2c3.berr_errors);
+	SHELL_Transmit(Shell, "  ARLO errors: %d\r", i2c3.arlo_errors);
+	SHELL_Transmit(Shell, "  AF errors: %d\r", i2c3.af_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", i2c3.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", i2c3.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", i2c3.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", i2c3.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", i2c3.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r", i2c3.message_queue_overflow_errors);
+#endif
+}
+
+static void SHELL_CMD_SPICallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{
+#ifdef BSP_CONFIG_USE_SPI1
+	SHELL_Transmit(Shell, "SPI1:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi1.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi1.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi1.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi1.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi1.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi1.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi1.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi1.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi1.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi1.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi1.message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_SPI2
+	SHELL_Transmit(Shell, "SPI2:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi2.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi2.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi2.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi2.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi2.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi2.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi2.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi2.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi2.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi2.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi2.message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_SPI3
+	SHELL_Transmit(Shell, "SPI3:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi3.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi3.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi3.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi3.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi3.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi3.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi3.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi3.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi3.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi3.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi3.message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_SPI4
+	SHELL_Transmit(Shell, "SPI4:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi4.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi4.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi4.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi4.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi4.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi4.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi4.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi4.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi4.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi4.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi4.message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_SPI5
+	SHELL_Transmit(Shell, "SPI5:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi5.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi5.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi5.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi5.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi5.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi5.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi5.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi5.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi5.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi5.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi5.message_queue_overflow_errors);
+#endif
+}
+
+static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{
+#ifdef BSP_CONFIG_USE_UART1
+	SHELL_Transmit(Shell, "UART1:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart1.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart1.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart1.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart1.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart1.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart1.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart1.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart1.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart1.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart1.rx_message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_UART2
+	SHELL_Transmit(Shell, "UART2:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart2.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart2.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart2.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart2.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart2.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart2.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart2.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart2.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart2.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart2.rx_message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_UART3
+	SHELL_Transmit(Shell, "UART3:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart3.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart3.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart3.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart3.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart3.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart3.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart3.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart3.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart3.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart3.rx_message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_UART4
+	SHELL_Transmit(Shell, "UART4:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart4.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart4.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart4.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart4.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart4.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart4.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart4.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart4.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart4.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart4.rx_message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_UART5
+	SHELL_Transmit(Shell, "UART5:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart5.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart5.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart5.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart5.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart5.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart5.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart5.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart5.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart5.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart5.rx_message_queue_overflow_errors);
+#endif
+#ifdef BSP_CONFIG_USE_UART6
+	SHELL_Transmit(Shell, "UART6:\r");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart6.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart6.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart6.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart6.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart6.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart6.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart6.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart6.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart6.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart6.rx_message_queue_overflow_errors);
+#endif
 }
 
 const char *pca9536_pcb_id[BSP_SFP_PIN_PCA9536_CNT] = 
