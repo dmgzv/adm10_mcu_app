@@ -2415,6 +2415,7 @@ typedef struct {
    uint32_t Ln_1_SFP_EnableTx;
    float Ln_1_SFP_SetFreq;
    uint32_t Ln_1_SetDataType;
+   uint32_t Ln_1_OTU2_SetFECType;
    uint32_t Ln_1_OPU2_SetPayload;
    uint32_t Ln_1_OPU1_1_SetPayload;
    uint32_t Ln_1_OPU1_2_SetPayload;
@@ -2426,6 +2427,7 @@ typedef struct {
    uint32_t Ln_2_SFP_EnableTx;
    float Ln_2_SFP_SetFreq;
    uint32_t Ln_2_SetDataType;
+   uint32_t Ln_2_OTU2_SetFECType;
    uint32_t Ln_2_OPU2_SetPayload;
    uint32_t Ln_2_OPU1_1_SetPayload;
    uint32_t Ln_2_OPU1_2_SetPayload;
@@ -2437,6 +2439,7 @@ typedef struct {
    uint32_t Ln_3_SFP_EnableTx;
    float Ln_3_SFP_SetFreq;
    uint32_t Ln_3_SetDataType;
+   uint32_t Ln_3_OTU2_SetFECType;
    uint32_t Ln_3_OPU2_SetPayload;
    uint32_t Ln_3_OPU1_1_SetPayload;
    uint32_t Ln_3_OPU1_2_SetPayload;
@@ -2448,6 +2451,7 @@ typedef struct {
    uint32_t Ln_4_SFP_EnableTx;
    float Ln_4_SFP_SetFreq;
    uint32_t Ln_4_SetDataType;
+   uint32_t Ln_4_OTU2_SetFECType;
    uint32_t Ln_4_OPU2_SetPayload;
    uint32_t Ln_4_OPU1_1_SetPayload;
    uint32_t Ln_4_OPU1_2_SetPayload;
