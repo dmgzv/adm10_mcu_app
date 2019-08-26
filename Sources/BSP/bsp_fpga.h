@@ -44,8 +44,24 @@
 #define BSP_FPGA_LINE_IFACE_ODU2_ALARM_AIS_MASK	(1 << 3)
 #define BSP_FPGA_LINE_IFACE_ODU2_ALARM_PMBIP8_MASK	(1 << 4)
 #define BSP_FPGA_LINE_IFACE_ODU2_ALARM_OPUCSF_MASK	(1 << 5)
-#define BSP_FPGA_LINE_IFACE_ODU2_ALARM_PMBEI_MASK	(0x0F << 12)
 #define BSP_FPGA_LINE_IFACE_ODU2_ALARM_PMBDI_MASK	(1 << 11)
+#define BSP_FPGA_LINE_IFACE_ODU2_ALARM_PMBEI_MASK	(0x0F << 12)
+
+#define BSP_FPGA_LINE_IFACE_ODU1_ALARM_LOF_MASK	(1 << 1)
+#define BSP_FPGA_LINE_IFACE_ODU1_ALARM_LOM_MASK	(1 << 2)
+#define BSP_FPGA_LINE_IFACE_ODU1_ALARM_AIS_MASK	(1 << 3)
+#define BSP_FPGA_LINE_IFACE_ODU1_ALARM_PMBIP8_MASK	(1 << 4)
+#define BSP_FPGA_LINE_IFACE_ODU1_ALARM_OPUCSF_MASK	(1 << 5)
+#define BSP_FPGA_LINE_IFACE_ODU1_ALARM_PMBDI_MASK	(1 << 11)
+#define BSP_FPGA_LINE_IFACE_ODU1_ALARM_PMBEI_MASK	(0x0F << 12)
+
+#define BSP_FPGA_LINE_IFACE_ODU0_ALARM_LOF_MASK	(1 << 1)
+#define BSP_FPGA_LINE_IFACE_ODU0_ALARM_LOM_MASK	(1 << 2)
+#define BSP_FPGA_LINE_IFACE_ODU0_ALARM_AIS_MASK	(1 << 3)
+#define BSP_FPGA_LINE_IFACE_ODU0_ALARM_PMBIP8_MASK	(1 << 4)
+#define BSP_FPGA_LINE_IFACE_ODU0_ALARM_OPUCSF_MASK	(1 << 5)
+#define BSP_FPGA_LINE_IFACE_ODU0_ALARM_PMBDI_MASK	(1 << 11)
+#define BSP_FPGA_LINE_IFACE_ODU0_ALARM_PMBEI_MASK	(0x0F << 12)
 
 #define BSP_FPGA_LINE_IFACE_PMASTATUS_TX_PLL_LOCK_MASK 				(1 << 0)
 #define BSP_FPGA_LINE_IFACE_PMASTATUS_RX_PLL_LOCK_MASK 				(1 << 1)
@@ -64,6 +80,7 @@
 #define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_STM1	0x0A
 #define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_STM4	0x0B
 #define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_1GE		0x07
+#define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_NULL	0xFD
 
 #define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(OPU0Idx, PayloadType) ((OPU0Idx) >= BSP_FPGA_LINE_MUX_OPU0_CNT) ? -1: ((fpga_line.Mux.OPU0PayloadType[OPU0Idx] = (PayloadType)), 0)
 
@@ -72,6 +89,7 @@
 
 #define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_2xODU0	0x20
 #define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_STM16		0x02
+#define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_NULL		0xFD
 
 #define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(OPU1Idx, PayloadType) ((OPU1Idx) >= BSP_FPGA_LINE_MUX_OPU1_CNT) ? -1: ((fpga_line.Mux.OPU1PayloadType[OPU1Idx] = (PayloadType)), 0)
 
@@ -81,22 +99,23 @@
 #define BSP_FPGA_LINE_MUX_CLIENT_LINE_ODU0_SET(ClientIdx, LineIdx, ODU0Idx) (((ClientIdx) >= BSP_FPGA_LINE_MUX_CLIENT_CNT) ? -1: (((LineIdx) >= 2) ? -1 : ((ODU0Idx >= 8) ? -1 : ((fpga_line.Mux.Client[ClientIdx] = ((LineIdx) * 8) + (ODU0Idx) + 0x10) , 0))))
 #define BSP_FPGA_LINE_MUX_CLIENT_LINE_ODU1_SET(ClientIdx, LineIdx, ODU1Idx) (((ClientIdx) >= BSP_FPGA_LINE_MUX_CLIENT_CNT) ? -1: (((LineIdx) >= 2) ? -1 : ((ODU1Idx >= 8) ? -1 : ((fpga_line.Mux.Client[ClientIdx] = ((LineIdx) * 4) + (ODU1Idx) + 0x00) , 0))))
 
-
 #define BSP_FPGA_LINE_MUX_ODU01_CNT	16
 #define BSP_FPGA_LINE_MUX_ODU01_ADDR(ODU01Idx)   (BSP_FPGA_LINE_ADDR + 0x520 + (ODU01Idx))
 
-#define BSP_FPGA_LINE_MUX_ODU01_LINE(LineIdx, ODU0Idx)	(((LineIdx) >= 2) ? -1 : ((ODU0Idx >= 8) ? -1 : ((((LineIdx) * 8) + (ODU0Idx)) , 0)))
-#define BSP_FPGA_LINE_MUX_ODU01_CLIENT(ClientIdx)				(((ClientIdx) >= 16) ? -1 : ((ClientIdx) + 0x10))
+#define BSP_FPGA_LINE_MUX_ODU01_NONE										(0xFF)
+#define BSP_FPGA_LINE_MUX_ODU01_LINE(LineIdx, ODU0Idx)	(((LineIdx) * 8) + (ODU0Idx))
+#define BSP_FPGA_LINE_MUX_ODU01_ODU0(ODU0Idx)				((ODU0Idx) + 0x10)
 
 #define BSP_FPGA_LINE_MUX_ODU01_SET(ODU01Idx, Source) ((ODU01Idx) >= BSP_FPGA_LINE_MUX_ODU01_CNT) ? -1: ((fpga_line.Mux.ODU01[ODU01Idx] = (Source)), 0)
 
 #define BSP_FPGA_LINE_MUX_ODU12_CNT	8
 #define BSP_FPGA_LINE_MUX_ODU12_ADDR(ODU12Idx)   (BSP_FPGA_LINE_ADDR + 0x510 + (ODU12Idx))
 
-#define BSP_FPGA_LINE_MUX_ODU12_LINE(LineIdx, ODU1Idx)	(((LineIdx) >= 2) ? -1 : ((ODU1Idx >= 4) ? -1 : ((((LineIdx) * 4) + (ODU1Idx)) , 0)))
-#define BSP_FPGA_LINE_MUX_ODU12_ODU1(ODU1Idx)						(((ODU1Idx) >= 8) ? -1 : ((ODU1Idx) + 0x08))
+#define BSP_FPGA_LINE_MUX_ODU12_NONE										(0xFF)
+#define BSP_FPGA_LINE_MUX_ODU12_LINE(LineIdx, ODU1Idx)	(((LineIdx) * 4) + (ODU1Idx))
+#define BSP_FPGA_LINE_MUX_ODU12_ODU1(ODU1Idx)						((ODU1Idx) + 0x08)
 
-#define BSP_FPGA_LINE_MUX_ODU12_SET(ODU12Idx, Source) 	((ODU12Idx) >= BSP_FPGA_LINE_MUX_ODU12_CNT) ? -1: ((fpga_line.Mux.ODU1[ODU12Idx] = (Source)), 0)
+#define BSP_FPGA_LINE_MUX_ODU12_SET(ODU12Idx, Source) 	((ODU12Idx) >= BSP_FPGA_LINE_MUX_ODU12_CNT) ? -1: ((fpga_line.Mux.ODU12[ODU12Idx] = (Source)), 0)
 
 #define BSP_FPGA_LINE_LOOPBACK_NO 			0
 #define BSP_FPGA_LINE_LOOPBACK_SERIAL 	1
@@ -181,6 +200,50 @@ do { \
 		fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(ClientIdx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(ClientIdx)].PMAStatus |= BSP_FPGA_CLIENT_IFACE_PMASTATUS_LOOPBACK_PRE_CDR_MASK; \
 } while(0) 
 
+#define BSP_FPGA_CLIENT_ODU1_CNT	4
+#define BSP_FPGA_CLIENT_ODU0_CNT	8
+
+#define BSP_FPGA_CLIENT_ODU1_ALARM_LOF_MASK	(1 << 1)
+#define BSP_FPGA_CLIENT_ODU1_ALARM_LOM_MASK	(1 << 2)
+#define BSP_FPGA_CLIENT_ODU1_ALARM_AIS_MASK	(1 << 3)
+#define BSP_FPGA_CLIENT_ODU1_ALARM_PMBIP8_MASK	(1 << 4)
+#define BSP_FPGA_CLIENT_ODU1_ALARM_OPUCSF_MASK	(1 << 5)
+#define BSP_FPGA_CLIENT_ODU1_ALARM_PMBDI_MASK	(1 << 11)
+#define BSP_FPGA_CLIENT_ODU1_ALARM_PMBEI_MASK	(0x0F << 12)
+#define BSP_FPGA_CLIENT_ODU1_ALARM_ADDR(DevIdx, ODU1Idx)   (BSP_FPGA_CLIENT_ADDR(DevIdx) + 0x200 + ((ODU1Idx) * 0x08))
+#define BSP_FPGA_CLIENT_ODU1_BIP_ADDR(DevIdx, ODU1Idx)   (BSP_FPGA_CLIENT_ADDR(DevIdx) + 0x200 + ((ODU1Idx) * 0x08) + 0x02)
+
+#define BSP_FPGA_CLIENT_ODU0_ALARM_LOF_MASK	(1 << 1)
+#define BSP_FPGA_CLIENT_ODU0_ALARM_LOM_MASK	(1 << 2)
+#define BSP_FPGA_CLIENT_ODU0_ALARM_AIS_MASK	(1 << 3)
+#define BSP_FPGA_CLIENT_ODU0_ALARM_PMBIP8_MASK	(1 << 4)
+#define BSP_FPGA_CLIENT_ODU0_ALARM_OPUCSF_MASK	(1 << 5)
+#define BSP_FPGA_CLIENT_ODU0_ALARM_PMBDI_MASK	(1 << 11)
+#define BSP_FPGA_CLIENT_ODU0_ALARM_PMBEI_MASK	(0x0F << 12)
+#define BSP_FPGA_CLIENT_ODU0_ALARM_ADDR(DevIdx, ODU1Idx)   (BSP_FPGA_CLIENT_ADDR(DevIdx) + 0x200 + ((ODU1Idx) * 0x08))
+#define BSP_FPGA_CLIENT_ODU0_BIP_ADDR(DevIdx, ODU0Idx)   (BSP_FPGA_CLIENT_ADDR(DevIdx) + 0x220 + ((ODU0Idx) * 0x08) + 0x02)
+
+#define BSP_FPGA_CLIENT_IFACE_TX_STATUS_AIS_MASK	(1 << 0)
+#define BSP_FPGA_CLIENT_IFACE_TX_STATUS_ADDR(DevIdx, IfaceIdx)   (BSP_FPGA_CLIENT_ADDR(DevIdx) + 0x40 + ((IfaceIdx) * 0x08))
+#define BSP_FPGA_CLIENT_IFACE_TX_STATUS_SET(ClientIdx, __TxStatus)	fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(ClientIdx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(ClientIdx)].TxStatus = (__TxStatus)
+
+#define BSP_FPGA_MODE_ADM10				1
+#define BSP_FPGA_MODE_ATP_2x10_BS	0
+#define BSP_FPGA_MODE_SET(__Mode)	\
+do { \
+	fpga_maxv.Mode = __Mode; \
+} while(0)
+
+
+#define BSP_FPGA_LINE_AGG_MODE_MANUAL_LINE_0			0x00
+#define BSP_FPGA_LINE_AGG_MODE_MANUAL_LINE_1			0x01
+#define BSP_FPGA_LINE_AGG_MODE_AUTO_NON_REVERTIVE	0x04
+#define BSP_FPGA_LINE_AGG_MODE_AUTO_REVERTIVE			0x06
+#define BSP_FPGA_LINE_AGG_MODE_SET(AGGIdx, AGGMode) fpga_line.AGG[AGGIdx].Mode = (AGGMode)
+#define BSP_FPGA_LINE_AGG_MODE_ADDR(AGGIdx) (BSP_FPGA_LINE_ADDR + 0x500 + (AGGIdx)*(0x10))
+
+#define BSP_FPGA_LINE_AGG_STATUS_ADDR(AGGIdx) (BSP_FPGA_LINE_ADDR + 0x501 + (AGGIdx)*(0x10))
+
 typedef struct {
 	BSP_DEV;
 	SRAM_HandleTypeDef hsram;
@@ -222,11 +285,19 @@ typedef struct {
 } BSP_FPGA_LINE_IFACE_T;
 
 typedef struct {
+	uint8_t __Mode;
+	uint8_t Mode;
+	uint8_t Status;
+} BSP_FPGA_LINE_AGG_T;
+
+typedef struct {
 	BSP_DEV;
+	uint32_t Mode;
 	char SwVersion[16];
 	float Temp;
 	BSP_FPGA_LINE_IFACE_T Iface[BSP_FPGA_LINE_IFACE_CNT];
 	BSP_FPGA_LINE_MUX_T Mux;
+	BSP_FPGA_LINE_AGG_T AGG[2];
 } BSP_FPGA_LINE_T;
 
 typedef struct {
@@ -237,6 +308,9 @@ typedef struct {
 	uint8_t __PMAStatus;
 	uint8_t __PCSStatus;
 	uint8_t __CDRStatus;
+	
+	uint8_t TxStatus;
+	uint8_t __TxStatus;
 	
 	uint16_t SDHAlarms;
 	uint16_t SDHBIP8;
@@ -262,15 +336,26 @@ typedef struct {
 typedef struct {
 	BSP_DEV;
 	uint32_t Idx;
+	uint32_t Mode;
 	char SwVersion[16];
 	float Temp;
 	BSP_FPGA_CLIENT_IFACE_T Iface[BSP_FPGA_CLIENT_IFACE_CNT];
+	
+	uint16_t ODU1Alarms[BSP_FPGA_CLIENT_ODU1_CNT];
+	uint16_t ODU1BIP[BSP_FPGA_CLIENT_ODU1_CNT];
+	uint16_t __ODU1BIP[BSP_FPGA_CLIENT_ODU1_CNT];
+	
+	uint16_t ODU0Alarms[BSP_FPGA_CLIENT_ODU0_CNT];
+	uint16_t ODU0BIP[BSP_FPGA_CLIENT_ODU0_CNT];
+	uint16_t __ODU0BIP[BSP_FPGA_CLIENT_ODU0_CNT];
+	
 } BSP_FPGA_CLIENT_T;
 
 typedef struct {
 	BSP_DEV;
 	char SwVersion[9];
 	uint8_t Status;
+	uint32_t Mode;
 } BSP_FPGA_MAXV_T;
 
 extern BSP_FPGA_IFACE_T fpga_iface;

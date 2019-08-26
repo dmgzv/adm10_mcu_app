@@ -330,8 +330,10 @@ int32_t PROFILE_ADM_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t
 		return -1;
 	if (PROFILE_ADM_CLIENT_CheckConfigValue(Profile, Table, Idx, Value))
 		return -1;
-	//if (PROFILE_ADM_XC_CheckConfigValue(Profile, Table, Idx, Value))
-	//	return -1;
+	if (PROFILE_ADM_XC_CheckConfigValue(Profile, Table, Idx, Value))
+		return -1;
+	if (PROFILE_ADM_PG_CheckConfigValue(Profile, Table, Idx, Value))
+		return -1;
 	return 0;
 }
 
@@ -357,18 +359,40 @@ int32_t PROFILE_ADM_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table
 	
 	if (Idx == PROFILE_ADM_RESET_IDX)
 		BSP_Reset();
+	
+	
 	if (PROFILE_ADM_LINE_SetConfigValueDependencies(Profile, Table, Idx, Value))
 		return -1;
 	if (PROFILE_ADM_CLIENT_SetConfigValueDependencies(Profile, Table, Idx, Value))
 		return -1;
-	//if (PROFILE_ADM_XC_SetConfigValueDependencies(Profile, Table, Idx, Value))
-	//	return -1;
+	if (PROFILE_ADM_XC_SetConfigValueDependencies(Profile, Table, Idx, Value))
+		return -1;
+	if (PROFILE_ADM_PG_SetConfigValueDependencies(Profile, Table, Idx, Value))
+		return -1;
+	
+	
+	
 	return 0;
 }
 
 void PROFILE_ADM_UpdateConfigs(PROFILE_T *Profile)
 {
+	uint32_t Mode;
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM_SETMODE_IDX, &Mode))
+		return;
+	
+	if (Mode == 0)
+	{
+		BSP_FPGA_MODE_SET(BSP_FPGA_MODE_ADM10);
+	}
+	else
+	{
+		BSP_FPGA_MODE_SET(BSP_FPGA_MODE_ATP_2x10_BS);
+	}
+	
 	PROFILE_ADM_LINE_UpdateConfigs(Profile);
 	PROFILE_ADM_CLIENT_UpdateConfigs(Profile);
-	//PROFILE_ADM_XC_UpdateConfigs(Profile);
+	PROFILE_ADM_XC_UpdateConfigs(Profile);
+	PROFILE_ADM_PG_UpdateConfigs(Profile);
 }

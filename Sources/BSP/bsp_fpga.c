@@ -303,6 +303,7 @@ int32_t BSP_FPGA_MAXV_Init(BSP_FPGA_MAXV_T *Dev)
 	SwVersion = *((uint8_t*)BSP_FPGA_MAXV_ADDR);
 	snprintf(Dev->SwVersion, sizeof(Dev->SwVersion), "%d", SwVersion);
 	Dev->Status = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x01));
+	Dev->Mode = ((*((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x02))) >> 7) & 0x01;
 	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
@@ -316,6 +317,7 @@ error:
 
 int32_t BSP_FPGA_MAXV_Update(BSP_FPGA_MAXV_T *Dev)
 {
+	uint32_t Mode;
 	if (!Dev)
 		return -1;	
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
@@ -324,6 +326,12 @@ int32_t BSP_FPGA_MAXV_Update(BSP_FPGA_MAXV_T *Dev)
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->Status = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x01));
+	Mode = ((*((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x02))) >> 7) & 0x01;
+	if (Dev->Mode != Mode)
+	{
+		*((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x02)) = ((Dev->Mode & 0x01) << 7) | (1 << 0);
+		Dev->Status = 0;
+	}
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -336,7 +344,7 @@ void BSP_FPGA_MAXV_Deinit(BSP_FPGA_MAXV_T *Dev)
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
 
-int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev)
+int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev, uint32_t Mode)
 {
 	uint8_t Status, SwVersion[4];
 	uint32_t i;
@@ -351,11 +359,54 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev)
 	if (Status == 0)
 		goto error;
 	
+	Dev->Mode = Mode;
+	
 	for (i = 0; i < 4; i++)
 	{
 		SwVersion[i] = *((char*)(BSP_FPGA_LINE_ADDR + i));
 	}
 	sprintf(Dev->SwVersion, "%d.%d.%d.%d", SwVersion[1], SwVersion[0], SwVersion[3], SwVersion[2]);
+	
+	for (i = 0; i < BSP_FPGA_LINE_IFACE_CNT; i++)
+	{
+		Dev->Iface[i].PMAStatus = *((uint8_t*)(BSP_FPGA_LINE_IFACE_ADDR(i)+ 0x0E));		
+		Dev->Iface[i].OTU2Alarms = *((uint16_t*)BSP_FPGA_LINE_IFACE_ADDR(i));
+	}
+	if (Dev->Mode == BSP_FPGA_MODE_ADM10)
+	{
+		for (i = 0; i < BSP_FPGA_LINE_MUX_OPU0_CNT; i++)
+		{
+			Dev->Mux.OPU0PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_ADDR(i)));
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_OPU1_CNT; i++)
+		{
+			Dev->Mux.OPU1PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_ADDR(i)));
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_CLIENT_CNT; i++)
+		{
+			Dev->Mux.Client[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_CLIENT_ADDR(i)));
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU01_CNT; i+=2)
+		{
+			Dev->Mux.ODU01[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU01_ADDR(i)));
+			Dev->Mux.ODU01[i+1] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU01_ADDR(i+1)));
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU12_CNT; i++)
+		{
+			Dev->Mux.ODU12[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU12_ADDR(i)));
+		}
+	}
+	else if (Dev->Mode == BSP_FPGA_MODE_ATP_2x10_BS)
+	{
+		for (i = 0; i < 2; i++)
+		{
+			Dev->AGG[i].Mode = *(uint8_t*)(BSP_FPGA_LINE_AGG_MODE_ADDR(i));
+		}
+	}
 	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
@@ -373,6 +424,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 	uint8_t Status;
 	uint16_t Temp, OTU2BIP, OTU2FECUncorr, ODU2BIP, ODU1BIP, ODU0BIP;
 	uint32_t OTU2FECCorr;
+	uint8_t NotUsedODU1Mux, NotUsedODU0Mux;
 	
 	if (!Dev)
 		return -1;	
@@ -387,11 +439,10 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 	for (i = 0; i < BSP_FPGA_LINE_IFACE_CNT; i++)
 	{
 		
-		//if (/*(i == 1) || (i = 2) ||*/ (i == 3))
-		//		continue;
+		if ((Dev->Mode == BSP_FPGA_MODE_ADM10) && (i > 2))
+			continue;
 		
-		Dev->Iface[i].__PMAStatus = *((uint8_t*)(BSP_FPGA_LINE_IFACE_ADDR(i)+ 0x0E));
-		
+		Dev->Iface[i].__PMAStatus = *((uint8_t*)(BSP_FPGA_LINE_IFACE_ADDR(i)+ 0x0E));		
 		Dev->Iface[i].__OTU2Alarms = *((uint16_t*)BSP_FPGA_LINE_IFACE_ADDR(i));
 		
 		OTU2BIP = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x02));
@@ -412,22 +463,25 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 		Dev->Iface[i].ODU2BIP = ODU2BIP - Dev->Iface[i].__ODU2BIP;
 		Dev->Iface[i].__ODU2BIP = ODU2BIP;
 		
-		for (j = 0; j < BSP_FPGA_LINE_IFACE_ODU1_CNT; j++)
+		if (Dev->Mode == BSP_FPGA_MODE_ADM10)
 		{
-			Dev->Iface[i].ODU1Alarms[j] = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x18 + (0x08 * j)));
+			for (j = 0; j < BSP_FPGA_LINE_IFACE_ODU1_CNT; j++)
+			{
+				Dev->Iface[i].ODU1Alarms[j] = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x18 + (0x08 * j)));
+				
+				ODU1BIP = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x18 + (0x08 * j) + 2));
+				Dev->Iface[i].ODU1BIP[j] = ODU1BIP - Dev->Iface[i].__ODU1BIP[j];
+				Dev->Iface[i].__ODU1BIP[j] = ODU1BIP;
+			}
 			
-			ODU1BIP = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x18 + (0x08 * j) + 2));
-			Dev->Iface[i].ODU1BIP[j] = ODU1BIP - Dev->Iface[i].__ODU1BIP[j];
-			Dev->Iface[i].__ODU1BIP[j] = ODU1BIP;
-		}
-		
-		for (j = 0; j < BSP_FPGA_LINE_IFACE_ODU0_CNT; j++)
-		{
-			Dev->Iface[i].ODU0Alarms[j] = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x38 + (0x08 * j)));
-			
-			ODU0BIP = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x38 + (0x08 * j) + 2));
-			Dev->Iface[i].ODU0BIP[j] = ODU0BIP - Dev->Iface[i].__ODU0BIP[j];
-			Dev->Iface[i].__ODU0BIP[j] = ODU0BIP;
+			for (j = 0; j < BSP_FPGA_LINE_IFACE_ODU0_CNT; j++)
+			{
+				Dev->Iface[i].ODU0Alarms[j] = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x38 + (0x08 * j)));
+				
+				ODU0BIP = *((uint16_t*)(BSP_FPGA_LINE_IFACE_ADDR(i) + 0x38 + (0x08 * j) + 2));
+				Dev->Iface[i].ODU0BIP[j] = ODU0BIP - Dev->Iface[i].__ODU0BIP[j];
+				Dev->Iface[i].__ODU0BIP[j] = ODU0BIP;
+			}
 		}
 		
 		if ((Dev->Iface[i].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARM_FEC_DISABLED_MASK) != (Dev->Iface[i].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARM_FEC_DISABLED_MASK))
@@ -457,7 +511,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 		}
 		
 		if ((Dev->Iface[i].PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_LOOPBACK_MASK) != (Dev->Iface[i].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_LOOPBACK_MASK))
-		{			
+		{
 			if (Dev->Iface[i].PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_LOOPBACK_SERIAL_MASK)
 			{
 				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
@@ -568,53 +622,167 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			}
 		}
 	}
-	
-	for (i = 0; i < BSP_FPGA_LINE_MUX_OPU0_CNT; i++)
+	if (Dev->Mode == BSP_FPGA_MODE_ADM10)
 	{
-		Dev->Mux.__OPU0PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_ADDR(i)));
 		
-		if (Dev->Mux.__OPU0PayloadType[i] != Dev->Mux.OPU0PayloadType[i])
+		NotUsedODU1Mux = 0xFF;
+		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU12_CNT; i++)
 		{
-			Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
-			if (Status == 0)
-				continue;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i + 0x10;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.OPU0PayloadType[i];
-			*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x23;
-			osDelay(5);
+			for (j = 0; j < BSP_FPGA_LINE_MUX_ODU12_CNT; j++)
+			{
+				if (Dev->Mux.ODU12[j] == BSP_FPGA_LINE_MUX_ODU12_ODU1(i))
+				{
+					break;
+				}
+			}
+			if (j == BSP_FPGA_LINE_MUX_ODU12_CNT)
+			{
+				NotUsedODU1Mux = i;
+				break;
+			}
+		}
+		
+		if (NotUsedODU1Mux != 0xFF)
+		{
+			for (i = 0; i < BSP_FPGA_LINE_MUX_ODU12_CNT; i++)
+			{
+				if (Dev->Mux.ODU12[i] == BSP_FPGA_LINE_MUX_ODU12_NONE)
+				{
+					Dev->Mux.ODU12[i] = BSP_FPGA_LINE_MUX_ODU12_ODU1(NotUsedODU1Mux);
+				}
+			}
+			BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(NotUsedODU1Mux, BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_NULL);
+		}
+		
+		NotUsedODU0Mux = 0xFF;
+		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU01_CNT; i++)
+		{
+			for (j = 0; j < BSP_FPGA_LINE_MUX_ODU01_CNT; j++)
+			{
+				if (Dev->Mux.ODU01[j] == BSP_FPGA_LINE_MUX_ODU01_ODU0(i))
+				{
+					break;
+				}
+			}
+			if (j == BSP_FPGA_LINE_MUX_ODU01_CNT)
+			{
+				NotUsedODU0Mux = i;
+				break;
+			}
+		}
+		
+		if (NotUsedODU0Mux != BSP_FPGA_LINE_MUX_ODU01_NONE)
+		{
+			for (i = 0; i < BSP_FPGA_LINE_MUX_ODU01_CNT; i++)
+			{
+				if (Dev->Mux.ODU01[i] == BSP_FPGA_LINE_MUX_ODU01_NONE)
+				{
+					Dev->Mux.ODU01[i] = BSP_FPGA_LINE_MUX_ODU01_ODU0(NotUsedODU0Mux);
+				}
+			}
+			BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(NotUsedODU0Mux, BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_NULL);
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_OPU0_CNT; i++)
+		{
+			Dev->Mux.__OPU0PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_ADDR(i)));
+			
+			if (Dev->Mux.__OPU0PayloadType[i] != Dev->Mux.OPU0PayloadType[i])
+			{
+				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+				if (Status == 0)
+					continue;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i + 0x10;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.OPU0PayloadType[i];
+				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x23;
+				osDelay(5);
+			}
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_OPU1_CNT; i++)
+		{
+			Dev->Mux.__OPU1PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_ADDR(i)));
+			if (Dev->Mux.__OPU1PayloadType[i] != Dev->Mux.OPU1PayloadType[i])
+			{
+				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+				if (Status == 0)
+					continue;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i + 0x08;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.OPU1PayloadType[i];
+				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x21;
+				osDelay(5);
+			}
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_CLIENT_CNT; i++)
+		{
+			Dev->Mux.__Client[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_CLIENT_ADDR(i)));
+			if (Dev->Mux.__Client[i] != Dev->Mux.Client[i])
+			{
+				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+				if (Status == 0)
+					continue;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.Client[i];
+				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x24;
+				osDelay(5);
+			}
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU01_CNT; i+=2)
+		{
+			Dev->Mux.__ODU01[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU01_ADDR(i)));
+			Dev->Mux.__ODU01[i+1] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU01_ADDR(i+1)));
+			if ((Dev->Mux.__ODU01[i] != Dev->Mux.ODU01[i]) || (Dev->Mux.__ODU01[i+1] != Dev->Mux.ODU01[i+1])) 
+			{
+				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+				if (Status == 0)
+					continue;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = i / 2 + 0x08;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = Dev->Mux.ODU01[i];
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.ODU01[i + 1];
+				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x22;
+				osDelay(5);
+			}
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU12_CNT; i++)
+		{
+			Dev->Mux.__ODU12[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU12_ADDR(i)));
+			if (Dev->Mux.__ODU12[i] != Dev->Mux.ODU12[i])
+			{
+				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+				if (Status == 0)
+					continue;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.ODU12[i];
+				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x20;
+				osDelay(5);
+			}
 		}
 	}
-	
-	for (i = 0; i < BSP_FPGA_LINE_MUX_OPU1_CNT; i++)
+	else if (Dev->Mode == BSP_FPGA_MODE_ATP_2x10_BS)
 	{
-		Dev->Mux.__OPU1PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_ADDR(i)));
-		if (Dev->Mux.__OPU1PayloadType[i] != Dev->Mux.OPU1PayloadType[i])
+		for (i = 0; i < 2; i++)
 		{
-			Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
-			if (Status == 0)
-				continue;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i + 0x08;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.OPU1PayloadType[i];
-			*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x21;
-			osDelay(5);
-		}
-	}
-	
-	for (i = 0; i < BSP_FPGA_LINE_MUX_CLIENT_CNT; i++)
-	{
-		Dev->Mux.__Client[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_CLIENT_ADDR(i)));
-		if (Dev->Mux.__Client[i] != Dev->Mux.Client[i])
-		{
-			Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
-			if (Status == 0)
-				continue;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i;
-			*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.Client[i];
-			*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x24;
-			osDelay(5);
+			Dev->AGG[i].__Mode = *(uint8_t*)(BSP_FPGA_LINE_AGG_MODE_ADDR(i));
+			Dev->AGG[i].Status = *(uint8_t*)(BSP_FPGA_LINE_AGG_STATUS_ADDR(i));
+			
+			if (Dev->AGG[i].__Mode != Dev->AGG[i].Mode)
+			{
+				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
+				if (Status == 0)
+					continue;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->AGG[i].Mode;
+				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x25;
+				osDelay(5);
+			}
 		}
 	}
 	
@@ -629,7 +797,7 @@ void BSP_FPGA_LINE_Deinit(BSP_FPGA_LINE_T *Dev)
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
 
-int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx)
+int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx, uint32_t Mode)
 {
 	uint32_t i;
 	uint8_t Status, SwVersion[4];
@@ -641,6 +809,7 @@ int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx)
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->Idx = Idx;
+	Dev->Mode = Mode;
 	
 	Status = *((uint8_t*)BSP_FPGA_CLIENT_STATUS_ADDR(Dev->Idx));
 	if (Status == 0)
@@ -651,6 +820,13 @@ int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx)
 		SwVersion[i] = *((char*)(BSP_FPGA_CLIENT_ADDR(Dev->Idx) + i));
 	}
 	sprintf(Dev->SwVersion, "%d.%d.%d.%d", SwVersion[1], SwVersion[0], SwVersion[3], SwVersion[2]);
+	
+	for (i = 0; i < BSP_FPGA_CLIENT_IFACE_CNT; i++)
+	{
+		Dev->Iface[i].Mode = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x00));
+		Dev->Iface[i].PMAStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x01));
+		Dev->Iface[i].TxStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TX_STATUS_ADDR(Dev->Idx, i)));
+	}
 	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
@@ -667,6 +843,7 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 	uint32_t i;
 	uint8_t Status;
 	uint16_t Temp, SDHBIP8, SDHBIP24, EthRxErrs, EthTxErrs;
+	uint16_t ODU1BIP, ODU0BIP;
 	uint32_t EthRxPkts, EthRxOcts, EthTxPkts, EthTxOcts;
 	
 	if (!Dev)
@@ -687,6 +864,7 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 		Dev->Iface[i].__PMAStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x01));
 		Dev->Iface[i].__PCSStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x02));
 		Dev->Iface[i].__CDRStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TRANS_ADDR(Dev->Idx, i)+ 0x03));
+		Dev->Iface[i].__TxStatus = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_TX_STATUS_ADDR(Dev->Idx, i)));
 		
 		Dev->Iface[i].SDHAlarms = *((uint16_t*)(BSP_FPGA_CLIENT_IFACE_STAT_ADDR(Dev->Idx, i)+ 0x02));
 		
@@ -722,6 +900,18 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 		Dev->Iface[i].EthRxErrs = EthRxErrs - Dev->Iface[i].__EthRxErrs;
 		Dev->Iface[i].__EthRxErrs = EthRxErrs;
 				
+		if (Dev->Iface[i].__TxStatus !=  Dev->Iface[i].TxStatus)
+		{
+			Status = *((uint8_t*)BSP_FPGA_CLIENT_STATUS_ADDR(Dev->Idx));
+			if (Status == 0)
+				continue;
+			*((uint8_t*)BSP_FPGA_CLIENT_CMD_OPT1_ADDR(Dev->Idx)) = 0x00;
+			*((uint8_t*)BSP_FPGA_CLIENT_CMD_OPT2_ADDR(Dev->Idx)) = i;
+			*((uint8_t*)BSP_FPGA_CLIENT_CMD_OPT3_ADDR(Dev->Idx)) = Dev->Iface[i].TxStatus;
+			*((uint8_t*)BSP_FPGA_CLIENT_CMD_ADDR(Dev->Idx)) = 0x05;
+			osDelay(5);
+		}
+		
 		if (Dev->Iface[i].__Mode !=  Dev->Iface[i].Mode)
 		{
 			Status = *((uint8_t*)BSP_FPGA_CLIENT_STATUS_ADDR(Dev->Idx));
@@ -845,6 +1035,25 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 			}
 		}
 	}
+	
+	if (Dev->Mode == BSP_FPGA_MODE_ATP_2x10_BS)
+	{
+		for (i = 0; i < BSP_FPGA_CLIENT_ODU1_CNT; i++)
+		{
+			Dev->ODU1Alarms[i] = *((uint16_t*)(BSP_FPGA_CLIENT_ODU1_ALARM_ADDR(Dev->Idx, i)));			
+			ODU1BIP =  *((uint16_t*)(BSP_FPGA_CLIENT_ODU1_BIP_ADDR(Dev->Idx, i)));
+			Dev->ODU1BIP[i] = ODU1BIP - Dev->__ODU1BIP[i];
+			Dev->__ODU1BIP[i] = ODU1BIP;
+		}
+		
+		for (i = 0; i < BSP_FPGA_CLIENT_ODU0_CNT; i++)
+		{
+			Dev->ODU0Alarms[i] = *((uint16_t*)(BSP_FPGA_CLIENT_ODU0_ALARM_ADDR(Dev->Idx, i)));			
+			ODU0BIP =  *((uint16_t*)(BSP_FPGA_CLIENT_ODU0_BIP_ADDR(Dev->Idx, i)));
+			Dev->ODU0BIP[i] = ODU0BIP - Dev->__ODU0BIP[i];
+			Dev->__ODU0BIP[i] = ODU0BIP;
+		}
+	}
 
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -913,12 +1122,16 @@ void BSP_FPGA_Process(void)
 				{
 					if (BSP_DEV_GET_STATE(&fpga_line)  != BSP_DEV_STATE_OK)
 					{
-						BSP_FPGA_LINE_Init(&fpga_line);
+						BSP_FPGA_LINE_Init(&fpga_line, fpga_maxv.Mode);
 					}
 					else
 					{
 						BSP_FPGA_LINE_Update(&fpga_line);
 					}
+				}
+				else
+				{
+					BSP_FPGA_LINE_Deinit(&fpga_line);
 				}
 				for (i = 0; i < BSP_FPGA_CLIENT_CNT; i++)
 				{
@@ -926,12 +1139,16 @@ void BSP_FPGA_Process(void)
 					{
 						if (BSP_DEV_GET_STATE(&fpga_client[i]) != BSP_DEV_STATE_OK)
 						{
-							BSP_FPGA_CLIENT_Init(&fpga_client[i], i);
+							BSP_FPGA_CLIENT_Init(&fpga_client[i], i, fpga_maxv.Mode);
 						}
 						else
 						{
 							BSP_FPGA_CLIENT_Update(&fpga_client[i]);
 						}
+					}
+					else
+					{
+						BSP_FPGA_CLIENT_Deinit(&fpga_client[i]);
 					}
 				}
 			}

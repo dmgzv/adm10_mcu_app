@@ -844,6 +844,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM\profile_adm_values.c</FilePath>
             </File>
+            <File>
+              <FileName>profile_adm_xc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM\profile_adm_xc.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm_pg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM\profile_adm_pg.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1915,6 +1925,16 @@
               <FileName>profile_adm_values.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM\profile_adm_values.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm_xc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM\profile_adm_xc.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm_pg.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM\profile_adm_pg.c</FilePath>
             </File>
           </Files>
         </Group>
