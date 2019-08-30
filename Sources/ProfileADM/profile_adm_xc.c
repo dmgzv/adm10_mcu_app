@@ -67,7 +67,7 @@ static int32_t PROFILE_ADM_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8_t
 			{
 				/*Allow to set XC source to Line 1 nad 2 ODU1 containers only*/
 			}
-			else if ((*(uint32_t*)Value >= PROFILE_ADM_XC_CLIENT_ODU1(0)) && (*(uint32_t*)Value <= PROFILE_ADM_XC_CLIENT_ODU1(15)) && ((*(uint32_t*)Value - PROFILE_ADM_XC_CLIENT_ODU1(0)) % 2))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM_XC_CLIENT_ODU1(0)) && (*(uint32_t*)Value <= PROFILE_ADM_XC_CLIENT_ODU1(15)) && (((*(uint32_t*)Value - PROFILE_ADM_XC_CLIENT_ODU1(0)) % 2) == 0))
 			{
 				/*Allow to set XC destination to Client even ODU0 containers only*/
 			}
@@ -607,11 +607,11 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 					TargetLine = ((Target - 1) / 4);
 					TargetODU1Idx = ((Target - 1) % 4);
 					BSP_FPGA_LINE_MUX_CLIENT_LINE_ODU1_SET(Client, TargetLine, TargetODU1Idx);
-					BSP_FPGA_CLIENT_IFACE_TX_STATUS_SET(Client, 0);
+					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
 				}
 				else
 				{
-					BSP_FPGA_CLIENT_IFACE_TX_STATUS_SET(Client, BSP_FPGA_CLIENT_IFACE_TX_STATUS_AIS_MASK);
+					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK | BSP_FPGA_CLIENT_IFACE_CTRL_AIS_MASK);
 				}
 			}
 			else if ((ClDataType[Client] == 128) || (ClDataType[Client] == 129) || (ClDataType[Client] == 257))
@@ -635,11 +635,11 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 					TargetLine = ((Target - 1) / 8);
 					TargetODU0Idx = ((Target - 1) % 8);
 					BSP_FPGA_LINE_MUX_CLIENT_LINE_ODU0_SET(Client, TargetLine, TargetODU0Idx);
-					BSP_FPGA_CLIENT_IFACE_TX_STATUS_SET(Client, 0);
+					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
 				}
 				else
 				{
-					BSP_FPGA_CLIENT_IFACE_TX_STATUS_SET(Client, BSP_FPGA_CLIENT_IFACE_TX_STATUS_AIS_MASK);
+					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK | BSP_FPGA_CLIENT_IFACE_CTRL_AIS_MASK);
 				}
 			}
 		}
@@ -647,6 +647,10 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 	else
 	{
 		/* Cross-connect is autoconfigured in FPGA */
+		for (i = 0; i < 16; i++)
+		{
+			BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
+		}
 	}
 }
 
