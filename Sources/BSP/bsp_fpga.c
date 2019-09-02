@@ -428,7 +428,6 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 	uint8_t Status;
 	uint16_t Temp, OTU2BIP, OTU2FECUncorr, ODU2BIP, ODU1BIP, ODU0BIP;
 	uint32_t OTU2FECCorr;
-	uint8_t NotUsedODU1Mux, NotUsedODU0Mux;
 	
 	if (!Dev)
 		return -1;	
@@ -608,65 +607,6 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 	}
 	if (Dev->Mode == BSP_FPGA_MODE_ADM10)
 	{
-		
-		NotUsedODU1Mux = 0xFF;
-		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU12_CNT; i++)
-		{
-			for (j = 0; j < BSP_FPGA_LINE_MUX_ODU12_CNT; j++)
-			{
-				if (Dev->Mux.ODU12[j] == BSP_FPGA_LINE_MUX_ODU12_ODU1(i))
-				{
-					break;
-				}
-			}
-			if (j == BSP_FPGA_LINE_MUX_ODU12_CNT)
-			{
-				NotUsedODU1Mux = i;
-				break;
-			}
-		}
-		
-		if (NotUsedODU1Mux != 0xFF)
-		{
-			for (i = 0; i < BSP_FPGA_LINE_MUX_ODU12_CNT; i++)
-			{
-				if (Dev->Mux.ODU12[i] == BSP_FPGA_LINE_MUX_ODU12_NONE)
-				{
-					Dev->Mux.ODU12[i] = BSP_FPGA_LINE_MUX_ODU12_ODU1(NotUsedODU1Mux);
-				}
-			}
-			BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(NotUsedODU1Mux, BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_NULL);
-		}
-		
-		NotUsedODU0Mux = 0xFF;
-		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU01_CNT; i++)
-		{
-			for (j = 0; j < BSP_FPGA_LINE_MUX_ODU01_CNT; j++)
-			{
-				if (Dev->Mux.ODU01[j] == BSP_FPGA_LINE_MUX_ODU01_ODU0(i))
-				{
-					break;
-				}
-			}
-			if (j == BSP_FPGA_LINE_MUX_ODU01_CNT)
-			{
-				NotUsedODU0Mux = i;
-				break;
-			}
-		}
-		
-		if (NotUsedODU0Mux != BSP_FPGA_LINE_MUX_ODU01_NONE)
-		{
-			for (i = 0; i < BSP_FPGA_LINE_MUX_ODU01_CNT; i++)
-			{
-				if (Dev->Mux.ODU01[i] == BSP_FPGA_LINE_MUX_ODU01_NONE)
-				{
-					Dev->Mux.ODU01[i] = BSP_FPGA_LINE_MUX_ODU01_ODU0(NotUsedODU0Mux);
-				}
-			}
-			BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(NotUsedODU0Mux, BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_NULL);
-		}
-		
 		for (i = 0; i < BSP_FPGA_LINE_MUX_OPU0_CNT; i++)
 		{
 			Dev->Mux.__OPU0PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_ADDR(i)));

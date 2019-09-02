@@ -119,6 +119,7 @@ do { \
 #define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_NULL	0xFD
 
 #define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(OPU0Idx, PayloadType) ((OPU0Idx) >= BSP_FPGA_LINE_MUX_OPU0_CNT) ? -1: ((fpga_line.Mux.OPU0PayloadType[OPU0Idx] = (PayloadType)), 0)
+#define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_GET(OPU0Idx) (fpga_line.Mux.OPU0PayloadType[OPU0Idx])
 
 #define BSP_FPGA_LINE_MUX_OPU1_CNT	8
 #define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_ADDR(OPU1Idx)   (BSP_FPGA_LINE_ADDR + 0x518 + (OPU1Idx))
@@ -128,6 +129,7 @@ do { \
 #define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_NULL		0xFD
 
 #define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(OPU1Idx, PayloadType) ((OPU1Idx) >= BSP_FPGA_LINE_MUX_OPU1_CNT) ? -1: ((fpga_line.Mux.OPU1PayloadType[OPU1Idx] = (PayloadType)), 0)
+#define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_GET(OPU1Idx) (fpga_line.Mux.OPU1PayloadType[OPU1Idx])
 
 #define BSP_FPGA_LINE_MUX_CLIENT_CNT	16
 #define BSP_FPGA_LINE_MUX_CLIENT_ADDR(ODU01Idx)   (BSP_FPGA_LINE_ADDR + 0x500 + (ODU01Idx))
@@ -143,6 +145,7 @@ do { \
 #define BSP_FPGA_LINE_MUX_ODU01_ODU0(ODU0Idx)				((ODU0Idx) + 0x10)
 
 #define BSP_FPGA_LINE_MUX_ODU01_SET(ODU01Idx, Source) ((ODU01Idx) >= BSP_FPGA_LINE_MUX_ODU01_CNT) ? -1: ((fpga_line.Mux.ODU01[ODU01Idx] = (Source)), 0)
+#define BSP_FPGA_LINE_MUX_ODU01_GET(ODU01Idx) (fpga_line.Mux.ODU01[ODU01Idx])
 
 #define BSP_FPGA_LINE_MUX_ODU12_CNT	8
 #define BSP_FPGA_LINE_MUX_ODU12_ADDR(ODU12Idx)   (BSP_FPGA_LINE_ADDR + 0x510 + (ODU12Idx))
@@ -152,7 +155,7 @@ do { \
 #define BSP_FPGA_LINE_MUX_ODU12_ODU1(ODU1Idx)						((ODU1Idx) + 0x08)
 
 #define BSP_FPGA_LINE_MUX_ODU12_SET(ODU12Idx, Source) 	((ODU12Idx) >= BSP_FPGA_LINE_MUX_ODU12_CNT) ? -1: ((fpga_line.Mux.ODU12[ODU12Idx] = (Source)), 0)
-#define BSP_FPGA_LINE_MUX_ODU12_GET(ODU12Idx, Source) 	((ODU12Idx) >= BSP_FPGA_LINE_MUX_ODU12_CNT) ? -1: (fpga_line.Mux.ODU12[ODU12Idx] = (Source))
+#define BSP_FPGA_LINE_MUX_ODU12_GET(ODU12Idx) 					(fpga_line.Mux.ODU12[ODU12Idx])
 
 #define BSP_FPGA_LINE_LOOPBACK_NO 			0
 #define BSP_FPGA_LINE_LOOPBACK_SERIAL 	1

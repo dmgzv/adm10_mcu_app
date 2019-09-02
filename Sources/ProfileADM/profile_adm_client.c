@@ -482,7 +482,8 @@ static int32_t PROFILE_ADM_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uint8
 	uint32_t SetState;
 	
 	/* Do not alow to go from OOS to IS */
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &SetState);
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &SetState))
+		return -1;
 	if ((SetState == PROFILE_STATE_OOS) && (*(uint32_t*)Value == PROFILE_STATE_IS))
 		return -1;
 	return 0;
@@ -495,7 +496,8 @@ static int32_t PROFILE_ADM_CLIENT_CheckClSFPEnableTxValue(PROFILE_T *Profile, ui
 	/* Do not alow to enable tx if set state if OOS */
 	if (*(uint32_t*)Value == 1)
 	{
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &SetState);
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &SetState))
+			return -1;
 		if (SetState == PROFILE_STATE_OOS)
 			return -1;
 	}
@@ -507,9 +509,12 @@ static int32_t PROFILE_ADM_CLIENT_CheckClSFPSetFreqValue(PROFILE_T *Profile, uin
 	float __MinFreq, __MaxFreq, __FreqSp;
 	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPMinFreqIdx[Idx], &__MinFreq);
-	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPMaxFreqIdx[Idx], &__MaxFreq);
-	PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPFreqSpIdx[Idx], &__FreqSp);
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPMinFreqIdx[Idx], &__MinFreq))
+		return -1;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPMaxFreqIdx[Idx], &__MaxFreq))
+		return -1;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPFreqSpIdx[Idx], &__FreqSp))
+		return -1;
 	
 	Freq = *((float*)Value) * 1000000;
 	MinFreq = __MinFreq * 1000000;
@@ -673,11 +678,16 @@ void PROFILE_ADM_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 	
 	for (i = 0; i < PROFILE_ADM_CLIENT_PORTS; i++)
 	{
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[i], &State);
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPEnableTxIdx[i], &SFPEnableTx);
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqIdx[i], &SFPSetFreq);
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[i], &DataType);
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetLoopbackIdx[i], &Loopback);
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[i], &State))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPEnableTxIdx[i], &SFPEnableTx))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqIdx[i], &SFPSetFreq))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[i], &DataType))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetLoopbackIdx[i], &Loopback))
+			return;
 		
 		SFP_ConfigTxDisable(&sfp[BSP_SFP_CLIENT_IDX(i)], SFPEnableTx ? 0 : 1);
 		SFP_ConfigFreq(&sfp[BSP_SFP_CLIENT_IDX(i)], SFPSetFreq * 1000000);
@@ -726,20 +736,24 @@ static void PROFILE_ADM_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, uin
 	float __Freq, __MinFreq, __MaxFreq, __FreqSp;
 	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
 	{
 		case BSP_DEV_STATE_OK:
 			//Check if inserted module is same as previous
 			UpdateFlag = 1;
-			PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPVendorIdx[Idx], Tmp);
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPVendorIdx[Idx], Tmp))
+				return;
 			if (!strncmp(Tmp, sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.Vendor, sizeof(sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.Vendor)))
 			{
-				PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPSrNumberIdx[Idx], Tmp);
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPSrNumberIdx[Idx], Tmp))
+					return;
 				if (!strncmp(Tmp, sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.SerialNumber, sizeof(sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.SerialNumber)))
 				{
-					PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPPtNumberIdx[Idx], Tmp);
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPPtNumberIdx[Idx], Tmp))
+						return;
 					if (!strncmp(Tmp, sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.PartNumber, sizeof(sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.PartNumber)))
 					{
 						UpdateFlag = 0;
@@ -749,6 +763,9 @@ static void PROFILE_ADM_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, uin
 			//If module is not the same as previous, then update info and thresholds values
 			if (UpdateFlag)
 			{
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqIdx[Idx], &__Freq))
+					return;
+				
 				PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPVendorIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.Vendor);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPSrNumberIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.SerialNumber);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPPtNumberIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.PartNumber);
@@ -771,7 +788,6 @@ static void PROFILE_ADM_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, uin
 				MinFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Min;
 				MaxFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Max;
 				FreqSp = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Spacing;
-				PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqIdx[Idx], &__Freq);
 				Freq = __Freq * 1000000;
 				
 				__MinFreq = MinFreq / 1000000.0f;
@@ -815,30 +831,29 @@ static void PROFILE_ADM_CLIENT_UpdateSFPStateValue(PROFILE_T *Profile, uint32_t 
 	uint32_t Value;
 	uint8_t ColorType;
 	uint32_t State;	
-		
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
+	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
 	{
 		case BSP_DEV_STATE_RESET:
 			Value = 0;
 			ColorType = PROFILE_COLOR_TYPE_FAILURE;
-			PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);	
 			break;
 		case BSP_DEV_STATE_INIT:
 			Value = 2;
 			ColorType = PROFILE_COLOR_TYPE_NORMAL;
-			PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);	
 			break;
 		case BSP_DEV_STATE_OK:
 			Value = 1;
 			ColorType = PROFILE_COLOR_TYPE_NORMAL;
-			PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);	
 			/* todo: Add check failure states */
 			break;
 		case BSP_DEV_STATE_FAIL:
 		default:
 			Value = 3;
 			ColorType = PROFILE_COLOR_TYPE_FAILURE;
-			PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);	
 			break;
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPStateIdx[Idx], &Value, ColorType, State);
@@ -850,14 +865,14 @@ static void PROFILE_ADM_CLIENT_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t I
 	uint8_t ColorType;
 	uint32_t State;	
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
 		
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].Temp;
 			ColorType = PROFILE_COLOR_TYPE_AUTO;
-			PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
@@ -865,7 +880,6 @@ static void PROFILE_ADM_CLIENT_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t I
 		default:
 			Value = 0.0;
 			ColorType = PROFILE_COLOR_TYPE_AUTO;
-			State = PROFILE_STATE_OOS;
 			break;		
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPTempIdx[Idx], &Value, ColorType, State);
@@ -877,14 +891,14 @@ static void PROFILE_ADM_CLIENT_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_t 
 	uint32_t State;
 	uint8_t ColorType;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].RxPwr;
 			ColorType = PROFILE_COLOR_TYPE_AUTO;
-			PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
@@ -892,7 +906,6 @@ static void PROFILE_ADM_CLIENT_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_t 
 		default:
 			Value = -40.0f;
 			ColorType = PROFILE_COLOR_TYPE_AUTO;
-			State = PROFILE_STATE_OOS;
 			break;
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPRxPwrIdx[Idx], &Value, ColorType, State);
@@ -904,14 +917,14 @@ static void PROFILE_ADM_CLIENT_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_t 
 	uint32_t State;
 	uint8_t ColorType;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].TxPwr;
 			ColorType = PROFILE_COLOR_TYPE_AUTO;
-			PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
@@ -919,7 +932,6 @@ static void PROFILE_ADM_CLIENT_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_t 
 		default:
 			Value = -40.0f;
 			ColorType = PROFILE_COLOR_TYPE_AUTO;
-			State = PROFILE_STATE_OOS;
 			break;
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicClSFPTxPwrIdx[Idx], &Value, ColorType, State);
@@ -930,15 +942,16 @@ static void PROFILE_ADM_CLIENT_UpdatePMAStatusValue(PROFILE_T *Profile, uint32_t
 	uint32_t PMAStatus;
 	uint32_t State;
 	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
+	
 	if (BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK)
 	{
 		PMAStatus = 0;
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 	}
 	else
 	{
 		PMAStatus = fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__PMAStatus;
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicClPMAStatusIdx[Idx], &PMAStatus, PROFILE_COLOR_TYPE_NO, State);
 }
@@ -948,15 +961,16 @@ static void PROFILE_ADM_CLIENT_UpdatePCSStatusValue(PROFILE_T *Profile, uint32_t
 	uint32_t PCSStatus;
 	uint32_t State;
 	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
+	
 	if (BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK)
 	{
 		PCSStatus = 0;
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 	}
 	else
 	{
 		PCSStatus = fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__PCSStatus;
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicClPCSStatusIdx[Idx], &PCSStatus, PROFILE_COLOR_TYPE_NO, State);
 }
@@ -966,15 +980,16 @@ static void PROFILE_ADM_CLIENT_UpdateCDRStatusValue(PROFILE_T *Profile, uint32_t
 	uint32_t CDRStatus;
 	uint32_t State;
 	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
+	
 	if (BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK)
 	{
 		CDRStatus = 0;
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 	}
 	else
 	{
 		CDRStatus = fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__CDRStatus;
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADMDynamicClCDRStatusIdx[Idx], &CDRStatus, PROFILE_COLOR_TYPE_NO, State);
 }
@@ -1075,13 +1090,15 @@ static void PROFILE_ADM_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint32
 	uint32_t State, DataType;
 	uint8_t ColorType;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx], &DataType);	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx], &DataType))
+		return;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
 	
 	if ((DataType == 128) || (DataType == 129) || (DataType == 130))
 	{
 		SDHRSAlarms = 0;
 		ColorType = PROFILE_COLOR_TYPE_NORMAL;
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_CLIENT_IDX(Idx)].Pin.RxLos) ||
@@ -1143,13 +1160,15 @@ static void PROFILE_ADM_CLIENT_UpdateEthAlarmsValue(PROFILE_T *Profile, uint32_t
 	uint32_t State, DataType;
 	uint8_t ColorType;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx], &DataType);	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx], &DataType))
+		return;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
 	
 	if ((DataType == 256) || (DataType == 257))
 	{
 		EthAlarms = 0;
 		ColorType = PROFILE_COLOR_TYPE_NORMAL;
-		PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_CLIENT_IDX(Idx)].Pin.RxLos) ||
@@ -1321,9 +1340,11 @@ static void PROFILE_ADM_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint32_
 	uint32_t Errors, Defects;
 	uint32_t State, DataType;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx], &DataType);
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
-	if ((DataType == 128) || (DataType == 129) || (DataType == 130))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx], &DataType))
+		return;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
+	if ((((DataType == 128) || (DataType == 129) || (DataType == 130))  && (State != PROFILE_STATE_OOS)))
 	{
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
@@ -1351,15 +1372,14 @@ static void PROFILE_ADM_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint32_
 				Errors = 0;
 			}
 		}
-		
+		PERF_Update(&ClSDHRSPerf[Idx], Defects, Errors, PERF_ODU1_SES_ERRORS_THR);
 	}
 	else
 	{
 		Defects = 0;
 		Errors = 0;
+		PERF_Reset(&ClSDHRSPerf[Idx]);
 	}
-	
-	PERF_Update(&ClSDHRSPerf[Idx], Defects, Errors, PERF_ODU1_SES_ERRORS_THR);
 	
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADMPerfClSDHRSEBIdx[Idx], &ClSDHRSPerf[Idx].EB, PROFILE_COLOR_TYPE_NO, State);
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADMPerfClSDHRSESIdx[Idx], &ClSDHRSPerf[Idx].ES, PROFILE_COLOR_TYPE_NO, State);
@@ -1373,10 +1393,12 @@ static void PROFILE_ADM_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_t 
 	uint32_t RxPkts, RxOcts, RxErrs, TxPkts, TxOcts, TxErrs;
 	uint32_t State, DataType;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx], &DataType);
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx], &DataType))
+		return;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
 	
-	if (DataType == 257)
+	if ((DataType == 257) && (State != PROFILE_STATE_OOS))
 	{
 		if (BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK)
 		{
@@ -1435,7 +1457,8 @@ static void PROFILE_ADM_CLIENT_UpdateAlarmLedValue(PROFILE_T *Profile, uint32_t 
 	uint32_t State, LedColor;
 	uint8_t Color, ParamColor, ParamState;
 	
-	PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State);
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &State))
+		return;
 	if (State == PROFILE_STATE_IS)
 	{
 		Color = PROFILE_COLOR_NORMAL;
