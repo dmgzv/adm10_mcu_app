@@ -93,19 +93,12 @@ static const uint32_t ProfileADMInfoLnSFPPtNumberIdx[PROFILE_ADM_LINE_PORTS] =
 	PROFILE_ADM_LN_1_SFP_PTNUMBER_IDX, PROFILE_ADM_LN_2_SFP_PTNUMBER_IDX, PROFILE_ADM_LN_3_SFP_PTNUMBER_IDX, PROFILE_ADM_LN_4_SFP_PTNUMBER_IDX,
 };
 
-static const uint32_t ProfileADMInfoLnSFPMinFreqIdx[PROFILE_ADM_LINE_PORTS] = 
+static const uint32_t ProfileADMStaticLnSFPSetFreqIdx[PROFILE_ADM_LINE_PORTS][2] = 
 {
-	PROFILE_ADM_LN_1_SFP_MINFREQ_IDX, PROFILE_ADM_LN_2_SFP_MINFREQ_IDX, PROFILE_ADM_LN_3_SFP_MINFREQ_IDX, PROFILE_ADM_LN_4_SFP_MINFREQ_IDX,
-};
-
-static const uint32_t ProfileADMInfoLnSFPMaxFreqIdx[PROFILE_ADM_LINE_PORTS] = 
-{
-	PROFILE_ADM_LN_1_SFP_MAXFREQ_IDX, PROFILE_ADM_LN_2_SFP_MAXFREQ_IDX, PROFILE_ADM_LN_3_SFP_MAXFREQ_IDX, PROFILE_ADM_LN_4_SFP_MAXFREQ_IDX,
-};
-
-static const uint32_t ProfileADMInfoLnSFPFreqSpIdx[PROFILE_ADM_LINE_PORTS] = 
-{
-	PROFILE_ADM_LN_1_SFP_FREQSP_IDX, PROFILE_ADM_LN_2_SFP_FREQSP_IDX, PROFILE_ADM_LN_3_SFP_FREQSP_IDX, PROFILE_ADM_LN_4_SFP_FREQSP_IDX,
+	{PROFILE_ADM_LN_1_SFP_SETFREQHMIN_IDX, PROFILE_ADM_LN_1_SFP_SETFREQHMAX_IDX},
+	{PROFILE_ADM_LN_2_SFP_SETFREQHMIN_IDX, PROFILE_ADM_LN_2_SFP_SETFREQHMAX_IDX},
+	{PROFILE_ADM_LN_3_SFP_SETFREQHMIN_IDX, PROFILE_ADM_LN_3_SFP_SETFREQHMAX_IDX},
+	{PROFILE_ADM_LN_4_SFP_SETFREQHMIN_IDX, PROFILE_ADM_LN_4_SFP_SETFREQHMAX_IDX},
 };
 
 static const uint32_t ProfileADMStaticLnSFPRxPwrIdx[PROFILE_ADM_LINE_PORTS][4] = 
@@ -145,6 +138,11 @@ static const uint32_t ProfileADMConfigLnSFPEnableTxIdx[PROFILE_ADM_LINE_PORTS] =
 static const uint32_t ProfileADMConfigLnSFPSetFreqIdx[PROFILE_ADM_LINE_PORTS] = 
 {
 	PROFILE_ADM_LN_1_SFP_SETFREQ_IDX, PROFILE_ADM_LN_2_SFP_SETFREQ_IDX, PROFILE_ADM_LN_3_SFP_SETFREQ_IDX, PROFILE_ADM_LN_4_SFP_SETFREQ_IDX,
+};
+
+static const uint32_t ProfileADMConfigLnSFPSetFreqSpIdx[PROFILE_ADM_LINE_PORTS] = 
+{
+	PROFILE_ADM_LN_1_SFP_SETFREQSP_IDX, PROFILE_ADM_LN_2_SFP_SETFREQSP_IDX, PROFILE_ADM_LN_3_SFP_SETFREQSP_IDX, PROFILE_ADM_LN_4_SFP_SETFREQSP_IDX,
 };
 
 static const uint32_t ProfileADMConfigLnSetDataTypeIdx[PROFILE_ADM_LINE_PORTS] = 
@@ -382,22 +380,16 @@ static int32_t PROFILE_ADM_LINE_CheckLnSFPEnableTxValue(PROFILE_T *Profile, uint
 
 static int32_t PROFILE_ADM_LINE_CheckLnSFPSetFreqValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
-	float __MinFreq, __MaxFreq, __FreqSp;
-	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
+	float __FreqSp;
+	uint32_t Freq, FreqSp;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMinFreqIdx[Idx], &__MinFreq))
-		return -1;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMaxFreqIdx[Idx], &__MaxFreq))
-		return -1;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPFreqSpIdx[Idx], &__FreqSp))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMConfigLnSFPSetFreqSpIdx[Idx], &__FreqSp))
 		return -1;
 	
 	Freq = *((float*)Value) * 1000000;
-	MinFreq = __MinFreq * 1000000;
-	MaxFreq = __MaxFreq * 1000000;
 	FreqSp = __FreqSp * 1000;
 	
-	if ((Freq < MinFreq) || (Freq > MaxFreq) || (Freq % FreqSp))
+	if (Freq % FreqSp)
 		return -1;
 	
 	return 0;
@@ -526,9 +518,6 @@ static int32_t PROFILE_ADM_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Prof
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPVendorIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPSrNumberIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPPtNumberIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMinFreqIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMaxFreqIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPFreqSpIdx[Idx]);
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 2))
 	{
@@ -536,6 +525,7 @@ static int32_t PROFILE_ADM_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Prof
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetStateIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPEnableTxIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqIdx[Idx]);
+		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqSpIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetDataTypeIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnOTU2SetFECTypeIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnOPU2SetPayloadIdx[Idx]);
@@ -553,6 +543,11 @@ static int32_t PROFILE_ADM_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Prof
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPRxPwrIdx[Idx][i]);
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTxPwrIdx[Idx][i]);
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTempIdx[Idx][i]);
+		}
+		
+		for (i = 0; i < 2; i++)
+		{
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPSetFreqIdx[Idx][i]);
 		}
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 4))
@@ -736,9 +731,9 @@ static void PROFILE_ADM_LINE_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint3
 				__MinFreq = MinFreq / 1000000.0f;
 				__MaxFreq = MaxFreq / 1000000.0f;
 				__FreqSp = FreqSp / 1000.0f;
-				PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMinFreqIdx[Idx], &__MinFreq);
-				PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMaxFreqIdx[Idx], &__MaxFreq);
-				PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPFreqSpIdx[Idx], &__FreqSp);					
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqSpIdx[Idx], &__FreqSp);
+				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPSetFreqIdx[Idx][0], &__MinFreq);
+				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPSetFreqIdx[Idx][1], &__MaxFreq);					
 				if ((Freq < MinFreq) || (Freq > MaxFreq) || (Freq % FreqSp))
 				{
 					PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqIdx[Idx], &__MinFreq);
@@ -750,10 +745,6 @@ static void PROFILE_ADM_LINE_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint3
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPVendorIdx[Idx], State);
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPSrNumberIdx[Idx], State);
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPPtNumberIdx[Idx], State);
-			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMinFreqIdx[Idx], State);
-			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMaxFreqIdx[Idx], State);
-			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPFreqSpIdx[Idx], State);
-			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
 		case BSP_DEV_STATE_FAIL:
@@ -762,9 +753,6 @@ static void PROFILE_ADM_LINE_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint3
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPVendorIdx[Idx], PROFILE_STATE_OOS);
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPSrNumberIdx[Idx], PROFILE_STATE_OOS);
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPPtNumberIdx[Idx], PROFILE_STATE_OOS);
-			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMinFreqIdx[Idx], PROFILE_STATE_OOS);
-			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPMaxFreqIdx[Idx], PROFILE_STATE_OOS);
-			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPFreqSpIdx[Idx], PROFILE_STATE_OOS);
 			break;
 	}
 }

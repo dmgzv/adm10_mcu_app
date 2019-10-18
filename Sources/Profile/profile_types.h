@@ -37,6 +37,9 @@
 #define	PROFILE_STATE_MT	1
 #define	PROFILE_STATE_IS	2
 
+#define PROFILE_THR_HMAX				0//	Верхний физический предел
+#define PROFILE_THR_HMIN				1//	Нижний физический предел
+
 #define PROFILE_THR_CMAX				0//	Верхний критический предел
 #define PROFILE_THR_WMAX				1//	Верхний порог (предупреждение)
 #define PROFILE_THR_WMIN				2// Нижний порог (предупреждение)
@@ -76,6 +79,7 @@ typedef struct {
 	uint8_t Access;
 	uint8_t	Type;
 	void *Value;
+	void *Thesholds; 
 } PROFILE_TABLE3_PARAM_T;
 
 typedef struct {

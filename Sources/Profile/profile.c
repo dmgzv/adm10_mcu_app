@@ -9,8 +9,9 @@
 #define PROFILE_DYNAMIC_PARAM_VALUE_PTR(Profile, Param) 							(void*)((uint32_t)((Profile)->Values.Dynamic) + (uint32_t)((Param)->Value))
 #define PROFILE_STATIC_PARAM_VALUE_PTR(Profile, Param) 								(void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Value))
 #define PROFILE_STATIC_PARAM_DEFAULT_VALUE_PTR(Profile, Param)				(void*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->DefaultValues) + (uint32_t)((Param)->Value))
-#define PROFILE_DYNAMIC_PARAM_THR_PTR(Profile, Param) 								(void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Thesholds))
-#define PROFILE_STATIC_PARAM_THR_PTR(Profile, Param) 									(void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Thesholds))
+#define PROFILE_DYNAMIC_PARAM_THR_PTR(Profile, Param) 								(Param)->Thesholds ? (void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Thesholds)) : NULL
+#define PROFILE_CONFIG_PARAM_THR_PTR(Profile, Param) 									(Param)->Thesholds ? (void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Thesholds)) : NULL
+#define PROFILE_STATIC_PARAM_THR_PTR(Profile, Param) 									(Param)->Thesholds ? (void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Thesholds)) : NULL
 #define PROFILE_DYNAMIC_PARAM_COLOR_PTR(Profile, Param) 							(Param)->Color ? (uint8_t*)((uint32_t)((Profile)->Values.Dynamic) + (uint32_t)((Param)->Color)) : NULL
 #define PROFILE_DYNAMIC_PARAM_DEGR_COLOR_PTR(Profile, Param) 					(Param)->DegradeColor ? (uint8_t*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->DegradeColor)) : NULL
 #define PROFILE_DYNAMIC_PARAM_DEFAULT_DEGR_COLOR_PTR(Profile, Param) 	(Param)->DegradeColor ? (uint8_t*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->DefaultValues) + (uint32_t)((Param)->DegradeColor)) : NULL
@@ -141,6 +142,9 @@ static void __PROFILE_GetThr(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, vo
 	{
 		case PROFILE_TABLE_2:
 			*Thr = PROFILE_DYNAMIC_PARAM_THR_PTR(Profile, &Profile->Descr[Profile->Idx]->Table2[Idx - 1]);
+			break;
+		case PROFILE_TABLE_3:
+			*Thr = PROFILE_CONFIG_PARAM_THR_PTR(Profile, &Profile->Descr[Profile->Idx]->Table3[Idx - 1]);
 			break;
 		case PROFILE_TABLE_4:
 			*Thr = PROFILE_STATIC_PARAM_THR_PTR(Profile, &Profile->Descr[Profile->Idx]->Table4[Idx - 1]);
@@ -372,7 +376,7 @@ int32_t PROFILE_CheckThresholdValue(PROFILE_T *Profile, uint8_t Table, uint16_t 
 	__PROFILE_GetValue(Profile, Table, Idx, &ParamValue);
 	__PROFILE_GetThr(Profile, Table, Idx, &ParamValueThr);
 	
-	for( i = 0; i < 6; i++)
+	for( i = 0; i < 4; i++)
 	{
 		switch (Type)
 		{
@@ -447,12 +451,78 @@ int32_t PROFILE_CheckThresholdValue(PROFILE_T *Profile, uint8_t Table, uint16_t 
 	return -1;
 }
 
+int32_t PROFILE_CheckConfigValueRange(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
+{
+	uint8_t Type;
+	void *ParamValue, *ParamValueThr;
+	
+	__PROFILE_GetType(Profile, Table, Idx, &Type);
+	__PROFILE_GetValue(Profile, Table, Idx, &ParamValue);
+	__PROFILE_GetThr(Profile, Table, Idx, &ParamValueThr);
+	
+	switch (Type)
+	{
+		case PROFILE_TYPE_BOOL:
+		case PROFILE_TYPE_UINT32:
+		case PROFILE_TYPE_CNT:
+		case PROFILE_TYPE_BITMSK:
+		case PROFILE_TYPE_HEX32:
+			if(ParamValueThr)
+			{
+				if ((*(uint32_t*)Value) < ((uint32_t*)ParamValueThr)[PROFILE_THR_HMIN])
+					return -1;
+				else if ((*(uint32_t*)Value) > ((uint32_t*)ParamValueThr)[PROFILE_THR_HMAX])
+					return -1;
+			}
+			break;
+		case PROFILE_TYPE_ENUM:
+		case PROFILE_TYPE_INT32:
+			if(ParamValueThr)
+			{
+				if ((*(int32_t*)Value) < ((int32_t*)ParamValueThr)[PROFILE_THR_HMIN])
+					return -1;
+				else if ((*(int32_t*)Value) > ((int32_t*)ParamValueThr)[PROFILE_THR_HMAX])
+					return -1;
+			}
+			break;
+		case PROFILE_TYPE_FLOAT_1:
+		case PROFILE_TYPE_FLOAT_2:
+		case PROFILE_TYPE_FLOAT_3:
+		case PROFILE_TYPE_FLOAT_E:
+			if(ParamValueThr)
+			{
+				if ((*(float*)Value) < ((float*)ParamValueThr)[PROFILE_THR_HMIN])
+					return -1;
+				else if ((*(float*)Value) > ((float*)ParamValueThr)[PROFILE_THR_HMAX])
+					return -1;
+			}
+			break;
+		case PROFILE_TYPE_UINT64:
+			if(ParamValueThr)
+			{
+				if ((*(uint64_t*)Value) < ((uint64_t*)ParamValueThr)[PROFILE_THR_HMIN])
+					return -1;
+				else if ((*(uint64_t*)Value) > ((uint64_t*)ParamValueThr)[PROFILE_THR_HMAX])
+					return -1;
+			}
+			break;
+		default:
+			return -1;
+	}
+	return 0;
+}
+
 int32_t PROFILE_CheckValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
 {
 	if (Table == PROFILE_TABLE_4)
 		return PROFILE_CheckThresholdValue(Profile, Table, Idx, Value);
 	if (Table == PROFILE_TABLE_3)
-		return PROFILE_CheckConfigValue(Profile, Table, Idx, Value);
+	{
+		if (PROFILE_CheckConfigValueRange(Profile, Table, Idx, Value))
+			return -1;
+		if (PROFILE_CheckConfigValue(Profile, Table, Idx, Value))
+			return -1;
+	}
 	return 0;
 }
 
