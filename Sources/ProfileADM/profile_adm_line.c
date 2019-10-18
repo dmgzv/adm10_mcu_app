@@ -378,6 +378,21 @@ static int32_t PROFILE_ADM_LINE_CheckLnSFPEnableTxValue(PROFILE_T *Profile, uint
 	return 0;
 }
 
+static int32_t PROFILE_ADM_LINE_CheckLnSetLoopbackValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+{
+	uint32_t SetState;
+	
+	/* Do not alow to enable loopback if set state if OOS or IS */
+	if (*(uint32_t*)Value != 0)
+	{
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetStateIdx[Idx], &SetState))
+			return -1;
+		if ((SetState == PROFILE_STATE_OOS) || (SetState == PROFILE_STATE_IS))
+			return -1;
+	}
+	return 0;
+}
+
 static int32_t PROFILE_ADM_LINE_CheckLnSFPSetFreqValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
 	float __FreqSp;
@@ -425,6 +440,12 @@ int32_t PROFILE_ADM_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uin
 		if (TableIdx == ProfileADMConfigLnSFPEnableTxIdx[i])
 		{
 			if (PROFILE_ADM_LINE_CheckLnSFPEnableTxValue(Profile, Table, TableIdx, Value, i))
+				return -1;
+			return 0;
+		}
+		if (TableIdx == ProfileADMConfigLnSetLoopbackIdx[i])
+		{
+			if (PROFILE_ADM_LINE_CheckLnSetLoopbackValue(Profile, Table, TableIdx, Value, i))
 				return -1;
 			return 0;
 		}
@@ -479,12 +500,20 @@ static int32_t PROFILE_ADM_LINE_SetModeValueDependencies(PROFILE_T *Profile, uin
 
 static int32_t PROFILE_ADM_LINE_SetLnSetStateValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
-	uint32_t EnableTx;	
-	/* Disable tx when state is OOS*/
+	uint32_t EnableTx, Loopback;	
+	/* Disable tx and loopback when state is OOS*/
 	if (*(uint32_t*)Value == PROFILE_STATE_OOS)
 	{
 		EnableTx = 0;
+		Loopback = 0;
 		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPEnableTxIdx[Idx], &EnableTx);
+		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetLoopbackIdx[Idx], &Loopback);
+	}
+	/* Disable loopback when state is IS*/
+	else if (*(uint32_t*)Value == PROFILE_STATE_IS)
+	{
+		Loopback = 0;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetLoopbackIdx[Idx], &Loopback);
 	}
 	return 0;
 }

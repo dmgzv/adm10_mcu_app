@@ -508,6 +508,21 @@ static int32_t PROFILE_ADM_CLIENT_CheckClSFPEnableTxValue(PROFILE_T *Profile, ui
 	return 0;
 }
 
+static int32_t PROFILE_ADM_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+{
+	uint32_t SetState;
+	
+	/* Do not alow to enable loopdack if set state if OOS */
+	if (*(uint32_t*)Value != 0)
+	{
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx], &SetState))
+			return -1;
+		if ((SetState == PROFILE_STATE_OOS) || (SetState == PROFILE_STATE_IS))
+			return -1;
+	}
+	return 0;
+}
+
 static int32_t PROFILE_ADM_CLIENT_CheckClSFPSetFreqValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
 	float __FreqSp;
@@ -552,6 +567,12 @@ int32_t PROFILE_ADM_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, u
 				return -1;
 			return 0;
 		}
+		if (TableIdx == ProfileADMConfigClSetLoopbackIdx[i])
+		{
+			if (PROFILE_ADM_CLIENT_CheckClSetLoopbackValue(Profile, Table, TableIdx, Value, i))
+				return -1;
+			return 0;
+		}
 		if (TableIdx == ProfileADMConfigClSFPSetFreqIdx[i])
 		{
 			if (PROFILE_ADM_CLIENT_CheckClSFPSetFreqValue(Profile, Table, TableIdx, Value, i))
@@ -570,12 +591,20 @@ int32_t PROFILE_ADM_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, u
 
 static int32_t PROFILE_ADM_CLIENT_SetClSetStateValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
-	uint32_t EnableTx;	
-	/* Disable tx when state is OOS*/
+	uint32_t EnableTx, Loopback;	
+	/* Disable tx and loopback when state is OOS*/
 	if (*(uint32_t*)Value == PROFILE_STATE_OOS)
 	{
 		EnableTx = 0;
+		Loopback = 0;
 		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPEnableTxIdx[Idx], &EnableTx);
+		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetLoopbackIdx[Idx], &Loopback);
+	}
+	/* Disable loopback when state is IS*/
+	else if (*(uint32_t*)Value == PROFILE_STATE_IS)
+	{
+		Loopback = 0;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetLoopbackIdx[Idx], &Loopback);
 	}
 	return 0;
 }
