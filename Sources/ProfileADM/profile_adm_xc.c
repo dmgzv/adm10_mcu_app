@@ -730,7 +730,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 	else
 	{
 		/* Cross-connect is autoconfigured in FPGA */
-		for (i = 0; i < 16; i++)
+		for (Client = 0; Client < 16; Client++)
 		{
 			BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
 		}
