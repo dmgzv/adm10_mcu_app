@@ -616,39 +616,80 @@ static int32_t PROFILE_ADM_CLIENT_SetClSFPEnableTxValueDependencies(PROFILE_T *P
 
 static int32_t PROFILE_ADM_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
+	float MinFreq, MaxFreq, FreqSp;
 	uint32_t i;
 	
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 1))
 	{
-		/* Set all info client parametes to factory*/
+		/* Set all info client parametes to factory */
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClDestinationIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPVendorIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPSrNumberIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPPtNumberIdx[Idx]);
+		if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK)
+		{
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPVendorIdx[Idx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPSrNumberIdx[Idx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPPtNumberIdx[Idx]);
+		}
+		else
+		{
+			PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPVendorIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.Vendor);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPSrNumberIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.SerialNumber);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoClSFPPtNumberIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.PartNumber);
+		}
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 2))
 	{
 		/* Set all config client parametes to factory*/
+		FreqSp = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Spacing / 1000.0f;
+		
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetStateIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPEnableTxIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqSpIdx[Idx]);
+		if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK)
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqSpIdx[Idx]);
+		else
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqSpIdx[Idx], &FreqSp);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetDataTypeIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSetLoopbackIdx[Idx]);
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 3))
 	{
-		/* Set all threshoulds client parametes to factory*/
-		for (i = 0; i < 4; i++)
+		/* Set all threshoulds client parametes to factory */
+		if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK)
 		{
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPRxPwrIdx[Idx][i]);
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTxPwrIdx[Idx][i]);
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTempIdx[Idx][i]);
+			for (i = 0; i < 4; i++)
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPRxPwrIdx[Idx][i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTxPwrIdx[Idx][i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTempIdx[Idx][i]);
+			}
+			
+			for (i = 0; i < 2; i++)
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPSetFreqIdx[Idx][i]);
+			}
 		}
-		
-		for (i = 0; i < 2; i++)
+		else
 		{
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPSetFreqIdx[Idx][i]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPRxPwrIdx[Idx][0], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.RxPwr[SFP_THR_CMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPRxPwrIdx[Idx][1], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.RxPwr[SFP_THR_WMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPRxPwrIdx[Idx][2], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.RxPwr[SFP_THR_WMAX]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPRxPwrIdx[Idx][3], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.RxPwr[SFP_THR_CMAX]);
+			
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTxPwrIdx[Idx][0], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.TxPwr[SFP_THR_CMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTxPwrIdx[Idx][1], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.TxPwr[SFP_THR_WMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTxPwrIdx[Idx][2], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.TxPwr[SFP_THR_WMAX]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTxPwrIdx[Idx][3], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.TxPwr[SFP_THR_CMAX]);
+			
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTempIdx[Idx][0], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_CMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTempIdx[Idx][1], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_WMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTempIdx[Idx][2], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_WMAX]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPTempIdx[Idx][3], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_CMAX]);
+			
+			MinFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Min / 1000000.0f;
+			MaxFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Max / 1000000.0f;
+			
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPSetFreqIdx[Idx][0], &MinFreq);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticClSFPSetFreqIdx[Idx][1], &MaxFreq);
 		}
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 4))

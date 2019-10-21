@@ -538,23 +538,41 @@ static int32_t PROFILE_ADM_LINE_SetLnOPU2SetPayloadDependencies(PROFILE_T *Profi
 
 static int32_t PROFILE_ADM_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
+	float MinFreq, MaxFreq, FreqSp;
 	uint32_t i;
 	
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 1))
 	{
 		/* Set all info client parametes to factory*/
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnDestinationIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPVendorIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPSrNumberIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPPtNumberIdx[Idx]);
+		if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK)
+		{
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPVendorIdx[Idx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPSrNumberIdx[Idx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPPtNumberIdx[Idx]);
+		}
+		else
+		{
+			PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPVendorIdx[Idx], sfp[BSP_SFP_LINE_IDX(Idx)].Info.Vendor);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPSrNumberIdx[Idx], sfp[BSP_SFP_LINE_IDX(Idx)].Info.SerialNumber);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADMInfoLnSFPPtNumberIdx[Idx], sfp[BSP_SFP_LINE_IDX(Idx)].Info.PartNumber);
+		}
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 2))
 	{
 		/* Set all config client parametes to factory*/
+		
+		FreqSp = sfp[BSP_SFP_LINE_IDX(Idx)].Freq.Spacing / 1000.0f;
+		
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetStateIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPEnableTxIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqSpIdx[Idx]);
+		
+		if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK)
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqSpIdx[Idx]);
+		else
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqSpIdx[Idx], &FreqSp);
+		
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSetDataTypeIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnOTU2SetFECTypeIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnOPU2SetPayloadIdx[Idx]);
@@ -566,17 +584,42 @@ static int32_t PROFILE_ADM_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Prof
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 3))
 	{
-		/* Set all threshoulds client parametes to factory*/
-		for (i = 0; i < 4; i++)
+		if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK)
 		{
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPRxPwrIdx[Idx][i]);
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTxPwrIdx[Idx][i]);
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTempIdx[Idx][i]);
+			/* Set all threshoulds client parametes to factory*/
+			for (i = 0; i < 4; i++)
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPRxPwrIdx[Idx][i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTxPwrIdx[Idx][i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTempIdx[Idx][i]);
+			}			
+			for (i = 0; i < 2; i++)
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPSetFreqIdx[Idx][i]);
+			}
 		}
-		
-		for (i = 0; i < 2; i++)
+		else
 		{
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPSetFreqIdx[Idx][i]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPRxPwrIdx[Idx][0], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.RxPwr[SFP_THR_CMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPRxPwrIdx[Idx][1], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.RxPwr[SFP_THR_WMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPRxPwrIdx[Idx][2], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.RxPwr[SFP_THR_WMAX]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPRxPwrIdx[Idx][3], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.RxPwr[SFP_THR_CMAX]);
+			
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTxPwrIdx[Idx][0], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.TxPwr[SFP_THR_CMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTxPwrIdx[Idx][1], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.TxPwr[SFP_THR_WMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTxPwrIdx[Idx][2], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.TxPwr[SFP_THR_WMAX]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTxPwrIdx[Idx][3], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.TxPwr[SFP_THR_CMAX]);
+			
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTempIdx[Idx][0], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.Temp[SFP_THR_CMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTempIdx[Idx][1], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.Temp[SFP_THR_WMIN]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTempIdx[Idx][2], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.Temp[SFP_THR_WMAX]);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPTempIdx[Idx][3], &sfp[BSP_SFP_LINE_IDX(Idx)].Thr.Temp[SFP_THR_CMAX]);
+			
+			MinFreq = sfp[BSP_SFP_LINE_IDX(Idx)].Freq.Min / 1000000.0f;
+			MaxFreq = sfp[BSP_SFP_LINE_IDX(Idx)].Freq.Max / 1000000.0f;
+			
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPSetFreqIdx[Idx][0], &MinFreq);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADMStaticLnSFPSetFreqIdx[Idx][1], &MaxFreq);
 		}
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 4))
@@ -685,11 +728,11 @@ void PROFILE_ADM_LINE_UpdateConfigs(PROFILE_T *Profile)
 		
 		if (FECType == 1)
 		{
-			BSP_FPGA_LINE_FEC_SET(i, BSP_FPGA_LINE_FEC_DISABLED);
+			BSP_FPGA_LINE_IFACE_CTRL_SET(i, BSP_FPGA_LINE_IFACE_CTRL_FEC_DISABLED_MASK | BSP_FPGA_LINE_IFACE_CTRL_CNTR_EN_MASK);
 		}
 		else
 		{
-			BSP_FPGA_LINE_FEC_SET(i, BSP_FPGA_LINE_FEC_RSFEC);
+			BSP_FPGA_LINE_IFACE_CTRL_SET(i, BSP_FPGA_LINE_IFACE_CTRL_CNTR_EN_MASK);
 		}
 	}
 }

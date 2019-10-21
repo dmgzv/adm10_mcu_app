@@ -488,9 +488,9 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			}
 		}
 		
-		if ((Dev->Iface[i].Ctrl & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_FEC_DISABLED_MASK) != (Dev->Iface[i].__Ctrl & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_FEC_DISABLED_MASK))
+		if ( Dev->Iface[i].Ctrl != Dev->Iface[i].__Ctrl )
 		{
-			*((uint8_t*)(BSP_FPGA_LINE_IFACE_ADDR(i)+ 0x0C)) = Dev->Iface[i].Ctrl;
+			*((uint8_t*)(BSP_FPGA_LINE_IFACE_CTRL_ADDR(i))) = Dev->Iface[i].Ctrl;
 		}
 		
 		if ((Dev->Iface[i].PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_LOOPBACK_MASK) != (Dev->Iface[i].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_LOOPBACK_MASK))

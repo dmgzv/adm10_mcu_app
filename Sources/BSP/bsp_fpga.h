@@ -67,6 +67,7 @@ do { \
 #define BSP_FPGA_LINE_IFACE_CTRL_CNTR_RST_MASK			(1 << 1)
 #define BSP_FPGA_LINE_IFACE_CTRL_FEC_DISABLED_MASK	(1 << 7)
 #define BSP_FPGA_LINE_IFACE_CTRL_ADDR(IfaceIdx)   	(BSP_FPGA_LINE_IFACE_ADDR(IfaceIdx) + 0x0C)
+#define BSP_FPGA_LINE_IFACE_CTRL_SET(IfaceIdx, __Ctrl)   		(fpga_line.Iface[(IfaceIdx)].Ctrl = (__Ctrl))
 
 #define BSP_FPGA_LINE_IFACE_PMASTATUS_TX_PLL_LOCK_MASK 				(1 << 0)
 #define BSP_FPGA_LINE_IFACE_PMASTATUS_RX_PLL_LOCK_MASK 				(1 << 1)
