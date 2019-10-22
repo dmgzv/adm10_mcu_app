@@ -361,7 +361,7 @@ int32_t UCD90120A_ReadFaultLogSize(UCD90120A_T *Dev, uint32_t *Size)
 	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT_DETAIL_INDEX, Data))
 		goto error;
 	
-	*Size = Data[0];
+	*Size = Data[1];
 	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;

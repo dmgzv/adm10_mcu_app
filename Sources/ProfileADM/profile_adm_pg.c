@@ -405,6 +405,8 @@ void PROFILE_ADM_PG_UpdateConfigs(PROFILE_T *Profile)
 				{
 					BSP_FPGA_LINE_AGG_MODE_SET(i, BSP_FPGA_LINE_AGG_MODE_MANUAL_LINE_1);
 				}
+				BSP_FPGA_LINE_AGG_WTR_SET(i, PGWTRTmr[i] / 100);
+				BSP_FPGA_LINE_AGG_HO_SET(i, PGHOTmr[i] / 100);
 				break;
 		}
 	}

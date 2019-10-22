@@ -1185,11 +1185,17 @@ invalid_dev:
 "    ucd <cmd> [<data1> <data2> ...]\r"\
 "Commands:\r"\
 "    help - Display this help.\r"\
-"    mntr - Display device monitor values.\r"
+"    init - Init device.\r"\
+"    mntr - Display device monitor values.\r"\
+"    log  - Display device log.\r"\
+"    mntr - Clear device log.\r"
 
 static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	uint32_t i;
+	uint32_t LogSize;
+	UCD90120A_FAULT_LOG_RECORD_T LogRecord;
+	uint8_t Log[14];
 	
 	if (CmdParamsCnt == 1)
 	{
@@ -1202,16 +1208,90 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		{
 			SHELL_Transmit(Shell, SHELL_CMD_UCD_HELP);
 		}
+		else if (!strcmp(CmdParamsList[1], "init"))
+		{
+			if (UCD90120A_Init(&ucd90120a, BSP_PWR_SEQ_UCD90120A_I2C, BSP_PWR_SEQ_UCD90120A_I2C_ADDR, (BSP_PIN_CTRL_T*) &ucd90120a_pin_ctrl, BSP_UCD90120A_CFG_Table, BSP_UCD90120A_CFG_TableSize))
+				goto cmd_err;
+		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
 		{
 			if (UCD90120A_Update(&ucd90120a))
 				goto cmd_err;
 			SHELL_Transmit(Shell, "Device temp: %2.2f\r", ucd90120a.Mon.Temp);
-			SHELL_Transmit(Shell,   "Rail   Vout    Iout    Temp\r");
+			SHELL_Transmit(Shell,   "Rail   Vout    Iout    Temp    Status\r");
 			for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 			{
-				SHELL_Transmit(Shell,   " %2d    %2.2f    %2.2f    %2.2f\r", i + 1, ucd90120a.Mon.Rail[i].Vout, ucd90120a.Mon.Rail[i].Iout, ucd90120a.Mon.Rail[i].Temp);
+				SHELL_Transmit(Shell,   " %2d    %2.2f    %2.2f    %2.2f    %02x\r", i + 1, ucd90120a.Mon.Rail[i].Vout, ucd90120a.Mon.Rail[i].Iout, ucd90120a.Mon.Rail[i].Temp, ucd90120a.Mon.Rail[i].StatusVout);
 			}
+		}
+		else if (!strcmp(CmdParamsList[1], "log"))
+		{
+			if (UCD90120A_ReadFaultLog(&ucd90120a, Log))
+				goto cmd_err;
+			SHELL_Transmit(Shell, "Non-Paged faults: 0x%x\r", Log[0]);
+			SHELL_Transmit(Shell, "GPI faults: 0x%x\r", Log[1]);
+			for (i = 0; i < UCD90120A_RAILS_CNT; i++)
+			{
+				SHELL_Transmit(Shell, "Rail %d faults: 0x%x\r", i + 1, Log[i+2]);
+			}
+			if (UCD90120A_ReadFaultLogSize(&ucd90120a, &LogSize))
+				goto cmd_err;
+			SHELL_Transmit(Shell, "Log records: %d\r", LogSize);
+			for (i = 0; i < LogSize; i++)
+			{
+				if (UCD90120A_ReadFaultLogRecord(&ucd90120a, i, &LogRecord))
+					goto cmd_err;
+				switch (LogRecord.Type)
+				{
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_SWD:
+						SHELL_Transmit(Shell,   "%d-%d: System Watchdog Timeout\r", LogRecord.Day, LogRecord.Time);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_SEQ:
+						SHELL_Transmit(Shell,   "%d-%d: Resequense Error\r", LogRecord.Day, LogRecord.Time);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_WD:
+						SHELL_Transmit(Shell,   "%d-%d: Watchdog Timeout\r", LogRecord.Day, LogRecord.Time);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_FAN:
+						SHELL_Transmit(Shell,   "%d-%d: Fan Fault\r", LogRecord.Day, LogRecord.Time);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_GPI:
+						SHELL_Transmit(Shell,   "%d-%d: GPI Fault\r", LogRecord.Day, LogRecord.Time);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_VOUT_OV:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d VOUT_OV %.1fV\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_VOUT_UV:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d VOUT_UV %.1fV\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_TON_MAX:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d TON_MAX %.1fV\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_IOUT_OC:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d IOUT_OC %.1fA\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_IOUT_UC:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d IOUT_UC %.1fA\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_TEMP_OT:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d TEMPERATURE_OT %.1fA\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_SEQ_ON:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d Sequence On Timeout 0x%x\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.u);
+						break;
+					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_SEQ_OFF:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d Sequence Off Timeout 0x%x\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.u);
+						break;
+					default:
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d Reserved(0x%x) 0x%x\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Type, LogRecord.Value.u);
+						break;
+				}
+			}
+		}
+		else if (!strcmp(CmdParamsList[1], "clr"))
+		{
+			if (UCD90120A_ClearFaultLog(&ucd90120a))
+				goto cmd_err;
 		}
 		else
 		{

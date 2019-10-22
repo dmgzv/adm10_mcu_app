@@ -122,7 +122,8 @@ static void PROFILE_ADM_UpdatePowerAlarmsValue(PROFILE_T *Profile)
 	{
 		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 		{
-			if (!UCD90120A_RAIL_POWER_GOOD(&ucd90120a, i))
+			//if (!UCD90120A_RAIL_POWER_GOOD(&ucd90120a, i))
+			if (!(ucd90120a.__PowerGood & (1 << (i))))
 			{
 				Value |= (1 << (3 + i));
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
@@ -141,12 +142,44 @@ static void PROFILE_ADM_UpdateHwAlarmsValue(PROFILE_T *Profile)
 	Value = 0;
 	ColorType = PROFILE_COLOR_TYPE_NORMAL;
 	
-	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&at45db641e) != BSP_DEV_STATE_OK)
 		Value |= 1 << 0;
 	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 		Value |= 1 << 1;
-	if (BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		Value |= 1 << 2;
+	if (BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK)
+		Value |= 1 << 3;
+	//if (BSP_DEV_GET_STATE(&gdt080a[0]) != BSP_DEV_STATE_OK)
+	//	Value |= 1 << 4;
+	//if (BSP_DEV_GET_STATE(&gdt080a[1]) != BSP_DEV_STATE_OK)
+	//	Value |= 1 << 5;
+	if (BSP_DEV_GET_STATE(&si5332[0]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 6;
+	if (BSP_DEV_GET_STATE(&si5332[1]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 7;
+	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+		Value |= 1 << 8;
+	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
+		Value |= 1 << 9;
+	if (BSP_DEV_GET_STATE(&fpga_client[0]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 10;
+	if (BSP_DEV_GET_STATE(&fpga_client[1]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 11;
+	if (BSP_DEV_GET_STATE(&pca9548a[0]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 12;
+	if (BSP_DEV_GET_STATE(&pca9548a[1]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 13;
+	if (BSP_DEV_GET_STATE(&pca9548a[2]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 14;
+	if (BSP_DEV_GET_STATE(&pcal6524[0]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 15;
+	if (BSP_DEV_GET_STATE(&pcal6524[1]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 16;
+	if (BSP_DEV_GET_STATE(&pcal6524[2]) != BSP_DEV_STATE_OK)
+		Value |= 1 << 17;
+	if (BSP_DEV_GET_STATE(&ksz8895) != BSP_DEV_STATE_OK)
+		Value |= 1 << 18;
 	
 	if (Value)
 		ColorType = PROFILE_COLOR_TYPE_FAILURE;

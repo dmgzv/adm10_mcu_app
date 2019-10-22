@@ -13,4 +13,11 @@ int32_t PROFILE_ADM_XC_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Ta
 void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile);
 void PROFILE_ADM_XC_UpdateValues(PROFILE_T *Profile);
 
+extern uint32_t ProfileADMConfigODU1XCSetSrcIdx[PROFILE_ADM_ODU1_XC_CNT];
+extern uint32_t ProfileADMConfigODU1XCSetDstIdx[PROFILE_ADM_ODU1_XC_CNT];
+extern uint32_t ProfileADMConfigODU1XCSetFactoryIdx[PROFILE_ADM_ODU0_XC_CNT];
+extern uint32_t ProfileADMConfigODU0XCSetSrcIdx[PROFILE_ADM_ODU0_XC_CNT];
+extern uint32_t ProfileADMConfigODU0XCSetDstIdx[PROFILE_ADM_ODU0_XC_CNT];
+extern uint32_t ProfileADMConfigODU0XCSetFactoryIdx[PROFILE_ADM_ODU0_XC_CNT];
+
 #endif /* __PROFILE_ADM_XC_H */

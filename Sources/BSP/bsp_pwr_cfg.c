@@ -27,9 +27,9 @@ const uint8_t Values24[] = {0x00};
 const uint8_t Values25[] = {0x20, 0x21, 0x22, 0x00, 0x23, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values26[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values27[] = {0x00};
-const uint8_t Values28[] = {0x93, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x0E};
+const uint8_t Values28[] = {0x93, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0E};
 const uint8_t Values29[] = {0x01};
-const uint8_t Values30[] = {0x9B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00};
+const uint8_t Values30[] = {0x9B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values31[] = {0x02};
 const uint8_t Values32[] = {0xA3, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values33[] = {0x03};
@@ -188,7 +188,7 @@ const uint8_t Values185[] = {0x00, 0x88};
 const uint8_t Values186[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values187[] = {0x00, 0x00, 0x00, 0x00};
 const uint8_t Values188[] = {0x00};
-const uint8_t Values189[] = {0x00};
+const uint8_t Values189[] = {0x14};
 const uint8_t Values190[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values191[] = {0x80, 0xD2};
 const uint8_t Values192[] = {0x00, 0x80};
@@ -215,7 +215,7 @@ const uint8_t Values212[] = {0x00, 0xBA};
 const uint8_t Values213[] = {0xF6, 0x30};
 const uint8_t Values214[] = {0xD7, 0x33};
 const uint8_t Values215[] = {0x01};
-const uint8_t Values216[] = {0x00};
+const uint8_t Values216[] = {0x14};
 const uint8_t Values217[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values218[] = {0x72, 0xB2};
 const uint8_t Values219[] = {0x00, 0x80};
@@ -242,7 +242,7 @@ const uint8_t Values239[] = {0x00, 0xBA};
 const uint8_t Values240[] = {0xAE, 0x33};
 const uint8_t Values241[] = {0xB8, 0x36};
 const uint8_t Values242[] = {0x02};
-const uint8_t Values243[] = {0x00};
+const uint8_t Values243[] = {0x14};
 const uint8_t Values244[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values245[] = {0x80, 0xD2};
 const uint8_t Values246[] = {0x00, 0x80};
@@ -269,7 +269,7 @@ const uint8_t Values266[] = {0x00, 0xB2};
 const uint8_t Values267[] = {0xF6, 0x30};
 const uint8_t Values268[] = {0xD7, 0x33};
 const uint8_t Values269[] = {0x03};
-const uint8_t Values270[] = {0x00};
+const uint8_t Values270[] = {0x14};
 const uint8_t Values271[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values272[] = {0x80, 0xD2};
 const uint8_t Values273[] = {0x00, 0x80};
@@ -327,8 +327,8 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 	// Format=Tab; Hex=CoderUpper; BreakOutBytes=True; PEC=False; IncludeBlockLength=False [DO NOT REMOVE THIS LINE IF YOU WANT TO IMPORT USING A FUSION TOOL]
 	// SMBus Fields are Request,Address,Command,Data
 	// For reads, the last field is what is expected back from the device
-	// Creator: Texas Instruments Fusion Digital Power Designer v7.0.25
-	// Date: 9 ?????? 2019 ?.
+	// Creator: Texas Instruments Fusion Digital Power Designer v7.0.18
+	// Date: 21 ??????? 2019 ?.
 	// Exported from UCD90120A - Firmware: 2.3.4.0
 	// Write VOUT_MODE [Rail #1] EXP -14
 	{
@@ -500,7 +500,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values26,
 		sizeof(Values26) / sizeof(Values26[0]),
 	},
-	// Write SEQ_CONFIG [MFR 38,Rail #1] Rail On Dep: Rail #5 | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: Rail #2,3,4 | Enable: Pin 11 GPIO1 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
+	// Write SEQ_CONFIG [MFR 38,Rail #1] Rail On Dep: <None> | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: Rail #2,3,4 | Enable: Pin 11 GPIO1 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -513,7 +513,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values28,
 		sizeof(Values28) / sizeof(Values28[0]),
 	},
-	// Write SEQ_CONFIG [MFR 38,Rail #2] Rail On Dep: Rail #5 | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: <None> | Enable: Pin 12 GPIO2 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
+	// Write SEQ_CONFIG [MFR 38,Rail #2] Rail On Dep: <None> | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: <None> | Enable: Pin 12 GPIO2 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -1553,7 +1553,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values187,
 		sizeof(Values187) / sizeof(Values187[0]),
 	},
-	// Write ON_OFF_CONFIG [Rail #1] Mode: Always Converting
+	// Write ON_OFF_CONFIG [Rail #1] Mode: CONTROL Pin Only; Control: Active Low, Use TOFF_DELAY/TOFF_FALL
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -1741,7 +1741,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values214,
 		sizeof(Values214) / sizeof(Values214[0]),
 	},
-	// Write ON_OFF_CONFIG [Rail #2] Mode: Always Converting
+	// Write ON_OFF_CONFIG [Rail #2] Mode: CONTROL Pin Only; Control: Active Low, Use TOFF_DELAY/TOFF_FALL
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -1929,7 +1929,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values241,
 		sizeof(Values241) / sizeof(Values241[0]),
 	},
-	// Write ON_OFF_CONFIG [Rail #3] Mode: Always Converting
+	// Write ON_OFF_CONFIG [Rail #3] Mode: CONTROL Pin Only; Control: Active Low, Use TOFF_DELAY/TOFF_FALL
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -2117,7 +2117,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values268,
 		sizeof(Values268) / sizeof(Values268[0]),
 	},
-	// Write ON_OFF_CONFIG [Rail #4] Mode: Always Converting
+	// Write ON_OFF_CONFIG [Rail #4] Mode: CONTROL Pin Only; Control: Active Low, Use TOFF_DELAY/TOFF_FALL
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
