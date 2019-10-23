@@ -340,6 +340,6 @@ void PCAL6524_Deinit(PCAL6524_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add("PCAL6524 Deinit: Fail");
+	LOG_Add("PCAL6524 Deinit");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
