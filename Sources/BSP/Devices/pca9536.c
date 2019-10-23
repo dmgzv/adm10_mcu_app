@@ -289,7 +289,7 @@ int32_t PCA9536_Init(PCA9536_T *Dev, I2C_TypeDef *I2C)
 	Dev->Dirs = Dirs;
 	Dev->Pols = Pols;
 	
-	LOG_Add("PCA9536 Deinit: Fail");
+	LOG_Add("PCA9536 Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
