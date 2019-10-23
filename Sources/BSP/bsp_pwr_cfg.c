@@ -27,15 +27,15 @@ const uint8_t Values24[] = {0x00};
 const uint8_t Values25[] = {0x20, 0x21, 0x22, 0x00, 0x23, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values26[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values27[] = {0x00};
-const uint8_t Values28[] = {0x93, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0E};
+const uint8_t Values28[] = {0x93, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x0E};
 const uint8_t Values29[] = {0x01};
-const uint8_t Values30[] = {0x9B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+const uint8_t Values30[] = {0x9B, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values31[] = {0x02};
 const uint8_t Values32[] = {0xA3, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values33[] = {0x03};
 const uint8_t Values34[] = {0xAB, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values35[] = {0x04};
-const uint8_t Values36[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F};
+const uint8_t Values36[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values37[] = {0x05};
 const uint8_t Values38[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values39[] = {0x06};
@@ -175,20 +175,20 @@ const uint8_t Values172[] = {0x08};
 const uint8_t Values173[] = {0x19};
 const uint8_t Values174[] = {0x08};
 const uint8_t Values175[] = {0x00, 0x00, 0xE7, 0xE7, 0xE7, 0xE7, 0xE3, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-const uint8_t Values176[] = {0x59, 0x59, 0x4D, 0x4D, 0x44, 0x44};
-const uint8_t Values177[] = {0x4D, 0x46, 0x52, 0x5F, 0x49, 0x44};
-const uint8_t Values178[] = {0x4D, 0x46, 0x52, 0x5F, 0x4C, 0x4F, 0x43, 0x41, 0x54, 0x49, 0x4F, 0x4E};
-const uint8_t Values179[] = {0x4D, 0x46, 0x52, 0x5F, 0x4D, 0x4F, 0x44, 0x45, 0x4C};
-const uint8_t Values180[] = {0x4D, 0x46, 0x52, 0x5F, 0x52, 0x45, 0x56, 0x49, 0x53, 0x49, 0x4F, 0x4E};
-const uint8_t Values181[] = {0x30, 0x30, 0x30, 0x30, 0x30, 0x30};
-const uint8_t Values182[] = {0x00, 0x00};
+const uint8_t Values176[] = {0x31, 0x39, 0x31, 0x30, 0x32, 0x33};
+const uint8_t Values177[] = {0x49, 0x50, 0x47};
+const uint8_t Values178[] = {0x46, 0x72, 0x79, 0x61, 0x7A, 0x69, 0x6E, 0x6F};
+const uint8_t Values179[] = {0x41, 0x44, 0x4D, 0x2D, 0x31, 0x30};
+const uint8_t Values180[] = {0x34};
+const uint8_t Values181[] = {0x30, 0x30, 0x30, 0x30, 0x30, 0x31};
+const uint8_t Values182[] = {0x80, 0x00};
 const uint8_t Values183[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values184[] = {0x00, 0x00};
 const uint8_t Values185[] = {0x00, 0x88};
 const uint8_t Values186[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values187[] = {0x00, 0x00, 0x00, 0x00};
 const uint8_t Values188[] = {0x00};
-const uint8_t Values189[] = {0x14};
+const uint8_t Values189[] = {0x00};
 const uint8_t Values190[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values191[] = {0x80, 0xD2};
 const uint8_t Values192[] = {0x00, 0x80};
@@ -215,7 +215,7 @@ const uint8_t Values212[] = {0x00, 0xBA};
 const uint8_t Values213[] = {0xF6, 0x30};
 const uint8_t Values214[] = {0xD7, 0x33};
 const uint8_t Values215[] = {0x01};
-const uint8_t Values216[] = {0x14};
+const uint8_t Values216[] = {0x00};
 const uint8_t Values217[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values218[] = {0x72, 0xB2};
 const uint8_t Values219[] = {0x00, 0x80};
@@ -242,7 +242,7 @@ const uint8_t Values239[] = {0x00, 0xBA};
 const uint8_t Values240[] = {0xAE, 0x33};
 const uint8_t Values241[] = {0xB8, 0x36};
 const uint8_t Values242[] = {0x02};
-const uint8_t Values243[] = {0x14};
+const uint8_t Values243[] = {0x00};
 const uint8_t Values244[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values245[] = {0x80, 0xD2};
 const uint8_t Values246[] = {0x00, 0x80};
@@ -269,7 +269,7 @@ const uint8_t Values266[] = {0x00, 0xB2};
 const uint8_t Values267[] = {0xF6, 0x30};
 const uint8_t Values268[] = {0xD7, 0x33};
 const uint8_t Values269[] = {0x03};
-const uint8_t Values270[] = {0x14};
+const uint8_t Values270[] = {0x00};
 const uint8_t Values271[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 const uint8_t Values272[] = {0x80, 0xD2};
 const uint8_t Values273[] = {0x00, 0x80};
@@ -328,7 +328,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 	// SMBus Fields are Request,Address,Command,Data
 	// For reads, the last field is what is expected back from the device
 	// Creator: Texas Instruments Fusion Digital Power Designer v7.0.18
-	// Date: 21 ??????? 2019 ?.
+	// Date: 23 ??????? 2019 ?.
 	// Exported from UCD90120A - Firmware: 2.3.4.0
 	// Write VOUT_MODE [Rail #1] EXP -14
 	{
@@ -500,7 +500,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values26,
 		sizeof(Values26) / sizeof(Values26[0]),
 	},
-	// Write SEQ_CONFIG [MFR 38,Rail #1] Rail On Dep: <None> | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: Rail #2,3,4 | Enable: Pin 11 GPIO1 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
+	// Write SEQ_CONFIG [MFR 38,Rail #1] Rail On Dep: Rail #5 | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: Rail #2,3,4 | Enable: Pin 11 GPIO1 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -513,7 +513,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values28,
 		sizeof(Values28) / sizeof(Values28[0]),
 	},
-	// Write SEQ_CONFIG [MFR 38,Rail #2] Rail On Dep: <None> | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: <None> | Enable: Pin 12 GPIO2 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
+	// Write SEQ_CONFIG [MFR 38,Rail #2] Rail On Dep: Rail #5 | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: <None> | Enable: Pin 12 GPIO2 ActiveLow OpenDrainOutput; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -552,7 +552,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values34,
 		sizeof(Values34) / sizeof(Values34[0]),
 	},
-	// Write SEQ_CONFIG [MFR 38,Rail #5] Rail On Dep: <None> | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: Rail #1,2,3,4 | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
+	// Write SEQ_CONFIG [MFR 38,Rail #5] Rail On Dep: <None> | GPI On Dep: <None> | Rail Off Dep: <None> | GPI Off Dep: <None> | Fault Dep: <None> | Enable: Unassigned; Seq On Timeout: 0 / Wait Indefinitely; Seq Off Timeout: 0 / Wait Indefinitely
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -1469,49 +1469,49 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values175,
 		sizeof(Values175) / sizeof(Values175[0]),
 	},
-	// Write MFR_DATE YYMMDD
+	// Write MFR_DATE 191023
 	{
 		PMBUS_CMD_TYPE_WRITE_BLOCK,
 		0x9D,
 		(uint8_t*)Values176,
 		sizeof(Values176) / sizeof(Values176[0]),
 	},
-	// Write MFR_ID MFR_ID
+	// Write MFR_ID IPG
 	{
 		PMBUS_CMD_TYPE_WRITE_BLOCK,
 		0x99,
 		(uint8_t*)Values177,
 		sizeof(Values177) / sizeof(Values177[0]),
 	},
-	// Write MFR_LOCATION MFR_LOCATION
+	// Write MFR_LOCATION Fryazino
 	{
 		PMBUS_CMD_TYPE_WRITE_BLOCK,
 		0x9C,
 		(uint8_t*)Values178,
 		sizeof(Values178) / sizeof(Values178[0]),
 	},
-	// Write MFR_MODEL MFR_MODEL
+	// Write MFR_MODEL ADM-10
 	{
 		PMBUS_CMD_TYPE_WRITE_BLOCK,
 		0x9A,
 		(uint8_t*)Values179,
 		sizeof(Values179) / sizeof(Values179[0]),
 	},
-	// Write MFR_REVISION MFR_REVISION
+	// Write MFR_REVISION 4
 	{
 		PMBUS_CMD_TYPE_WRITE_BLOCK,
 		0x9B,
 		(uint8_t*)Values180,
 		sizeof(Values180) / sizeof(Values180[0]),
 	},
-	// Write MFR_SERIAL 000000
+	// Write MFR_SERIAL 000001
 	{
 		PMBUS_CMD_TYPE_WRITE_BLOCK,
 		0x9E,
 		(uint8_t*)Values181,
 		sizeof(Values181) / sizeof(Values181[0]),
 	},
-	// Write MISC_CONFIG [MFR 44] Time Between Resequences: 0 msec; Resequence Abort: no; Max Resequences: 1; FIFO Mode: Disabled; Brownout Enable: no
+	// Write MISC_CONFIG [MFR 44] Time Between Resequences: 0 msec; Resequence Abort: no; Unlimited Resequence Number; FIFO Mode: Disabled; Brownout Enable: no
 	{
 		PMBUS_CMD_TYPE_WRITE_BLOCK,
 		0xFC,
@@ -1553,7 +1553,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values187,
 		sizeof(Values187) / sizeof(Values187[0]),
 	},
-	// Write ON_OFF_CONFIG [Rail #1] Mode: CONTROL Pin Only; Control: Active Low, Use TOFF_DELAY/TOFF_FALL
+	// Write ON_OFF_CONFIG [Rail #1] Mode: Always Converting
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -1741,7 +1741,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values214,
 		sizeof(Values214) / sizeof(Values214[0]),
 	},
-	// Write ON_OFF_CONFIG [Rail #2] Mode: CONTROL Pin Only; Control: Active Low, Use TOFF_DELAY/TOFF_FALL
+	// Write ON_OFF_CONFIG [Rail #2] Mode: Always Converting
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -1929,7 +1929,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values241,
 		sizeof(Values241) / sizeof(Values241[0]),
 	},
-	// Write ON_OFF_CONFIG [Rail #3] Mode: CONTROL Pin Only; Control: Active Low, Use TOFF_DELAY/TOFF_FALL
+	// Write ON_OFF_CONFIG [Rail #3] Mode: Always Converting
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,
@@ -2117,7 +2117,7 @@ const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {
 		(uint8_t*)Values268,
 		sizeof(Values268) / sizeof(Values268[0]),
 	},
-	// Write ON_OFF_CONFIG [Rail #4] Mode: CONTROL Pin Only; Control: Active Low, Use TOFF_DELAY/TOFF_FALL
+	// Write ON_OFF_CONFIG [Rail #4] Mode: Always Converting
 	{
 		PMBUS_CMD_TYPE_WRITE_BYTE,
 		0x00,

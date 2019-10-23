@@ -9,7 +9,7 @@ end = 0
 Values = ""
 ValueLen = 0
 ValuesCnt = 0
-Configs = "const UCD90120A_CFG_T BSP_UCD90120A_CFG_Table[] = {\n"
+Configs = "const UCD90120A_CFG_CMD_T BSP_UCD90120A_CFG_Table[] = {\n"
 while start < len(data):
     end = start + data[start:].find("\n")
     line = data[start:end+1]
