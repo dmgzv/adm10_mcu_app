@@ -2055,6 +2055,14 @@ static void PROFILE_ADM_LINE_UpdateAlarmLedValue(PROFILE_T *Profile, uint32_t Id
 				Color = ParamColor;
 		}
 		
+		for (i = 0; i < 8; i++)
+		{
+			PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnOPU0AlarmsIdx[Idx][i], &ParamColor);
+			PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADMDynamicLnOPU0AlarmsIdx[Idx][i], &ParamState);
+			if ((ParamState == PROFILE_STATE_IS) && (Color < ParamColor))
+				Color = ParamColor;
+		}
+		
 		if (Color == 7)
 		{
 			BSP_SFP_PIN_SetAlarmLed(BSP_SFP_LINE_IDX(Idx), BSP_SFP_PIN_LED_RED);
