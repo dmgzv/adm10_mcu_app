@@ -3,6 +3,7 @@
 #include "bsp_pwr_pin.h"
 #include "bsp_pwr_seq.h"
 #include "bsp_clk.h"
+#include "log.h"
 #include <string.h>
 
 BSP_FPGA_IFACE_T fpga_iface;
@@ -305,11 +306,13 @@ int32_t BSP_FPGA_MAXV_Init(BSP_FPGA_MAXV_T *Dev)
 	Dev->Status = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x01));
 	Dev->Mode = ((*((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x02))) >> 7) & 0x01;
 	
+	LOG_Add("FPGA MAXV Init: Ok");	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
+	LOG_Add("FPGA MAXV Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -340,7 +343,8 @@ int32_t BSP_FPGA_MAXV_Update(BSP_FPGA_MAXV_T *Dev)
 void BSP_FPGA_MAXV_Deinit(BSP_FPGA_MAXV_T *Dev)
 {
 	if (!Dev)
-		return;	
+		return;
+	LOG_Add("FPGA MAXV Deinit");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
 
@@ -412,11 +416,13 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev, uint32_t Mode)
 		}
 	}
 	
+	LOG_Add("FPGA Line Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 
 error:
+	LOG_Add("FPGA Line Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -722,7 +728,8 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 void BSP_FPGA_LINE_Deinit(BSP_FPGA_LINE_T *Dev)
 {
 	if (!Dev)
-		return;	
+		return;
+	LOG_Add("FPGA Line Deinit");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
 
@@ -757,11 +764,13 @@ int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx, uint32_t Mode
 		Dev->Iface[i].Ctrl = *((uint8_t*)(BSP_FPGA_CLIENT_IFACE_CTRL_ADDR(Dev->Idx, i)));
 	}
 	
+	LOG_Add("FPGA Client %d Init: Ok", Idx);
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 
 error:
+	LOG_Add("FPGA Client %d Init: Fail", Idx);
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -984,7 +993,8 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 void BSP_FPGA_CLIENT_Deinit(BSP_FPGA_CLIENT_T *Dev)
 {
 	if (!Dev)
-		return;	
+		return;
+	LOG_Add("FPGA Client %d Deinit", Dev->Idx);
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
 
@@ -992,7 +1002,7 @@ static int32_t BSP_FPGA_CheckConditions(void)
 {
 	uint32_t i;
 	
-	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
 		return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;

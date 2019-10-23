@@ -659,6 +659,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Common\eth.c</FilePath>
             </File>
+            <File>
+              <FileName>log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Common\log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1740,6 +1745,11 @@
               <FileName>eth.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Common\eth.c</FilePath>
+            </File>
+            <File>
+              <FileName>log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Common\log.c</FilePath>
             </File>
           </Files>
         </Group>
