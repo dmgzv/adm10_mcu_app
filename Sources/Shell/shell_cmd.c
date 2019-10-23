@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "bsp.h"
 #include "tftp_client.h"
+#include "log.h"
 
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
