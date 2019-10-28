@@ -674,6 +674,19 @@ static int32_t PROFILE_ADM_CLIENT_CheckClSFPSetFreqValue(PROFILE_T *Profile, uin
 	return 0;
 }
 
+static int32_t PROFILE_ADM_CLIENT_CheckClSFPSetFreqSpValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+{
+	float FreqSp;
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigClSFPSetFreqSpIdx[Idx], &FreqSp))
+		return -1;
+	
+	if (FreqSp != (*(float*)Value))
+		return -1;
+	
+	return 0;
+}
+
 static int32_t PROFILE_ADM_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {	
 	if ((*(uint32_t*)Value == 130) && (Idx % 2))
@@ -710,6 +723,12 @@ int32_t PROFILE_ADM_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, u
 		if (TableIdx == ProfileADMConfigClSFPSetFreqIdx[i])
 		{
 			if (PROFILE_ADM_CLIENT_CheckClSFPSetFreqValue(Profile, Table, TableIdx, Value, i))
+				return -1;
+			return 0;
+		}
+		if (TableIdx == ProfileADMConfigClSFPSetFreqSpIdx[i])
+		{
+			if (PROFILE_ADM_CLIENT_CheckClSFPSetFreqSpValue(Profile, Table, TableIdx, Value, i))
 				return -1;
 			return 0;
 		}

@@ -556,13 +556,26 @@ static int32_t PROFILE_ADM_LINE_CheckLnSFPSetFreqValue(PROFILE_T *Profile, uint8
 	float __FreqSp;
 	uint32_t Freq, FreqSp;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADMConfigLnSFPSetFreqSpIdx[Idx], &__FreqSp))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqSpIdx[Idx], &__FreqSp))
 		return -1;
 	
 	Freq = *((float*)Value) * 1000000;
 	FreqSp = __FreqSp * 1000;
 	
 	if (Freq % FreqSp)
+		return -1;
+	
+	return 0;
+}
+
+static int32_t PROFILE_ADM_LINE_CheckLnSFPSetFreqSpValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+{
+	float FreqSp;
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigLnSFPSetFreqSpIdx[Idx], &FreqSp))
+		return -1;
+	
+	if (FreqSp != (*(float*)Value))
 		return -1;
 	
 	return 0;
@@ -619,6 +632,12 @@ int32_t PROFILE_ADM_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uin
 		if (TableIdx == ProfileADMConfigLnSFPSetFreqIdx[i])
 		{
 			if (PROFILE_ADM_LINE_CheckLnSFPSetFreqValue(Profile, Table, TableIdx, Value, i))
+				return -1;
+			return 0;
+		}
+		if (TableIdx == ProfileADMConfigLnSFPSetFreqSpIdx[i])
+		{
+			if (PROFILE_ADM_LINE_CheckLnSFPSetFreqSpValue(Profile, Table, TableIdx, Value, i))
 				return -1;
 			return 0;
 		}
