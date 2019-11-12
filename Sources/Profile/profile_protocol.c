@@ -4,7 +4,6 @@
 #include <string.h>
 #include "string_fnc.h"
 #include "crc.h"
-#include "log.h"
 
 #define PROFILE_PROTOCOL_LANG_PACKET_SIZE 256
 
@@ -298,22 +297,34 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 	uint32_t CRCRead, CRCCalc;
 	char *Value;
 	char TempValue[PROFILE_STRING_MAX_LEN];
-
+	
 	//проверка и разбор структуры запроса
 	p = cmd + 2;
-	if( !StrToUint( p, &TableId, ';' ) ) 
+	if( !StrToUint( p, &TableId, ';' ) )
+	{
 		error = 1;
+	}
 	if( ( p = strchr( p, ';' ) ) == NULL )
+	{
 		error = 1;		//;Конец таблицы
+	}
 	if( !StrToUint( p + 1, &Item, ';' ) )
+	{
 		error = 1;
+	}
 	if( (  p = strchr(  p + 1, ';' ) ) == NULL )
+	{
 		error = 1;		//;Конец индекса
+	}
 	Value =  p + 1;	  //Указатель на параметр 
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
+	{
 		error = 1;		//;Конец параметра
+	}
 	if( strchr( p + 1, ';' ) )
+	{
 		error = 1;		 // ; на конце CRC быть не должно
+	}
 	if( p && !error )//успешно найдены точно 3 символа ";"
 	{	
 		//Проверка контрольной суммы	
@@ -322,11 +333,15 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 			CRCRead = 0xFFFFFFFF;
 		CRCCalc = Calc_CRC16_ASCII( cmd, p - cmd );
 		*--p = 0;
-		if( CRCRead != CRCCalc ) 
+		if( CRCRead != CRCCalc )
+		{
 			error = 1; //Неверная контрольная сумма
+		}
 	}
-	else 
+	else
+	{
 		error = 1;
+	}
 	
 	p = rsp;
 	memcpy(p, cmd, 2);
@@ -371,9 +386,13 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 			if (PROFILE_CheckValue(Profile, TableId, Item, TempValue) == 0)
 			{
 				if (PROFILE_SetValue(Profile, TableId, Item, TempValue))
+				{
 					goto error;
+				}
 				if (PROFILE_SetValueDependencies(Profile, TableId, Item, TempValue))
+				{
 					goto error;
+				}
 				PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
 			}				
 		}
@@ -665,24 +684,20 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 	
 	if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_STARTREAD, sizeof(PROFILE_PROTOCOL_CONFIG_STARTREAD) - 1))
 	{
-		LOG_Add("%s", s);
 		s += sizeof(PROFILE_PROTOCOL_CONFIG_STARTREAD) - 1;
 		if (*s != ';')
 		{
-			LOG_Add("1 %s", s);
 			goto error;
 		}
 		
 		s++;
 		if( !StrToUint( s, &CRCRead, ';' ) ) 
 		{
-			LOG_Add("2 %s", s);
 			goto error;
 		}
 		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
 		if( CRCRead != CRCCalc )
 		{
-			LOG_Add("3 %04x != %04x", CRCRead, CRCCalc);
 			goto error;
 		}
 		
@@ -705,11 +720,9 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 	}
 	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_READBLOCK, sizeof(PROFILE_PROTOCOL_CONFIG_READBLOCK) - 1))
 	{
-		LOG_Add("%s", s);
 		s += sizeof(PROFILE_PROTOCOL_CONFIG_READBLOCK) - 1;
 		if (*s != ';')
 		{
-			LOG_Add("1 %s", s);
 			goto error;
 		}
 		
@@ -719,31 +732,26 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 		s++;		
 		if( !StrToUint( s, &Index, ';' ) ) 
 		{
-			LOG_Add("2 %s", s);
 			goto error;
 		}
 		if (Index >= BlocksCnt)
 		{
-			LOG_Add("3 %d > %d ", Index, BlocksCnt);
 			goto error;
 		}
 		s = strchr( s, ';' );		
 		if (*s != ';')
 		{
-			LOG_Add("4 %s", s);
 			goto error;
 		}
 		
 		s++;
 		if( !StrToUint( s, &CRCRead, ';' ) ) 
 		{
-			LOG_Add("5 %s", s);
 			goto error;
 		}
 		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
 		if( CRCRead != CRCCalc )
 		{
-			LOG_Add("6 %04x != %04x", CRCRead, CRCCalc);
 			goto error;
 		}
 		
@@ -817,24 +825,20 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 	}
 	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_FINISHREAD, sizeof(PROFILE_PROTOCOL_CONFIG_FINISHREAD) - 1))
 	{
-		LOG_Add("%s", s);
 		s += sizeof(PROFILE_PROTOCOL_CONFIG_FINISHREAD) - 1;
 		if (*s != ';')
 		{
-			LOG_Add("1 %s", s);
 			goto error;
 		}
 		
 		s++;
 		if( !StrToUint( s, &CRCRead, ';' ) )
 		{
-			LOG_Add("2 %s", s);
 			goto error;
 		}
 		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
 		if( CRCRead != CRCCalc )
 		{
-			LOG_Add("3 %04x != %04x", CRCRead, CRCCalc);
 			goto error;
 		}
 		
@@ -848,24 +852,20 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 	}
 	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_STARTWRITE, sizeof(PROFILE_PROTOCOL_CONFIG_STARTWRITE) - 1))
 	{
-		LOG_Add("%s", s);
 		s += sizeof(PROFILE_PROTOCOL_CONFIG_STARTWRITE) - 1;
 		if (*s != ';')
 		{
-			LOG_Add("1 %s", s);
 			goto error;
 		}
 		
 		s++;
 		if( !StrToUint( s, &CRCRead, ';' ) ) 
 		{
-			LOG_Add("2 %s", s);
 			goto error;
 		}
 		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
 		if( CRCRead != CRCCalc )
 		{
-			LOG_Add("3 %04x != %04x", CRCRead, CRCCalc);
 			goto error;
 		}
 		
@@ -887,11 +887,9 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 	}
 	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_WRITEBLOCK, sizeof(PROFILE_PROTOCOL_CONFIG_WRITEBLOCK) - 1))
 	{
-		LOG_Add("%s", s);
 		s += sizeof(PROFILE_PROTOCOL_CONFIG_WRITEBLOCK) - 1;
 		if (*s != ';')
 		{
-			LOG_Add("1 %s", s);
 			goto error;
 		}
 		
@@ -901,18 +899,15 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 		s++;		
 		if( !StrToUint( s, &Index, ';' ) ) 
 		{
-			LOG_Add("2 %s", s);
 			goto error;
 		}
 		if (Index >= BlocksCnt)
 		{
-			LOG_Add("3 %d > %d ", Index, BlocksCnt);
 			goto error;
 		}
 		s = strchr( s, ';' );		
 		if (*s != ';')
 		{
-			LOG_Add("4 %s", s);
 			goto error;
 		}
 		
@@ -921,25 +916,21 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 		s = strchr( s, ';' );		
 		if (*s != ';')
 		{
-			LOG_Add("5 %s", s);
 			goto error;
 		}
 		if ((s - Data) != 512)
 		{
-			LOG_Add("6 %d != 512", (s - Data));
 			goto error;
 		}
 		
 		s++;
 		if( !StrToUint( s, &CRCRead, ';' ) ) 
 		{
-			LOG_Add("7 %s", s);
 			goto error;
 		}
 		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
 		if( CRCRead != CRCCalc )
 		{
-			LOG_Add("8 %04x != %04x", CRCRead, CRCCalc);
 			goto error;
 		}
 		
@@ -1026,24 +1017,20 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 	}
 	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_FINISHWRITE, sizeof(PROFILE_PROTOCOL_CONFIG_FINISHWRITE) - 1))
 	{
-		LOG_Add("%s", s);
 		s += sizeof(PROFILE_PROTOCOL_CONFIG_FINISHWRITE) - 1;
 		if (*s != ';')
 		{
-			LOG_Add("1 %s", s);
 			goto error;
 		}
 		
 		s++;
 		if( !StrToUint( s, &CRCRead, ';' ) )
 		{
-			LOG_Add("2 %s", s);
 			goto error;
 		}
 		CRCCalc = Calc_CRC16_ASCII( cmd, s - cmd );
 		if( CRCRead != CRCCalc )
 		{
-			LOG_Add("3 %04x != %04x", CRCRead, CRCCalc);
 			goto error;
 		}
 		
@@ -1053,7 +1040,6 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 		
 		if (Profile->ValuesCRC16 != CRCCalc)
 		{
-			LOG_Add("4 %04x != %04x", Profile->ValuesCRC16, CRCCalc);
 			if (PROFILE_FLASH_LastRecordLoad(&Profile->ProfileFlash))
 			{
 				PROFILE_SetFactory(Profile, PROFILE_TABLE_1);
@@ -1088,7 +1074,6 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 	}
 	else
 	{
-		LOG_Add("%s", s);
 		goto error;
 	}
 	
@@ -1096,7 +1081,6 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
-	LOG_Add("%s", rsp + 2);
 	return p - rsp;
 
 error:
@@ -1106,7 +1090,6 @@ error:
 	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
-	LOG_Add("%s", rsp + 2);
 	return p - rsp;
 }
 
@@ -1155,7 +1138,7 @@ uint32_t PROFILE_PROTOCOL_Command(PROFILE_T *Profile, char *cmd, char *rsp, uint
 			len = BOOTLOADER_PROTOCOL_UpdateFw(&Profile->Bootloader, cmd, rsp, complete);
 			break;
 		case 0x63://Расширенное чтение/запись конфигурации устройства
-			//len = PROFILE_PROTOCOL_ConfigExt(Profile, cmd, rsp);
+			len = PROFILE_PROTOCOL_ConfigExt(Profile, cmd, rsp);
 			break;
 	}
 	if( len == 0 )// если нет ответа, отвечаем об ошибке

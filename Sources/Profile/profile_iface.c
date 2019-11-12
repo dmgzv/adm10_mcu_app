@@ -150,6 +150,7 @@ static void PROFILE_IFACE_Thread(void const *argument)
 		if (Iface->Command[0] != Iface->StartByte)
 			continue;
 		
+		Iface->Command[Iface->CommandLen] = 0;
 		TimeStart = osKernelSysTick();
 		Complete = 0;
 		

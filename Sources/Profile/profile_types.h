@@ -49,7 +49,7 @@
 #define PROFILE_ACCESS_READ				(1 << 0)
 #define PROFILE_ACCESS_WRITE			(3 << 0)
 
-#define PROFILE_ACCESS(SU, AD, US, MN)	(((MN) << 0) | ((US) << 2) | ((AD) << 4) | ((SU) << 6))
+#define PROFILE_ACCESS(MN, US, AD, SU)	(((MN) << 0) | ((US) << 2) | ((AD) << 4) | ((SU) << 6))
 
 typedef struct {
 	uint8_t Table;
