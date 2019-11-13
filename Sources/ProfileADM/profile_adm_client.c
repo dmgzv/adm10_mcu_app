@@ -507,7 +507,7 @@ static int32_t PROFILE_ADM_CLIENT_GetXCLineODU1(PROFILE_T *Profile, uint32_t Cli
 	*LineIdx = 0xFF;
 	*ODU1Idx = 0xFF;
 	
-	for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU1XCSetSrcIdx[i], &Src))
 			return -1;
@@ -554,7 +554,7 @@ static int32_t PROFILE_ADM_CLIENT_GetXCLineODU0(PROFILE_T *Profile, uint32_t Cli
 	*LineIdx = 0xFF;
 	*ODU0Idx = 0xFF;
 	
-	for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU0XCSetSrcIdx[i], &Src))
 			return -1;
@@ -1036,21 +1036,25 @@ void PROFILE_ADM_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 		if (DataType == 128)
 		{
 			BSP_FPGA_CLIENT_IFACE_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM1);
+			BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM1);
 			SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
 		}
 		else if (DataType == 129)
 		{
 			BSP_FPGA_CLIENT_IFACE_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM4);
+			BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM4);
 			SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
 		}
 		else if (DataType == 130)
 		{
 			BSP_FPGA_CLIENT_IFACE_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM16);
+			BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM16);
 			SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 1);
 		}
 		else if (DataType == 257)
 		{
 			BSP_FPGA_CLIENT_IFACE_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_GE);
+			BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_GE);
 			SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
 		}
 		

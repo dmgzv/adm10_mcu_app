@@ -363,7 +363,7 @@ static int32_t PROFILE_ADM_LINE_GetXCODU1(PROFILE_T *Profile, uint32_t LineIdx, 
 	*PortIdx = 0xFF;
 	*PortODU1Idx = 0xFF;
 	
-	for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU1XCSetSrcIdx[i], &Src))
 			return -1;
@@ -433,7 +433,7 @@ static int32_t PROFILE_ADM_LINE_GetXCODU0(PROFILE_T *Profile, uint32_t LineIdx, 
 	*PortIdx = 0xFF;
 	*PortODU0Idx = 0xFF;
 	
-	for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU0XCSetSrcIdx[i], &Src))
 			return -1;

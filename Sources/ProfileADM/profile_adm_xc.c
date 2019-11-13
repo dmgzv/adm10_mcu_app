@@ -1,36 +1,35 @@
 #include "profile_adm_xc.h"
-#include "profile_adm_values.h"
 
-uint32_t ProfileADMConfigODU1XCSetSrcIdx[PROFILE_ADM_ODU1_XC_CNT] = {
+uint32_t ProfileADMConfigODU1XCSetSrcIdx[PROFILE_ADM_ODU1_XCS] = {
 	PROFILE_ADM_ODU1_XC_1_SETSRC_IDX, PROFILE_ADM_ODU1_XC_2_SETSRC_IDX, PROFILE_ADM_ODU1_XC_3_SETSRC_IDX, PROFILE_ADM_ODU1_XC_4_SETSRC_IDX,
 	PROFILE_ADM_ODU1_XC_5_SETSRC_IDX, PROFILE_ADM_ODU1_XC_6_SETSRC_IDX, PROFILE_ADM_ODU1_XC_7_SETSRC_IDX, PROFILE_ADM_ODU1_XC_8_SETSRC_IDX
 };
 
-uint32_t ProfileADMConfigODU1XCSetDstIdx[PROFILE_ADM_ODU1_XC_CNT] = {
+uint32_t ProfileADMConfigODU1XCSetDstIdx[PROFILE_ADM_ODU1_XCS] = {
 	PROFILE_ADM_ODU1_XC_1_SETDST_IDX, PROFILE_ADM_ODU1_XC_2_SETDST_IDX, PROFILE_ADM_ODU1_XC_3_SETDST_IDX, PROFILE_ADM_ODU1_XC_4_SETDST_IDX,
 	PROFILE_ADM_ODU1_XC_5_SETDST_IDX, PROFILE_ADM_ODU1_XC_6_SETDST_IDX, PROFILE_ADM_ODU1_XC_7_SETDST_IDX, PROFILE_ADM_ODU1_XC_8_SETDST_IDX
 };
 
-uint32_t ProfileADMConfigODU1XCSetFactoryIdx[PROFILE_ADM_ODU0_XC_CNT] = {
+uint32_t ProfileADMConfigODU1XCSetFactoryIdx[PROFILE_ADM_ODU1_XCS] = {
 	PROFILE_ADM_ODU1_XC_1_SETFACTORY_IDX, PROFILE_ADM_ODU1_XC_2_SETFACTORY_IDX, PROFILE_ADM_ODU1_XC_3_SETFACTORY_IDX, PROFILE_ADM_ODU1_XC_4_SETFACTORY_IDX,
 	PROFILE_ADM_ODU1_XC_5_SETFACTORY_IDX, PROFILE_ADM_ODU1_XC_6_SETFACTORY_IDX, PROFILE_ADM_ODU1_XC_7_SETFACTORY_IDX, PROFILE_ADM_ODU1_XC_8_SETFACTORY_IDX,
 };
 
-uint32_t ProfileADMConfigODU0XCSetSrcIdx[PROFILE_ADM_ODU0_XC_CNT] = {
+uint32_t ProfileADMConfigODU0XCSetSrcIdx[PROFILE_ADM_ODU0_XCS] = {
 	PROFILE_ADM_ODU0_XC_1_SETSRC_IDX, PROFILE_ADM_ODU0_XC_2_SETSRC_IDX, PROFILE_ADM_ODU0_XC_3_SETSRC_IDX, PROFILE_ADM_ODU0_XC_4_SETSRC_IDX,
 	PROFILE_ADM_ODU0_XC_5_SETSRC_IDX, PROFILE_ADM_ODU0_XC_6_SETSRC_IDX, PROFILE_ADM_ODU0_XC_7_SETSRC_IDX, PROFILE_ADM_ODU0_XC_8_SETSRC_IDX,
 	PROFILE_ADM_ODU0_XC_9_SETSRC_IDX, PROFILE_ADM_ODU0_XC_10_SETSRC_IDX, PROFILE_ADM_ODU0_XC_11_SETSRC_IDX, PROFILE_ADM_ODU0_XC_12_SETSRC_IDX,
 	PROFILE_ADM_ODU0_XC_13_SETSRC_IDX, PROFILE_ADM_ODU0_XC_14_SETSRC_IDX, PROFILE_ADM_ODU0_XC_15_SETSRC_IDX, PROFILE_ADM_ODU0_XC_16_SETSRC_IDX
 };
 
-uint32_t ProfileADMConfigODU0XCSetDstIdx[PROFILE_ADM_ODU0_XC_CNT] = {
+uint32_t ProfileADMConfigODU0XCSetDstIdx[PROFILE_ADM_ODU0_XCS] = {
 	PROFILE_ADM_ODU0_XC_1_SETDST_IDX, PROFILE_ADM_ODU0_XC_2_SETDST_IDX, PROFILE_ADM_ODU0_XC_3_SETDST_IDX, PROFILE_ADM_ODU0_XC_4_SETDST_IDX,
 	PROFILE_ADM_ODU0_XC_5_SETDST_IDX, PROFILE_ADM_ODU0_XC_6_SETDST_IDX, PROFILE_ADM_ODU0_XC_7_SETDST_IDX, PROFILE_ADM_ODU0_XC_8_SETDST_IDX,
 	PROFILE_ADM_ODU0_XC_9_SETDST_IDX, PROFILE_ADM_ODU0_XC_10_SETDST_IDX, PROFILE_ADM_ODU0_XC_11_SETDST_IDX, PROFILE_ADM_ODU0_XC_12_SETDST_IDX,
 	PROFILE_ADM_ODU0_XC_13_SETDST_IDX, PROFILE_ADM_ODU0_XC_14_SETDST_IDX, PROFILE_ADM_ODU0_XC_15_SETDST_IDX, PROFILE_ADM_ODU0_XC_16_SETDST_IDX
 };
 
-uint32_t ProfileADMConfigODU0XCSetFactoryIdx[PROFILE_ADM_ODU0_XC_CNT] = {
+uint32_t ProfileADMConfigODU0XCSetFactoryIdx[PROFILE_ADM_ODU0_XCS] = {
 	PROFILE_ADM_ODU0_XC_1_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_2_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_3_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_4_SETFACTORY_IDX,
 	PROFILE_ADM_ODU0_XC_5_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_6_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_7_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_8_SETFACTORY_IDX,
 	PROFILE_ADM_ODU0_XC_9_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_10_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_11_SETFACTORY_IDX, PROFILE_ADM_ODU0_XC_12_SETFACTORY_IDX,
@@ -39,12 +38,6 @@ uint32_t ProfileADMConfigODU0XCSetFactoryIdx[PROFILE_ADM_ODU0_XC_CNT] = {
 
 extern const uint32_t ProfileADMConfigClSetDataTypeIdx[PROFILE_ADM_CLIENT_PORTS];
 extern const uint32_t ProfileADMConfigLnOPU1SetPayloadIdx[PROFILE_ADM_LINE_PORTS][4];
-
-#define PROFILE_ADM_XC_LINE_ODU1(Line, ODU1Idx) (1 + ((Line) * 4) + ODU1Idx)
-#define PROFILE_ADM_XC_CLIENT_ODU1(Client) 			(1025 + (Client))
-#define PROFILE_ADM_XC_LINE_ODU0(Line, ODU1Idx) (1 + ((Line) * 8) + ODU1Idx)
-#define PROFILE_ADM_XC_CLIENT_ODU0(Client) 			(1025 + (Client))
-
 
 static int32_t PROFILE_ADM_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8_t Table, uint16_t Index, void *Value, uint32_t ODU1XCIdx)
 {
@@ -75,7 +68,7 @@ static int32_t PROFILE_ADM_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8_t
 			{
 				return -1;
 			}
-			for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+			for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 			{
 				/*Check that there is no XC with same ODU container as source*/
 				if (i != ODU1XCIdx)
@@ -129,7 +122,7 @@ static int32_t PROFILE_ADM_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8_t
 			{
 				return -1;
 			}
-			for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+			for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 			{
 				/*Check that there is no XC with same ODU container as source*/
 				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU1XCSetSrcIdx[i], &Src))
@@ -186,7 +179,7 @@ static int32_t PROFILE_ADM_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8_t
 			{
 				return -1;
 			}
-			for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+			for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 			{
 				/*Check that there is no XC with same ODU container as source*/
 				if (i != ODU0XCIdx)
@@ -240,7 +233,7 @@ static int32_t PROFILE_ADM_XC_CheckODU0XCSetDstValue(PROFILE_T *Profile, uint8_t
 			{
 				return -1;
 			}
-			for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+			for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 			{
 				/*Check that there is no XC with same ODU container as source*/
 				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU0XCSetSrcIdx[i], &Src))
@@ -272,7 +265,7 @@ int32_t PROFILE_ADM_XC_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint1
 {
 	uint32_t i;
 	
-	for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 	{
 		if (Index == ProfileADMConfigODU1XCSetSrcIdx[i])
 		{
@@ -288,7 +281,7 @@ int32_t PROFILE_ADM_XC_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint1
 		}
 	}
 	
-	for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 	{
 		if (Index == ProfileADMConfigODU0XCSetSrcIdx[i])
 		{
@@ -307,24 +300,24 @@ int32_t PROFILE_ADM_XC_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint1
 	return 0;
 }
 
-const uint32_t ODU1XCSrcFactory[PROFILE_ADM_ODU1_XC_CNT] = {
+const uint32_t ODU1XCSrcFactory[PROFILE_ADM_ODU1_XCS] = {
 	PROFILE_ADM_XC_CLIENT_ODU1(0), PROFILE_ADM_XC_CLIENT_ODU1(2), PROFILE_ADM_XC_CLIENT_ODU1(4), PROFILE_ADM_XC_CLIENT_ODU1(6),
 	PROFILE_ADM_XC_CLIENT_ODU1(8), PROFILE_ADM_XC_CLIENT_ODU1(10), PROFILE_ADM_XC_CLIENT_ODU1(12), PROFILE_ADM_XC_CLIENT_ODU1(14), 
 };
 
-const uint32_t ODU1XCDstFactory[PROFILE_ADM_ODU1_XC_CNT] = {
+const uint32_t ODU1XCDstFactory[PROFILE_ADM_ODU1_XCS] = {
 	PROFILE_ADM_XC_LINE_ODU1(0, 0), PROFILE_ADM_XC_LINE_ODU1(0, 1), PROFILE_ADM_XC_LINE_ODU1(0, 2), PROFILE_ADM_XC_LINE_ODU1(0, 3),
 	PROFILE_ADM_XC_LINE_ODU1(1, 0), PROFILE_ADM_XC_LINE_ODU1(1, 1), PROFILE_ADM_XC_LINE_ODU1(1, 2), PROFILE_ADM_XC_LINE_ODU1(1, 3), 
 };
 
-const uint32_t ODU0XCSrcFactory[PROFILE_ADM_ODU0_XC_CNT] = {
+const uint32_t ODU0XCSrcFactory[PROFILE_ADM_ODU0_XCS] = {
 	PROFILE_ADM_XC_CLIENT_ODU0(0), PROFILE_ADM_XC_CLIENT_ODU0(1), PROFILE_ADM_XC_CLIENT_ODU0(2), PROFILE_ADM_XC_CLIENT_ODU0(3),
 	PROFILE_ADM_XC_CLIENT_ODU0(4), PROFILE_ADM_XC_CLIENT_ODU0(5), PROFILE_ADM_XC_CLIENT_ODU0(6), PROFILE_ADM_XC_CLIENT_ODU0(7),
 	PROFILE_ADM_XC_CLIENT_ODU0(8), PROFILE_ADM_XC_CLIENT_ODU0(9), PROFILE_ADM_XC_CLIENT_ODU0(10), PROFILE_ADM_XC_CLIENT_ODU0(11),
 	PROFILE_ADM_XC_CLIENT_ODU0(12), PROFILE_ADM_XC_CLIENT_ODU0(13), PROFILE_ADM_XC_CLIENT_ODU0(14), PROFILE_ADM_XC_CLIENT_ODU0(15), 
 };
 
-const uint32_t ODU0XCDstFactory[PROFILE_ADM_ODU0_XC_CNT] = {
+const uint32_t ODU0XCDstFactory[PROFILE_ADM_ODU0_XCS] = {
 	PROFILE_ADM_XC_LINE_ODU0(0, 0), PROFILE_ADM_XC_LINE_ODU0(0, 1), PROFILE_ADM_XC_LINE_ODU0(0, 2), PROFILE_ADM_XC_LINE_ODU0(0, 3),
 	PROFILE_ADM_XC_LINE_ODU0(0, 4), PROFILE_ADM_XC_LINE_ODU0(0, 5), PROFILE_ADM_XC_LINE_ODU0(0, 6), PROFILE_ADM_XC_LINE_ODU0(0, 7),
 	PROFILE_ADM_XC_LINE_ODU0(1, 0), PROFILE_ADM_XC_LINE_ODU0(1, 1), PROFILE_ADM_XC_LINE_ODU0(1, 2), PROFILE_ADM_XC_LINE_ODU0(1, 3),
@@ -339,12 +332,12 @@ static int32_t PROFILE_ADM_XC_SetModeValueDependencies(PROFILE_T *Profile, uint8
 	{
 		case 0:
 			/*
-			for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+			for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 			{
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU1XCSetSrcIdx[i]);
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU1XCSetDstIdx[i]);
 			}
-			for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+			for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 			{
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU0XCSetSrcIdx[i]);
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU0XCSetDstIdx[i]);
@@ -352,12 +345,12 @@ static int32_t PROFILE_ADM_XC_SetModeValueDependencies(PROFILE_T *Profile, uint8
 			*/
 			break;
 		case 3:
-			for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+			for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU1XCSetSrcIdx[i], (uint32_t*)&ODU1XCSrcFactory[i]);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU1XCSetDstIdx[i], (uint32_t*)&ODU1XCDstFactory[i]);
 			}
-			for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+			for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU0XCSetSrcIdx[i], (uint32_t*)&ODU0XCSrcFactory[i]);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU0XCSetDstIdx[i], (uint32_t*)&ODU0XCDstFactory[i]);
@@ -425,13 +418,13 @@ int32_t PROFILE_ADM_XC_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Ta
 			return -1;
 	}
 	
-	for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 	{
 		if (Index == ProfileADMConfigODU1XCSetFactoryIdx[i])
 			PROFILE_ADM_XC_SetODU1FactoryValueDependencies(Profile, Table, Index, Value, i);
 	}
 	
-	for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 	{
 		if (Index == ProfileADMConfigODU0XCSetFactoryIdx[i])
 			PROFILE_ADM_XC_SetODU0FactoryValueDependencies(Profile, Table, Index, Value, i);
@@ -449,14 +442,14 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 	uint32_t Line, Client, ODU1Idx, ODU0Idx;
 	uint32_t LnOPU1Payload[PROFILE_ADM_LINE_PORTS][4];
 	uint32_t ClDataType[PROFILE_ADM_CLIENT_PORTS];
-	uint32_t XCODU1Src[PROFILE_ADM_ODU1_XC_CNT], XCODU1Dst[PROFILE_ADM_ODU1_XC_CNT];
-	uint32_t XCODU0Src[PROFILE_ADM_ODU0_XC_CNT], XCODU0Dst[PROFILE_ADM_ODU0_XC_CNT];
+	uint32_t XCODU1Src[PROFILE_ADM_ODU1_XCS], XCODU1Dst[PROFILE_ADM_ODU1_XCS];
+	uint32_t XCODU0Src[PROFILE_ADM_ODU0_XCS], XCODU0Dst[PROFILE_ADM_ODU0_XCS];
 	uint32_t __ODU0Mux, __ODU1Mux, __OPU0PayloadType, __OPU1PayloadType;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM_SETMODE_IDX, &Mode))
 		return;
 	
-	for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU1XCSetSrcIdx[i], &XCODU1Src[i]))
 			return;
@@ -464,7 +457,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 			return;
 	}
 	
-	for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+	for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADMConfigODU0XCSetSrcIdx[i], &XCODU0Src[i]))
 			return;
@@ -506,7 +499,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 			for (ODU1Idx = 0; ODU1Idx < 4; ODU1Idx++)
 			{
 				Target = 0;
-				for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+				for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 				{
 					if (XCODU1Src[i] == PROFILE_ADM_XC_LINE_ODU1(Line, ODU1Idx))
 					{
@@ -555,7 +548,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 			for (ODU1Idx = 0; ODU1Idx < 4; ODU1Idx++)
 			{
 				Target = 0;
-				for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+				for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 				{
 					if (XCODU1Src[i] == PROFILE_ADM_XC_LINE_ODU1(Line, ODU1Idx))
 					{
@@ -581,6 +574,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 				}
 			}
 		}
+		
 		for(Line = 0; Line < 2; Line++)
 		{
 			for (ODU1Idx = 0; ODU1Idx < 4; ODU1Idx++)
@@ -594,7 +588,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 					for (ODU0Idx = 0; ODU0Idx < 2; ODU0Idx++)
 					{
 						Target = 0;
-						for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+						for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 						{
 							if (XCODU0Src[i] == PROFILE_ADM_XC_LINE_ODU0(Line, (ODU1Idx * 2) + ODU0Idx))
 							{
@@ -639,7 +633,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 					for (ODU0Idx = 0; ODU0Idx < 2; ODU0Idx++)
 					{
 						Target = 0;
-						for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+						for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 						{
 							if (XCODU0Src[i] == PROFILE_ADM_XC_LINE_ODU0(Line, (ODU1Idx * 2) + ODU0Idx))
 							{
@@ -671,7 +665,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 			if (ClDataType[Client] == 130)
 			{
 				Target = 0;
-				for (i = 0; i < PROFILE_ADM_ODU1_XC_CNT; i++)
+				for (i = 0; i < PROFILE_ADM_ODU1_XCS; i++)
 				{
 					if (XCODU1Src[i] == PROFILE_ADM_XC_CLIENT_ODU1(Client))
 					{
@@ -689,7 +683,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 				{
 					TargetLine = ((Target - 1) / 4);
 					TargetODU1Idx = ((Target - 1) % 4);
-					BSP_FPGA_LINE_MUX_CLIENT_LINE_ODU1_SET(Client, TargetLine, TargetODU1Idx);
+					BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(Client, TargetLine, TargetODU1Idx);
 					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
 				}
 				else
@@ -700,7 +694,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 			else if ((ClDataType[Client] == 128) || (ClDataType[Client] == 129) || (ClDataType[Client] == 257))
 			{
 				Target = 0;
-				for (i = 0; i < PROFILE_ADM_ODU0_XC_CNT; i++)
+				for (i = 0; i < PROFILE_ADM_ODU0_XCS; i++)
 				{
 					if (XCODU0Src[i] == PROFILE_ADM_XC_CLIENT_ODU0(Client))
 					{
@@ -717,7 +711,7 @@ void PROFILE_ADM_XC_UpdateConfigs(PROFILE_T *Profile)
 				{
 					TargetLine = ((Target - 1) / 8);
 					TargetODU0Idx = ((Target - 1) % 8);
-					BSP_FPGA_LINE_MUX_CLIENT_LINE_ODU0_SET(Client, TargetLine, TargetODU0Idx);
+					BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(Client, TargetLine, TargetODU0Idx);						
 					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
 				}
 				else

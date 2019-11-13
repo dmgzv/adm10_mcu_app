@@ -113,6 +113,42 @@ do { \
 
 #define BSP_FPGA_LINE_IFACE_IDX(LineIdx)	(LineIdx)
 
+#define BSP_FPGA_LINE_DEMUX_CLIENT_MODE_CNT	16
+#define BSP_FPGA_LINE_DEMUX_CLIENT_MODE_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x500 + (ClientIdx))
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(ClientIdx, Mode) ((ClientIdx) >= BSP_FPGA_LINE_DEMUX_CLIENT_MODE_CNT) ? -1: ((fpga_line.Demux.ClientMode[ClientIdx] = (Mode)), 0)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_MODE_GET(ClientIdx) (fpga_line.Demux.ClientMode[ClientIdx])
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT	8
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x540 + ((ClientIdx) * 4))
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_STATUS_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x540 + ((ClientIdx) * 4) + 1)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x540 + ((ClientIdx) * 4) + 2)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x540 + ((ClientIdx) * 4) + 3)
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(ClientIdx, PGMode) (((ClientIdx) / 2) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].Mode = (PGMode)) , 0)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].Mode)
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(ClientIdx, LineIdx, ODU1Idx) (((ClientIdx) / 2) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].PrimaryODUk = (((LineIdx) * 4) + ODU1Idx)), 0)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_GET(ClientIdx) 									(fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].PrimaryODUk)
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_SET(ClientIdx, LineIdx, ODU1Idx) (((ClientIdx) / 2) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].ProtectODUk = (((LineIdx) * 4) + ODU1Idx)), 0)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_GET(ClientIdx) 									(fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].ProtectODUk)
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT	16
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x560 + ((ClientIdx) * 4))
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_STATUS_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x560 + ((ClientIdx) * 4) + 1)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x560 + ((ClientIdx) * 4) + 2)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_ADDR(ClientIdx)   (BSP_FPGA_LINE_ADDR + 0x560 + ((ClientIdx) * 4) + 3)
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(ClientIdx, PGMode) ((ClientIdx) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU0PG[ClientIdx].Mode = (PGMode)) , 0)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU0PG[ClientIdx].Mode)
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(ClientIdx, LineIdx, ODU0Idx) ((ClientIdx) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU0PG[ClientIdx].PrimaryODUk = (((LineIdx) * 8) + ODU0Idx)), 0)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_GET(ClientIdx) 									(fpga_line.Demux.ClientODU0PG[ClientIdx].PrimaryODUk)
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_SET(ClientIdx, LineIdx, ODU0Idx) ((ClientIdx) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU0PG[ClientIdx].ProtectODUk = (((LineIdx) * 8) + ODU0Idx)), 0)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_GET(ClientIdx) 									(fpga_line.Demux.ClientODU0PG[ClientIdx].ProtectODUk)
+
 #define BSP_FPGA_LINE_MUX_OPU0_CNT	16
 #define BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_ADDR(OPU0Idx)   (BSP_FPGA_LINE_ADDR + 0x530 + (OPU0Idx))
 
@@ -133,12 +169,6 @@ do { \
 
 #define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(OPU1Idx, PayloadType) ((OPU1Idx) >= BSP_FPGA_LINE_MUX_OPU1_CNT) ? -1: ((fpga_line.Mux.OPU1PayloadType[OPU1Idx] = (PayloadType)), 0)
 #define BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_GET(OPU1Idx) (fpga_line.Mux.OPU1PayloadType[OPU1Idx])
-
-#define BSP_FPGA_LINE_MUX_CLIENT_CNT	16
-#define BSP_FPGA_LINE_MUX_CLIENT_ADDR(ODU01Idx)   (BSP_FPGA_LINE_ADDR + 0x500 + (ODU01Idx))
-
-#define BSP_FPGA_LINE_MUX_CLIENT_LINE_ODU0_SET(ClientIdx, LineIdx, ODU0Idx) (((ClientIdx) >= BSP_FPGA_LINE_MUX_CLIENT_CNT) ? -1: (((LineIdx) >= 2) ? -1 : ((ODU0Idx >= 8) ? -1 : ((fpga_line.Mux.Client[ClientIdx] = ((LineIdx) * 8) + (ODU0Idx) + 0x10) , 0))))
-#define BSP_FPGA_LINE_MUX_CLIENT_LINE_ODU1_SET(ClientIdx, LineIdx, ODU1Idx) (((ClientIdx) >= BSP_FPGA_LINE_MUX_CLIENT_CNT) ? -1: (((LineIdx) >= 2) ? -1 : ((ODU1Idx >= 8) ? -1 : ((fpga_line.Mux.Client[ClientIdx] = ((LineIdx) * 4) + (ODU1Idx) + 0x00) , 0))))
 
 #define BSP_FPGA_LINE_MUX_ODU01_CNT	16
 #define BSP_FPGA_LINE_MUX_ODU01_ADDR(ODU01Idx)   (BSP_FPGA_LINE_ADDR + 0x520 + (ODU01Idx))
@@ -296,12 +326,31 @@ typedef struct {
 } BSP_FPGA_IFACE_T;
 
 typedef struct {
-	uint8_t OPU1PayloadType[BSP_FPGA_LINE_MUX_OPU1_CNT];
-	uint8_t __OPU1PayloadType[BSP_FPGA_LINE_MUX_OPU1_CNT];
+	uint8_t Mode;
+	uint8_t __Mode;
+	uint8_t Status;
+	uint8_t PrimaryODUk;
+	uint8_t __PrimaryODUk;
+	uint8_t ProtectODUk;
+	uint8_t __ProtectODUk;
+	uint8_t WTRTmr;
+	uint8_t __WTRTmr;
+	uint8_t HOTmr;
+	uint8_t __HOTmr;
+} BSP_FPGA_LINE_DEMUX_PG_T;
+
+typedef struct {
+	uint8_t ClientMode[BSP_FPGA_LINE_DEMUX_CLIENT_MODE_CNT];
+	uint8_t __ClientMode[BSP_FPGA_LINE_DEMUX_CLIENT_MODE_CNT];
+	BSP_FPGA_LINE_DEMUX_PG_T ClientODU1PG[BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT];
+	BSP_FPGA_LINE_DEMUX_PG_T ClientODU0PG[BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT];
+} BSP_FPGA_LINE_DEMUX_T;
+
+typedef struct {
 	uint8_t OPU0PayloadType[BSP_FPGA_LINE_MUX_OPU0_CNT];
 	uint8_t __OPU0PayloadType[BSP_FPGA_LINE_MUX_OPU0_CNT];
-	uint8_t Client[BSP_FPGA_LINE_MUX_CLIENT_CNT];
-	uint8_t __Client[BSP_FPGA_LINE_MUX_CLIENT_CNT];
+	uint8_t OPU1PayloadType[BSP_FPGA_LINE_MUX_OPU1_CNT];
+	uint8_t __OPU1PayloadType[BSP_FPGA_LINE_MUX_OPU1_CNT];
 	uint8_t ODU01[BSP_FPGA_LINE_MUX_ODU01_CNT];
 	uint8_t __ODU01[BSP_FPGA_LINE_MUX_ODU01_CNT];
 	uint8_t ODU12[BSP_FPGA_LINE_MUX_ODU12_CNT];
@@ -348,6 +397,7 @@ typedef struct {
 	float Temp;
 	BSP_FPGA_LINE_IFACE_T Iface[BSP_FPGA_LINE_IFACE_CNT];
 	BSP_FPGA_LINE_MUX_T Mux;
+	BSP_FPGA_LINE_DEMUX_T Demux;
 	BSP_FPGA_LINE_AGG_T AGG[2];
 } BSP_FPGA_LINE_T;
 

@@ -389,11 +389,6 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev, uint32_t Mode)
 			Dev->Mux.OPU1PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_ADDR(i)));
 		}
 		
-		for (i = 0; i < BSP_FPGA_LINE_MUX_CLIENT_CNT; i++)
-		{
-			Dev->Mux.Client[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_CLIENT_ADDR(i)));
-		}
-		
 		for (i = 0; i < BSP_FPGA_LINE_MUX_ODU01_CNT; i+=2)
 		{
 			Dev->Mux.ODU01[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU01_ADDR(i)));
@@ -404,6 +399,33 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev, uint32_t Mode)
 		{
 			Dev->Mux.ODU12[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU12_ADDR(i)));
 		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_DEMUX_CLIENT_MODE_CNT; i++)
+		{
+			Dev->Demux.ClientMode[i] = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_MODE_ADDR(i)));
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT; i++)
+		{
+			Dev->Demux.ClientODU1PG[i].Mode = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_ADDR(i)));
+			
+			Dev->Demux.ClientODU1PG[i].Status = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_STATUS_ADDR(i)));
+			
+			Dev->Demux.ClientODU1PG[i].PrimaryODUk = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_ADDR(i)));
+			
+			Dev->Demux.ClientODU1PG[i].ProtectODUk = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_ADDR(i)));
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT; i++)
+		{
+			Dev->Demux.ClientODU0PG[i].Mode = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_ADDR(i)));
+			
+			Dev->Demux.ClientODU0PG[i].Status = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_STATUS_ADDR(i)));
+			
+			Dev->Demux.ClientODU0PG[i].PrimaryODUk = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_ADDR(i)));
+		
+			Dev->Demux.ClientODU0PG[i].ProtectODUk = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_ADDR(i)));
+		}		
 	}
 	else if (Dev->Mode == BSP_FPGA_MODE_ATP_2x10_BS)
 	{
@@ -619,14 +641,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			
 			if (Dev->Mux.__OPU0PayloadType[i] != Dev->Mux.OPU0PayloadType[i])
 			{
-				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
-				if (Status == 0)
-					continue;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i + 0x10;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.OPU0PayloadType[i];
-				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x23;
-				osDelay(5);
+				*((uint8_t*)(BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_ADDR(i))) = Dev->Mux.OPU0PayloadType[i];
 			}
 		}
 		
@@ -635,30 +650,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			Dev->Mux.__OPU1PayloadType[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_ADDR(i)));
 			if (Dev->Mux.__OPU1PayloadType[i] != Dev->Mux.OPU1PayloadType[i])
 			{
-				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
-				if (Status == 0)
-					continue;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i + 0x08;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.OPU1PayloadType[i];
-				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x21;
-				osDelay(5);
-			}
-		}
-		
-		for (i = 0; i < BSP_FPGA_LINE_MUX_CLIENT_CNT; i++)
-		{
-			Dev->Mux.__Client[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_CLIENT_ADDR(i)));
-			if (Dev->Mux.__Client[i] != Dev->Mux.Client[i])
-			{
-				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
-				if (Status == 0)
-					continue;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.Client[i];
-				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x24;
-				osDelay(5);
+				*((uint8_t*)(BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_ADDR(i))) = Dev->Mux.OPU1PayloadType[i];
 			}
 		}
 		
@@ -668,14 +660,8 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			Dev->Mux.__ODU01[i+1] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU01_ADDR(i+1)));
 			if ((Dev->Mux.__ODU01[i] != Dev->Mux.ODU01[i]) || (Dev->Mux.__ODU01[i+1] != Dev->Mux.ODU01[i+1])) 
 			{
-				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
-				if (Status == 0)
-					continue;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = i / 2 + 0x08;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = Dev->Mux.ODU01[i];
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.ODU01[i + 1];
-				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x22;
-				osDelay(5);
+				*((uint8_t*)(BSP_FPGA_LINE_MUX_ODU01_ADDR(i))) = Dev->Mux.ODU01[i];
+				*((uint8_t*)(BSP_FPGA_LINE_MUX_ODU01_ADDR(i+1))) = Dev->Mux.ODU01[i + 1];
 			}
 		}
 		
@@ -684,14 +670,62 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			Dev->Mux.__ODU12[i] = *((uint8_t*)(BSP_FPGA_LINE_MUX_ODU12_ADDR(i)));
 			if (Dev->Mux.__ODU12[i] != Dev->Mux.ODU12[i])
 			{
-				Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
-				if (Status == 0)
-					continue;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = 0x00;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = i;
-				*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Dev->Mux.ODU12[i];
-				*((uint8_t*)BSP_FPGA_LINE_CMD_ADDR) = 0x20;
-				osDelay(5);
+				*((uint8_t*)(BSP_FPGA_LINE_MUX_ODU12_ADDR(i))) = Dev->Mux.ODU12[i];
+			}
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_DEMUX_CLIENT_MODE_CNT; i++)
+		{
+			Dev->Demux.__ClientMode[i] = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_MODE_ADDR(i)));
+			if (Dev->Demux.__ClientMode[i] != Dev->Demux.ClientMode[i])
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_MODE_ADDR(i))) = Dev->Demux.ClientMode[i];
+			}
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT; i++)
+		{
+			Dev->Demux.ClientODU1PG[i].__Mode = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_ADDR(i)));
+			if (Dev->Demux.ClientODU1PG[i].__Mode != Dev->Demux.ClientODU1PG[i].Mode)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_ADDR(i))) = Dev->Demux.ClientODU1PG[i].Mode;
+			}
+			
+			Dev->Demux.ClientODU1PG[i].Status = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_STATUS_ADDR(i)));
+			
+			Dev->Demux.ClientODU1PG[i].__PrimaryODUk = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_ADDR(i)));
+			if (Dev->Demux.ClientODU1PG[i].__PrimaryODUk != Dev->Demux.ClientODU1PG[i].PrimaryODUk)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_ADDR(i))) = Dev->Demux.ClientODU1PG[i].PrimaryODUk;
+			}
+			
+			Dev->Demux.ClientODU1PG[i].__ProtectODUk = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_ADDR(i)));
+			if (Dev->Demux.ClientODU1PG[i].__ProtectODUk != Dev->Demux.ClientODU1PG[i].ProtectODUk)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_ADDR(i))) = Dev->Demux.ClientODU1PG[i].ProtectODUk;
+			}
+		}
+		
+		for (i = 0; i < BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT; i++)
+		{
+			Dev->Demux.ClientODU0PG[i].__Mode = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_ADDR(i)));
+			if (Dev->Demux.ClientODU0PG[i].__Mode != Dev->Demux.ClientODU0PG[i].Mode)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_ADDR(i))) = Dev->Demux.ClientODU0PG[i].Mode;
+			}
+			
+			Dev->Demux.ClientODU0PG[i].Status = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_STATUS_ADDR(i)));
+			
+			Dev->Demux.ClientODU0PG[i].__PrimaryODUk = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_ADDR(i)));
+			if (Dev->Demux.ClientODU0PG[i].__PrimaryODUk != Dev->Demux.ClientODU0PG[i].PrimaryODUk)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_ADDR(i))) = Dev->Demux.ClientODU0PG[i].PrimaryODUk;
+			}
+			
+			Dev->Demux.ClientODU0PG[i].__ProtectODUk = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_ADDR(i)));
+			if (Dev->Demux.ClientODU0PG[i].__ProtectODUk != Dev->Demux.ClientODU0PG[i].ProtectODUk)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_ADDR(i))) = Dev->Demux.ClientODU0PG[i].ProtectODUk;
 			}
 		}
 	}
