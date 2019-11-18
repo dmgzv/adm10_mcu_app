@@ -115,7 +115,7 @@ static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_T *Profile, char * cmd, ch
 	if( (cmd[5] == 'O') && (cmd[6] == 'K') && (cmd[7] == ';')	)
 	{
 		if (!Profile->ProfileFlash.EnableSave)
-			PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
+			PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
 		Profile->ProfileFlash.EnableSave = 1;
 	}
 	else if( (cmd[5] == 'N') && (cmd[6] == 'A') && (cmd[7] == ';')	)
@@ -393,7 +393,7 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 				{
 					goto error;
 				}
-				PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
+				PROFILE_SaveValue(Profile, TableId, Item);
 			}				
 		}
 		if (PROFILE_GetValue(Profile, TableId, Item, TempValue))
@@ -484,7 +484,7 @@ int32_t PROFILE_PROTOCOL_SetColor(PROFILE_T *Profile, char * cmd, char * rsp)
 	{
 		if (PROFILE_SetAlarmColors(Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure))
 			goto error;
-		PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
+		PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
 		if (PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, Item, &ColorDegrade, &ColorFailure))
 			goto error;
 		p = UintToStr( p, TableId );
@@ -1040,15 +1040,11 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 		
 		if (Profile->ValuesCRC16 != CRCCalc)
 		{
-			if (PROFILE_FLASH_LastRecordLoad(&Profile->ProfileFlash))
+			if (PROFILE_FLASH_ConfigsLoad(&Profile->ProfileFlash))
 			{
-				PROFILE_SetFactory(Profile, PROFILE_TABLE_1);
-				PROFILE_SetFactory(Profile, PROFILE_TABLE_2);
-				PROFILE_SetFactory(Profile, PROFILE_TABLE_3);
-				PROFILE_SetFactory(Profile, PROFILE_TABLE_4);
-				PROFILE_SetFactory(Profile, PROFILE_TABLE_103);
+				PROFILE_SetFactory(Profile);
 			}
-			PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
+			PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
 			Profile->ValuesLock = 0;		
 			*p++ = 'N';
 			*p++ = 'A';
@@ -1061,7 +1057,7 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 		else
 		{
 			Profile->TablesChanges |= (1 << PROFILE_TABLE_1) | (1 << PROFILE_TABLE_2) | (1 << PROFILE_TABLE_3) | (1 << PROFILE_TABLE_4) | (1 << PROFILE_TABLE_103);
-			PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
+			PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
 			Profile->ValuesLock = 0;			
 			*p++ = 'O';
 			*p++ = 'K';

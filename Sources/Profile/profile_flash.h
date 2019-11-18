@@ -9,9 +9,18 @@
 #define	PROFILE_FLASH_HEADERS_SIZE		(	2 * BSP_FLASH_PAGE_SIZE )
 #define PROFILE_FLASH_HEADERS_END			( PROFILE_FLASH_HEADERS_START + PROFILE_FLASH_HEADERS_SIZE )
 
+#define PROFILE_FLASH_CALIBS_CNT			( BSP_CONFIG_PROFILES_CNT )
+#define PROFILE_FLASH_CALIBS_START		( PROFILE_FLASH_HEADERS_END )
+#define	PROFILE_FLASH_CALIBS_SIZE			(	30 * BSP_FLASH_PAGE_SIZE )
+#define PROFILE_FLASH_CALIBS_END			( PROFILE_FLASH_CALIBS_START + PROFILE_FLASH_CALIBS_SIZE )
+
+#define	PROFILE_FLASH_CALIB_SIZE				(	PROFILE_FLASH_CALIBS_SIZE / PROFILE_FLASH_CALIBS_CNT )
+#define PROFILE_FLASH_CALIB_START(Idx)	( PROFILE_FLASH_CALIBS_START +  ((Idx) * PROFILE_FLASH_CALIB_SIZE) )
+#define PROFILE_FLASH_CALIB_END(Idx)		( PROFILE_FLASH_CALIB_START(Idx) +  PROFILE_FLASH_CALIB_SIZE )
+
 #define PROFILE_FLASH_CONFIGS_CNT			( BSP_CONFIG_PROFILES_CNT )
-#define PROFILE_FLASH_CONFIGS_START		( PROFILE_FLASH_HEADERS_END )
-#define	PROFILE_FLASH_CONFIGS_SIZE		(	BSP_FLASH_CFG_SIZE - PROFILE_FLASH_HEADERS_SIZE )
+#define PROFILE_FLASH_CONFIGS_START		( PROFILE_FLASH_CALIBS_END )
+#define	PROFILE_FLASH_CONFIGS_SIZE		(	BSP_FLASH_CFG_SIZE - (PROFILE_FLASH_HEADERS_SIZE + PROFILE_FLASH_CALIBS_SIZE) )
 #define PROFILE_FLASH_CONFIGS_END			( PROFILE_FLASH_CONFIGS_START + PROFILE_FLASH_CONFIGS_SIZE )
 
 #define	PROFILE_FLASH_CONFIG_SIZE				(	PROFILE_FLASH_CONFIGS_SIZE / PROFILE_FLASH_CONFIGS_CNT )
@@ -35,27 +44,32 @@
 #endif
 	
 typedef struct {
-	void *Values;
-	uint32_t ValuesSize;
-	osMutexId ValuesMutex;
+	void *Calibs;
+	uint32_t CalibsSize;
+	void *Configs;
+	uint32_t ConfigsSize;
+	osMutexId Mutex;
 	
 	osThreadId ThreadId;
 	osMessageQId MessageQId;
 	
 	uint32_t HeaderIdx;
 	uint32_t ConfigIdx;
+	uint32_t CalibIdx;
 	uint32_t ProfileIdx;
 	uint32_t EnableSave;
 } PROFILE_FLASH_T;
 
-int32_t PROFILE_FLASH_Init(PROFILE_FLASH_T *ProfileFlash, char *Name, void *Values, uint32_t ValuesSize, osMutexId ValuesMutex);
+int32_t PROFILE_FLASH_Init(PROFILE_FLASH_T *ProfileFlash, char *Name, void *Calibs, uint32_t CalibsSize, void *Configs, uint32_t ConfigsSize, osMutexId ConfigsMutex);
 
 int32_t PROFILE_FLASH_ProfileIdxLoad(PROFILE_FLASH_T *ProfileFlash, uint32_t *ProfileIdx);
 int32_t PROFILE_FLASH_ProfileIdxSave(PROFILE_FLASH_T *ProfileFlash, uint32_t ProfileIdx);
 
-void PROFILE_FLASH_ParamsSave(PROFILE_FLASH_T *ProfileFlash);
-int32_t PROFILE_FLASH_ParamsLoad(PROFILE_FLASH_T *ProfileFlash);
-int32_t PROFILE_FLASH_LastRecordLoad(PROFILE_FLASH_T *ProfileFlash);
+void PROFILE_FLASH_CalibsSave(PROFILE_FLASH_T *ProfileFlash);
+int32_t PROFILE_FLASH_CalibsLoad(PROFILE_FLASH_T *ProfileFlash);
+
+void PROFILE_FLASH_ConfigsSave(PROFILE_FLASH_T *ProfileFlash);
+int32_t PROFILE_FLASH_ConfigsLoad(PROFILE_FLASH_T *ProfileFlash);
 
 void PROFILE_FLASH_LangpackSave(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index);
 void PROFILE_FLASH_LangpackLoad(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index);

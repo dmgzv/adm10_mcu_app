@@ -162,7 +162,8 @@ typedef struct {
 	const uint32_t Table103Size;	//Количество строк (параметров) для таблицы профиля
 	const char 			**Text; //Указатель на файл профиля
 	const uint32_t	*TextSize;	//Количество строк в профиле
-	const void 			*DefaultValues; //Указатель на дефолтные значения
+	const void 			*StaticDefaultValues; //Указатель на дефолтные значения
+	const void 			*CalibDefaultValues; //Указатель на дефолтные значения
 } PROFILE_DESCR_T;
 
 typedef struct {
@@ -171,6 +172,8 @@ typedef struct {
 	uint32_t DynamicSize;
 	void *Static;
 	uint32_t StaticSize;
+	void *Calib;
+	uint32_t CalibSize;
 }	PROFILE_VALUES_T;
 
 #endif /* __PROFILE_TYPES_H */

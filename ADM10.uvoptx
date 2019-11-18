@@ -75,7 +75,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>1</IsCurrentTarget>
+        <IsCurrentTarget>0</IsCurrentTarget>
       </OPTFL>
       <CpuCode>18</CpuCode>
       <DebugOpt>
@@ -397,7 +397,7 @@
       <OPTFL>
         <tvExp>1</tvExp>
         <tvExpOptDlg>0</tvExpOptDlg>
-        <IsCurrentTarget>0</IsCurrentTarget>
+        <IsCurrentTarget>1</IsCurrentTarget>
       </OPTFL>
       <CpuCode>18</CpuCode>
       <DebugOpt>
@@ -1652,7 +1652,7 @@
   </Group>
 
   <Group>
-    <GroupName>ProfileADM</GroupName>
+    <GroupName>ProfileADM10</GroupName>
     <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
@@ -1664,8 +1664,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM\profile_adm.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1676,8 +1676,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM\profile_adm_client.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm_client.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_client.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_client.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1688,8 +1688,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM\profile_adm_line.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm_line.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_line.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_line.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1700,8 +1700,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM\profile_adm_params.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm_params.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_params.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_params.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1712,8 +1712,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM\profile_adm_text.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm_text.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_pg.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_pg.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1724,8 +1724,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM\profile_adm_values.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm_values.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_text.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_text.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1736,8 +1736,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM\profile_adm_xc.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm_xc.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_values.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_values.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -1748,8 +1748,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM\profile_adm_pg.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm_pg.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_xc.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_xc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

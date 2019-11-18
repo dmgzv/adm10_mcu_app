@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI, DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -817,47 +817,47 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>ProfileADM</GroupName>
+          <GroupName>ProfileADM10</GroupName>
           <Files>
             <File>
-              <FileName>profile_adm.c</FileName>
+              <FileName>profile_adm10.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_client.c</FileName>
+              <FileName>profile_adm10_client.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_client.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_client.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_line.c</FileName>
+              <FileName>profile_adm10_line.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_line.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_line.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_params.c</FileName>
+              <FileName>profile_adm10_params.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_params.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_params.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_text.c</FileName>
+              <FileName>profile_adm10_pg.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_text.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_pg.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_values.c</FileName>
+              <FileName>profile_adm10_text.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_values.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_text.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_xc.c</FileName>
+              <FileName>profile_adm10_values.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_xc.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_values.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_pg.c</FileName>
+              <FileName>profile_adm10_xc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_pg.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_xc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1422,7 +1422,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1904,47 +1904,47 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>ProfileADM</GroupName>
+          <GroupName>ProfileADM10</GroupName>
           <Files>
             <File>
-              <FileName>profile_adm.c</FileName>
+              <FileName>profile_adm10.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_client.c</FileName>
+              <FileName>profile_adm10_client.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_client.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_client.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_line.c</FileName>
+              <FileName>profile_adm10_line.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_line.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_line.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_params.c</FileName>
+              <FileName>profile_adm10_params.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_params.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_params.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_text.c</FileName>
+              <FileName>profile_adm10_pg.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_text.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_pg.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_values.c</FileName>
+              <FileName>profile_adm10_text.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_values.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_text.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_xc.c</FileName>
+              <FileName>profile_adm10_values.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_xc.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_values.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm_pg.c</FileName>
+              <FileName>profile_adm10_xc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM\profile_adm_pg.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_xc.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,6 +1,6 @@
-const char *const ProfileADMText[] = {
+const char *const ProfileADM10Text[] = {
 "[Header]",
-"5.0;adm;adm;2;5",
+"5.0;adm10;admj;2;5",
 "[1]",
 "pId;1;32;213;;;Block identifier",
 "SrNumber;2;32;213;;;Serial number",
@@ -2377,4 +2377,4 @@ const char *const ProfileADMText[] = {
 };
 
 
-const unsigned int ProfileADMTextSize = sizeof( ProfileADMText ) / sizeof( ProfileADMText[0] );
+const unsigned int ProfileADM10TextSize = sizeof( ProfileADM10Text ) / sizeof( ProfileADM10Text[0] );

@@ -17,7 +17,7 @@
 #include "profile_iface.h"
 #include "profile_types.h"
 #include "profile_protocol.h"
-#include "profile_adm.h"
+#include "profile_adm10.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -80,19 +80,24 @@ const SHELL_IFACE_T ShellTelnetIface =
 /* Private variables ---------------------------------------------------------*/
 
 typedef union {
-	PROFILE_ADM_VALUES_DYNAMIC_T	adm;
+	PROFILE_ADM10_VALUES_DYNAMIC_T	adm;
 } PROFILE_VALUES_DYNAMIC_T;
 
 typedef union {
-	PROFILE_ADM_VALUES_STATIC_T	adm;
+	PROFILE_ADM10_VALUES_STATIC_T	adm;
 }PROFILE_VALUES_STATIC_T;
 
-extern PROFILE_DESCR_T ProfileADMDescr;
-PROFILE_DESCR_T __attribute__((section ("CCM_DATA"))) *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADMDescr};
+typedef union {
+	PROFILE_ADM10_VALUES_CALIB_T	adm;
+}PROFILE_VALUES_CALIB_T;
+
+extern PROFILE_DESCR_T ProfileADM10Descr;
+PROFILE_DESCR_T __attribute__((section ("CCM_DATA"))) *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADM10Descr};
 
 PROFILE_T __attribute__((section ("CCM_DATA"))) Profile;
 PROFILE_VALUES_STATIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesStatic;
 PROFILE_VALUES_DYNAMIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesDynamic;
+PROFILE_VALUES_CALIB_T __attribute__((section ("CCM_DATA"))) ProfileValuesCalib;
 PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart4;
 PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart5;
 
@@ -117,26 +122,26 @@ osThreadDef(System, System_Thread, osPriorityNormal, 0, 1024);
 
 void PROFILE_UpdateValues(void)
 {
-	PROFILE_ADM_UpdateValues(&Profile);	
+	PROFILE_ADM10_UpdateValues(&Profile);	
 }
 
 int32_t PROFILE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
 {
-	if (PROFILE_ADM_CheckConfigValue(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_CheckConfigValue(Profile, Table, Idx, Value))
 		return -1;
 	return 0;
 }
 
 int32_t PROFILE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
 {
-	if (PROFILE_ADM_SetConfigValueDependencies(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_SetConfigValueDependencies(Profile, Table, Idx, Value))
 		return -1;
 	return 0;
 }
 
 void PROFILE_UpdateConfigs(void)
 {
-	PROFILE_ADM_UpdateConfigs(&Profile);
+	PROFILE_ADM10_UpdateConfigs(&Profile);
 }
 
 /**
@@ -189,7 +194,7 @@ static void System_Thread(void const *argument)
 	WATCHDOG_Refresh();
 	
 	/* Init Profile*/
-	PROFILE_Init(&Profile, ProfileDescr, &ProfileValuesStatic, sizeof(ProfileValuesStatic), &ProfileValuesDynamic, sizeof(ProfileValuesDynamic));
+	PROFILE_Init(&Profile, ProfileDescr, &ProfileValuesStatic, sizeof(ProfileValuesStatic), &ProfileValuesDynamic, sizeof(ProfileValuesDynamic), &ProfileValuesCalib, sizeof(ProfileValuesCalib));
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Protocol*/

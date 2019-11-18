@@ -24,7 +24,7 @@ typedef struct {
 	BOOTLOADER_T Bootloader;
 } PROFILE_T;
 
-int32_t PROFILE_Init(PROFILE_T *Profile, PROFILE_DESCR_T **Descr, void *Static, uint32_t StaticSize, void *Dynamic, uint32_t DynamicSize);
+int32_t PROFILE_Init(PROFILE_T *Profile, PROFILE_DESCR_T **Descr, void *Static, uint32_t StaticSize, void *Dynamic, uint32_t DynamicSize, void *Calib, uint32_t CalibSize);
 
 int32_t PROFILE_ValueToString(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, char* Str , uint32_t *Len);
 int32_t PROFILE_StringToValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, char* Str);
@@ -33,13 +33,15 @@ int32_t PROFILE_CheckValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void
 int32_t PROFILE_SetValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
 int32_t PROFILE_SetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *SetValue);
 int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *GetValue);
+void PROFILE_SaveValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
 int32_t PROFILE_SetFactoryValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
 
 int32_t PROFILE_SetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t DegradeColor, uint8_t FailureColor);
 int32_t PROFILE_GetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *DegradeColor, uint8_t *FailureColor);
 int32_t PROFILE_SetFactoryAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx);
 	
-int32_t PROFILE_SetFactory(PROFILE_T *Profile, uint8_t Table);
+int32_t PROFILE_SetFactoryTable(PROFILE_T *Profile, uint8_t Table);
+int32_t PROFILE_SetFactory(PROFILE_T *Profile);
 int32_t PROFILE_SetDefault(PROFILE_T *Profile);
 
 int32_t PROFILE_GetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *GetColor);

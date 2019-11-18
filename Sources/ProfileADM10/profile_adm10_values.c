@@ -1,8 +1,6 @@
-#include "profile_adm_values.h"
+#include "profile_adm10_values.h"
 
-const PROFILE_ADM_VALUES_STATIC_T ProfileADMValuesStaticDefault = {
-    "ADM10",
-    "0000-0000-0000",
+const PROFILE_ADM10_VALUES_STATIC_T ProfileADM10ValuesStaticDefault = {
     "IP1459",
     "1.0.0.1",
     0,
@@ -601,8 +599,6 @@ const PROFILE_ADM_VALUES_STATIC_T ProfileADMValuesStaticDefault = {
     PROFILE_COLOR_MINOR,
     PROFILE_COLOR_CRITICAL,
     0,
-    0,
-    0,
     3,
     0,
     0,
@@ -1073,6 +1069,13 @@ const PROFILE_ADM_VALUES_STATIC_T ProfileADMValuesStaticDefault = {
     "",
     0,
     "",
+    0,
+};
+
+const PROFILE_ADM10_VALUES_CALIB_T ProfileADM10ValuesCalibDefault = {
+    "ADM10",
+    "0000-0000-0000",
+    0,
     0,
 };
 

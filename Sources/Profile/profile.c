@@ -8,15 +8,17 @@
 
 #define PROFILE_DYNAMIC_PARAM_VALUE_PTR(Profile, Param) 							(void*)((uint32_t)((Profile)->Values.Dynamic) + (uint32_t)((Param)->Value))
 #define PROFILE_STATIC_PARAM_VALUE_PTR(Profile, Param) 								(void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Value))
-#define PROFILE_STATIC_PARAM_DEFAULT_VALUE_PTR(Profile, Param)				(void*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->DefaultValues) + (uint32_t)((Param)->Value))
+#define PROFILE_CALIB_PARAM_VALUE_PTR(Profile, Param) 								(void*)((uint32_t)((Profile)->Values.Calib) + (uint32_t)((Param)->Value))
+#define PROFILE_STATIC_PARAM_DEFAULT_VALUE_PTR(Profile, Param)				(void*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->StaticDefaultValues) + (uint32_t)((Param)->Value))
+#define PROFILE_CALIB_PARAM_DEFAULT_VALUE_PTR(Profile, Param)					(void*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->CalibDefaultValues) + (uint32_t)((Param)->Value))
 #define PROFILE_DYNAMIC_PARAM_THR_PTR(Profile, Param) 								(Param)->Thesholds ? (void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Thesholds)) : NULL
 #define PROFILE_CONFIG_PARAM_THR_PTR(Profile, Param) 									(Param)->Thesholds ? (void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Thesholds)) : NULL
 #define PROFILE_STATIC_PARAM_THR_PTR(Profile, Param) 									(Param)->Thesholds ? (void*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->Thesholds)) : NULL
 #define PROFILE_DYNAMIC_PARAM_COLOR_PTR(Profile, Param) 							(Param)->Color ? (uint8_t*)((uint32_t)((Profile)->Values.Dynamic) + (uint32_t)((Param)->Color)) : NULL
 #define PROFILE_DYNAMIC_PARAM_DEGR_COLOR_PTR(Profile, Param) 					(Param)->DegradeColor ? (uint8_t*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->DegradeColor)) : NULL
-#define PROFILE_DYNAMIC_PARAM_DEFAULT_DEGR_COLOR_PTR(Profile, Param) 	(Param)->DegradeColor ? (uint8_t*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->DefaultValues) + (uint32_t)((Param)->DegradeColor)) : NULL
+#define PROFILE_DYNAMIC_PARAM_DEFAULT_DEGR_COLOR_PTR(Profile, Param) 	(Param)->DegradeColor ? (uint8_t*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->StaticDefaultValues) + (uint32_t)((Param)->DegradeColor)) : NULL
 #define PROFILE_DYNAMIC_PARAM_FAIL_COLOR_PTR(Profile, Param) 					(Param)->FailureColor ? (uint8_t*)((uint32_t)((Profile)->Values.Static) + (uint32_t)((Param)->FailureColor)) : NULL
-#define PROFILE_DYNAMIC_PARAM_DEFAULT_FAIL_COLOR_PTR(Profile, Param) 	(Param)->FailureColor ? (uint8_t*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->DefaultValues) + (uint32_t)((Param)->FailureColor)) : NULL
+#define PROFILE_DYNAMIC_PARAM_DEFAULT_FAIL_COLOR_PTR(Profile, Param) 	(Param)->FailureColor ? (uint8_t*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->StaticDefaultValues) + (uint32_t)((Param)->FailureColor)) : NULL
 #define PROFILE_DYNAMIC_PARAM_STATE_PTR(Profile, Param) 							(Param)->State ? (uint8_t*)((uint32_t)((Profile)->Values.Dynamic) + (uint32_t)((Param)->State)) : NULL
 
 __weak int32_t PROFILE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
@@ -29,13 +31,15 @@ __weak int32_t PROFILE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Ta
 	return 0;
 }
 
-static int32_t PROFILE_InitValues(PROFILE_VALUES_T *Values, void *Static, uint32_t StaticSize, void *Dynamic, uint32_t DynamicSize)
+static int32_t PROFILE_InitValues(PROFILE_VALUES_T *Values, void *Static, uint32_t StaticSize, void *Dynamic, uint32_t DynamicSize, void *Calib, uint32_t CalibSize)
 {
 	osMutexDef(ProfileValues);
 	Values->Dynamic = Dynamic;
 	Values->DynamicSize = DynamicSize;
 	Values->Static = Static;
 	Values->StaticSize = StaticSize;
+	Values->Calib = Calib;
+	Values->CalibSize = CalibSize;
 	Values->Mutex = osMutexCreate(osMutex(ProfileValues));
 	if ( !Values->Mutex )
 		return -1;
@@ -47,13 +51,21 @@ static void __PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, 
 	switch (Table)
 	{
 		case PROFILE_TABLE_1:
-			*Value = PROFILE_STATIC_PARAM_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table1[Idx - 1]);
+			if (((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) && 
+				((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)) != PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)))
+				*Value = PROFILE_CALIB_PARAM_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table1[Idx - 1]);
+			else
+				*Value = PROFILE_STATIC_PARAM_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table1[Idx - 1]);
 			break;
 		case PROFILE_TABLE_2:
 			*Value = PROFILE_DYNAMIC_PARAM_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table2[Idx - 1]);
 			break;
 		case PROFILE_TABLE_3:
-			*Value = PROFILE_STATIC_PARAM_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table3[Idx - 1]);
+			if (((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) && 
+				((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)) != PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)))
+				*Value = PROFILE_CALIB_PARAM_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table3[Idx - 1]);
+			else
+				*Value = PROFILE_STATIC_PARAM_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table3[Idx - 1]);
 			break;
 		case PROFILE_TABLE_4:
 			*Value = PROFILE_STATIC_PARAM_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table4[Idx - 1]);
@@ -78,10 +90,18 @@ static void __PROFILE_GetDefaultValue(PROFILE_T *Profile, uint8_t Table, uint16_
 	switch (Table)
 	{
 		case PROFILE_TABLE_1:
-			*DefaultValue = PROFILE_STATIC_PARAM_DEFAULT_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table1[Idx - 1]);
+			if (((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) && 
+				((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)) != PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)))
+				*DefaultValue = PROFILE_CALIB_PARAM_DEFAULT_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table1[Idx - 1]);
+			else
+				*DefaultValue = PROFILE_STATIC_PARAM_DEFAULT_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table1[Idx - 1]);
 			break;
 		case PROFILE_TABLE_3:
-			*DefaultValue = PROFILE_STATIC_PARAM_DEFAULT_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table3[Idx - 1]);
+			if (((Profile->Descr[Profile->Idx]->Table3[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) && 
+				((Profile->Descr[Profile->Idx]->Table3[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)) != PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)))
+				*DefaultValue = PROFILE_CALIB_PARAM_DEFAULT_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table3[Idx - 1]);
+			else
+				*DefaultValue = PROFILE_STATIC_PARAM_DEFAULT_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table3[Idx - 1]);
 			break;
 		case PROFILE_TABLE_4:
 			*DefaultValue = PROFILE_STATIC_PARAM_DEFAULT_VALUE_PTR(Profile, &Profile->Descr[Profile->Idx]->Table4[Idx - 1]);
@@ -226,32 +246,42 @@ static void __PROFILE_GetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, 
 	}
 }
 
-int32_t PROFILE_Init(PROFILE_T *Profile, PROFILE_DESCR_T **Descr, void *Static, uint32_t StaticSize, void *Dynamic, uint32_t DynamicSize)
+int32_t PROFILE_Init(PROFILE_T *Profile, PROFILE_DESCR_T **Descr, void *Static, uint32_t StaticSize, void *Dynamic, uint32_t DynamicSize, void *Calib, uint32_t CalibSize)
 {	
 	Profile->Idx = 0;
 	Profile->Descr = Descr;
 	Profile->TablesChanges = 0;
 	Profile->SetEnable = 0;
 	Profile->ValuesLock = 0;
-	if (PROFILE_InitValues(&Profile->Values, Static, StaticSize, Dynamic, DynamicSize))
+	if (PROFILE_InitValues(&Profile->Values, Static, StaticSize, Dynamic, DynamicSize, Calib, CalibSize))
 		return -1;
 	
-	if( PROFILE_FLASH_Init(&Profile->ProfileFlash, "Profile Flash", Profile->Values.Static, Profile->Values.StaticSize, Profile->Values.Mutex))
-		goto error;
+	if( PROFILE_FLASH_Init(&Profile->ProfileFlash, "Profile Flash", Profile->Values.Calib, Profile->Values.CalibSize, Profile->Values.Static, Profile->Values.StaticSize, Profile->Values.Mutex))
+		goto set_default;
 	
 	if (PROFILE_FLASH_ProfileIdxLoad(&Profile->ProfileFlash, &Profile->Idx))
 	{
 		Profile->Idx = 0;
 		PROFILE_FLASH_ProfileIdxSave(&Profile->ProfileFlash, Profile->Idx);
 	}
-	if (PROFILE_FLASH_ParamsLoad(&Profile->ProfileFlash))
-		goto error;
+	
+	if (PROFILE_FLASH_CalibsLoad(&Profile->ProfileFlash))
+		goto set_default;
+	
+	if (PROFILE_FLASH_ConfigsLoad(&Profile->ProfileFlash))
+		goto set_factory;
 	
 	return 0;
 	
-error:
+set_default:
 	PROFILE_SetDefault(Profile);
-	PROFILE_FLASH_ParamsSave(&Profile->ProfileFlash);
+	PROFILE_FLASH_CalibsSave(&Profile->ProfileFlash);
+	PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
+	return 0;
+
+set_factory:
+	PROFILE_SetFactory(Profile);
+	PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
 	return 0;
 }
 
@@ -652,6 +682,33 @@ int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 	return 0;
 }
 
+void PROFILE_SaveValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
+{
+	switch (Table)
+	{
+		case PROFILE_TABLE_1:
+			if (((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) && 
+				((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)) != PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)))
+				PROFILE_FLASH_CalibsSave(&Profile->ProfileFlash);
+			else
+				PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
+			break;
+		case PROFILE_TABLE_3:
+			if (((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) && 
+				((Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)) != PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)))
+				PROFILE_FLASH_CalibsSave(&Profile->ProfileFlash);
+			else
+				PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
+			break;
+		case PROFILE_TABLE_4:
+			PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
+			break;
+		case PROFILE_TABLE_103:
+			PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
+			break;
+	}
+}
+
 int32_t PROFILE_SetFactoryValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 {
 	void *DefaultValue;
@@ -719,7 +776,7 @@ int32_t PROFILE_SetFactoryAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_
 	return PROFILE_SetAlarmColors(Profile, Table, Idx, DefaultDegradeColor ? *DefaultDegradeColor : PROFILE_COLOR_NA, DefaultFailureColor ? *DefaultFailureColor : PROFILE_COLOR_NA);
 }
 
-int32_t PROFILE_SetFactory(PROFILE_T *Profile, uint8_t Table)
+int32_t PROFILE_SetFactoryTable(PROFILE_T *Profile, uint8_t Table)
 {
 	uint32_t Idx;
 	
@@ -786,7 +843,19 @@ int32_t PROFILE_SetDefault(PROFILE_T *Profile)
 		return - 1;
 	
 	osMutexWait( Profile->Values.Mutex, osWaitForever );
-	memcpy(Profile->Values.Static, Profile->Descr[Profile->Idx]->DefaultValues, Profile->Values.StaticSize);
+	memcpy(Profile->Values.Calib, Profile->Descr[Profile->Idx]->CalibDefaultValues, Profile->Values.CalibSize);
+	memcpy(Profile->Values.Static, Profile->Descr[Profile->Idx]->StaticDefaultValues, Profile->Values.StaticSize);
+	osMutexRelease( Profile->Values.Mutex );
+	return 0;
+}
+
+int32_t PROFILE_SetFactory(PROFILE_T *Profile)
+{
+	if (Profile->ValuesLock)
+		return - 1;
+	
+	osMutexWait( Profile->Values.Mutex, osWaitForever );
+	memcpy(Profile->Values.Static, Profile->Descr[Profile->Idx]->StaticDefaultValues, Profile->Values.StaticSize);
 	osMutexRelease( Profile->Values.Mutex );
 	return 0;
 }
