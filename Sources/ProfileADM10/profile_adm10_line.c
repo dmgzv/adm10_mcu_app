@@ -25,11 +25,6 @@ static const uint32_t ProfileADM10DynamicLnSFPTxPwrIdx[PROFILE_ADM10_LINE_PORTS]
 	PROFILE_ADM10_LN_1_SFP_TXPWR_IDX, PROFILE_ADM10_LN_2_SFP_TXPWR_IDX, PROFILE_ADM10_LN_3_SFP_TXPWR_IDX, PROFILE_ADM10_LN_4_SFP_TXPWR_IDX,
 };
 
-static const uint32_t ProfileADM10DynamicLnPMAStatusIdx[PROFILE_ADM10_LINE_PORTS] = 
-{
-	PROFILE_ADM10_LN_1_PMASTATUS_IDX, PROFILE_ADM10_LN_2_PMASTATUS_IDX, PROFILE_ADM10_LN_3_PMASTATUS_IDX, PROFILE_ADM10_LN_4_PMASTATUS_IDX,
-};
-
 static const uint32_t ProfileADM10DynamicLnOTU2AlarmsIdx[PROFILE_ADM10_LINE_PORTS] = 
 {
 	PROFILE_ADM10_LN_1_OTU2_ALARMS_IDX, PROFILE_ADM10_LN_2_OTU2_ALARMS_IDX, PROFILE_ADM10_LN_3_OTU2_ALARMS_IDX, PROFILE_ADM10_LN_4_OTU2_ALARMS_IDX,
@@ -1148,25 +1143,6 @@ static void PROFILE_ADM10_LINE_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_t 
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicLnSFPTxPwrIdx[Idx], &Value, ColorType, State);
 }
 
-static void PROFILE_ADM10_LINE_UpdatePMAStatusValue(PROFILE_T *Profile, uint32_t Idx)
-{
-	uint32_t PMAStatus;
-	uint32_t State;
-
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
-		return;
-	
-	if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK))
-	{
-		PMAStatus = 0;
-	}
-	else
-	{
-		PMAStatus = fpga_line.Iface[Idx].__PMAStatus;
-	}
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicLnPMAStatusIdx[Idx], &PMAStatus, PROFILE_COLOR_TYPE_NO, State);
-}
-
 static void PROFILE_ADM10_LINE_UpdateOTU2AlarmsValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t OTU2Alarms;
@@ -1717,7 +1693,6 @@ static void PROFILE_ADM10_LINE_UpdateDynamicValues(PROFILE_T *Profile, uint32_t 
 	PROFILE_ADM10_LINE_UpdateSFPTempValue(Profile, Idx);
 	PROFILE_ADM10_LINE_UpdateSFPRxPwrValue(Profile, Idx);
 	PROFILE_ADM10_LINE_UpdateSFPTxPwrValue(Profile, Idx);
-	PROFILE_ADM10_LINE_UpdatePMAStatusValue(Profile, Idx);
 	PROFILE_ADM10_LINE_UpdateOTU2AlarmsValue(Profile, Idx);
 	PROFILE_ADM10_LINE_UpdateOTU2FECBERValue(Profile, Idx);
 	PROFILE_ADM10_LINE_UpdateODU2AlarmsValue(Profile, Idx);
