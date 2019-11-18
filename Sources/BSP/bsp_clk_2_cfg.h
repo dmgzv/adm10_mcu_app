@@ -1,16 +1,16 @@
 /*
- * Si5332-GM2 Rev C Configuration Register Export Header File
+ * Si5332-GM3 Rev C Configuration Register Export Header File
  *
- * This file represents a series of Silicon Labs Si5332-GM2 Rev C 
+ * This file represents a series of Silicon Labs Si5332-GM3 Rev C 
  * register writes that can be performed to load a single configuration 
  * on a device. It was created by a Silicon Labs ClockBuilder Pro
  * export tool.
  *
- * Part:		                                       Si5332-GM2 Rev C
- * Design ID:                                          
+ * Part:		                                       Si5332-GM3 Rev C
+ * Design ID:                                          ADM10
  * Includes Pre/Post Download Control Register Writes: Yes
- * Created By:                                         ClockBuilder Pro v2.29 [2018-11-04]
- * Timestamp:                                          2019-01-10 18:45:47 GMT+03:00
+ * Created By:                                         ClockBuilder Pro v2.38 [2019-10-31]
+ * Timestamp:                                          2019-11-15 14:39:45 GMT+03:00
  *
  * A complete design report corresponding to this export is included at the end 
  * of this header file.
@@ -22,112 +22,113 @@
 
 #include "si5332.h"
 
-#define BSP_CLK_2_CFG_NUM_REGS				103
+#define BSP_CLK_2_CFG_NUM_REGS				104
 
 const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
 {
 		/* Start configuration registers */
-	{ 0x17, 0x41 },
-	{ 0x18, 0x44 },
-	{ 0x19, 0x4D },
-	{ 0x1A, 0x31 },
-	{ 0x1B, 0x30 },
-	{ 0x1C, 0x20 },
-	{ 0x21, 0x6A },
-	{ 0x24, 0x01 },
-	{ 0x25, 0x10 },
-	{ 0x26, 0x10 },
-	{ 0x27, 0x50 },
-	{ 0x28, 0x00 },
-	{ 0x29, 0x60 },
-	{ 0x2A, 0x60 },
-	{ 0x2B, 0x19 },
-	{ 0x2D, 0x14 },
-	{ 0x36, 0x0B },
-	{ 0x37, 0xC3 },
-	{ 0x38, 0x00 },
-	{ 0x39, 0x0D },
-	{ 0x3A, 0x00 },
-	{ 0x3B, 0x11 },
-	{ 0x3C, 0x00 },
-	{ 0x48, 0x00 },
-	{ 0x4E, 0x08 },
-	{ 0x4F, 0x09 },
-	{ 0x50, 0x02 },
-	{ 0x51, 0x54 },
-	{ 0x52, 0x03 },
-	{ 0x53, 0xCC },
-	{ 0x54, 0x00 },
-	{ 0x60, 0x00 },
-	{ 0x67, 0x3E },
-	{ 0x68, 0x80 },
-	{ 0x69, 0x00 },
-	{ 0x6A, 0x00 },
-	{ 0x6B, 0x00 },
-	{ 0x6C, 0x01 },
-	{ 0x73, 0x00 },
-	{ 0x74, 0x00 },
-	{ 0x75, 0x02 },
-	{ 0x7A, 0x07 },
-	{ 0x7B, 0x01 },
-	{ 0x7C, 0x00 },
-	{ 0x7D, 0x00 },
-	{ 0x7F, 0x07 },
-	{ 0x80, 0x01 },
-	{ 0x81, 0x00 },
-	{ 0x82, 0x00 },
-	{ 0x84, 0x07 },
-	{ 0x85, 0x01 },
-	{ 0x86, 0x00 },
-	{ 0x87, 0x00 },
-	{ 0x89, 0x07 },
-	{ 0x8A, 0x01 },
-	{ 0x8B, 0x00 },
-	{ 0x8C, 0x00 },
-	{ 0x8E, 0x07 },
-	{ 0x8F, 0x01 },
-	{ 0x90, 0x00 },
-	{ 0x91, 0x00 },
-	{ 0x93, 0x03 },
-	{ 0x94, 0x04 },
-	{ 0x95, 0x00 },
-	{ 0x96, 0x00 },
-	{ 0x97, 0x04 },
-	{ 0x98, 0x07 },
-	{ 0x99, 0x01 },
-	{ 0x9A, 0x00 },
-	{ 0x9B, 0x00 },
-	{ 0x9D, 0x07 },
-	{ 0x9E, 0x01 },
-	{ 0x9F, 0x00 },
-	{ 0xA0, 0x00 },
-	{ 0xA2, 0x03 },
-	{ 0xA3, 0x02 },
-	{ 0xA4, 0x00 },
-	{ 0xA5, 0x00 },
-	{ 0xA6, 0x04 },
-	{ 0xA7, 0x07 },
-	{ 0xA8, 0x01 },
-	{ 0xA9, 0x00 },
-	{ 0xAA, 0x00 },
-	{ 0xAC, 0x07 },
-	{ 0xAD, 0x01 },
-	{ 0xAE, 0x00 },
-	{ 0xAF, 0x00 },
-	{ 0xB1, 0x07 },
-	{ 0xB2, 0x01 },
-	{ 0xB3, 0x00 },
-	{ 0xB4, 0x00 },
-	{ 0xB6, 0xFF },
-	{ 0xB7, 0x0F },
-	{ 0xB9, 0x06 },
-	{ 0xBA, 0x1C },
-	{ 0xBC, 0x00 },
-	{ 0xBD, 0x00 },
-	{ 0xBE, 0x10 },
-	{ 0xBF, 0x00 },
-	{ 0xC0, 0x1F },
-	{ 0xC1, 0x1F },
+	{ 0x0017, 0x41 },
+	{ 0x0018, 0x44 },
+	{ 0x0019, 0x4D },
+	{ 0x001A, 0x31 },
+	{ 0x001B, 0x30 },
+	{ 0x001C, 0x20 },
+	{ 0x0021, 0x6A },
+	{ 0x0024, 0x01 },
+	{ 0x0025, 0x10 },
+	{ 0x0026, 0x10 },
+	{ 0x0027, 0x50 },
+	{ 0x0028, 0x00 },
+	{ 0x0029, 0x60 },
+	{ 0x002A, 0x60 },
+	{ 0x002B, 0x19 },
+	{ 0x002D, 0x14 },
+	{ 0x0036, 0x0B },
+	{ 0x0037, 0xC3 },
+	{ 0x0038, 0x00 },
+	{ 0x0039, 0x0D },
+	{ 0x003A, 0x00 },
+	{ 0x003B, 0x11 },
+	{ 0x003C, 0x00 },
+	{ 0x0048, 0x00 },
+	{ 0x004E, 0x08 },
+	{ 0x004F, 0x09 },
+	{ 0x0050, 0x02 },
+	{ 0x0051, 0x54 },
+	{ 0x0052, 0x03 },
+	{ 0x0053, 0xCC },
+	{ 0x0054, 0x00 },
+	{ 0x0060, 0x00 },
+	{ 0x0067, 0x3E },
+	{ 0x0068, 0x80 },
+	{ 0x0069, 0x00 },
+	{ 0x006A, 0x00 },
+	{ 0x006B, 0x00 },
+	{ 0x006C, 0x01 },
+	{ 0x0073, 0x00 },
+	{ 0x0074, 0x00 },
+	{ 0x0075, 0x02 },
+	{ 0x007A, 0x07 },
+	{ 0x007B, 0x01 },
+	{ 0x007C, 0x00 },
+	{ 0x007D, 0x00 },
+	{ 0x007F, 0x07 },
+	{ 0x0080, 0x01 },
+	{ 0x0081, 0x00 },
+	{ 0x0082, 0x00 },
+	{ 0x0084, 0x07 },
+	{ 0x0085, 0x01 },
+	{ 0x0086, 0x00 },
+	{ 0x0087, 0x00 },
+	{ 0x0089, 0x07 },
+	{ 0x008A, 0x01 },
+	{ 0x008B, 0x00 },
+	{ 0x008C, 0x00 },
+	{ 0x008E, 0x07 },
+	{ 0x008F, 0x01 },
+	{ 0x0090, 0x00 },
+	{ 0x0091, 0x00 },
+	{ 0x0093, 0x03 },
+	{ 0x0094, 0x04 },
+	{ 0x0095, 0x00 },
+	{ 0x0096, 0x00 },
+	{ 0x0097, 0x04 },
+	{ 0x0098, 0x07 },
+	{ 0x0099, 0x01 },
+	{ 0x009A, 0x00 },
+	{ 0x009B, 0x00 },
+	{ 0x009D, 0x07 },
+	{ 0x009E, 0x01 },
+	{ 0x009F, 0x00 },
+	{ 0x00A0, 0x00 },
+	{ 0x00A2, 0x03 },
+	{ 0x00A3, 0x02 },
+	{ 0x00A4, 0x00 },
+	{ 0x00A5, 0x00 },
+	{ 0x00A6, 0x04 },
+	{ 0x00A7, 0x07 },
+	{ 0x00A8, 0x01 },
+	{ 0x00A9, 0x00 },
+	{ 0x00AA, 0x00 },
+	{ 0x00AC, 0x07 },
+	{ 0x00AD, 0x01 },
+	{ 0x00AE, 0x00 },
+	{ 0x00AF, 0x00 },
+	{ 0x00B1, 0x07 },
+	{ 0x00B2, 0x01 },
+	{ 0x00B3, 0x00 },
+	{ 0x00B4, 0x00 },
+	{ 0x00B6, 0xFF },
+	{ 0x00B7, 0x0F },
+	{ 0x00B9, 0x06 },
+	{ 0x00BA, 0x1C },
+	{ 0x00BB, 0x00 },
+	{ 0x00BC, 0x00 },
+	{ 0x00BD, 0x00 },
+	{ 0x00BE, 0x10 },
+	{ 0x00BF, 0x00 },
+	{ 0x00C0, 0x26 },
+	{ 0x00C1, 0x26 },
 };
 
 
@@ -139,8 +140,8 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * Part:               Si5332-GM3 Rev C
  * Project File:       E:\Design\Cadence\CYC10GX_r2\si5332\Si5332-40.00-ADM10.slabtimeproj
  * Design ID:          ADM10
- * Created By:         ClockBuilder Pro v2.34.1 [2019-05-31]
- * Timestamp:          2019-06-06 10:11:28 GMT+03:00
+ * Created By:         ClockBuilder Pro v2.38 [2019-10-31]
+ * Timestamp:          2019-11-15 14:39:45 GMT+03:00
  * 
  * Design Rule Check
  * =================
@@ -164,7 +165,7 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * Inputs:
  *    XAXB: 40 MHz
  *          Crystal Mode
- *          Adjusted Capacitance: 10 pF
+ *          Adjusted Capacitance: 11.5 pF
  *  CLKIN2: Unused
  *  CLKIN3: Unused
  * 
@@ -235,11 +236,11 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * 
  * Estimated Power
  * ===============
- * Total Power: 303 mW, Tj: 32 °C
+ * Total Power: 304 mW, On Chip Power: 288 mW, Tj: 31 °C
  * 
  *                    Frequency             Format   Voltage   Current     Power
  *                  -----------  -----------------  --------  --------  --------
- * VDD                                                 1.8 V   37.5 mA     68 mW
+ * VDD                                                 1.8 V   38.3 mA     69 mW
  * VDD Dig                                             1.8 V    7.9 mA     14 mW
  * VDD Xtal                                            1.8 V    2.3 mA      4 mW
  * VDDO0                                                                        
@@ -261,11 +262,11 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  *           OUT10   155.52 MHz           LVDSFast     1.8 V   11.1 mA     20 mW
  *           OUT11   155.52 MHz           LVDSFast     1.8 V   11.1 mA     20 mW
  *                                                            --------  --------
- *                                                     Total  168.1 mA    303 mW
+ *                                                     Total  168.8 mA    304 mW
  * 
  * Note:
  * 
- * -Tj is junction temperature.
+ * -Tj is junction temperature. Tj must be less than 125 °C (on Si5332-GM3 Revision C) for device to comply with datasheet specifications. Tj = Ta + Theta_JA*On_Chip_Power.
  * -Overall power includes on-chip power dissipation and adds differential load power dissipation to estimate total power requirements.
  * -Above are estimates only: power and temperature should be measured on your PCB.
  * 
@@ -417,6 +418,12 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * 0xBA[2]     HSDIV2_DIS        1                  0x1              
  * 0xBA[3]     HSDIV3_DIS        1                  0x1              
  * 0xBA[4]     HSDIV4_DIS        1                  0x1              
+ * 0xBB[0]     OMUX0_DIS         0                  0x0              
+ * 0xBB[1]     OMUX1_DIS         0                  0x0              
+ * 0xBB[2]     OMUX2_DIS         0                  0x0              
+ * 0xBB[3]     OMUX3_DIS         0                  0x0              
+ * 0xBB[4]     OMUX4_DIS         0                  0x0              
+ * 0xBB[5]     OMUX5_DIS         0                  0x0              
  * 0xBC[0]     OUT0_DIS          0                  0x0              
  * 0xBC[1]     OUT1_DIS          0                  0x0              
  * 0xBC[2]     OUT2_DIS          0                  0x0              
@@ -431,10 +438,10 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * 0xBD[3]     OUT11_DIS         0                  0x0              
  * 0xBE[7:0]   PLL_MODE          16                 0x10             
  * 0xBF[0]     XOSC_CINT_ENA     0                  0x0              
- * 0xC0[5:0]   XOSC_CTRIM_XIN    31                 0x1F             
- * 0xC1[5:0]   XOSC_CTRIM_XOUT   31                 0x1F
+ * 0xC0[5:0]   XOSC_CTRIM_XIN    38                 0x26             
+ * 0xC1[5:0]   XOSC_CTRIM_XOUT   38                 0x26
  * 
  *
  */
-
+ 
 #endif
