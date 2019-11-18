@@ -517,9 +517,6 @@ int32_t PROFILE_ADM_PG_CheckConfigODU1PGSetWTRTmrValue(PROFILE_T *Profile, uint8
 	switch (Mode)
 	{
 		case 0:
-			/*In ADM-10 WTR timer grid is 100ms*/
-			if ((*(uint32_t*)Value % 100))
-				return -1;	
 			break;
 		case 3:
 			/*In ATP-2x10-BS WTR timer is always 0*/
@@ -542,6 +539,9 @@ int32_t PROFILE_ADM_PG_CheckConfigODU1PGSetHOTmrValue(PROFILE_T *Profile, uint8_
 	switch (Mode)
 	{
 		case 0:
+			/*In ADM-10 HO timer grid is 100ms*/
+			if ((*(uint32_t*)Value % 100))
+				return -1;	
 			break;
 		case 3:
 			/*In ATP-2x10-BS WTR timer is always 0*/
@@ -747,9 +747,6 @@ int32_t PROFILE_ADM_PG_CheckConfigODU0PGSetWTRTmrValue(PROFILE_T *Profile, uint8
 	switch (Mode)
 	{
 		case 0:
-			/*In ADM-10 WTR timer grid is 100ms*/
-			if ((*(uint32_t*)Value % 100))
-				return -1;	
 			break;
 		case 3:
 			/*In ATP-2x10-BS WTR timer is always 0*/
@@ -772,6 +769,9 @@ int32_t PROFILE_ADM_PG_CheckConfigODU0PGSetHOTmrValue(PROFILE_T *Profile, uint8_
 	switch (Mode)
 	{
 		case 0:
+			/*In ADM-10 HO timer grid is 100ms*/
+			if ((*(uint32_t*)Value % 100))
+				return -1;	
 			break;
 		case 3:
 			/*In ATP-2x10-BS WTR timer is always 0*/
@@ -1174,6 +1174,8 @@ static void PROFILE_ADM_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 						{
 							BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(Client, 0x01);
 						}
+						BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_WTR_SET(Client, ODU1PGWTRTmr[i]);
+						BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_HO_SET(Client, ODU1PGHOTmr[i]);
 					}
 				}
 				break;
@@ -1288,6 +1290,8 @@ static void PROFILE_ADM_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 						{
 							BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(Client, 0x01);
 						}
+						BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_WTR_SET(Client, ODU0PGWTRTmr[i]);
+						BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_HO_SET(Client, ODU0PGHOTmr[i]);
 					}
 				}
 				break;

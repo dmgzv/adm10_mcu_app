@@ -704,6 +704,18 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			{
 				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_ADDR(i))) = Dev->Demux.ClientODU1PG[i].ProtectODUk;
 			}
+			
+			Dev->Demux.ClientODU1PG[i].__WTRTmr = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_WTR_ADDR(i)));
+			if (Dev->Demux.ClientODU1PG[i].__WTRTmr != Dev->Demux.ClientODU1PG[i].WTRTmr)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_WTR_ADDR(i))) = Dev->Demux.ClientODU1PG[i].WTRTmr;
+			}
+			
+			Dev->Demux.ClientODU1PG[i].__HOTmr = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_HO_ADDR(i)));
+			if (Dev->Demux.ClientODU1PG[i].__HOTmr != Dev->Demux.ClientODU1PG[i].HOTmr)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_HO_ADDR(i))) = Dev->Demux.ClientODU1PG[i].HOTmr;
+			}
 		}
 		
 		for (i = 0; i < BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT; i++)
@@ -726,6 +738,18 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 			if (Dev->Demux.ClientODU0PG[i].__ProtectODUk != Dev->Demux.ClientODU0PG[i].ProtectODUk)
 			{
 				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_ADDR(i))) = Dev->Demux.ClientODU0PG[i].ProtectODUk;
+			}
+			
+			Dev->Demux.ClientODU0PG[i].__WTRTmr = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_WTR_ADDR(i)));
+			if (Dev->Demux.ClientODU0PG[i].__WTRTmr != Dev->Demux.ClientODU0PG[i].WTRTmr)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_WTR_ADDR(i))) = Dev->Demux.ClientODU0PG[i].WTRTmr;
+			}
+			
+			Dev->Demux.ClientODU0PG[i].__HOTmr = *((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_HO_ADDR(i)));
+			if (Dev->Demux.ClientODU0PG[i].__HOTmr != Dev->Demux.ClientODU0PG[i].HOTmr)
+			{
+				*((uint8_t*)(BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_HO_ADDR(i))) = Dev->Demux.ClientODU0PG[i].HOTmr;
 			}
 		}
 	}
