@@ -609,9 +609,6 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return -1;
 	
-	if (Mode == 0)
-		return 0;
-	
 	if ((Idx % 2) == 0)
 		return 0;
 	
@@ -777,23 +774,35 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 		return -1;
 	
 	if (Mode == 0)
-		return 0;
-	
-	if ((*(uint32_t*)Value) == 130)
 	{
-		OPU1Payload = 0;
-		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
-		State = 0;
-		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx + 1], &State);
-		EnableTx = 0;
-		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx + 1], &EnableTx);
-		Loopback = 0;
-		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx + 1], &Loopback);
+		if ((*(uint32_t*)Value) == 130)
+		{
+			State = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx + 1], &State);
+			EnableTx = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx + 1], &EnableTx);
+			Loopback = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx + 1], &Loopback);
+		}
 	}
 	else
 	{
-		OPU1Payload = 1;
-		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+		if ((*(uint32_t*)Value) == 130)
+		{
+			OPU1Payload = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+			State = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx + 1], &State);
+			EnableTx = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx + 1], &EnableTx);
+			Loopback = 0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx + 1], &Loopback);
+		}
+		else
+		{
+			OPU1Payload = 1;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+		}
 	}
 	return 0;
 }
