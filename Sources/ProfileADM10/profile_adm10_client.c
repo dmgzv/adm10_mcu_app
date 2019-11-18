@@ -142,26 +142,6 @@ static const uint32_t ProfileADM10InfoClSFPPtNumberIdx[PROFILE_ADM10_CLIENT_PORT
 	PROFILE_ADM10_CL_13_SFP_PTNUMBER_IDX, PROFILE_ADM10_CL_14_SFP_PTNUMBER_IDX, PROFILE_ADM10_CL_15_SFP_PTNUMBER_IDX, PROFILE_ADM10_CL_16_SFP_PTNUMBER_IDX
 };
 
-static const uint32_t ProfileADM10StaticClSFPSetFreqIdx[PROFILE_ADM10_CLIENT_PORTS][2] = 
-{
-	{PROFILE_ADM10_CL_1_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_1_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_2_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_2_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_3_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_3_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_4_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_4_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_5_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_5_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_6_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_6_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_7_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_7_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_8_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_8_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_9_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_9_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_10_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_10_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_11_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_11_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_12_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_12_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_13_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_13_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_14_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_14_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_15_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_15_SFP_SETFREQHMAX_IDX},
-	{PROFILE_ADM10_CL_16_SFP_SETFREQHMIN_IDX, PROFILE_ADM10_CL_16_SFP_SETFREQHMAX_IDX},
-};
-
 static const uint32_t ProfileADM10StaticClSFPRxPwrIdx[PROFILE_ADM10_CLIENT_PORTS][4] = 
 {
 	{PROFILE_ADM10_CL_1_SFP_RXPWRCMIN_IDX, PROFILE_ADM10_CL_1_SFP_RXPWRWMIN_IDX, PROFILE_ADM10_CL_1_SFP_RXPWRWMAX_IDX, PROFILE_ADM10_CL_1_SFP_RXPWRCMAX_IDX},
@@ -236,22 +216,6 @@ static const uint32_t ProfileADM10ConfigClSFPEnableTxIdx[PROFILE_ADM10_CLIENT_PO
 	PROFILE_ADM10_CL_5_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_6_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_7_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_8_SFP_ENABLETX_IDX, 
 	PROFILE_ADM10_CL_9_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_10_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_11_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_12_SFP_ENABLETX_IDX,
 	PROFILE_ADM10_CL_13_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_14_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_15_SFP_ENABLETX_IDX, PROFILE_ADM10_CL_16_SFP_ENABLETX_IDX
-};
-
-static const uint32_t ProfileADM10ConfigClSFPSetFreqIdx[PROFILE_ADM10_CLIENT_PORTS] = 
-{
-	PROFILE_ADM10_CL_1_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_2_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_3_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_4_SFP_SETFREQ_IDX,
-	PROFILE_ADM10_CL_5_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_6_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_7_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_8_SFP_SETFREQ_IDX, 
-	PROFILE_ADM10_CL_9_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_10_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_11_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_12_SFP_SETFREQ_IDX,
-	PROFILE_ADM10_CL_13_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_14_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_15_SFP_SETFREQ_IDX, PROFILE_ADM10_CL_16_SFP_SETFREQ_IDX
-};
-
-static const uint32_t ProfileADM10ConfigClSFPSetFreqSpIdx[PROFILE_ADM10_CLIENT_PORTS] = 
-{
-	PROFILE_ADM10_CL_1_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_2_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_3_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_4_SFP_SETFREQSP_IDX,
-	PROFILE_ADM10_CL_5_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_6_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_7_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_8_SFP_SETFREQSP_IDX,
-	PROFILE_ADM10_CL_9_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_10_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_11_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_12_SFP_SETFREQSP_IDX,
-	PROFILE_ADM10_CL_13_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_14_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_15_SFP_SETFREQSP_IDX, PROFILE_ADM10_CL_16_SFP_SETFREQSP_IDX
 };
 
 const uint32_t ProfileADM10ConfigClSetDataTypeIdx[PROFILE_ADM10_CLIENT_PORTS] = 
@@ -654,36 +618,6 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, 
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_CheckClSFPSetFreqValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
-{
-	float __FreqSp;
-	uint32_t Freq, FreqSp;
-	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqSpIdx[Idx], &__FreqSp))
-		return -1;
-	
-	Freq = *((float*)Value) * 1000000;
-	FreqSp = __FreqSp * 1000;
-	
-	if (Freq % FreqSp)
-		return -1;
-	
-	return 0;
-}
-
-static int32_t PROFILE_ADM10_CLIENT_CheckClSFPSetFreqSpValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
-{
-	float FreqSp;
-	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqSpIdx[Idx], &FreqSp))
-		return -1;
-	
-	if (FreqSp != (*(float*)Value))
-		return -1;
-	
-	return 0;
-}
-
 static int32_t PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {	
 	if ((*(uint32_t*)Value == 130) && (Idx % 2))
@@ -714,18 +648,6 @@ int32_t PROFILE_ADM10_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table,
 		if (TableIdx == ProfileADM10ConfigClSetLoopbackIdx[i])
 		{
 			if (PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(Profile, Table, TableIdx, Value, i))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigClSFPSetFreqIdx[i])
-		{
-			if (PROFILE_ADM10_CLIENT_CheckClSFPSetFreqValue(Profile, Table, TableIdx, Value, i))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigClSFPSetFreqSpIdx[i])
-		{
-			if (PROFILE_ADM10_CLIENT_CheckClSFPSetFreqSpValue(Profile, Table, TableIdx, Value, i))
 				return -1;
 			return 0;
 		}
@@ -809,7 +731,6 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 
 static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
-	float MinFreq, MaxFreq, FreqSp;
 	uint32_t i;
 	
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 1))
@@ -832,15 +753,8 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 2))
 	{
 		/* Set all config client parametes to factory*/
-		FreqSp = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Spacing / 1000.0f;
-		
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx]);
-		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqIdx[Idx]);
-		if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK)
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqSpIdx[Idx]);
-		else
-			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqSpIdx[Idx], &FreqSp);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx]);
 	}
@@ -854,11 +768,6 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPRxPwrIdx[Idx][i]);
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTxPwrIdx[Idx][i]);
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][i]);
-			}
-			
-			for (i = 0; i < 2; i++)
-			{
-				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPSetFreqIdx[Idx][i]);
 			}
 		}
 		else
@@ -877,12 +786,6 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][1], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_WMIN]);
 			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][2], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_WMAX]);
 			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][3], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_CMAX]);
-			
-			MinFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Min / 1000000.0f;
-			MaxFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Max / 1000000.0f;
-			
-			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPSetFreqIdx[Idx][0], &MinFreq);
-			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPSetFreqIdx[Idx][1], &MaxFreq);
 		}
 	}
 	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 4))
@@ -944,7 +847,6 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 {
 	uint32_t i;
 	uint32_t Mode, State, SFPEnableTx, DataType, Loopback, ALSMode;
-	float SFPSetFreq;
 	uint32_t RxLos;
 	uint32_t LineIdx, ODU0Idx, ODU1Idx;
 	
@@ -957,16 +859,12 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 			return;
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[i], &SFPEnableTx))
 			return;
-		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqIdx[i], &SFPSetFreq))
-			return;
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[i], &DataType))
 			return;
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[i], &Loopback))
 			return;
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetALSModeIdx[i], &ALSMode))
 			return;
-		
-		SFP_ConfigFreq(&sfp[BSP_SFP_CLIENT_IDX(i)], SFPSetFreq * 1000000);
 		
 		if (ALSMode == 1)
 		{
@@ -1091,8 +989,6 @@ static void PROFILE_ADM10_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, u
 	char Tmp[PROFILE_STRING_MAX_LEN];
 	uint32_t UpdateFlag;
 	uint32_t State;
-	float __Freq, __MinFreq, __MaxFreq, __FreqSp;
-	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
@@ -1121,8 +1017,6 @@ static void PROFILE_ADM10_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, u
 			//If module is not the same as previous, then update info and thresholds values
 			if (UpdateFlag)
 			{
-				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqIdx[Idx], &__Freq))
-					return;
 				
 				PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADM10InfoClSFPVendorIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.Vendor);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADM10InfoClSFPSrNumberIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.SerialNumber);
@@ -1142,22 +1036,6 @@ static void PROFILE_ADM10_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, u
 				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][1], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_WMIN]);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][2], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_WMAX]);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][3], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_CMAX]);
-				
-				MinFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Min;
-				MaxFreq = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Max;
-				FreqSp = sfp[BSP_SFP_CLIENT_IDX(Idx)].Freq.Spacing;
-				Freq = __Freq * 1000000;
-				
-				__MinFreq = MinFreq / 1000000.0f;
-				__MaxFreq = MaxFreq / 1000000.0f;
-				__FreqSp = FreqSp / 1000.0f;
-				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqSpIdx[Idx], &__FreqSp);				
-				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPSetFreqIdx[Idx][0], &__MinFreq);
-				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPSetFreqIdx[Idx][1], &__MaxFreq);
-				if ((Freq < MinFreq) || (Freq > MaxFreq) || (Freq % FreqSp))
-				{
-					PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPSetFreqIdx[Idx], &__MinFreq);
-				}
 				
 				PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
 			}
