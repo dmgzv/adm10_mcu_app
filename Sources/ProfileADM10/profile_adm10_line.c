@@ -1169,12 +1169,12 @@ static void PROFILE_ADM10_LINE_UpdateOTU2AlarmsValue(PROFILE_T *Profile, uint32_
 		}
 		else if (fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK)
 		{
-			OTU2Alarms = 1 << 1;
+			OTU2Alarms = (1 << 1) | (1 << 8);
 			ColorType = PROFILE_COLOR_TYPE_FAILURE;
 		}
 		else if (fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK)
 		{
-			OTU2Alarms = 1 << 2;
+			OTU2Alarms = (1 << 2) | (1 << 8);
 			ColorType = PROFILE_COLOR_TYPE_FAILURE;
 		}
 		else
@@ -1262,29 +1262,44 @@ static void PROFILE_ADM10_LINE_UpdateODU2AlarmsValue(PROFILE_T *Profile, uint32_
 		{
 			if (fpga_line.Iface[Idx].ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK))
 			{
-				ODU2Alarms = 1 << 0;
+				ODU2Alarms |= (1 << 0) | (1 << 8);
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
 			}
 			else if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK)
 			{
-				ODU2Alarms = 1 << 1;
+				ODU2Alarms |= (1 << 1) | (1 << 8);
+				ColorType = PROFILE_COLOR_TYPE_FAILURE;
+			}
+			else if ((fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_OCI_MASK)
+			{
+				ODU2Alarms |= (1 << 2) | (1 << 8);
+				ColorType = PROFILE_COLOR_TYPE_FAILURE;
+			}
+			else if ((fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_LCK_MASK)
+			{
+				ODU2Alarms |= (1 << 3) | (1 << 8);
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
 			}
 			else
 			{
 				if (fpga_line.Iface[Idx].ODU2BIP)
 				{
-					ODU2Alarms = 1 << 4;
+					ODU2Alarms |= 1 << 4;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 				if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_PMBEI_MASK)
 				{
-					ODU2Alarms = 1 << 5;
+					ODU2Alarms |= 1 << 5;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 				if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_PMBDI_MASK)
 				{
-					ODU2Alarms = 1 << 6;
+					ODU2Alarms |= 1 << 6;
+					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+				}
+				if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_SD_MASK)
+				{
+					ODU2Alarms |= 1 << 7;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 			}				
@@ -1320,7 +1335,7 @@ static void PROFILE_ADM10_LINE_UpdateOPU2AlarmsValue(PROFILE_T *Profile, uint32_
 		{
 			if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_OPUCSF_MASK)
 			{
-				OPU2Alarms = 1 << 1;
+				OPU2Alarms |= 1 << 1;
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
 			}			
 		}
@@ -1368,29 +1383,44 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 		{
 			if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK))
 			{
-				ODU1Alarms = 1 << 0;
+				ODU1Alarms |= (1 << 0) | (1 << 8);
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
 			}
 			else if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK)
 			{
-				ODU1Alarms = 1 << 1;
+				ODU1Alarms |= (1 << 1) | (1 << 8);
+				ColorType = PROFILE_COLOR_TYPE_FAILURE;
+			}
+			else if ((fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_OCI_MASK)
+			{
+				ODU1Alarms |= (1 << 2) | (1 << 8);
+				ColorType = PROFILE_COLOR_TYPE_FAILURE;
+			}
+			else if ((fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_LCK_MASK)
+			{
+				ODU1Alarms |= (1 << 3) | (1 << 8);
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
 			}
 			else
 			{
 				if (fpga_line.Iface[Idx].ODU1BIP[ODU1Idx])
 				{
-					ODU1Alarms = 1 << 4;
+					ODU1Alarms |= 1 << 4;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 				if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_PMBEI_MASK)
 				{
-					ODU1Alarms = 1 << 5;
+					ODU1Alarms |= 1 << 5;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 				if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_PMBDI_MASK)
 				{
-					ODU1Alarms = 1 << 6;
+					ODU1Alarms |= 1 << 6;
+					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+				}
+				if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_SD_MASK)
+				{
+					ODU1Alarms |= 1 << 7;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 			}
@@ -1401,29 +1431,44 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 			{
 				if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_LOM_MASK))
 				{
-					ODU1Alarms = 1 << 0;
+					ODU1Alarms |= (1 << 0) | (1 << 8);
 					ColorType = PROFILE_COLOR_TYPE_FAILURE;
 				}
 				else if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK)
 				{
-					ODU1Alarms = 1 << 1;
+					ODU1Alarms |= (1 << 1) | (1 << 8);
+					ColorType = PROFILE_COLOR_TYPE_FAILURE;
+				}
+				else if ((fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_OCI_MASK)
+				{
+					ODU1Alarms |= (1 << 2) | (1 << 8);
+					ColorType = PROFILE_COLOR_TYPE_FAILURE;
+				}
+				else if ((fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_LCK_MASK)
+				{
+					ODU1Alarms |= (1 << 3) | (1 << 8);
 					ColorType = PROFILE_COLOR_TYPE_FAILURE;
 				}
 				else
 				{
 					if (fpga_client[Idx].ODU1BIP[ODU1Idx])
 					{
-						ODU1Alarms = 1 << 4;
+						ODU1Alarms |= 1 << 4;
 						ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 					}
 					if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_PMBEI_MASK)
 					{
-						ODU1Alarms = 1 << 5;
+						ODU1Alarms |= 1 << 5;
 						ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 					}
 					if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_PMBDI_MASK)
 					{
-						ODU1Alarms = 1 << 6;
+						ODU1Alarms |= 1 << 6;
+						ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+					}
+					if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_SD_MASK)
+					{
+						ODU1Alarms |= 1 << 7;
 						ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 					}
 				}
@@ -1529,29 +1574,44 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 		{
 			if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK))
 			{
-				ODU0Alarms = 1 << 0;
+				ODU0Alarms |= (1 << 0) | (1 << 8);
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
 			}
 			else if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK)
 			{
-				ODU0Alarms = 1 << 1;
+				ODU0Alarms |= (1 << 1) | (1 << 8);
+				ColorType = PROFILE_COLOR_TYPE_FAILURE;
+			}
+			else if ((fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_OCI_MASK)
+			{
+				ODU0Alarms |= (1 << 2) | (1 << 8);
+				ColorType = PROFILE_COLOR_TYPE_FAILURE;
+			}
+			else if ((fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_LCK_MASK)
+			{
+				ODU0Alarms |= (1 << 3) | (1 << 8);
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
 			}
 			else
 			{
 				if (fpga_line.Iface[Idx].ODU0BIP[ODU0Idx])
 				{
-					ODU0Alarms = 1 << 4;
+					ODU0Alarms |= 1 << 4;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 				if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_PMBEI_MASK)
 				{
-					ODU0Alarms = 1 << 5;
+					ODU0Alarms |= 1 << 5;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 				if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_PMBDI_MASK)
 				{
-					ODU0Alarms = 1 << 6;
+					ODU0Alarms |= 1 << 6;
+					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+				}
+				if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_SD_MASK)
+				{
+					ODU0Alarms |= 1 << 7;
 					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 				}
 			}				
@@ -1562,29 +1622,44 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 			{
 				if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & (BSP_FPGA_CLIENT_ODU0_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU0_ALARMS_LOM_MASK))
 				{
-					ODU0Alarms = 1 << 0;
+					ODU0Alarms |= (1 << 0) | (1 << 8);
 					ColorType = PROFILE_COLOR_TYPE_FAILURE;
 				}
 				else if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_AIS_MASK)
 				{
-					ODU0Alarms = 1 << 1;
+					ODU0Alarms |= (1 << 1) | (1 << 8);
+					ColorType = PROFILE_COLOR_TYPE_FAILURE;
+				}
+				else if ((fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_OCI_MASK)
+				{
+					ODU0Alarms |= (1 << 2) | (1 << 8);
+					ColorType = PROFILE_COLOR_TYPE_FAILURE;
+				}
+				else if ((fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_LCK_MASK)
+				{
+					ODU0Alarms |= (1 << 2) | (1 << 8);
 					ColorType = PROFILE_COLOR_TYPE_FAILURE;
 				}
 				else
 				{
 					if (fpga_client[Idx].ODU0BIP[ODU0Idx])
 					{
-						ODU0Alarms = 1 << 4;
+						ODU0Alarms |= 1 << 4;
 						ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 					}
 					if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_PMBEI_MASK)
 					{
-						ODU0Alarms = 1 << 5;
+						ODU0Alarms |= 1 << 5;
 						ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 					}
 					if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_PMBDI_MASK)
 					{
-						ODU0Alarms = 1 << 6;
+						ODU0Alarms |= 1 << 6;
+						ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+					}
+					if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_SD_MASK)
+					{
+						ODU0Alarms |= 1 << 7;
 						ColorType = PROFILE_COLOR_TYPE_DEGRADE;
 					}
 				}
@@ -1631,7 +1706,7 @@ static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_
 		{
 			if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_OPUCSF_MASK)
 			{
-				OPU0Alarms = 1 << 1;
+				OPU0Alarms |= 1 << 1;
 				ColorType = PROFILE_COLOR_TYPE_FAILURE;
 			}		
 		}
@@ -1641,7 +1716,7 @@ static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_
 			{
 				if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_OPUCSF_MASK)
 				{
-					OPU0Alarms = 1 << 1;
+					OPU0Alarms |= 1 << 1;
 					ColorType = PROFILE_COLOR_TYPE_FAILURE;
 				}
 			}
@@ -1779,6 +1854,8 @@ static void PROFILE_ADM10_LINE_UpdateODU2PerfValues(PROFILE_T *Profile, uint32_t
 			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
 			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
 			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK) || \
+			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK) || \
+			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK) || \
 			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK))
 		{
 			Defects = 1;
@@ -1833,6 +1910,8 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
 			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
 			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK) || \
+			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK) || \
+			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK) || \
 			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK))
 		{
 			Defects = 1;
@@ -1909,6 +1988,8 @@ static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t
 			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
 			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
 			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK) || \
+			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK) || \
+			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK) || \
 			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK))
 		{
 			Defects = 1;
