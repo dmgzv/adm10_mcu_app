@@ -351,6 +351,8 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	PROFILE_ADM10_LINE_UpdateValues(Profile);
 	
 	PROFILE_ADM10_CLIENT_UpdateValues(Profile);
+	
+	PROFILE_ADM10_PG_UpdateValues(Profile);
 
 	PROFILE_ADM10_UpdateBlockColorValue(Profile);
 

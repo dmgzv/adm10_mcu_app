@@ -10,10 +10,6 @@ uint32_t ProfileADM10ConfigODU1XCSetDstIdx[PROFILE_ADM10_ODU1_XCS] = {
 	PROFILE_ADM10_ODU1_XC_5_SETDST_IDX, PROFILE_ADM10_ODU1_XC_6_SETDST_IDX, PROFILE_ADM10_ODU1_XC_7_SETDST_IDX, PROFILE_ADM10_ODU1_XC_8_SETDST_IDX
 };
 
-uint32_t ProfileADM10ConfigODU1XCSetFactoryIdx[PROFILE_ADM10_ODU1_XCS] = {
-	PROFILE_ADM10_ODU1_XC_1_SETFACTORY_IDX, PROFILE_ADM10_ODU1_XC_2_SETFACTORY_IDX, PROFILE_ADM10_ODU1_XC_3_SETFACTORY_IDX, PROFILE_ADM10_ODU1_XC_4_SETFACTORY_IDX,
-	PROFILE_ADM10_ODU1_XC_5_SETFACTORY_IDX, PROFILE_ADM10_ODU1_XC_6_SETFACTORY_IDX, PROFILE_ADM10_ODU1_XC_7_SETFACTORY_IDX, PROFILE_ADM10_ODU1_XC_8_SETFACTORY_IDX,
-};
 
 uint32_t ProfileADM10ConfigODU0XCSetSrcIdx[PROFILE_ADM10_ODU0_XCS] = {
 	PROFILE_ADM10_ODU0_XC_1_SETSRC_IDX, PROFILE_ADM10_ODU0_XC_2_SETSRC_IDX, PROFILE_ADM10_ODU0_XC_3_SETSRC_IDX, PROFILE_ADM10_ODU0_XC_4_SETSRC_IDX,
@@ -27,13 +23,6 @@ uint32_t ProfileADM10ConfigODU0XCSetDstIdx[PROFILE_ADM10_ODU0_XCS] = {
 	PROFILE_ADM10_ODU0_XC_5_SETDST_IDX, PROFILE_ADM10_ODU0_XC_6_SETDST_IDX, PROFILE_ADM10_ODU0_XC_7_SETDST_IDX, PROFILE_ADM10_ODU0_XC_8_SETDST_IDX,
 	PROFILE_ADM10_ODU0_XC_9_SETDST_IDX, PROFILE_ADM10_ODU0_XC_10_SETDST_IDX, PROFILE_ADM10_ODU0_XC_11_SETDST_IDX, PROFILE_ADM10_ODU0_XC_12_SETDST_IDX,
 	PROFILE_ADM10_ODU0_XC_13_SETDST_IDX, PROFILE_ADM10_ODU0_XC_14_SETDST_IDX, PROFILE_ADM10_ODU0_XC_15_SETDST_IDX, PROFILE_ADM10_ODU0_XC_16_SETDST_IDX
-};
-
-uint32_t ProfileADM10ConfigODU0XCSetFactoryIdx[PROFILE_ADM10_ODU0_XCS] = {
-	PROFILE_ADM10_ODU0_XC_1_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_2_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_3_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_4_SETFACTORY_IDX,
-	PROFILE_ADM10_ODU0_XC_5_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_6_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_7_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_8_SETFACTORY_IDX,
-	PROFILE_ADM10_ODU0_XC_9_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_10_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_11_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_12_SETFACTORY_IDX,
-	PROFILE_ADM10_ODU0_XC_13_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_14_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_15_SETFACTORY_IDX, PROFILE_ADM10_ODU0_XC_16_SETFACTORY_IDX
 };
 
 extern const uint32_t ProfileADM10ConfigClSetDataTypeIdx[PROFILE_ADM10_CLIENT_PORTS];
@@ -347,13 +336,13 @@ static int32_t PROFILE_ADM10_XC_SetModeValueDependencies(PROFILE_T *Profile, uin
 		case 3:
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
-				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], (uint32_t*)&ODU1XCSrcFactory[i]);
-				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], (uint32_t*)&ODU1XCDstFactory[i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i]);
 			}
 			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
 			{
-				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], (uint32_t*)&ODU0XCSrcFactory[i]);
-				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], (uint32_t*)&ODU0XCDstFactory[i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i]);
 			}
 			break;
 		default:
@@ -362,9 +351,9 @@ static int32_t PROFILE_ADM10_XC_SetModeValueDependencies(PROFILE_T *Profile, uin
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Index, void *Value, uint32_t ODU1XCIdx)
+static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Index, void *Value)
 {
-	uint32_t Mode;
+	uint32_t i, Mode;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return -1;
@@ -372,12 +361,12 @@ static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profi
 	switch (Mode)
 	{
 		case 0:
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[ODU1XCIdx]);
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[ODU1XCIdx]);
-			break;
 		case 3:
-			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[ODU1XCIdx], (uint32_t*)&ODU0XCSrcFactory[ODU1XCIdx]);
-			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[ODU1XCIdx], (uint32_t*)&ODU0XCDstFactory[ODU1XCIdx]);
+			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i]);
+			}
 			break;
 		default:
 			return -1;
@@ -385,9 +374,9 @@ static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profi
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Index, void *Value, uint32_t ODU0XCIdx)
+static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Index, void *Value)
 {
-	uint32_t Mode;
+	uint32_t i, Mode;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return -1;
@@ -395,12 +384,12 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 	switch (Mode)
 	{
 		case 0:
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[ODU0XCIdx]);
-			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[ODU0XCIdx]);
-			break;
 		case 3:
-			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[ODU0XCIdx], (uint32_t*)&ODU0XCSrcFactory[ODU0XCIdx]);
-			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[ODU0XCIdx], (uint32_t*)&ODU0XCDstFactory[ODU0XCIdx]);
+			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i]);
+			}
 			break;
 		default:
 			return -1;
@@ -409,26 +398,18 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 }
 
 int32_t PROFILE_ADM10_XC_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Index, void *Value)
-{
-	uint32_t i;
-	
+{	
 	if (Index == PROFILE_ADM10_SETMODE_IDX)
 	{
 		if (PROFILE_ADM10_XC_SetModeValueDependencies(Profile, Table, Index, Value))
 			return -1;
 	}
 	
-	for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
-	{
-		if (Index == ProfileADM10ConfigODU1XCSetFactoryIdx[i])
-			PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(Profile, Table, Index, Value, i);
-	}
+	if (Index == PROFILE_ADM10_ODU1_XC_SETFACTORY_IDX)
+		PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(Profile, Table, Index, Value);
 	
-	for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
-	{
-		if (Index == ProfileADM10ConfigODU0XCSetFactoryIdx[i])
-			PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(Profile, Table, Index, Value, i);
-	}
+	if (Index == PROFILE_ADM10_ODU0_XC_SETFACTORY_IDX)
+		PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(Profile, Table, Index, Value);
 	
 	return 0;
 }

@@ -145,6 +145,8 @@ do { \
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(ClientIdx, PGMode) (((ClientIdx) / 2) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].Mode = (PGMode)) , 0)
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].Mode)
 
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_STATUS_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].Status)
+
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(ClientIdx, LineIdx, ODU1Idx) (((ClientIdx) / 2) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].PrimaryODUk = (((LineIdx) * 4) + ODU1Idx)), 0)
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_GET(ClientIdx) 									(fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].PrimaryODUk)
 
@@ -167,6 +169,8 @@ do { \
 
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(ClientIdx, PGMode) ((ClientIdx) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU0PG[ClientIdx].Mode = (PGMode)) , 0)
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU0PG[ClientIdx].Mode)
+
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_STATUS_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU0PG[ClientIdx].Status)
 
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(ClientIdx, LineIdx, ODU0Idx) ((ClientIdx) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU0PG[ClientIdx].PrimaryODUk = (((LineIdx) * 8) + ODU0Idx)), 0)
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_GET(ClientIdx) 									(fpga_line.Demux.ClientODU0PG[ClientIdx].PrimaryODUk)
