@@ -1,0 +1,240 @@
+module ipg-sfp {
+	yang-version 1;
+	namespace "http://www.ipg.com/horizon/sfp";
+	prefix ipg-sfp;
+
+	import ipg-common {
+		prefix "ipg-cmn";
+		revision-date "2019-08-10";
+	}
+
+	organization "IPG";
+	contact "IPG";
+	description "YANG model for SFP module";
+	revision 2019-11-27 {
+		description 
+			"
+				1. Fix issues with threshoulds referencesInitial
+				2. Move optical-power into channel container
+			";
+	}
+	revision 2019-11-20 {
+		description "Initial revision of SFP module schema";
+	}
+
+	grouping sfp-port {
+		leaf connector {
+			description "Connector";
+			ipg-cmn:category "config";
+			type enumeration {
+				enum LC { value 0; }
+			}
+			config true;
+			default LC;
+		}
+
+		container channel {
+			description "Optical channel";
+			ipg-cmn:object "channel";
+
+			leaf wavelength {
+				description "Wavelength";
+				units "nm";
+				ipg-cmn:category "config";
+				type ipg-cmn:float-2;
+				ipg-cmn:min-ref "../wavelength-min";
+				ipg-cmn:max-ref "../wavelength-max";
+				ipg-cmn:def-ref "../wavelength-default";
+				config true;
+			}
+			leaf wavelength-min {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-2;
+				config false;
+				default "1510.00";
+			}
+			leaf wavelength-max {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-2;
+				config false;
+				default "1510.00";
+			}
+			leaf wavelength-default {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-2;
+				config false;
+				default "1510.00";
+			}
+
+			leaf frequency {
+				description "Frequency";
+				units "THz";
+				ipg-cmn:category "config";
+				type ipg-cmn:float-2;
+				ipg-cmn:min-ref "../frequency-min";
+				ipg-cmn:max-ref "../frequency-max";
+				ipg-cmn:def-ref "../frequency-default";
+				config true;
+			}
+			leaf frequency-min {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-2;
+				config false;
+				default "198.54";
+			}
+			leaf frequency-max {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-2;
+				config false;
+				default "198.54";
+			}
+			leaf frequency-default {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-2;
+				config false;
+				default "198.54";
+			}
+
+			leaf width {
+				description "Width";
+				ipg-cmn:category "config";
+				units "GHz";
+				type enumeration {
+					enum 100.0 { value 3; }
+				}
+				config true;
+				default 100.0;
+			}
+
+			leaf optical-power {
+				description "Optical power";
+				units "dBm";
+				ipg-cmn:category "gauge";
+				type ipg-cmn:float-1;
+				ipg-cmn:min-ref "../optical-power-min";
+				ipg-cmn:max-ref "../optical-power-max";
+				config false;
+			}
+			leaf optical-power-min {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-1;
+				config false;
+				default "-40.0";
+			}
+			leaf optical-power-max {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-1;
+				config false;
+				default "5.0";
+			}
+			leaf optical-power-fault {
+				description "Optical power fault";
+				ipg-cmn:category "fault";
+				type  boolean;
+				ipg-cmn:severity "critical";
+				config false;
+			}
+		}
+	}
+
+	grouping sfp {
+	  	container sfp {
+			when "(../admin-state != 'DSBLD') and (../module-type = 'SFP')";
+			description "SFP Module";
+			ipg-cmn:object "hw-module";
+
+			leaf serial-number {
+				ipg-cmn:category "inventory";
+				type ipg-cmn:string-64;
+				config false;
+				description "Serial number.";
+			}
+			leaf part-number {
+				ipg-cmn:category "inventory";
+				type ipg-cmn:string-64;
+				config false;
+				description "Part number.";
+			}
+			leaf vendor {
+				description "Vendor";
+				ipg-cmn:category "inventory";
+				type ipg-cmn:string-64;
+				config false;
+			}
+
+			leaf temperature {
+				description "Temperature";
+				units "Centigrade";
+				ipg-cmn:category "gauge";
+				type ipg-cmn:float-1;
+				ipg-cmn:min-ref "../temperature-min";
+				ipg-cmn:max-ref "../temperature-max";
+				config false;
+			}
+			leaf temperature-min {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-1;
+				config false;
+				default "5.0";
+			}
+			leaf temperature-max {
+				ipg-cmn:category "attribute";
+				type ipg-cmn:float-1;
+				config false;
+				default "65.0";
+			}
+			leaf temperature-fault {
+				description "Temperature fault";
+				ipg-cmn:category "fault";
+				type  boolean;
+				ipg-cmn:severity "critical";
+				config false;
+			}
+
+			container rx-port {
+				description "Rx port";
+				ipg-cmn:object "port";
+
+				leaf direction {
+					description "Direction";
+					ipg-cmn:category "config";
+					type enumeration {
+						enum "In"  { value 0; }
+					}
+					config true;
+					default "In";
+				}
+
+				uses sfp-port;
+			}
+
+			container tx-port {
+				description "Tx port";
+				ipg-cmn:object "port";
+
+				leaf laser-enable {
+					description "Laser enable";
+					ipg-cmn:category "config";
+					type enumeration {
+					  enum "Disable" { value 0; }
+					  enum "Enable"  { value 1; }
+					}
+					config true;
+					default "Disable";
+				}
+
+				leaf direction {
+					description "Direction";
+					ipg-cmn:category "config";
+					type enumeration {
+					  enum "Out"  { value 1; }
+					}
+					config true;
+					default "Out";
+				}
+
+				uses sfp-port;
+			}
+		}
+	}
+}

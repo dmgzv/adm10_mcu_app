@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define SHELL_THREAD_PRIORITY		osPriorityHigh
+#define SHELL_THREAD_PRIORITY		osPriorityAboveNormal
 #define SHELL_THREAD_STACK_SIZE	1024
 
 #define SHELL_CMD_PARAMS_MAX_CNT	8

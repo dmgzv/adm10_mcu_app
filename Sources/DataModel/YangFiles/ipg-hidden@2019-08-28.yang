@@ -1,0 +1,36 @@
+module ipg-hidden {
+  yang-version 1;
+
+  namespace "http://www.ipg.com/horizon/hidden";
+  prefix hidden;
+
+  import ipg-common {
+    prefix "ipg-cmn";
+    revision-date "2019-08-10";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "Internal model for card.";
+  revision "2019-08-28" {
+    description "Initial revision.";
+    reference "";
+  }
+
+  container __HIDDEN__ {
+    ipg-cmn:object "__HIDDEN__";
+    description "Hidden container";
+    leaf admin-state {
+      ipg-cmn:category "config";
+      type ipg-cmn:admin-state-type;
+      default "MT";
+      description "Administrative state.";
+    }
+    leaf service-state {
+      ipg-cmn:category "monitor";
+      type ipg-cmn:service-state-type;
+      config false;
+      description "Service state.";
+    }
+  }
+}

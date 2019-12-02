@@ -6,6 +6,8 @@
 #include "bsp.h"
 #include "tftp_client.h"
 #include "log.h"
+#include "dm.h"
+#include "dm_adm10.h"
 
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -15,6 +17,7 @@ static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 static void SHELL_CMD_I2CCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_SPICallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -37,6 +40,7 @@ const SHELL_CMD_T ShellCmdList[] =
 	{ "i2c", 			"I2C statistics", &SHELL_CMD_I2CCallback},
 	{ "spi", 			"SPI statistics", &SHELL_CMD_SPICallback},
 	{ "uart", 		"UART statistics", &SHELL_CMD_UARTCallback},
+	{ "dm", 			"Data Model", &SHELL_CMD_DMCallback},
 	{ "status", 	"Status of devices", &SHELL_CMD_StatusCallback},
 	{ "dim3r", 		"DIM3R3400 control", &SHELL_CMD_DIM3RCallback},
 	{ "ucd", 			"UCD90120A control", &SHELL_CMD_UCDCallback},
@@ -302,6 +306,227 @@ static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t C
 	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart6.tx_message_queue_overflow_errors);
 	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart6.rx_message_queue_overflow_errors);
 #endif
+}
+
+#define SHELL_CMD_DM_HELP \
+"Usage:\r"\
+"    dm <cmd> [<data1> <data2> ...]\r"\
+"Commands:\r"\
+"    help - Display this help.\r"\
+"    get <path> - Get parameter value.\r"\
+"    set <path> <value> - Set parameter value.\r"
+
+static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{
+	const struct schema_node *dm_node;
+	char *p;
+	union {
+		uint8_t u8;
+		uint16_t u16;
+		uint32_t u32;
+		uint64_t u64;
+		int8_t s8;
+		int16_t s16;
+		int32_t s32;
+		int64_t s64;
+		float f;
+	} value;
+	
+	if (CmdParamsCnt == 1)
+	{
+		SHELL_Transmit(Shell,   "Data model: ADM200\r");
+	}
+	else if (CmdParamsCnt == 2)
+	{
+		if (!strcmp(CmdParamsList[1], "help"))
+		{
+			SHELL_Transmit(Shell, SHELL_CMD_DM_HELP);
+		}
+		else
+		{
+			goto invalid_cmd;
+		}
+	}
+	else if (CmdParamsCnt == 3)
+	{
+		if (!strcmp(CmdParamsList[1], "get"))
+		{
+			dm_node = get_schema_node(&sn_adm10_root_,CmdParamsList[2]);
+			if (dm_node)
+			{
+				dm_print_tree(dm_node, &SHELL_Transmit, Shell);
+			}
+			else
+			{
+				goto invalid_path;
+			}
+		}
+		else
+		{
+			goto invalid_cmd;
+		}
+	}
+	else if (CmdParamsCnt == 4)
+	{
+		if (!strcmp(CmdParamsList[1], "set"))
+		{
+			dm_node = get_schema_node(&sn_adm10_root_,CmdParamsList[2]);
+			if (dm_node)
+			{
+				switch (dm_node->category)
+				{
+					case SCHEMA_NODE_TYPE_ROOT:
+					case SCHEMA_NODE_TYPE_OBJECT:
+						goto invalid_param_path;
+					default:
+						switch (dm_node->datatype)
+						{
+							case SCHEMA_DATATYPE_BOOL:								
+								value.u8 = strtoul(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.u8))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_ENUM:								
+								value.s32 = strtoul(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.s32))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_INT8:
+								value.s8 = strtol(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.s8))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_UINT8:
+								value.u8 = strtoul(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.u8))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_INT16:
+								value.s16 = strtol(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.s16))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_UINT16:
+								value.u16 = strtoul(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.u16))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_INT32:								
+								value.s32 = strtol(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.s32))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_UINT32:
+								value.u32 = strtoul(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.u32))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_INT64:
+								value.s64 = strtoll(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.s64))
+									goto invalid_param_value_out_of_range;
+								
+								break;
+							case SCHEMA_DATATYPE_UINT64:
+								value.u64 = strtoull(CmdParamsList[3], &p, 10);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.u64))
+									goto invalid_param_value_out_of_range;
+
+								break;
+							case SCHEMA_DATATYPE_FLOAT_1:
+							case SCHEMA_DATATYPE_FLOAT_2:
+							case SCHEMA_DATATYPE_FLOAT_3:
+							case SCHEMA_DATATYPE_FLOAT_E1:
+							case SCHEMA_DATATYPE_FLOAT_E18:
+								value.f = strtof(CmdParamsList[3], &p);
+								if ((*p != 0) || (p == CmdParamsList[3]))
+									goto invalid_param_value;
+							
+								if (dm_set_param_value(dm_node, &value.f))
+									goto invalid_param_value_out_of_range;
+			
+								break;
+							case SCHEMA_DATATYPE_STRING_16:
+							case SCHEMA_DATATYPE_STRING_32:
+							case SCHEMA_DATATYPE_STRING_64:
+							case SCHEMA_DATATYPE_STRING_128:
+							case SCHEMA_DATATYPE_STRING_256:
+								if (dm_set_param_value(dm_node, CmdParamsList[3]))
+									goto invalid_param_value_out_of_range;
+								break;
+							default:
+								goto invalid_param_type;
+						}
+						break;
+				}		
+			}
+			else
+			{
+				goto invalid_path;
+			}
+		}
+		else
+		{
+			goto invalid_cmd;
+		}
+	}
+		return;
+invalid_cmd:
+	SHELL_Transmit(Shell, "Error: invalid command\r");
+	return;
+invalid_path:
+	SHELL_Transmit(Shell, "Error: invalid path\r");
+	return;
+invalid_param_path:
+	SHELL_Transmit(Shell, "Error: invalid parameter path\r");
+	return;
+invalid_param_type:
+	SHELL_Transmit(Shell, "Error: invalid parameter type\r");
+	return;
+invalid_param_value:
+	SHELL_Transmit(Shell, "Error: invalid parameter value\r");
+	return;
+invalid_param_value_out_of_range:
+	SHELL_Transmit(Shell, "Error: invalid parameter value out of range\r");
+	return;
 }
 
 const char *pca9536_pcb_id[BSP_SFP_PIN_PCA9536_CNT] = 

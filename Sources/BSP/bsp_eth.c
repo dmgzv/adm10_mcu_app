@@ -23,7 +23,7 @@
 #define IFNAME1 't'
 
 static void __BSP_NETIF_Input( void const * argument );
-osThreadDef(netif_input, __BSP_NETIF_Input, osPriorityHigh, 0, BSP_NETIF_INPUT_THREAD_STACK_SIZE);
+osThreadDef(netif_input, __BSP_NETIF_Input, osPriorityRealtime, 0, BSP_NETIF_INPUT_THREAD_STACK_SIZE);
 osThreadId netif_input_thread_id;
 
 struct netif bsp_netif;

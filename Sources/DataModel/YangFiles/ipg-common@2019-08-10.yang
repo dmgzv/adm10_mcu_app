@@ -1,0 +1,263 @@
+module ipg-common {
+  yang-version 1;
+
+  namespace "http://www.ipg.com/horizon/ipg-common";
+  prefix "ipg-cmn";
+
+  organization "IPG";
+  contact "IPG";
+  description
+    "This module describe common typedefs, extension,
+     parameters templates for system and slot card schemas.";
+
+  revision "2019-08-10" {
+    description "Initial revision.";
+    reference "";
+  }
+
+  /*
+   * Extensions
+   */
+
+  extension category {
+    argument "category"; // config, inventory, monitor, fault, gauge, counter
+    description "define parameter category, added to parameter container";
+  }
+
+  extension object {
+    argument "object";
+    description "object type that define object as well-known";
+  }
+
+  extension condition {
+    description "define parameter as condition, added to parameter container";
+  }
+
+  extension severity {
+    argument "severity";
+    description "fault severity";
+  }
+  extension min-val {
+    argument "min-val";
+    description "extension for fixed parameter min value";
+  }
+
+  extension max-val {
+    argument "max-val";
+    description "extension for fixed parameter max value";
+  }
+
+  extension def-val {
+    argument "def-val";
+    description "extension for fixed parameter default value";
+  }
+
+  extension min-ref {
+    argument "min-ref";
+    description "extension for parameter min leaf reference";
+  }
+
+  extension max-ref {
+    argument "max-ref";
+    description "extension for parameter max leaf reference";
+  }
+
+  extension def-ref {
+    argument "def-val";
+    description "extension for parameter default value reference";
+  }
+
+  typedef string-16 {
+    type string {
+      length "0 .. 16";
+    }
+    description "string type length is limited to 16 chars";
+  }
+
+  typedef string-32 {
+    type string {
+      length "0 .. 32";
+    }
+    description "string type length is limited to 32 chars";
+  }
+
+  typedef string-64 {
+    type string {
+      length "0 .. 64";
+    }
+    description "string type length is limited to 64 chars";
+  }
+
+  typedef float-1 {
+    type decimal64 {
+      fraction-digits 1; 
+    }
+    description "floating type with 1 fraction digit. Display format xx.x";
+  }
+
+  typedef float-2 {
+    type decimal64 {
+      fraction-digits 2; 
+    }
+    description "floating type with 2 fraction digits. Display format xx.xx";
+  }
+
+  typedef float-3 {
+    type decimal64 {
+      fraction-digits 3; 
+    }
+    description "floating type with 3 fraction digits. Display format xx.xxx";
+  }
+
+  typedef float-e1 {
+    type decimal64 {
+      fraction-digits 1; 
+    }
+    description "large numbers floating type with 1 fraction digit. Display format xx.xe+xx";
+  }
+
+  typedef float-e18 {
+    type decimal64 {
+      fraction-digits 18; 
+    }
+    description "small numbers floating type less them 1. Display format xx.xe-xx";
+  }
+
+  typedef fault-severity-type {
+    type enumeration {
+      enum critical {
+        value "1";
+        description "Critical"; }
+      enum major {
+        value "2";
+        description "Major"; }
+      enum minor {
+        value "3";
+        description "Minor"; }
+      enum warning {
+        value "4";
+        description "Warning"; }
+      enum info {
+        value "5";
+        description "Info"; }
+    }
+    description "supported fault severity types";
+  }
+
+  typedef admin-state-type {
+    type enumeration {
+      enum DSBLD   {
+        value 1;
+        description "Disabled";
+      }
+      enum MT      {
+        value 2;
+        description "Mainteanace";
+      }
+      enum IS      {
+        value 3;
+        description "In-Service";
+      }
+      // enum AINS    { value x; description "AINS"; }
+      // enum AINS-TI { value x; description "AINS-TI"; }
+    }
+    description "Admin state values.";
+  }
+
+  typedef admin-state-type-IS {
+    type enumeration {
+      enum IS      {
+        value 3;
+        description "In-Service";
+      }
+    }
+    description "Admin state values.";
+  }
+
+  typedef service-state-type {
+    type enumeration {
+      enum DSBLD   {
+        value 1;
+        description "Disabled";
+      }
+      enum UEQ     {
+        value 2;
+        description "Unequipped";
+      }
+      enum MOE     {
+        value 3;
+        description "Mismatch of Equipment";
+      }
+      enum MT      {
+        value 4;
+        description "Mainteanace";
+      }
+      enum IS      {
+        value 5;
+        description "In-Service";
+      }
+      // enum AINS    { value x; description "AINS"; }
+      // enum AINS-TI { value x; description "AINS-TI"; }
+    }
+    description "Service state values.";
+  }
+
+  typedef service-state-type-UEQ-IS {
+    type enumeration {
+      enum UEQ     {
+        value 2;
+        description "Unequipped";
+      }
+      enum IS      {
+        value 5;
+        description "In-Service";
+      }
+    }
+    description "Service state values.";
+  }
+
+  typedef ipv4-address {
+    type string {
+      pattern
+        '(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}'
+        + '([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])';
+    }
+    description
+      "The ipv4-address type represents an IPv4 address in
+      dotted-quad notation.";
+  }
+
+  typedef ipv4-address-or-none {
+    type string {
+      pattern
+        '((([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}'
+            + '([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){0,1}';
+    }
+    description
+      "The ipv4-address-or-none type represents an IPv4 address in
+      dotted-quad notation or emptry string.";
+  }
+
+  typedef port-number {
+    type uint16 {
+      range "0..65535";
+    }
+    description
+     "The port-number type represents a 16-bit port number of an
+      Internet transport-layer protocol such as UDP, TCP, DCCP, or
+      SCTP.  Port numbers are assigned by IANA.  A current list of
+      all assignments is available from <http://www.iana.org/>.
+
+      Note that the port number value zero is reserved by IANA.  In
+      situations where the value zero does not make sense, it can
+      be excluded by subtyping the port-number type.
+      In the value set and its semantics, this type is equivalent
+      to the InetPortNumber textual convention of the SMIv2.";
+    reference
+     "RFC  768: User Datagram Protocol
+      RFC  793: Transmission Control Protocol
+      RFC 4960: Stream Control Transmission Protocol
+      RFC 4340: Datagram Congestion Control Protocol (DCCP)
+      RFC 4001: Textual Conventions for Internet Network Addresses";
+  }
+}

@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI, DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\DataModel;.\Sources\Agent;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -782,86 +782,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Profile</GroupName>
-          <Files>
-            <File>
-              <FileName>bootloader.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\bootloader.c</FilePath>
-            </File>
-            <File>
-              <FileName>bootloader_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\bootloader_protocol.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_iface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_iface.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_protocol.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>ProfileADM10</GroupName>
-          <Files>
-            <File>
-              <FileName>profile_adm10.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_client.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_client.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_line.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_line.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_params.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_params.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_pg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_pg.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_text.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_text.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_values.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_values.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_xc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_xc.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Utilities</GroupName>
           <Files>
             <File>
@@ -1088,6 +1008,56 @@
               <FileName>shell_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Shell\shell_uart.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>DataModel</GroupName>
+          <Files>
+            <File>
+              <FileName>dm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\dm.c</FilePath>
+            </File>
+            <File>
+              <FileName>dm_adm10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\dm_adm10.c</FilePath>
+            </File>
+            <File>
+              <FileName>dm_adm10_link.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\dm_adm10_link.c</FilePath>
+            </File>
+            <File>
+              <FileName>dm_freertos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\dm_freertos.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Agent</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_agent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Agent\dev_agent.c</FilePath>
+            </File>
+            <File>
+              <FileName>dev_agent_backend.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Agent\dev_agent_backend.c</FilePath>
+            </File>
+            <File>
+              <FileName>devapi_packer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Agent\devapi_packer.c</FilePath>
+            </File>
+            <File>
+              <FileName>ospl_linux.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Agent\ospl_linux.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1869,86 +1839,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Profile</GroupName>
-          <Files>
-            <File>
-              <FileName>bootloader.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\bootloader.c</FilePath>
-            </File>
-            <File>
-              <FileName>bootloader_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\bootloader_protocol.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_iface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_iface.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_protocol.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>ProfileADM10</GroupName>
-          <Files>
-            <File>
-              <FileName>profile_adm10.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_client.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_client.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_line.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_line.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_params.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_params.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_pg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_pg.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_text.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_text.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_values.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_values.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_xc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_xc.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Utilities</GroupName>
           <Files>
             <File>
@@ -2175,6 +2065,56 @@
               <FileName>shell_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Shell\shell_uart.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>DataModel</GroupName>
+          <Files>
+            <File>
+              <FileName>dm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\dm.c</FilePath>
+            </File>
+            <File>
+              <FileName>dm_adm10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\dm_adm10.c</FilePath>
+            </File>
+            <File>
+              <FileName>dm_adm10_link.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\dm_adm10_link.c</FilePath>
+            </File>
+            <File>
+              <FileName>dm_freertos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\dm_freertos.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Agent</GroupName>
+          <Files>
+            <File>
+              <FileName>dev_agent.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Agent\dev_agent.c</FilePath>
+            </File>
+            <File>
+              <FileName>dev_agent_backend.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Agent\dev_agent_backend.c</FilePath>
+            </File>
+            <File>
+              <FileName>devapi_packer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Agent\devapi_packer.c</FilePath>
+            </File>
+            <File>
+              <FileName>ospl_linux.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Agent\ospl_linux.c</FilePath>
             </File>
           </Files>
         </Group>

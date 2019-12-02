@@ -204,7 +204,7 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 /**
  * LWIP_SOCKET==1: Enable Socket API (require to use sockets.c)
  */
-#define LWIP_SOCKET                     0
+#define LWIP_SOCKET                     1
 
 /*
    ------------------------------------
@@ -228,7 +228,7 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define DEFAULT_TCP_RECVMBOX_SIZE       6
 #define DEFAULT_ACCEPTMBOX_SIZE         6
 #define DEFAULT_THREAD_STACKSIZE        500
-#define TCPIP_THREAD_PRIO               osPriorityAboveNormal
+#define TCPIP_THREAD_PRIO               osPriorityHigh
 
 
 

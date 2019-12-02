@@ -1,0 +1,257 @@
+module ipg-adm-10 {
+    yang-version 1;
+    namespace "http://www.ipg.com/horizon/adm-10";
+    prefix ipg-adm-10;
+
+    import ipg-common { 
+        prefix "ipg-cmn";
+        revision-date "2019-08-10";
+    }
+    /*import ipg-system { 
+        prefix "ipg-sys";
+        revision-date "2019-08-10";
+    }
+    import ipg-lcs { 
+        prefix "ipg-lcs";
+        revision-date "2019-11-20";
+    }*/
+    import ipg-sfp { 
+        prefix "ipg-sfp";
+        revision-date "2019-11-27";
+    }
+
+    organization "IPG";
+    contact "IPG";
+    description "YANG model for ADM-10 card";
+	revision 2019-11-28 {
+        description "Initial revision of ADM-10 card schema";
+    }
+
+
+    //augment /ipg-sys:system/ipg-lcs:line-card-slot {
+        container adm-10-2019-11-28 {
+            //when "(../ipg-lcs:card-module-name = 'adm-10-2019-11-28') and (../ipg-lcs:admin-state != 'DSBLD')";    
+            description "ADM-10";
+            ipg-cmn:object "card";
+
+            leaf serial-number {
+                description "Serial number";
+                ipg-cmn:category "inventory";
+                type ipg-cmn:string-64;
+        		default "0000-0000-0000";
+                config false;
+            }
+            leaf part-number {
+                description "Part number";
+                ipg-cmn:category "inventory";
+                type ipg-cmn:string-64;
+        		default "ADM-10-SFP/SFP+-H8";
+                config false;
+            }
+			leaf vendor {
+				description "Vendor";
+				ipg-cmn:category "inventory";
+				type ipg-cmn:string-64;
+				default "IPG Photonics";
+				config false;
+			}
+            leaf hardware-number {
+                description "Hardware number";
+                ipg-cmn:category "inventory";
+                type ipg-cmn:string-64;
+        		default "IP1459-1";
+                config false;
+            }
+            leaf software-number {
+                description "Software number";
+                ipg-cmn:category "inventory";
+                type ipg-cmn:string-64;
+        		default "2.0.0.0";
+                config false;
+            }
+            leaf temperature {
+                description "Temperature";
+                units "Centigrade";
+                ipg-cmn:category "gauge";
+                type ipg-cmn:float-1;
+                ipg-cmn:min-val "5.0";
+                ipg-cmn:max-val "45.0";
+                config false;
+            }
+            leaf temperature-fault {
+                description "Temperature fault";
+                ipg-cmn:category "fault";
+                type  boolean;
+                ipg-cmn:severity "critical";
+                config false;
+            }
+            leaf power-fault {
+                description "Power fault";
+                ipg-cmn:category "fault";
+                type  boolean;
+                ipg-cmn:severity "critical";
+                config false;
+            }
+            leaf hardware-fault {
+                description "Hardware fault";
+                ipg-cmn:category "fault";
+                type  boolean;
+                ipg-cmn:severity "critical";
+                config false;
+            }
+            container adm {
+                description "Add-drop multiplexor";
+                ipg-cmn:object "otn-device";
+
+                leaf admin-state {
+                    description "Administrative state";
+                    ipg-cmn:category "config";
+                    ipg-cmn:condition;
+                    type ipg-cmn:admin-state-type;
+                    config true;
+                    default "MT";
+                }
+                leaf service-state {
+                    ipg-cmn:category "monitor";
+                    type ipg-cmn:service-state-type;
+                    config false;
+                }
+                
+                list client {
+                    when "../admin-state != 'DSBLD'";
+                    description "Client interface";
+                    ipg-cmn:object "interface";
+                    max-elements 16;
+					min-elements 16;
+                    key "id";
+                    leaf id {
+                        type uint32 {
+                            range "1 .. 16";
+                        }
+                    }
+
+                    leaf admin-state {
+                        description "Administrative state";
+                        ipg-cmn:category "config";
+                        ipg-cmn:condition;
+                        type ipg-cmn:admin-state-type;
+                        config true;
+                        default "MT";
+                    }
+                    leaf service-state {
+                        ipg-cmn:category "monitor";
+                        type ipg-cmn:service-state-type;
+                        config false;
+                    }
+        			
+        			leaf signal-type {
+                        when "../admin-state != 'DSBLD'";
+                        description "Signal type";
+                        ipg-cmn:category "config";
+                        ipg-cmn:condition;
+                        type enumeration {
+                            enum STM1 { value 33; }
+                            enum STM4 { value 34; }
+                            enum STM16 { value 35; }
+                            enum 1GE  { value 66; }
+                        }
+                        config true;
+                        default "STM1";
+                    }
+
+                    leaf loopback {
+                        when "../admin-state != 'DSBLD'";
+                        description "Interface loopback";
+                        ipg-cmn:category "config";
+                        type enumeration {
+                            enum none { value 0; }
+                            enum Near-End { value 1;}
+                            enum Far-End { value 2;}
+                        }
+                        config true;
+                        default "none";
+                    }
+        			
+                    leaf module-type {
+                        when "../admin-state != 'DSBLD'";
+                        description "Module type";
+                        ipg-cmn:category "config";
+                        ipg-cmn:condition;
+                        type enumeration {
+                            enum SFP  { value 1; }
+                        }
+                        config true;
+                        default "SFP";
+                    }
+                    
+                    uses ipg-sfp:sfp;
+                } // client
+
+                list line {
+                    when "../admin-state != 'DSBLD'";
+                    description "Line interface";
+                    ipg-cmn:object "interface";
+                    max-elements 4;
+					min-elements 4;
+                    key "id";
+                    leaf id {
+                        type uint32 {
+                            range "1 .. 4";
+                        }
+                    }                
+
+                    leaf admin-state {
+                        description "Administrative state";
+                        ipg-cmn:category "config";
+                        ipg-cmn:condition;
+                        type ipg-cmn:admin-state-type;
+                        config true;
+                        default "MT";
+                    }
+                    leaf service-state {
+                        ipg-cmn:category "monitor";
+                        type ipg-cmn:service-state-type;
+                        config false;
+                    }
+        			leaf signal-type {
+                        when "../admin-state != 'DSBLD'";
+                        description "Signal type";
+                        ipg-cmn:category "config";
+                        ipg-cmn:condition;
+                        type enumeration {
+                            enum OTU2  { value 4; }
+                        }
+                        config true;
+                        default "OTU2";
+                    }
+                    leaf loopback {
+                        when "../admin-state = 'DSBLD'";
+                        description "Interface loopback";
+                        ipg-cmn:category "config";
+                        type enumeration {
+                            enum none { value 0; }
+                            enum Near-End { value 1;}
+                            enum Far-End { value 2;}
+                        }
+                        config true;
+                        default "none";
+                    }
+                    leaf module-type {
+                        when "../admin-state != 'DSBLD'";
+                        description "Module type";
+                        ipg-cmn:category "config";
+                        ipg-cmn:condition;
+                        type enumeration {
+                            enum SFP  { value 1; }
+                        }
+                        config true;
+                        default "SFP";
+                    }
+                    
+                    uses ipg-sfp:sfp;
+                }
+            }
+        }
+    //}
+
+}
