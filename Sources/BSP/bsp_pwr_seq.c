@@ -52,7 +52,7 @@ static int32_t BSP_PWR_SEQ_SetPinState(void *Priv, uint32_t Pin, uint32_t State)
 
 static int32_t BSP_PWR_SEQ_CheckConditions(void)
 {
-	//if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
+	//if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
 	//	return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;
