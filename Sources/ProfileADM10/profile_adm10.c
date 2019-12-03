@@ -73,14 +73,6 @@ static void PROFILE_ADM10_UpdateHwNumber(PROFILE_T *Profile)
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_HWNUMBER_IDX, BSP_HW_VERSION, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
 }
 
-static void PROFILE_ADM10_UpdateTCaseValue(PROFILE_T *Profile)
-{
-	float TCase;
-
-	TCase = 36.7f;	
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CASETEMP_IDX, &TCase, PROFILE_COLOR_TYPE_AUTO, PROFILE_STATE_IS);
-}
-
 static void PROFILE_ADM10_UpdateTimeValue(PROFILE_T *Profile)
 {
 	uint32_t Time;
@@ -331,8 +323,6 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	PROFILE_ADM10_UpdateClient2FPGASwNumber(Profile);
 	
 	PROFILE_ADM10_UpdateHwNumber(Profile);
-	
-	PROFILE_ADM10_UpdateTCaseValue(Profile);
 
 	PROFILE_ADM10_UpdateTimeValue(Profile);
 

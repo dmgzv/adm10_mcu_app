@@ -139,9 +139,6 @@ typedef struct {
     uint8_t BlockStateColor;
    uint32_t BlockState;
    uint8_t BlockStateState;
-    uint8_t CaseTempColor;
-   float CaseTemp;
-   uint8_t CaseTempState;
     uint8_t PowerAlarmsColor;
    uint32_t PowerAlarms;
    uint8_t PowerAlarmsState;
@@ -1997,9 +1994,6 @@ typedef struct {
    char Cl_16_SFP_PtNumber[PROFILE_STRING_MAX_LEN];
     uint8_t BlockStateDegradeColor;
     uint8_t BlockStateFailureColor;
-    float CaseTempThrs[4];
-    uint8_t CaseTempDegradeColor;
-    uint8_t CaseTempFailureColor;
     uint8_t PowerAlarmsDegradeColor;
     uint8_t PowerAlarmsFailureColor;
     uint8_t HwAlarmsDegradeColor;
