@@ -1,6 +1,7 @@
 #include "profile_adm10_client.h"
 #include "profile_adm10_values.h"
 #include "profile_adm10_xc.h"
+#include "profile_adm10_pg.h"
 #include "als.h"
 #include "perf.h"
 #include <string.h>
@@ -419,6 +420,75 @@ static int32_t PROFILE_ADM10_LINE_GetXCODU1(PROFILE_T *Profile, uint32_t LineIdx
 	return 0;
 }
 
+static int32_t PROFILE_ADM10_LINE_GetPGODU1(PROFILE_T *Profile, uint32_t LineIdx, uint32_t LineODU1Idx, uint32_t *PortType, uint32_t *PortIdx, uint32_t *PortODU1Idx)
+{
+	uint32_t i, j;
+	uint32_t PGType, PrimaryODUk, ProtectODUk;
+	
+	*PortType = 0xFF;
+	*PortIdx = 0xFF;
+	*PortODU1Idx = 0xFF;
+	
+	for (i = 0; i < PROFILE_ADM10_ODU1_PGS; i++)
+	{
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetTypeIdx[i], &PGType))
+			return -1;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[i], &PrimaryODUk))
+			return -1;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetProtectODUkIdx[i], &ProtectODUk))
+			return -1;
+		if ((PGType == 0) || (PrimaryODUk == 0) || (ProtectODUk == 0))
+			continue;
+		if (PrimaryODUk == (1 + (LineIdx * 4) + LineODU1Idx)) {
+			for (j = 0; j < 8; j++)
+			{
+				if (ProtectODUk == (1 + j))
+				{
+					*PortType = 0;
+					*PortIdx = j / 4;
+					*PortODU1Idx = j % 4;
+					return 0;
+				}
+			}
+			for (j = 0; j < 16; j++)
+			{
+				if (ProtectODUk == (1025 + j))
+				{
+					*PortType = 1;
+					*PortIdx = j;
+					*PortODU1Idx = 0;
+					return 0;
+				}
+			}
+			return 0;
+		}
+		else if (ProtectODUk == (1 + (LineIdx * 4) + LineODU1Idx)) {
+			for (j = 0; j < 8; j++)
+			{
+				if (PrimaryODUk == (1 + j))
+				{
+					*PortType = 0;
+					*PortIdx = j / 4;
+					*PortODU1Idx = j % 4;
+					return 0;
+				}
+			}
+			for (j = 0; j < 16; j++)
+			{
+				if (PrimaryODUk == (1025 + j))
+				{
+					*PortType = 1;
+					*PortIdx = j;
+					*PortODU1Idx = 0;
+					return 0;
+				}
+			}
+			return 0;
+		}		
+	}	
+	return 0;
+}
+
 static int32_t PROFILE_ADM10_LINE_GetXCODU0(PROFILE_T *Profile, uint32_t LineIdx, uint32_t LineODU0Idx, uint32_t *PortType, uint32_t *PortIdx, uint32_t *PortODU0Idx)
 {
 	uint32_t i, j;
@@ -476,6 +546,75 @@ static int32_t PROFILE_ADM10_LINE_GetXCODU0(PROFILE_T *Profile, uint32_t LineIdx
 			for (j = 0; j < 16; j++)
 			{
 				if (Src == (1025 + j))
+				{
+					*PortType = 1;
+					*PortIdx = j;
+					*PortODU0Idx = 0;
+					return 0;
+				}
+			}
+			return 0;
+		}		
+	}	
+	return 0;
+}
+
+static int32_t PROFILE_ADM10_LINE_GetPGODU0(PROFILE_T *Profile, uint32_t LineIdx, uint32_t LineODU0Idx, uint32_t *PortType, uint32_t *PortIdx, uint32_t *PortODU0Idx)
+{
+	uint32_t i, j;
+	uint32_t PGType, PrimaryODUk, ProtectODUk;
+	
+	*PortType = 0xFF;
+	*PortIdx = 0xFF;
+	*PortODU0Idx = 0xFF;
+	
+	for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
+	{
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetTypeIdx[i], &PGType))
+			return -1;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[i], &PrimaryODUk))
+			return -1;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetProtectODUkIdx[i], &ProtectODUk))
+			return -1;
+		if ((PGType == 0) || (PrimaryODUk == 0) || (ProtectODUk == 0))
+			continue;
+		if (PrimaryODUk == (1 + (LineIdx * 4) + LineODU0Idx)) {
+			for (j = 0; j < 16; j++)
+			{
+				if (ProtectODUk == (1 + j))
+				{
+					*PortType = 0;
+					*PortIdx = j / 4;
+					*PortODU0Idx = j % 4;
+					return 0;
+				}
+			}
+			for (j = 0; j < 16; j++)
+			{
+				if (ProtectODUk == (1025 + j))
+				{
+					*PortType = 1;
+					*PortIdx = j;
+					*PortODU0Idx = 0;
+					return 0;
+				}
+			}
+			return 0;
+		}
+		else if (ProtectODUk == (1 + (LineIdx * 4) + LineODU0Idx)) {
+			for (j = 0; j < 16; j++)
+			{
+				if (PrimaryODUk == (1 + j))
+				{
+					*PortType = 0;
+					*PortIdx = j / 4;
+					*PortODU0Idx = j % 4;
+					return 0;
+				}
+			}
+			for (j = 0; j < 16; j++)
+			{
+				if (PrimaryODUk == (1025 + j))
 				{
 					*PortType = 1;
 					*PortIdx = j;
@@ -1354,7 +1493,7 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 {
 	uint32_t ODU1Alarms;
 	uint32_t State, DataType, OPU2Payload, OPU1Payload;
-	uint32_t PortType, PortIdx, PortODU1Idx;
+	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
 	uint8_t ColorType;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -1373,9 +1512,11 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 		
 		if (OPU1Payload == 0)
 		{
-			if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &PortType, &PortIdx, &PortODU1Idx))
+			if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
 				return;
-			if ((PortType == 0xFF) || (PortIdx == 0xFF) || (PortODU1Idx == 0xFF))
+			if (PROFILE_ADM10_LINE_GetPGODU1(Profile, Idx, ODU1Idx, &PGPortType, &PGPortIdx, &PGPortODU1Idx))
+				return;
+			if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU1Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU1Idx == 0xFF)))
 				State = PROFILE_STATE_OOS;
 		}
 		
@@ -1489,7 +1630,7 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 {
 	uint32_t OPU1Alarms;
 	uint32_t State, DataType, OPU2Payload, OPU1Payload;
-	uint32_t PortType, PortIdx, PortODU1Idx;
+	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
 	uint8_t ColorType;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -1508,9 +1649,11 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 		
 		if (OPU1Payload == 0)
 		{
-			if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &PortType, &PortIdx, &PortODU1Idx))
+			if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
 				return;
-			if ((PortType == 0xFF) || (PortIdx == 0xFF) || (PortODU1Idx == 0xFF))
+			if (PROFILE_ADM10_LINE_GetPGODU1(Profile, Idx, ODU1Idx, &PGPortType, &PGPortIdx, &PGPortODU1Idx))
+				return;
+			if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU1Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU1Idx == 0xFF)))
 				State = PROFILE_STATE_OOS;
 		}
 		
@@ -1548,7 +1691,7 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 {
 	uint32_t ODU0Alarms;
 	uint32_t State, DataType, OPU2Payload, OPU1Payload;
-	uint32_t PortType, PortIdx, PortODU0Idx;
+	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
 	uint8_t ColorType;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -1565,9 +1708,11 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 		ODU0Alarms = 0;
 		ColorType = PROFILE_COLOR_TYPE_NORMAL;
 		
-		if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &PortType, &PortIdx, &PortODU0Idx))
+		if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &XCPortType, &XCPortIdx, &XCPortODU0Idx))
 			return;
-		if ((PortType == 0xFF) || (PortIdx == 0xFF) || (PortODU0Idx == 0xFF))
+		if (PROFILE_ADM10_LINE_GetPGODU0(Profile, Idx, ODU0Idx, &PGPortType, &PGPortIdx, &PGPortODU0Idx))
+			return;
+		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU0Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU0Idx == 0xFF)))
 			State = PROFILE_STATE_OOS;
 		
 		if ((BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK) && (fpga_line.Mode == BSP_FPGA_MODE_ADM10))
@@ -1680,7 +1825,7 @@ static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_
 {
 	uint32_t OPU0Alarms;
 	uint32_t State, DataType, OPU2Payload, OPU1Payload;
-	uint32_t PortType, PortIdx, PortODU0Idx;
+	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
 	uint8_t ColorType;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -1697,9 +1842,11 @@ static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_
 		OPU0Alarms = 0;
 		ColorType = PROFILE_COLOR_TYPE_NORMAL;
 		
-		if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &PortType, &PortIdx, &PortODU0Idx))
+		if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &XCPortType, &XCPortIdx, &XCPortODU0Idx))
 			return;
-		if ((PortType == 0xFF) || (PortIdx == 0xFF) || (PortODU0Idx == 0xFF))
+		if (PROFILE_ADM10_LINE_GetPGODU0(Profile, Idx, ODU0Idx, &PGPortType, &PGPortIdx, &PGPortODU0Idx))
+			return;
+		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU0Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU0Idx == 0xFF)))
 			State = PROFILE_STATE_OOS;
 		
 		if ((BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK) && (fpga_line.Mode == BSP_FPGA_MODE_ADM10))
