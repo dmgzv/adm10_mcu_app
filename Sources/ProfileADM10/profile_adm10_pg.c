@@ -1340,12 +1340,12 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 						}
 						else if (ODU0PGMode[i] == 3) /*Manual*/
 						{
-							if ((!((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU0Idx * 2) + ProtectODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK)) || \
-								(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU0Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU0Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_OCI_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU0Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_LCK_MASK))) && \
-								(!(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU0Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_SD_MASK)) && \
-								(!(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU0Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_OPUCSF_MASK)))
+							if ((!((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK)) || \
+								(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK) || \
+								((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_OCI_MASK) || \
+								((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_LCK_MASK))) && \
+								(!(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_SD_MASK)) && \
+								(!(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_OPUCSF_MASK)))
 							{
 								BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(Client, 0x01);
 							}

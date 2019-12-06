@@ -578,7 +578,7 @@ static int32_t PROFILE_ADM10_LINE_GetPGODU0(PROFILE_T *Profile, uint32_t LineIdx
 			return -1;
 		if ((PGType == 0) || (PrimaryODUk == 0) || (ProtectODUk == 0))
 			continue;
-		if (PrimaryODUk == (1 + (LineIdx * 4) + LineODU0Idx)) {
+		if (PrimaryODUk == (1 + (LineIdx * 8) + LineODU0Idx)) {
 			for (j = 0; j < 16; j++)
 			{
 				if (ProtectODUk == (1 + j))
@@ -601,7 +601,7 @@ static int32_t PROFILE_ADM10_LINE_GetPGODU0(PROFILE_T *Profile, uint32_t LineIdx
 			}
 			return 0;
 		}
-		else if (ProtectODUk == (1 + (LineIdx * 4) + LineODU0Idx)) {
+		else if (ProtectODUk == (1 + (LineIdx * 8) + LineODU0Idx)) {
 			for (j = 0; j < 16; j++)
 			{
 				if (PrimaryODUk == (1 + j))
