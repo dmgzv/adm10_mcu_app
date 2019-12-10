@@ -402,7 +402,7 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 
 void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 {
-	uint32_t Mode;
+	uint32_t Mode, SI5332_1_SetAdjCap, SI5332_2_SetAdjCap;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;
@@ -415,6 +415,44 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	{
 		BSP_FPGA_MODE_SET(BSP_FPGA_MODE_ATP_2x10_BS);
 	}
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))
+		return;
+	
+	if (SI5332_1_SetAdjCap == 1)
+	{
+		si5332_cfg[0] = BSP_CLK_SI5332_10P0_CFG;
+	}
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_2_SETADJCAP_IDX, &SI5332_2_SetAdjCap))
+		return;
+	
+	if (SI5332_2_SetAdjCap == 0)
+		si5332_cfg[1] = BSP_CLK_SI5332_6P0_CFG;
+	else if (SI5332_2_SetAdjCap == 1)
+		si5332_cfg[1] = BSP_CLK_SI5332_6P5_CFG;
+	else if (SI5332_2_SetAdjCap == 2)
+		si5332_cfg[1] = BSP_CLK_SI5332_7P0_CFG;
+	else if (SI5332_2_SetAdjCap == 3)
+		si5332_cfg[1] = BSP_CLK_SI5332_7P5_CFG;
+	else if (SI5332_2_SetAdjCap == 4)
+		si5332_cfg[1] = BSP_CLK_SI5332_8P0_CFG;
+	else if (SI5332_2_SetAdjCap == 5)
+		si5332_cfg[1] = BSP_CLK_SI5332_8P5_CFG;
+	else if (SI5332_2_SetAdjCap == 6)
+		si5332_cfg[1] = BSP_CLK_SI5332_9P0_CFG;
+	else if (SI5332_2_SetAdjCap == 7)
+		si5332_cfg[1] = BSP_CLK_SI5332_9P5_CFG;
+	else if (SI5332_2_SetAdjCap == 8)
+		si5332_cfg[1] = BSP_CLK_SI5332_10P0_CFG;
+	else if (SI5332_2_SetAdjCap == 9)
+		si5332_cfg[1] = BSP_CLK_SI5332_10P5_CFG;
+	else if (SI5332_2_SetAdjCap == 10)
+		si5332_cfg[1] = BSP_CLK_SI5332_11P0_CFG;
+	else if (SI5332_2_SetAdjCap == 11)
+		si5332_cfg[1] = BSP_CLK_SI5332_11P5_CFG;
+	else if (SI5332_2_SetAdjCap == 12)
+		si5332_cfg[1] = BSP_CLK_SI5332_12P0_CFG;
 	
 	PROFILE_ADM10_LINE_UpdateConfigs(Profile);
 	PROFILE_ADM10_CLIENT_UpdateConfigs(Profile);

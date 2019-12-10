@@ -2907,6 +2907,8 @@ typedef struct {
    char SrNumber[PROFILE_STRING_MAX_LEN];
    uint32_t SetDefault;
    uint32_t Reset;
+   uint32_t SI5332_1_SetAdjCap;
+   uint32_t SI5332_2_SetAdjCap;
 } PROFILE_ADM10_VALUES_CALIB_T;
 
 

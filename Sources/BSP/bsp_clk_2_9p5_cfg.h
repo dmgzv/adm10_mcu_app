@@ -10,23 +10,23 @@
  * Design ID:                                          ADM10
  * Includes Pre/Post Download Control Register Writes: Yes
  * Created By:                                         ClockBuilder Pro v2.38 [2019-10-31]
- * Timestamp:                                          2019-11-15 14:39:45 GMT+03:00
+ * Timestamp:                                          2019-11-15 14:40:35 GMT+03:00
  *
  * A complete design report corresponding to this export is included at the end 
  * of this header file.
  *
  */
 
-#ifndef __BSP_CLK_2_CFG_H
-#define __BSP_CLK_2_CFG_H
+#ifndef __BSP_CLK_2_9P5_CFG_H
+#define __BSP_CLK_2_9P5_CFG_H
 
 #include "si5332.h"
 
-#define BSP_CLK_2_CFG_NUM_REGS				104
+#define BSP_CLK_2_9P5_CFG_NUM_REGS				102
 
-const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
+const SI5332_CFG_T bsp_clk_2_9p5_cfg[BSP_CLK_2_9P5_CFG_NUM_REGS] =
 {
-		/* Start configuration registers */
+	/* Start configuration registers */
 	{ 0x0017, 0x41 },
 	{ 0x0018, 0x44 },
 	{ 0x0019, 0x4D },
@@ -127,10 +127,10 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
 	{ 0x00BD, 0x00 },
 	{ 0x00BE, 0x10 },
 	{ 0x00BF, 0x00 },
-	{ 0x00C0, 0x26 },
-	{ 0x00C1, 0x26 },
+	{ 0x00C0, 0x1D },
+	{ 0x00C1, 0x1D },
+	/* End configuration registers */
 };
-
 
 /*
  * Design Report
@@ -141,7 +141,7 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * Project File:       E:\Design\Cadence\CYC10GX_r2\si5332\Si5332-40.00-ADM10.slabtimeproj
  * Design ID:          ADM10
  * Created By:         ClockBuilder Pro v2.38 [2019-10-31]
- * Timestamp:          2019-11-15 14:39:45 GMT+03:00
+ * Timestamp:          2019-11-15 14:40:35 GMT+03:00
  * 
  * Design Rule Check
  * =================
@@ -165,7 +165,7 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * Inputs:
  *    XAXB: 40 MHz
  *          Crystal Mode
- *          Adjusted Capacitance: 11.5 pF
+ *          Adjusted Capacitance: 9.5 pF
  *  CLKIN2: Unused
  *  CLKIN3: Unused
  * 
@@ -438,10 +438,10 @@ const SI5332_CFG_T bsp_clk_2_cfg[BSP_CLK_2_CFG_NUM_REGS] =
  * 0xBD[3]     OUT11_DIS         0                  0x0              
  * 0xBE[7:0]   PLL_MODE          16                 0x10             
  * 0xBF[0]     XOSC_CINT_ENA     0                  0x0              
- * 0xC0[5:0]   XOSC_CTRIM_XIN    38                 0x26             
- * 0xC1[5:0]   XOSC_CTRIM_XOUT   38                 0x26
+ * 0xC0[5:0]   XOSC_CTRIM_XIN    29                 0x1D             
+ * 0xC1[5:0]   XOSC_CTRIM_XOUT   29                 0x1D
  * 
  *
  */
- 
+
 #endif

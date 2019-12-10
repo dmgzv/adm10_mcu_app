@@ -1,6 +1,18 @@
 #include "bsp_clk.h"
-#include "bsp_clk_1_cfg.h"
-#include "bsp_clk_2_cfg.h"
+#include "bsp_clk_1_10p0_cfg.h"
+#include "bsp_clk_2_6p0_cfg.h"
+#include "bsp_clk_2_6p5_cfg.h"
+#include "bsp_clk_2_7p0_cfg.h"
+#include "bsp_clk_2_7p5_cfg.h"
+#include "bsp_clk_2_8p0_cfg.h"
+#include "bsp_clk_2_8p5_cfg.h"
+#include "bsp_clk_2_9p0_cfg.h"
+#include "bsp_clk_2_9p5_cfg.h"
+#include "bsp_clk_2_10p0_cfg.h"
+#include "bsp_clk_2_10p5_cfg.h"
+#include "bsp_clk_2_11p0_cfg.h"
+#include "bsp_clk_2_11p5_cfg.h"
+#include "bsp_clk_2_12p0_cfg.h"
 #include "bsp_pwr_in.h"
 #include "bsp_pwr_pin.h"
 #include "bsp_pwr_seq.h"
@@ -8,10 +20,74 @@
 
 static const uint8_t bsp_clk_si5332_i2c_addr[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_I2C_ADDR, BSP_CLK_SI5332_2_I2C_ADDR};
 static const I2C_TypeDef* bsp_clk_si5332_i2c[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_I2C, BSP_CLK_SI5332_2_I2C};
-static const SI5332_CFG_T* bsp_clk_si5332_cfg[BSP_CLK_SI5332_CNT] = {bsp_clk_1_cfg, bsp_clk_2_cfg};
-static const uint32_t bsp_clk_si5332_cfg_size[BSP_CLK_SI5332_CNT] = {sizeof(bsp_clk_1_cfg) / sizeof(bsp_clk_1_cfg[0]), sizeof(bsp_clk_2_cfg) / sizeof(bsp_clk_2_cfg[0])};
+static const SI5332_CFG_T* bsp_clk_si5332_cfg[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332_CFG_CNT] = {
+	{
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		bsp_clk_1_10p0_cfg,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+	},
+	{
+		bsp_clk_2_6p0_cfg,
+		bsp_clk_2_6p5_cfg,
+		bsp_clk_2_7p0_cfg,
+		bsp_clk_2_7p5_cfg,
+		bsp_clk_2_8p0_cfg,
+		bsp_clk_2_8p5_cfg,
+		bsp_clk_2_9p0_cfg,
+		bsp_clk_2_9p5_cfg,
+		bsp_clk_2_10p0_cfg,
+		bsp_clk_2_10p5_cfg,
+		bsp_clk_2_11p0_cfg,
+		bsp_clk_2_11p5_cfg,
+		bsp_clk_2_12p0_cfg,
+	},
+};
+static const uint32_t bsp_clk_si5332_cfg_size[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332_CFG_CNT] = {
+	{	
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		sizeof(bsp_clk_1_10p0_cfg) / sizeof(bsp_clk_1_10p0_cfg[0]),
+		0,
+		0,
+		0,
+		0,
+	},
+	{
+		sizeof(bsp_clk_2_6p0_cfg) / sizeof(bsp_clk_2_6p0_cfg[0]),
+		sizeof(bsp_clk_2_6p5_cfg) / sizeof(bsp_clk_2_6p5_cfg[0]), 
+		sizeof(bsp_clk_2_7p0_cfg) / sizeof(bsp_clk_2_7p0_cfg[0]), 
+		sizeof(bsp_clk_2_7p5_cfg) / sizeof(bsp_clk_2_7p5_cfg[0]),
+		sizeof(bsp_clk_2_8p0_cfg) / sizeof(bsp_clk_2_8p0_cfg[0]),
+		sizeof(bsp_clk_2_8p5_cfg) / sizeof(bsp_clk_2_8p5_cfg[0]),
+		sizeof(bsp_clk_2_9p0_cfg) / sizeof(bsp_clk_2_9p0_cfg[0]),
+		sizeof(bsp_clk_2_9p5_cfg) / sizeof(bsp_clk_2_9p5_cfg[0]), 
+		sizeof(bsp_clk_2_10p0_cfg) / sizeof(bsp_clk_2_10p0_cfg[0]), 
+		sizeof(bsp_clk_2_10p5_cfg) / sizeof(bsp_clk_2_10p5_cfg[0]),
+		sizeof(bsp_clk_2_11p0_cfg) / sizeof(bsp_clk_2_11p0_cfg[0]),
+		sizeof(bsp_clk_2_11p5_cfg) / sizeof(bsp_clk_2_11p5_cfg[0]),
+		sizeof(bsp_clk_2_12p0_cfg) / sizeof(bsp_clk_2_12p0_cfg[0]),
+	},
+};
 
 SI5332_T si5332[BSP_CLK_SI5332_CNT];
+uint32_t si5332_cfg[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_DEF_CFG, BSP_CLK_SI5332_2_DEF_CFG};
+static uint32_t __si5332_cfg[BSP_CLK_SI5332_CNT];
 
 static int32_t BSP_CLK_CheckConditions(void)
 {
@@ -33,6 +109,8 @@ static int32_t BSP_CLK_CheckConditions(void)
 
 void BSP_CLK_Process(void)
 {
+	SI5332_CFG_T *cfg;
+	uint32_t cfg_size;
 	uint32_t i;
 	if (BSP_CLK_CheckConditions())
 	{
@@ -50,12 +128,35 @@ void BSP_CLK_Process(void)
 		/* External faults absent */
 		for (i = 0; i < BSP_CLK_SI5332_CNT; i++)
 		{
-			if(BSP_DEV_GET_STATE(&si5332[i]) != BSP_DEV_STATE_OK)
+			if ((BSP_DEV_GET_STATE(&si5332[i]) != BSP_DEV_STATE_OK) || (si5332_cfg[i] != __si5332_cfg[i]))
 			{
-				if (!BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_SI5332_CH(i)))
+				switch (si5332_cfg[i])
 				{
-					SI5332_Init(&si5332[i], (I2C_TypeDef*) bsp_clk_si5332_i2c[i], bsp_clk_si5332_i2c_addr[i], (SI5332_CFG_T*)bsp_clk_si5332_cfg[i], bsp_clk_si5332_cfg_size[i]);
-					BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
+					case BSP_CLK_SI5332_6P0_CFG:
+					case BSP_CLK_SI5332_6P5_CFG:
+					case BSP_CLK_SI5332_7P0_CFG:
+					case BSP_CLK_SI5332_7P5_CFG:
+					case BSP_CLK_SI5332_8P0_CFG:
+					case BSP_CLK_SI5332_8P5_CFG:
+					case BSP_CLK_SI5332_9P0_CFG:
+					case BSP_CLK_SI5332_9P5_CFG:
+					case BSP_CLK_SI5332_10P0_CFG:
+					case BSP_CLK_SI5332_10P5_CFG:
+					case BSP_CLK_SI5332_11P0_CFG:
+					case BSP_CLK_SI5332_11P5_CFG:
+					case BSP_CLK_SI5332_12P0_CFG:
+						cfg = (SI5332_CFG_T*)bsp_clk_si5332_cfg[i][si5332_cfg[i]];
+						cfg_size = bsp_clk_si5332_cfg_size[i][si5332_cfg[i]];
+						if (!BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_SI5332_CH(i)))
+						{
+							if (SI5332_Init(&si5332[i], (I2C_TypeDef*) bsp_clk_si5332_i2c[i], bsp_clk_si5332_i2c_addr[i], cfg, cfg_size) == 0)
+								__si5332_cfg[i] = si5332_cfg[i];
+							BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
+						}
+						break;
+					default:
+						SI5332_Deinit(&si5332[i]);
+						break;
 				}
 			}
 		}
