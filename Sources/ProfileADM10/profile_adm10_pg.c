@@ -1172,6 +1172,8 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 					PrimaryODU1Mux = BSP_FPGA_LINE_MUX_ODU12_GET((PrimaryLineIdx * 4) + PrimaryODU1Idx);
 					BSP_FPGA_LINE_MUX_ODU12_SET((ProtectLineIdx * 4) + ProtectODU1Idx, PrimaryODU1Mux);
 					
+					Target = 0xFFFFFFFF;
+					
 					for (j = 0; j < PROFILE_ADM10_ODU1_XC_CNT; j++)
 					{
 						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[j], &ODU1XCSrc))
@@ -1299,6 +1301,8 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 					
 					PrimaryODU0Mux = BSP_FPGA_LINE_MUX_ODU01_GET(((PrimaryODU1Mux - 8) * 2) + PrimaryODU0Idx);					
 					BSP_FPGA_LINE_MUX_ODU01_SET(((ProtectODU1Mux - 8) * 2) + ProtectODU0Idx, PrimaryODU0Mux);
+					
+					Target = 0xFFFFFFFF;
 					
 					for (j = 0; j < PROFILE_ADM10_ODU0_XC_CNT; j++)
 					{
