@@ -10,9 +10,14 @@
 static int32_t __BSP_SFP_ConfigSwitch(void *Priv);
 static int32_t __BSP_SFP_ResetSwitch(void *Priv);
 
-int32_t __BSP_SFP_InitPin(void *Priv, uint32_t Pin);
-int32_t __BSP_SFP_SetPinState(void *Priv, uint32_t Pin, uint32_t State);
-int32_t __BSP_SFP_GetPinState(void *Priv, uint32_t Pin, uint32_t *State);
+static int32_t __BSP_SFP_InitPin(void *Priv, uint32_t Pin);
+static int32_t __BSP_SFP_SetPinState(void *Priv, uint32_t Pin, uint32_t State);
+static int32_t __BSP_SFP_GetPinState(void *Priv, uint32_t Pin, uint32_t *State);
+
+const char* bsp_sfp_id[BSP_SFP_CNT] = {
+	"CL1", "CL2", "CL3", "CL4", "CL5", "CL6", "CL7", "CL8", "CL9", "CL10",
+	"CL11", "CL12", "CL13", "CL14", "CL15", "CL16", "LN1", "LN2", "LN3", "LN4"
+};
 
 const BSP_PIN_CTRL_T bsp_sfp_pin_ctrl[BSP_SFP_CNT] = {
 	{	__BSP_SFP_InitPin,	__BSP_SFP_SetPinState,	__BSP_SFP_GetPinState, (void*)0	},
@@ -74,7 +79,7 @@ static int32_t __BSP_SFP_ResetSwitch(void *Priv)
 	return BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
 }
 
-int32_t __BSP_SFP_InitPin(void *Priv, uint32_t Pin)
+static int32_t __BSP_SFP_InitPin(void *Priv, uint32_t Pin)
 {
 	uint32_t Idx = (uint32_t)Priv;
 	
@@ -102,7 +107,7 @@ int32_t __BSP_SFP_InitPin(void *Priv, uint32_t Pin)
 	return 0;	
 }
 
-int32_t __BSP_SFP_SetPinState(void *Priv, uint32_t Pin, uint32_t State)
+static int32_t __BSP_SFP_SetPinState(void *Priv, uint32_t Pin, uint32_t State)
 {
 	uint32_t Idx = (uint32_t)Priv;
 	
@@ -126,7 +131,7 @@ int32_t __BSP_SFP_SetPinState(void *Priv, uint32_t Pin, uint32_t State)
 	return 0;	
 }
 
-int32_t __BSP_SFP_GetPinState(void *Priv, uint32_t Pin, uint32_t *State)
+static int32_t __BSP_SFP_GetPinState(void *Priv, uint32_t Pin, uint32_t *State)
 {
 	uint32_t Idx = (uint32_t)Priv;
 	
@@ -197,7 +202,7 @@ void BSP_SFP_Process(uint32_t Idx)
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
 		{
-			SFP_Init(&sfp[Idx], (BSP_I2C_CTRL_T*)&bsp_sfp_i2c_ctrl[Idx], (BSP_PIN_CTRL_T*)&bsp_sfp_pin_ctrl[Idx]);
+			SFP_Init(&sfp[Idx], bsp_sfp_id[Idx], &bsp_sfp_i2c_ctrl[Idx], &bsp_sfp_pin_ctrl[Idx]);
 		}
 		else
 		{

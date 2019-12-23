@@ -3,14 +3,21 @@
 #include "bsp_pwr_pin.h"
 #include "bsp_pwr_seq.h"
 
-static const I2C_TypeDef *pca9548a_i2c[BSP_PCA9548_CNT] = 
+const char *pca9548a_id[BSP_PCA9548_CNT] = 
+{
+	BSP_PCA9548_1_ID,
+	BSP_PCA9548_2_ID,
+	BSP_PCA9548_3_ID
+};
+
+const I2C_TypeDef *pca9548a_i2c[BSP_PCA9548_CNT] = 
 {
 	BSP_PCA9548_1_I2C,
 	BSP_PCA9548_2_I2C,
 	BSP_PCA9548_3_I2C
 };
 
-static const uint8_t pca9548a_addr[BSP_PCA9548_CNT] =
+const uint8_t pca9548a_addr[BSP_PCA9548_CNT] =
 {
 	BSP_PCA9548_1_I2C_ADDR,
 	BSP_PCA9548_2_I2C_ADDR,
@@ -108,7 +115,7 @@ void BSP_SFP_I2C_SWITCH_Process(void)
 			/* External faults present */
 			if(BSP_DEV_GET_STATE(&pca9548a[i]) != BSP_DEV_STATE_OK)
 			{
-				PCA9548A_Init(&pca9548a[i], (I2C_TypeDef*)pca9548a_i2c[i], pca9548a_addr[i]);
+				PCA9548A_Init(&pca9548a[i], pca9548a_id[i], pca9548a_i2c[i], pca9548a_addr[i], NULL);
 			}
 		}
 	}

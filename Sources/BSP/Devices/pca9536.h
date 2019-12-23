@@ -8,7 +8,7 @@
 
 typedef struct {
 	BSP_DEV;
-	I2C_TypeDef *I2C;
+	const I2C_TypeDef *I2C;
 	uint8_t Ins;
 	uint8_t Outs;
 	uint8_t Dirs;
@@ -27,7 +27,7 @@ int32_t PCA9536_SetBankOut(PCA9536_T *Dev, uint8_t Out);
 int32_t PCA9536_GetBankPol(PCA9536_T *Dev);
 int32_t PCA9536_SetBankPol(PCA9536_T *Dev, uint8_t Out);
 
-int32_t PCA9536_Init(PCA9536_T *Dev, I2C_TypeDef *I2C);
+int32_t PCA9536_Init(PCA9536_T *Dev, const char *DevId, const I2C_TypeDef *I2C);
 void PCA9536_Deinit(PCA9536_T *Dev);
 
 #endif /* __PCA9536_H */

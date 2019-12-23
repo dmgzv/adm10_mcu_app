@@ -19,6 +19,7 @@
 #include "bsp_sfp_i2c_switch.h"
 
 static const uint8_t bsp_clk_si5332_i2c_addr[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_I2C_ADDR, BSP_CLK_SI5332_2_I2C_ADDR};
+static const char* bsp_clk_si5332_id[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_ID, BSP_CLK_SI5332_2_ID};
 static const I2C_TypeDef* bsp_clk_si5332_i2c[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_I2C, BSP_CLK_SI5332_2_I2C};
 static const SI5332_CFG_T* bsp_clk_si5332_cfg[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332_CFG_CNT] = {
 	{
@@ -149,7 +150,7 @@ void BSP_CLK_Process(void)
 						cfg_size = bsp_clk_si5332_cfg_size[i][si5332_cfg[i]];
 						if (!BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_SI5332_CH(i)))
 						{
-							if (SI5332_Init(&si5332[i], (I2C_TypeDef*) bsp_clk_si5332_i2c[i], bsp_clk_si5332_i2c_addr[i], cfg, cfg_size) == 0)
+							if (SI5332_Init(&si5332[i], bsp_clk_si5332_id[i], bsp_clk_si5332_i2c[i], bsp_clk_si5332_i2c_addr[i], cfg, cfg_size) == 0)
 								__si5332_cfg[i] = si5332_cfg[i];
 							BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
 						}

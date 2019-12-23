@@ -6,9 +6,18 @@
 
 #define PCA9505_BANKS_CNT 5
 
+#define PCA9505_PIN_DIR_OUT	0
+#define PCA9505_PIN_DIR_IN	1
+
+#define PCA9505_PIN_POL_NORMAL	0
+#define PCA9505_PIN_POL_INVERT	1
+
+#define PCA9505_PIN_MSK_ENB	0
+#define PCA9505_PIN_MSK_DIS	1
+
 typedef struct {
 	BSP_DEV;
-	I2C_TypeDef *I2C;
+	const I2C_TypeDef *I2C;
 	uint8_t Addr;
 	uint8_t Ins[PCA9505_BANKS_CNT];
 	uint8_t Outs[PCA9505_BANKS_CNT];
@@ -32,7 +41,7 @@ int32_t PCA9505_SetBankPol(PCA9505_T *dev, uint32_t Bank, uint8_t Out);
 int32_t PCA9505_GetBankMsk(PCA9505_T *dev, uint32_t Bank);
 int32_t PCA9505_SetBankMsk(PCA9505_T *dev, uint32_t Bank, uint8_t Out);
 
-int32_t PCA9505_Init(PCA9505_T *dev, I2C_TypeDef *I2C, uint8_t Addr);
+int32_t PCA9505_Init(PCA9505_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr);
 void PCA9505_Deinit(PCA9505_T *Dev);
 
 #endif /* __PCA9505_H */

@@ -3,6 +3,7 @@
 
 #include "pca9536.h"
 
+#define BSP_PWR_PIN_PCA9536_ID				"D107"
 #define BSP_PWR_PIN_PCA9536_I2C				I2C3
 
 #ifndef BSP_CONFIG_USE_I2C3

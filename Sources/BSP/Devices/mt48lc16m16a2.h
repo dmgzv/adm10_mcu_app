@@ -51,7 +51,7 @@ typedef struct {
 	SDRAM_HandleTypeDef hsdram;
 } MT48LC16M16A2_T;
 
-int32_t MT48LC16M16A2_Init(MT48LC16M16A2_T *Dev);
+int32_t MT48LC16M16A2_Init(MT48LC16M16A2_T *Dev, const char *DevId);
 int32_t MT48LC16M16A2_PatternTest(MT48LC16M16A2_T *Dev, uint16_t Pattern);
 int32_t MT48LC16M16A2_RandomTest(MT48LC16M16A2_T *Dev);
 

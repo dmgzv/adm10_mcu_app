@@ -35,9 +35,9 @@ static int32_t AT45DB641E_ReadId(AT45DB641E_T *Dev)
 	if (result)
 		return -1;
 	Dev->ManufId = data[1];
-	Dev->DevId = data[2] << 8 | data[3];
+	Dev->DeviceId = data[2] << 8 | data[3];
 	/*Check Id's*/
-	if ((Dev->ManufId != 0x1F) || (Dev->DevId != 0x2800))
+	if ((Dev->ManufId != 0x1F) || (Dev->DeviceId != 0x2800))
 		return -1;
 	return 0;
 }
@@ -298,12 +298,12 @@ error:
 }
 
 
-int32_t AT45DB641E_Init(AT45DB641E_T *Dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl)
+int32_t AT45DB641E_Init(AT45DB641E_T *Dev, const char *DevId, const SPI_TypeDef *SPI, const BSP_PIN_CTRL_T *PinCtrl)
 {	
 	if ((!Dev) || (!SPI) || (!PinCtrl))
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "AT45DB641E", DevId);
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->SPI = SPI;
@@ -339,13 +339,13 @@ int32_t AT45DB641E_Init(AT45DB641E_T *Dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *Pin
 	if ((Dev->Status & AT45DB641E_STATUS_PAGE_SIZE_MASK) == 0)
 		goto error;	
 	
-	LOG_Add("AT45DB641E Init: Ok");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
-	LOG_Add("AT45DB641E Init: Fail");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;

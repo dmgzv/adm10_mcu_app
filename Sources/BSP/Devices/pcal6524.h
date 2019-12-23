@@ -11,7 +11,7 @@
 
 typedef struct {
 	BSP_DEV;
-	I2C_TypeDef *I2C;
+	const I2C_TypeDef *I2C;
 	uint8_t Addr;
 	uint8_t Ins[PCAL6524_BANKS_CNT];
 	uint8_t Outs[PCAL6524_BANKS_CNT];
@@ -31,7 +31,7 @@ int32_t PCAL6524_SetBankOut(PCAL6524_T *Dev, uint8_t Bank, uint8_t Out);
 int32_t PCAL6524_GetBankPol(PCAL6524_T *Dev, uint8_t Bank);
 int32_t PCAL6524_SetBankPol(PCAL6524_T *Dev, uint8_t Bank, uint8_t Out);
 
-int32_t PCAL6524_Init(PCAL6524_T *Dev, I2C_TypeDef *I2C, uint8_t Addr);
+int32_t PCAL6524_Init(PCAL6524_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr);
 void PCAL6524_Deinit(PCAL6524_T *Dev);
 
 #endif /* __PCAL6524_H */

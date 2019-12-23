@@ -91,17 +91,19 @@ static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 {
 	uint32_t i, LinesCnt, LineTime;
 	float Time;
-	char Line[LOG_LINE_SIZE];
+	const char *Line;
+	const char *Name;
+	const char *Id;
 	
 	LinesCnt = LOG_GetLinesCnt();
 	SHELL_Transmit(Shell, "Size: %d\r", LOG_LINES_CNT);
 	SHELL_Transmit(Shell, "Records Count: %d\r", LOG_GetLinesCnt());
 	for (i = 0; i < LinesCnt; i++)
 	{
-		LOG_GetLine(i, &LineTime, Line);
+		LOG_GetLine(i, &LineTime, &Name, &Id, &Line);
 		Time = (float)LineTime / osKernelSysTickFrequency;
-		SHELL_Transmit(Shell, "[%4.4f] %s\r", Time, Line);		
-	}	
+		SHELL_Transmit(Shell, "[%4.4f] %s %s %s\r", Time, Name, Id, Line);
+	}
 }
 #endif
 
@@ -364,7 +366,7 @@ static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t 
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			if (DIM3R3400_Init(&dim3r3400, BSP_PWR_IN_DIM3R3400_I2C, BSP_PWR_IN_DIM3R3400_I2C_ADDR))
+			if (DIM3R3400_Init(&dim3r3400, BSP_PWR_IN_DIM3R3400_ID, BSP_PWR_IN_DIM3R3400_I2C, BSP_PWR_IN_DIM3R3400_I2C_ADDR))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
@@ -787,7 +789,7 @@ static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			if (PCA9548A_Init(&pca9548a[Idx], pca9548a[Idx].I2C, pca9548a[Idx].Addr >> 1))
+			if (PCA9548A_Init(&pca9548a[Idx], pca9548a_id[Idx], pca9548a_i2c[Idx], pca9548a_addr[Idx], NULL))
 				goto cmd_err;
 		}
 		else
@@ -882,7 +884,7 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 			/*Check module precence*/
 			if (sfp[Idx].Pin.ModAbs)
 				goto mod_abs;			
-			if (SFP_Init(&sfp[Idx], (BSP_I2C_CTRL_T*)&bsp_sfp_i2c_ctrl[Idx], (BSP_PIN_CTRL_T*)&bsp_sfp_pin_ctrl[Idx]))
+			if (SFP_Init(&sfp[Idx], bsp_sfp_id[Idx], &bsp_sfp_i2c_ctrl[Idx], &bsp_sfp_pin_ctrl[Idx]))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
@@ -1211,7 +1213,7 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			if (UCD90120A_Init(&ucd90120a, BSP_PWR_SEQ_UCD90120A_I2C, BSP_PWR_SEQ_UCD90120A_I2C_ADDR, (BSP_PIN_CTRL_T*) &ucd90120a_pin_ctrl, BSP_UCD90120A_CFG_Table, BSP_UCD90120A_CFG_TableSize))
+			if (UCD90120A_Init(&ucd90120a, BSP_PWR_SEQ_UCD90120A_ID, BSP_PWR_SEQ_UCD90120A_I2C, BSP_PWR_SEQ_UCD90120A_I2C_ADDR, &ucd90120a_pin_ctrl, BSP_UCD90120A_CFG_Table, BSP_UCD90120A_CFG_TableSize))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))

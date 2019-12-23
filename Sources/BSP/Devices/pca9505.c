@@ -1,4 +1,5 @@
 #include "pca9505.h"
+#include "log.h"
 
 #define PCA9505_CMD_AI (1 << 7)
 
@@ -26,6 +27,7 @@ int32_t PCA9505_SetPinDir(PCA9505_T *Dev, uint32_t Bank, uint8_t Pin, uint8_t Di
 		Dir = Dev->Dirs[Bank] & ~(1 << Pin);
 	if (Dev->Dirs[Bank] != Dir)
 	{
+		LOG_Add(Dev->DevName, Dev->DevId, "Write: 0x%02x 0x%02x", cmd, Dir);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Dir, sizeof(Dir)))
 			goto error;
 		Dev->Dirs[Bank] = Dir;
@@ -57,6 +59,7 @@ int32_t PCA9505_SetPinOut(PCA9505_T *Dev, uint32_t Bank, uint8_t Pin, uint8_t Ou
 		Out = Dev->Outs[Bank] & ~(1 << Pin);
 	if (Dev->Outs[Bank] != Out)
 	{
+		LOG_Add(Dev->DevName, Dev->DevId, "Write: 0x%02x 0x%02x", cmd, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Out, sizeof(Out)))
 			goto error;	
 		Dev->Outs[Bank] = Out;
@@ -81,13 +84,14 @@ int32_t PCA9505_SetPinPol(PCA9505_T *Dev, uint32_t Bank, uint8_t Pin, uint8_t Po
 	
 	BSP_DEV_LOCK(Dev);
 	
-	cmd = pca9505_reg_op[Bank];
+	cmd = pca9505_reg_pl[Bank];
 	if (Pol)
 		Pol = Dev->Pols[Bank] | (1 << Pin);
 	else
 		Pol = Dev->Pols[Bank] & ~(1 << Pin);
 	if (Dev->Pols[Bank] != Pol)
 	{
+		LOG_Add(Dev->DevName, Dev->DevId, "Write: 0x%02x 0x%02x", cmd, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Pol, sizeof(Pol)))
 			goto error;	
 		Dev->Pols[Bank] = Pol;
@@ -113,13 +117,14 @@ int32_t PCA9505_SetPinMsk(PCA9505_T *Dev, uint32_t Bank, uint8_t Pin, uint8_t Ms
 	
 	BSP_DEV_LOCK(Dev);
 	
-	cmd = pca9505_reg_op[Bank];
+	cmd = pca9505_reg_msk[Bank];
 	if (Msk)
 		Msk = Dev->Msks[Bank] | (1 << Pin);
 	else
 		Msk = Dev->Msks[Bank] & ~(1 << Pin);
 	if (Dev->Msks[Bank] != Msk)
 	{
+		LOG_Add(Dev->DevName, Dev->DevId, "Write: 0x%02x 0x%02x", cmd, Msk);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Msk, sizeof(Msk)))
 			goto error;	
 		Dev->Msks[Bank] = Msk;
@@ -249,6 +254,7 @@ int32_t PCA9505_SetBankOut(PCA9505_T *Dev, uint32_t Bank, uint8_t Out)
 	cmd = pca9505_reg_op[Bank];
 	if (Dev->Outs[Bank] != Out)
 	{
+		LOG_Add(Dev->DevName, Dev->DevId, "Write: 0x%02x 0x%02x", cmd, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Out, sizeof(Out)))
 			goto error;	
 		Dev->Outs[Bank] = Out;
@@ -301,6 +307,7 @@ int32_t PCA9505_SetBankPol(PCA9505_T *Dev, uint32_t Bank, uint8_t Pol)
 	cmd = pca9505_reg_pl[Bank];
 	if (Dev->Pols[Bank] != Pol)
 	{
+		LOG_Add(Dev->DevName, Dev->DevId, "Write: 0x%02x 0x%02x", cmd, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Pol, sizeof(Pol)))
 			goto error;	
 		Dev->Pols[Bank] = Pol;
@@ -353,6 +360,7 @@ int32_t PCA9505_SetBankMsk(PCA9505_T *Dev, uint32_t Bank, uint8_t Msk)
 	cmd = pca9505_reg_msk[Bank];
 	if (Dev->Msks[Bank] != Msk)
 	{
+		LOG_Add(Dev->DevName, Dev->DevId, "Write: 0x%02x 0x%02x", cmd, Msk);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Msk, sizeof(Msk)))
 			goto error;	
 		Dev->Msks[Bank] = Msk;
@@ -366,7 +374,7 @@ error:
 	return -1;
 }
 
-int32_t PCA9505_Init(PCA9505_T *Dev, I2C_TypeDef *I2C, uint8_t Addr)
+int32_t PCA9505_Init(PCA9505_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr)
 {
 	uint8_t data[PCA9505_BANKS_CNT];
 	uint8_t cmd;
@@ -377,7 +385,7 @@ int32_t PCA9505_Init(PCA9505_T *Dev, I2C_TypeDef *I2C, uint8_t Addr)
 	if ((Addr < 0x20) || (Addr > 0x27))
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "PCA9505", DevId);
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->Addr = Addr << 1;
@@ -413,11 +421,13 @@ int32_t PCA9505_Init(PCA9505_T *Dev, I2C_TypeDef *I2C, uint8_t Addr)
 	for (i = 0; i < PCA9505_BANKS_CNT; i++)
 		Dev->Ins[i] = data[i];
 	
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);	
 	return 0;
 	
 error:
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -427,5 +437,6 @@ void PCA9505_Deinit(PCA9505_T *Dev)
 {
 	if (!Dev)
 		return;
+	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 }

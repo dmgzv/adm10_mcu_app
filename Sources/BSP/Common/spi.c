@@ -37,7 +37,7 @@ osMessageQDef(spi, SPI_MESSAGE_QUEUE_SIZE, uint32_t);
 #endif
 #endif
 
-static int32_t SPI_GetHandle( SPI_TypeDef* Instance, SPI_T **spi)
+static int32_t SPI_GetHandle(const SPI_TypeDef* Instance, SPI_T **spi)
 {
 #ifdef BSP_CONFIG_USE_SPI1
 	if (Instance == SPI1)
@@ -665,7 +665,7 @@ void SPI_Deinit(void)
   * @param  TxSize2: size of data to transmit last
   * @retval 0 on succes, otherwise -1;
   */
-int32_t SPI_SequentialTransmit(SPI_TypeDef *Instance, SPI_CS_T *CS, char *TxBuffer1, uint32_t  TxSize1, char *TxBuffer2, uint32_t  TxSize2)
+int32_t SPI_SequentialTransmit(const SPI_TypeDef *Instance, SPI_CS_T *CS, char *TxBuffer1, uint32_t  TxSize1, char *TxBuffer2, uint32_t  TxSize2)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
 	SPI_T *spi;
@@ -752,7 +752,7 @@ error:
   * @param  RxSize: size of data to receive
   * @retval 0 on succes, otherwise -1;
   */
-int32_t SPI_SequentialReceive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, uint32_t  TxSize, char * RxBuffer, uint32_t  RxSize)
+int32_t SPI_SequentialReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, uint32_t  TxSize, char * RxBuffer, uint32_t  RxSize)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
 	SPI_T *spi;
@@ -838,7 +838,7 @@ error:
   * @param  Size: size of data to transmit and receive
   * @retval 0 on succes, otherwise -1;
   */
-int32_t SPI_TransmitReceive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, char * RxBuffer, uint32_t  Size)
+int32_t SPI_TransmitReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, char * RxBuffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
 	SPI_T *spi;
@@ -910,7 +910,7 @@ error:
   * @param  Size: size of data to transmit
   * @retval 0 on succes, otherwise -1;
   */
-int32_t SPI_Transmit(SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size)
+int32_t SPI_Transmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
 	SPI_T *spi;
@@ -981,7 +981,7 @@ error:
   * @param  Size: size of data to receive
   * @retval 0 on succes, otherwise -1;
   */
-int32_t SPI_Receive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size)
+int32_t SPI_Receive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
 	SPI_T *spi;

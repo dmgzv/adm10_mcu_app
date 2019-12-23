@@ -10,7 +10,7 @@ static int32_t BSP_ETH_PIN_Init(BSP_ETH_PIN_T *Dev)
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "ETH PIN", "");
 	BSP_DEV_LOCK(Dev);
 	
 	State = 0;

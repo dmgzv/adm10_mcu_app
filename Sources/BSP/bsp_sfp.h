@@ -36,6 +36,7 @@
 extern SFP_T sfp[BSP_SFP_CNT];
 extern const BSP_PIN_CTRL_T bsp_sfp_pin_ctrl[BSP_SFP_CNT];
 extern const BSP_I2C_CTRL_T bsp_sfp_i2c_ctrl[BSP_SFP_CNT];
+extern const char* bsp_sfp_id[BSP_SFP_CNT];
 
 void BSP_SFP_Process(uint32_t Idx);
 

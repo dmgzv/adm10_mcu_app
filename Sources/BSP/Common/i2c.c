@@ -27,7 +27,7 @@ I2C_T i2c3;
 #endif /*BSP_CONFIG_USE_I2C3*/
 
 
-static int32_t I2C_GetHandle( I2C_TypeDef* Instance, I2C_T **i2c)
+static int32_t I2C_GetHandle(const I2C_TypeDef* Instance, I2C_T **i2c)
 {	
 #ifdef BSP_CONFIG_USE_I2C1
 	if (Instance == I2C1)
@@ -557,7 +557,7 @@ void I2C_Deinit(void)
   * @retval 0 on succes, otherwise -1
   */
 
-int32_t I2C_Transmit(I2C_TypeDef * Instance, uint16_t DevAddress, char *Buffer, uint16_t Size)
+int32_t I2C_Transmit(const I2C_TypeDef * Instance, uint16_t DevAddress, char *Buffer, uint16_t Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
 	I2C_T *i2c;
@@ -613,7 +613,7 @@ error:
   * @retval 0 on succes, otherwise -1
   */
 
-int32_t I2C_Receive(I2C_TypeDef * Instance, uint16_t DevAddress, char *Buffer, uint16_t Size)
+int32_t I2C_Receive(const I2C_TypeDef * Instance, uint16_t DevAddress, char *Buffer, uint16_t Size)
 
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
@@ -672,7 +672,7 @@ error:
   * @retval 0 on succes, otherwise -1
   */
 
-int32_t I2C_Sequential_Transmit(I2C_TypeDef * Instance, uint16_t DevAddress, uint8_t *Address, uint16_t AddressSize, char *Buffer, uint16_t BufferSize)
+int32_t I2C_Sequential_Transmit(const I2C_TypeDef * Instance, uint16_t DevAddress, uint8_t *Address, uint16_t AddressSize, char *Buffer, uint16_t BufferSize)
 {
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
@@ -750,7 +750,7 @@ error:
   * @retval 0 on succes, otherwise -1
   */
 
-int32_t I2C_Sequential_Receive(I2C_TypeDef * Instance, uint16_t DevAddress, uint8_t *Address, uint16_t AddressSize, char *Buffer, uint16_t BufferSize)
+int32_t I2C_Sequential_Receive(const I2C_TypeDef * Instance, uint16_t DevAddress, uint8_t *Address, uint16_t AddressSize, char *Buffer, uint16_t BufferSize)
 {
 	
 #ifdef BSP_CONFIG_USE_FREERTOS

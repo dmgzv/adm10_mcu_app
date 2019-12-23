@@ -18,9 +18,9 @@
 
 typedef struct {
 	BSP_DEV;
-	SPI_TypeDef *SPI;
+	const SPI_TypeDef *SPI;
 	SPI_CS_T CS;
-	BSP_PIN_CTRL_T *PinCtrl;
+	const BSP_PIN_CTRL_T *PinCtrl;
 	uint8_t FamilyId;
 	uint8_t ChipId;
 	uint8_t PortStatus[KSZ8895_PORTS_CNT][KSZ8895_PORT_STATUS_CNT];
@@ -45,7 +45,7 @@ typedef struct {
 #define KSZ8895_PORT_LINK_IDX	1
 #define KSZ8895_PORT_LINK(Dev, Idx)	((Dev)->PortStatus[(Idx)][KSZ8895_PORT_LINK_IDX] & (1 << KSZ8895_PORT_LINK_BIT) ? 1 : 0)
 
-int32_t KSZ8895_Init(KSZ8895_T *dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl);
+int32_t KSZ8895_Init(KSZ8895_T *Dev, const char *DevId, const SPI_TypeDef *SPI, const BSP_PIN_CTRL_T *PinCtrl);
 void KSZ8895_Deinit(KSZ8895_T *Dev);
 int32_t KSZ8895_Update(KSZ8895_T *Dev);
 

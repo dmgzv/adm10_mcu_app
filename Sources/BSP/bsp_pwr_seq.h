@@ -2,7 +2,8 @@
 #define __BSP_PWR_SEQ_H
 
 #include "ucd90120a.h"
-	
+
+#define BSP_PWR_SEQ_UCD90120A_ID				"D106"
 #define BSP_PWR_SEQ_UCD90120A_I2C				I2C3
 #define BSP_PWR_SEQ_UCD90120A_I2C_ADDR	0x7E
 

@@ -15,7 +15,7 @@
 
 typedef struct {
 	BSP_DEV;
-	I2C_TypeDef *I2C;
+	const I2C_TypeDef *I2C;
 	uint8_t Addr;
 	uint8_t Status;
 	float Vin[DIM3R3400_IN_CNT];
@@ -24,7 +24,7 @@ typedef struct {
 	float Iout;
 }DIM3R3400_T;
 
-int32_t DIM3R3400_Init(DIM3R3400_T *Dev, I2C_TypeDef *I2C, uint8_t Addr);
+int32_t DIM3R3400_Init(DIM3R3400_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr);
 void DIM3R3400_Deinit(DIM3R3400_T *Dev);
 int32_t DIM3R3400_Update(DIM3R3400_T *Dev);
 

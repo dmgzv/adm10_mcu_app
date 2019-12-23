@@ -18,7 +18,7 @@ typedef enum {
 	PMBUS_CMD_TYPE_READ_BLOCK,
 } PMBUS_CMD_TYPE_T;
 
-int32_t PMBUS_ProcessCmd(I2C_TypeDef *I2C, uint8_t Addr, PMBUS_CMD_TYPE_T CmdType, uint8_t Cmd,  uint8_t *Data, uint8_t DataSize);
+int32_t PMBUS_ProcessCmd(const I2C_TypeDef *I2C, uint8_t Addr, PMBUS_CMD_TYPE_T CmdType, uint8_t Cmd,  uint8_t *Data, uint8_t DataSize);
 
 #define PMBUS_SendByte(I2C, Addr, Cmd)				 PMBUS_ProcessCmd((I2C), (Addr), PMBUS_CMD_TYPE_SEND_BYTE, (Cmd), Null, 0)
 #define PMBUS_WriteByte(I2C, Addr, Cmd, Data)	 PMBUS_ProcessCmd((I2C), (Addr), PMBUS_CMD_TYPE_WRITE_BYTE, (Cmd), (Data), 1)

@@ -11,11 +11,11 @@ typedef struct {
 
 typedef struct {
 	BSP_DEV;
-	I2C_TypeDef *I2C;
+	const I2C_TypeDef *I2C;
 	uint8_t Addr;
 } SI5332_T;
 
-int32_t SI5332_Init(SI5332_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, SI5332_CFG_T *Config, uint32_t ConfigSize);
+int32_t SI5332_Init(SI5332_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr, const SI5332_CFG_T *Config, const uint32_t ConfigSize);
 void SI5332_Deinit(SI5332_T *Dev);
 
 #endif /* __SI5332_H */

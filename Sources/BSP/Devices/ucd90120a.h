@@ -61,9 +61,9 @@ typedef struct {
 
 typedef struct {
 	BSP_DEV;
-	I2C_TypeDef *I2C;
+	const I2C_TypeDef *I2C;
 	uint8_t Addr;
-	BSP_PIN_CTRL_T *PinCtrl;
+	const BSP_PIN_CTRL_T *PinCtrl;
 	uint32_t PowerGood;
 	uint32_t __PowerGood;
 	UCD90120A_INFO_T Info;
@@ -98,7 +98,7 @@ typedef struct {
 	} Value;
 } UCD90120A_FAULT_LOG_RECORD_T;
 
-int32_t UCD90120A_Init(UCD90120A_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, BSP_PIN_CTRL_T *PinCtrl, const UCD90120A_CFG_CMD_T *Config, const uint32_t ConfigSize);
+int32_t UCD90120A_Init(UCD90120A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr, const BSP_PIN_CTRL_T *PinCtrl, const UCD90120A_CFG_CMD_T *Config, const uint32_t ConfigSize);
 void UCD90120A_Deinit(UCD90120A_T *Dev);
 int32_t UCD90120A_Update(UCD90120A_T *Dev);
 int32_t UCD90120A_ClearFaultLog(UCD90120A_T *Dev);

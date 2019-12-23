@@ -52,7 +52,7 @@ uint16_t PMBUS_FloatToLinear(float input_val)
 	return uExponent | uMantissa;
 }
 
-int32_t PMBUS_ProcessCmd(I2C_TypeDef *I2C, uint8_t Addr, PMBUS_CMD_TYPE_T CmdType, uint8_t Cmd,  uint8_t *Data, uint8_t DataSize)
+int32_t PMBUS_ProcessCmd(const I2C_TypeDef *I2C, uint8_t Addr, PMBUS_CMD_TYPE_T CmdType, uint8_t Cmd,  uint8_t *Data, uint8_t DataSize)
 {
 	uint8_t Tmp[PMBUS_BLOCK_MAX_SIZE + 1];
 	

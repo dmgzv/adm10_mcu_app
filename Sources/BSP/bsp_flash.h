@@ -74,6 +74,7 @@ extern BSP_FLASH_T at45db161e;
 #elif defined(BSP_FLASH_TYPE_AT45DB641E)
 #include "at45db641e.h"
 
+#define BSP_FLASH_AT45DB641E_ID		"D94"
 #define BSP_FLASH_AT45DB641E_SPI	SPI5
 
 #ifndef BSP_CONFIG_USE_SPI5
@@ -99,7 +100,7 @@ extern BSP_FLASH_T at45db641e;
 #define BSP_FLASH_PAGE_SIZE												AT45DB641E_PAGE_SIZE
 #define BSP_FLASH_SIZE														AT45DB641E_SIZE
 
-#define	BSP_FLASH_Init()													AT45DB641E_Init(&at45db641e, BSP_FLASH_AT45DB641E_SPI, (BSP_PIN_CTRL_T*)&bsp_flash_at45db641e_pin_ctrl)
+#define	BSP_FLASH_Init()													AT45DB641E_Init(&at45db641e, BSP_FLASH_AT45DB641E_ID, BSP_FLASH_AT45DB641E_SPI, (BSP_PIN_CTRL_T*)&bsp_flash_at45db641e_pin_ctrl)
 #define BSP_FLASH_Read(Addr, Buffer, Size) 				AT45DB641E_Read(&at45db641e, (Addr), (Buffer), (Size))
 #define BSP_FLASH_ProgramPage(Addr, Buffer, Size) AT45DB641E_ProgramPage(&at45db641e, (Addr), (Buffer), (Size))
 #define BSP_FLASH_ErasePage(Addr) 								AT45DB641E_ErasePage(&at45db641e, (Addr))

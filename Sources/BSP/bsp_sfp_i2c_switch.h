@@ -5,12 +5,15 @@
 
 #define	BSP_PCA9548_CNT	3
 
+#define BSP_PCA9548_1_ID				"D72"
 #define BSP_PCA9548_1_I2C				I2C2
 #define BSP_PCA9548_1_I2C_ADDR	0x70
 
+#define BSP_PCA9548_2_ID				"D73"
 #define BSP_PCA9548_2_I2C				I2C2
 #define BSP_PCA9548_2_I2C_ADDR	0x72
 
+#define BSP_PCA9548_3_ID				"D74"
 #define BSP_PCA9548_3_I2C				I2C2
 #define BSP_PCA9548_3_I2C_ADDR	0x74
 
@@ -29,7 +32,10 @@
 #define BSP_SFP_I2C_SWITCH_GDT_CH(GdtIdx) 			(17 - (GdtIdx))
 #define BSP_SFP_I2C_SWITCH_SI5332_CH(Si5332Idx) ((Si5332Idx) + 18)
 #define BSP_SFP_I2C_SWITCH_CH_NO	0xFFFFFFFF
-	
+
+extern const char *pca9548a_id[BSP_PCA9548_CNT];
+extern const I2C_TypeDef *pca9548a_i2c[BSP_PCA9548_CNT];
+extern const uint8_t pca9548a_addr[BSP_PCA9548_CNT];
 extern PCA9548A_T pca9548a[BSP_PCA9548_CNT];
 
 int32_t BSP_SFP_I2C_SWITCH_SelectChannel(uint32_t Channel);	

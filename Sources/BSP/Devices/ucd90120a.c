@@ -232,17 +232,17 @@ static int32_t UCD90120A_WriteConfig(UCD90120A_T *Dev, const UCD90120A_CFG_CMD_T
 	return 0;
 }
 
-int32_t UCD90120A_Init(UCD90120A_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, BSP_PIN_CTRL_T *PinCtrl, const UCD90120A_CFG_CMD_T *Config, const uint32_t ConfigSize)
+int32_t UCD90120A_Init(UCD90120A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr, const BSP_PIN_CTRL_T *PinCtrl, const UCD90120A_CFG_CMD_T *Config, const uint32_t ConfigSize)
 {	
 	if ((!Dev) || (!I2C))
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "UCD90120A", DevId);
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->Addr = Addr << 1;
 	Dev->I2C = I2C;
-	Dev->PinCtrl = (BSP_PIN_CTRL_T*)PinCtrl;
+	Dev->PinCtrl = PinCtrl;
 	
 	if (UCD90120A_InitPin(Dev, UCD90120A_PIN_RESET))
 		goto error;
@@ -266,13 +266,13 @@ int32_t UCD90120A_Init(UCD90120A_T *Dev, I2C_TypeDef *I2C, uint8_t Addr, BSP_PIN
 			goto error;
 	}
 	
-	LOG_Add("UCD90120A Init: Ok");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
-	LOG_Add("UCD90120A Init: Fail");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -282,7 +282,7 @@ void UCD90120A_Deinit(UCD90120A_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add("UCD90120A Deinit");
+	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 
@@ -321,12 +321,12 @@ int32_t UCD90120A_Update(UCD90120A_T *Dev)
 	}
 	if (Dev->__PowerGood != PowerGood)
 	{
-		LOG_Add("UCD90120A PowerGood: 0x%04x", PowerGood);
+		LOG_Add(Dev->DevName, Dev->DevId, "PowerGood: 0x%04x", PowerGood);
 		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 		{
 			if (Dev->Cfg.Rail[i].VoutScale == 0)
 				continue;
-			LOG_Add("UCD90120A Rail %d: %.2f", i, Dev->Mon.Rail[i].Vout);
+			LOG_Add(Dev->DevName, Dev->DevId, "Rail %d: %.2f", i, Dev->Mon.Rail[i].Vout);
 		}
 		Dev->__PowerGood = PowerGood;
 	}

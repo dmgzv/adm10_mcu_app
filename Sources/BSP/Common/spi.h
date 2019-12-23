@@ -220,10 +220,10 @@ extern SPI_T spi5;
 int32_t SPI_Init(void);
 void SPI_Deinit(void);
 
-int32_t SPI_SequentialTransmit(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer1, uint32_t  Size1, char *TxBuffer2, uint32_t  TxSize2);
-int32_t SPI_SequentialReceive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, uint32_t  TxSize, char *RxBuffer, uint32_t  RxSize);
-int32_t SPI_TransmitReceive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, char * RxBuffer, uint32_t  Size);
-int32_t SPI_Transmit(SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size);
-int32_t SPI_Receive(SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size);
+int32_t SPI_SequentialTransmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer1, uint32_t  Size1, char *TxBuffer2, uint32_t  TxSize2);
+int32_t SPI_SequentialReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, uint32_t  TxSize, char *RxBuffer, uint32_t  RxSize);
+int32_t SPI_TransmitReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, char * RxBuffer, uint32_t  Size);
+int32_t SPI_Transmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size);
+int32_t SPI_Receive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size);
 
 #endif /* __SPI_H */

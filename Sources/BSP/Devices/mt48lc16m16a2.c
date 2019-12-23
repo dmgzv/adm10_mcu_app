@@ -382,14 +382,14 @@ error:
 }
 
 /* FMC initialization function */
-int32_t MT48LC16M16A2_Init(MT48LC16M16A2_T *Dev)
+int32_t MT48LC16M16A2_Init(MT48LC16M16A2_T *Dev, const char *DevId)
 {
   FMC_SDRAM_TimingTypeDef SdramTiming;
 	
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "MT48LC16M16A2", DevId);
 	BSP_DEV_LOCK(Dev);
 	
   /** Perform the SDRAM1 memory initialization sequence
@@ -421,13 +421,13 @@ int32_t MT48LC16M16A2_Init(MT48LC16M16A2_T *Dev)
 	
 	MT48LC16M16A2_InitSequence(Dev);
 	
-	LOG_Add("MT48LC16M16A2 Init: Ok");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
-	LOG_Add("MT48LC16M16A2 Init: Fail");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;

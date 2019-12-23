@@ -51,12 +51,12 @@ static int32_t __KSZ8895_WriteReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t Data)
 	return 0;
 }
 
-int32_t KSZ8895_Init(KSZ8895_T *Dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl)
+int32_t KSZ8895_Init(KSZ8895_T *Dev, const char *DevId, const SPI_TypeDef *SPI, const BSP_PIN_CTRL_T *PinCtrl)
 {
 	if ((!Dev) || (!SPI) || (!PinCtrl))
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "KSZ8895", DevId);
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->SPI = SPI;
@@ -94,13 +94,13 @@ int32_t KSZ8895_Init(KSZ8895_T *Dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl)
 	if (__KSZ8895_ReadReg(Dev, 0x01, &Dev->ChipId))
 		goto error;
 	
-	LOG_Add("KSZ8895 Init: Ok");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);	
 	return 0;
 	
 error:
-	LOG_Add("KSZ8895 Init: Fail");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -110,7 +110,7 @@ void KSZ8895_Deinit(KSZ8895_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add("KSZ8895 Deinit");
+	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 

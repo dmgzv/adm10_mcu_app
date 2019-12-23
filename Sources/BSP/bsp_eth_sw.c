@@ -79,7 +79,7 @@ void BSP_ETH_SW_Process(void)
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&ksz8895) != BSP_DEV_STATE_OK)
 		{
-			KSZ8895_Init(&ksz8895, BSP_ETH_SW_SPI, (BSP_PIN_CTRL_T*)&ksz8895_ksz8895_pin_ctrl);
+			KSZ8895_Init(&ksz8895, BSP_ETH_SW_ID, BSP_ETH_SW_SPI, &ksz8895_ksz8895_pin_ctrl);
 		}
 		else
 		{

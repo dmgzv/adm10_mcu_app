@@ -18,13 +18,20 @@
 #define BSP_SFP_PIN_PCA9536_DIR_DEFAULT		( BSP_SFP_PIN_PCA9536_MOD_ABS_MASK ) // Only MOD_ABS pin is input
 #define BSP_SFP_PIN_PCA9536_OUT_DEFAULT		( BSP_SFP_PIN_PCA9536_LED_0_MASK | BSP_SFP_PIN_PCA9536_LED_1_MASK | BSP_SFP_PIN_PCA9536_RATE_SEL_MASK )
 
-static const I2C_TypeDef *pcal6524_i2c[BSP_SFP_PIN_PCAL6524_CNT] =
+const char* pcal6524_id[BSP_SFP_PIN_PCAL6524_CNT] =
+{
+	BSP_SFP_PIN_PCAL6524_1_ID,
+	BSP_SFP_PIN_PCAL6524_2_ID,
+	BSP_SFP_PIN_PCAL6524_3_ID
+};
+
+const I2C_TypeDef *pcal6524_i2c[BSP_SFP_PIN_PCAL6524_CNT] =
 {
 	BSP_SFP_PIN_PCAL6524_1_I2C,
 	BSP_SFP_PIN_PCAL6524_2_I2C,
 	BSP_SFP_PIN_PCAL6524_3_I2C
 };
-static const uint8_t pcal6524_addr[BSP_SFP_PIN_PCAL6524_CNT] =
+const uint8_t pcal6524_addr[BSP_SFP_PIN_PCAL6524_CNT] =
 {
 	BSP_SFP_PIN_PCAL6524_1_I2C_ADDR,
 	BSP_SFP_PIN_PCAL6524_2_I2C_ADDR,
@@ -32,6 +39,12 @@ static const uint8_t pcal6524_addr[BSP_SFP_PIN_PCAL6524_CNT] =
 };
 
 PCAL6524_T pcal6524[BSP_SFP_PIN_PCAL6524_CNT];
+
+const char *pca9536_id[BSP_SFP_PIN_PCA9536_CNT] = {
+	"D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "D10",
+	"D11", "D12", "D13", "D14", "D15", "D16", "D17", "D18", "D19", "D20",
+};
+
 PCA9536_T pca9536[BSP_SFP_PIN_PCA9536_CNT];	
 
 static int32_t BSP_SFP_PIN_CheckConditions(void)
@@ -82,7 +95,7 @@ void BSP_SFP_PIN_Process(void)
 		{
 			if(BSP_DEV_GET_STATE(&pcal6524[i]) != BSP_DEV_STATE_OK)
 			{
-				PCAL6524_Init(&pcal6524[i], (I2C_TypeDef*)pcal6524_i2c[i], (uint8_t)pcal6524_addr[i]);
+				PCAL6524_Init(&pcal6524[i], pcal6524_id[i], pcal6524_i2c[i], pcal6524_addr[i]);
 			}
 		}
 		for (i = 0; i < BSP_SFP_PIN_PCA9536_CNT; i++)
@@ -91,7 +104,7 @@ void BSP_SFP_PIN_Process(void)
 			{
 				if (!BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_SFP_CH(i)))
 				{
-					PCA9536_Init(&pca9536[i], BSP_SFP_PIN_PCA9536_I2C);
+					PCA9536_Init(&pca9536[i], pca9536_id[i], BSP_SFP_PIN_PCA9536_I2C);
 					BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
 				}
 			}

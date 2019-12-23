@@ -117,10 +117,10 @@ extern I2C_T i2c3;
 int32_t I2C_Init(void);
 void I2C_Deinit(void);
 
-int32_t I2C_Transmit(I2C_TypeDef * Instance, uint16_t DevAddress, char *Buffer, uint16_t Size);
-int32_t I2C_Receive(I2C_TypeDef * Instance, uint16_t DevAddress, char *Buffer, uint16_t Size);
+int32_t I2C_Transmit(const I2C_TypeDef * Instance, uint16_t DevAddress, char *Buffer, uint16_t Size);
+int32_t I2C_Receive(const I2C_TypeDef * Instance, uint16_t DevAddress, char *Buffer, uint16_t Size);
 
-int32_t I2C_Sequential_Transmit(I2C_TypeDef * Instance, uint16_t DevAddress, uint8_t *Address, uint16_t AddressSize, char *Buffer, uint16_t BufferSize);
-int32_t I2C_Sequential_Receive(I2C_TypeDef * Instance, uint16_t DevAddress, uint8_t *Address, uint16_t AddressSize, char *Buffer, uint16_t BufferSize);
+int32_t I2C_Sequential_Transmit(const I2C_TypeDef * Instance, uint16_t DevAddress, uint8_t *Address, uint16_t AddressSize, char *Buffer, uint16_t BufferSize);
+int32_t I2C_Sequential_Receive(const I2C_TypeDef * Instance, uint16_t DevAddress, uint8_t *Address, uint16_t AddressSize, char *Buffer, uint16_t BufferSize);
 
 #endif /* __I2C_H */

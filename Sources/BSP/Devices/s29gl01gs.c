@@ -232,7 +232,7 @@ void HAL_NOR_MspDeInit(NOR_HandleTypeDef *hnor)
 }
 
 /* FMC initialization function */
-int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
+int32_t S29GL01GS_Init(S29GL01GS_T *Dev, const char* DevId)
 {
   FMC_NORSRAM_TimingTypeDef Timing;
   FMC_NORSRAM_TimingTypeDef ExtTiming;
@@ -240,7 +240,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "S29GL01GS", DevId);
 	BSP_DEV_LOCK(Dev);
 	
   /** Perform the NOR1 memory initialization sequence
@@ -365,13 +365,13 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 	if (HAL_NOR_ReturnToReadMode(&Dev->hnor[1]) != HAL_NOR_STATUS_SUCCESS)
 		goto error;
 	
-	LOG_Add("S29GL01GS Init: Ok");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
-	LOG_Add("S29GL01GS Init: Fail");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -381,7 +381,7 @@ void S29GL01GS_Deinit(S29GL01GS_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add("S29GL01GS Deinit");
+	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
 

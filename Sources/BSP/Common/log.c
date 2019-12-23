@@ -7,6 +7,8 @@
 #ifdef BSP_CONFIG_USE_LOG
 
 char __attribute__((section ("CCM_DATA"))) LogLines[LOG_LINES_CNT][LOG_LINE_SIZE];
+const char* __attribute__((section ("CCM_DATA"))) LogName[LOG_LINES_CNT];
+const char* __attribute__((section ("CCM_DATA"))) LogId[LOG_LINES_CNT];
 uint32_t LogLineIndex = 0;
 uint32_t LogLinesCnt = 0;
 #ifdef BSP_CONFIG_USE_FREERTOS
@@ -25,7 +27,7 @@ void __LOG_Init(void)
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 }
 
-void __LOG_Add(char *str, ...)
+void __LOG_Add(const char *Name, const char *Id, char *str, ...)
 {
 	va_list va;
 	
@@ -36,25 +38,8 @@ void __LOG_Add(char *str, ...)
 	vsnprintf(LogLines[LogLineIndex % LOG_LINES_CNT], LOG_LINE_SIZE, str, va);
 	va_end(va);
 	LogLines[LogLineIndex % LOG_LINES_CNT][LOG_LINE_SIZE - 1] = 0;
-#ifdef BSP_CONFIG_USE_FREERTOS
-	LogLinesTime[LogLineIndex % LOG_LINES_CNT] = osKernelSysTick();
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	LogLineIndex++;
-	LogLinesCnt = LogLineIndex < LOG_LINES_CNT ? LogLineIndex : LOG_LINES_CNT;
-#ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease( LogMutexId);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-}
-
-void __LOG_AddLine(char *Line)
-{
-	if (!Line)
-		return;
-#ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait( LogMutexId, osWaitForever);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	strncpy(LogLines[LogLineIndex % LOG_LINES_CNT], Line, LOG_LINE_SIZE);
-	LogLines[LogLineIndex % LOG_LINES_CNT][LOG_LINE_SIZE - 1] = 0;
+	LogName[LogLineIndex % LOG_LINES_CNT] = "";
+	LogId[LogLineIndex % LOG_LINES_CNT] = "";
 #ifdef BSP_CONFIG_USE_FREERTOS
 	LogLinesTime[LogLineIndex % LOG_LINES_CNT] = osKernelSysTick();
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -70,15 +55,16 @@ uint32_t __LOG_GetLinesCnt(void)
 	return LogLinesCnt;
 }
 
-void __LOG_GetLine(uint32_t Index, uint32_t *Time, char *Line)
+void __LOG_GetLine(uint32_t Index, uint32_t *Time, const char **Name, const char **Id, const char **Line)
 {	
 	if (Index >= LOG_LINES_CNT)
 		return;
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexWait( LogMutexId, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
-	strncpy(Line, LogLines[Index], LOG_LINE_SIZE);
-	Line[LOG_LINE_SIZE - 1] = 0;
+	*Line = LogLines[Index];
+	*Name = LogName[Index];
+	*Id = LogId[Index];
 #ifdef BSP_CONFIG_USE_FREERTOS	
 	*Time = LogLinesTime[Index];
 #endif /*BSP_CONFIG_USE_FREERTOS*/		

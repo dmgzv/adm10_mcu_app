@@ -3,6 +3,7 @@
 
 #include "dim3r3400.h"
 	
+#define BSP_PWR_IN_DIM3R3400_ID				"A5"
 #define BSP_PWR_IN_DIM3R3400_I2C			I2C3
 #define BSP_PWR_IN_DIM3R3400_I2C_ADDR	0x2B
 

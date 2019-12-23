@@ -25,6 +25,8 @@
 #define SFP_PRODUCT_OPTS_RX_LOS_INV_MASK	(1 << 2)
 #define SFP_PRODUCT_OPTS_RX_LOS_MASK			(1 << 1)
 
+#define SFP_SPEED_OF_LIGHT 299792458.0f
+
 typedef struct {
 	uint8_t ProductOpts;
 	char Vendor[17];
@@ -47,6 +49,7 @@ typedef struct {
 } SFP_THR_T;
 
 typedef struct {
+	uint32_t Cur;
 	uint32_t Min;
 	uint32_t Max;
 	uint16_t Spacing;
@@ -55,8 +58,8 @@ typedef struct {
 
 typedef struct {
 	BSP_DEV;
-	BSP_I2C_CTRL_T *I2CCtrl;
-	BSP_PIN_CTRL_T *PinCtrl;
+	const BSP_I2C_CTRL_T *I2CCtrl;
+	const BSP_PIN_CTRL_T *PinCtrl;
 	SFP_PIN_T Pin;	
 	SFP_INFO_T Info;
 	SFP_THR_T Thr;
@@ -88,7 +91,7 @@ int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq);
 int32_t SFP_ConfigFreq(SFP_T *Dev, uint32_t Freq);
 
 int32_t SFP_Update(SFP_T *Dev);
-int32_t SFP_Init(SFP_T *Dev, BSP_I2C_CTRL_T *I2CCtrl, BSP_PIN_CTRL_T *PinCtrl);
+int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, const BSP_PIN_CTRL_T *PinCtrl);
 void SFP_Deinit(SFP_T *Dev);
 
 

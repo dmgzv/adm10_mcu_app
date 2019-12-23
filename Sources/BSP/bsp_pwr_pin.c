@@ -44,7 +44,7 @@ void BSP_PWR_PIN_Process(void)
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		{
-			PCA9536_Init(&pwr_pca9536, BSP_PWR_PIN_PCA9536_I2C);
+			PCA9536_Init(&pwr_pca9536, BSP_PWR_PIN_PCA9536_ID, BSP_PWR_PIN_PCA9536_I2C);
 		}
 	}
 }

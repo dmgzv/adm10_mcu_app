@@ -1,4 +1,5 @@
 #include "sfp.h"
+#include "log.h"
 #include <string.h>
 #include <math.h>
 
@@ -93,13 +94,21 @@ int32_t SFP_ReadFreq(SFP_T *Dev, uint32_t *Freq)
 		Addr = 144;
 		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
 			return -1;
-		Dev->Freq.Channel = (Data[0] << 8) | Data[1];		
+		Dev->Freq.Channel = (Data[0] << 8) | Data[1];
+		
+		Dev->Freq.Cur = ((Dev->Freq.Channel - 1) * Dev->Freq.Spacing) + Dev->Freq.Min;
 	}
 	else
 	{
-		Dev->Freq.Min = 0;
-		Dev->Freq.Max = 0;
-		Dev->Freq.Spacing = 0;
+		Addr = 60;
+		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA0, &Addr, 1, (char*)Data, 2))
+			return -1;
+		
+		Dev->Freq.Cur = SFP_SPEED_OF_LIGHT / ((Data[0] << 8) | Data[1]);
+		Dev->Freq.Min = Dev->Freq.Cur;
+		Dev->Freq.Max = Dev->Freq.Cur;
+		Dev->Freq.Spacing = 100;
+		Dev->Freq.Channel = 1;
 	}
 	return 0;
 }
@@ -114,7 +123,7 @@ static int32_t SFP_UpdateFreq(SFP_T *Dev)
 		return -1;
 	
 	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK))
-		return 0;;
+		return 0;
 	
 	Addr = 127;
 	Data[0] = 0x02;
@@ -136,6 +145,7 @@ static int32_t SFP_UpdateFreq(SFP_T *Dev)
 	Addr = 144;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
 		return -1;
+	LOG_Add(Dev->DevName, Dev->DevId, "Write Freq: %.2f", Dev->Freq.Cur);
 	
 	return 0;
 }
@@ -173,8 +183,10 @@ int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq)
 	Addr = 144;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
 		return -1;
-	Dev->Freq.Channel = Channel;	
+	Dev->Freq.Channel = Channel;
+	Dev->Freq.Cur = Freq;
 	
+	LOG_Add(Dev->DevName, Dev->DevId, "Write Freq: %.2f", Dev->Freq.Cur);	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 
@@ -197,6 +209,7 @@ int32_t SFP_ConfigFreq(SFP_T *Dev, uint32_t Freq)
 	if ((Freq < Dev->Freq.Min) || (Freq > Dev->Freq.Max) ||(Freq % Dev->Freq.Spacing))
 		goto error;
 	
+	Dev->Freq.Cur = Freq;
 	Dev->Freq.Channel = 1 + (Freq -  Dev->Freq.Min) / Dev->Freq.Spacing;
 	
 	BSP_DEV_UNLOCK(Dev);
@@ -445,17 +458,18 @@ error:
 	return -1;
 	
 reset:
+	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 }
 
-int32_t SFP_Init(SFP_T *Dev, BSP_I2C_CTRL_T *I2CCtrl, BSP_PIN_CTRL_T *PinCtrl)
+int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, const BSP_PIN_CTRL_T *PinCtrl)
 {	
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "SFP", DevId);
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->I2CCtrl = I2CCtrl;
@@ -514,7 +528,8 @@ int32_t SFP_Init(SFP_T *Dev, BSP_I2C_CTRL_T *I2CCtrl, BSP_PIN_CTRL_T *PinCtrl)
 	if (SFP_ReadTxPwr(Dev))
 		goto error;
 	
-	SFP_I2C_ResetSwitch(Dev);	
+	SFP_I2C_ResetSwitch(Dev);
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
@@ -535,5 +550,6 @@ void SFP_Deinit(SFP_T *Dev)
 {
 	if (!Dev)
 		return;
+	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 }

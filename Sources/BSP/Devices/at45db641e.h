@@ -28,10 +28,10 @@
 
 typedef struct {
 	BSP_DEV;	
-	SPI_TypeDef *SPI;
+	const SPI_TypeDef *SPI;
 	SPI_CS_T CS;
-	BSP_PIN_CTRL_T *PinCtrl;
-	uint16_t DevId;
+	const BSP_PIN_CTRL_T *PinCtrl;
+	uint16_t DeviceId;
 	uint8_t ManufId;
 	uint8_t Status;
 } AT45DB641E_T;
@@ -45,7 +45,7 @@ int32_t AT45DB641E_Read(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t
 int32_t AT45DB641E_ProgramPage(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
 int32_t AT45DB641E_ModifyPage(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
 
-int32_t AT45DB641E_Init(AT45DB641E_T *dev, SPI_TypeDef *SPI, BSP_PIN_CTRL_T *PinCtrl);
+int32_t AT45DB641E_Init(AT45DB641E_T *Dev, const char *DevId, const SPI_TypeDef *SPI, const BSP_PIN_CTRL_T *PinCtrl);
 
 
 

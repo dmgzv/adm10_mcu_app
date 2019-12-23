@@ -19,24 +19,31 @@ typedef enum {
 #define BSP_DEV		\
 	BSP_DEV_STATE_T DevState;\
 	osMutexDef_t DevMutexDef;\
-	osMutexId DevMutexId
+	osMutexId DevMutexId;\
+	const char *DevName;\
+	const char *DevId
 
 #if( configSUPPORT_STATIC_ALLOCATION == 1 )
 
-#define BSP_DEV_INIT(Dev)	\
+#define BSP_DEV_INIT(Dev, Name, Id)	\
 do { \
 	(Dev)->DevState = BSP_DEV_STATE_INIT;\
 	(Dev)->DevMutexDef.dummy = 0; \
 	(Dev)->DevMutexDef.controlblock = NULL; \
-	(Dev)->DevMutexId = osMutexCreate(&(Dev)->DevMutexDef);\
+	(Dev)->DevName = Name;\
+	(Dev)->DevId = Id;\
+	if (!(Dev)->DevMutexId) \
+		(Dev)->DevMutexId = osMutexCreate(&(Dev)->DevMutexDef);\
 } while(0)
 
 #else /* ( configSUPPORT_STATIC_ALLOCATION == 1 ) */
 
-#define BSP_DEV_INIT(Dev)	\
+#define BSP_DEV_INIT(Dev, Name, Id)	\
 do { \
 	(Dev)->DevState = BSP_DEV_STATE_INIT;\
 	(Dev)->DevMutexDef.dummy = 0; \
+	(Dev)->DevName = Name;\
+	(Dev)->DevId = Id;\
 	if (!(Dev)->DevMutexId) \
 		(Dev)->DevMutexId = osMutexCreate(&(Dev)->DevMutexDef);\
 } while(0)
@@ -44,7 +51,6 @@ do { \
 #define BSP_DEV_DEINIT(Dev)	\
 do { \
 	(Dev)->DevState = BSP_DEV_STATE_RESET;\
-	(Dev)->DevMutexDef.dummy = 0; \
 } while(0)
 
 #endif /* ( configSUPPORT_STATIC_ALLOCATION == 1 ) */
@@ -52,17 +58,24 @@ do { \
 #define BSP_DEV_GET_STATE(Dev)			(Dev)->DevState
 #define BSP_DEV_GET_STATE_STR(Dev)	(Dev)->DevState == BSP_DEV_STATE_RESET ? "RESET" : ((Dev)->DevState == BSP_DEV_STATE_INIT ? "INIT" : ((Dev)->DevState == BSP_DEV_STATE_OK ? "OK" : "FAIL"))
 #define BSP_DEV_SET_STATE(Dev, State)	(Dev)->DevState = (State)
+#define BSP_DEV_CHECK_STATE_OK(Dev)	((Dev)->DevState == BSP_DEV_STATE_OK)
 
 #define BSP_DEV_LOCK(Dev) 	osMutexWait((Dev)->DevMutexId, osWaitForever)
 #define BSP_DEV_UNLOCK(Dev) osMutexRelease((Dev)->DevMutexId)
 
 #else /* BSP_CONFIG_USE_FREERTOS */
 
-#define BSP_DEV		BSP_DEV_STATE_T DevState
+#define BSP_DEV \
+	BSP_DEV_STATE_T DevState;\
+	const char *DevName;\
+	const char *DevId
+	
 
-#define BSP_DEV_INIT(Dev)	\
+#define BSP_DEV_INIT(Dev, Name, Id)	\
 do { \
 	(Dev)->DevState = BSP_DEV_STATE_INIT;\
+	(Dev)->DevName = Name;\
+	(Dev)->DevId = Id;\
 } while(0)
 
 #define BSP_DEV_DEINIT(Dev)	\
@@ -105,7 +118,6 @@ do { \
 	
 	void DeinitDevice(DEVICE_T *Device)
 	{
-		
 		BSP_DEV_DEINIT(Device);
 	}
 	

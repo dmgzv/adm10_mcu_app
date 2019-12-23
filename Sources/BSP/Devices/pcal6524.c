@@ -25,7 +25,7 @@ int32_t PCAL6524_SetPinCfg(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t C
 		Cfg = Dev->Cfgs[Bank] & ~(1 << Pin);
 	if (Dev->Cfgs[Bank] != Cfg)
 	{
-		LOG_Add("PCAL6524 Write: 0x%02x 0x%02x", cmd, Cfg);
+		LOG_Add(Dev->DevName, Dev->DevId, "Write Cfg: 0x%02x 0x%02x", cmd, Cfg);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Cfg, sizeof(Cfg)))
 			goto error;
 		Dev->Cfgs[Bank] = Cfg;
@@ -57,7 +57,7 @@ int32_t PCAL6524_SetPinOut(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t O
 		Out = Dev->Outs[Bank] & ~(1 << Pin);
 	if (Dev->Outs[Bank] != Out)
 	{
-		LOG_Add("PCAL6524 Write: 0x%02x 0x%02x", cmd, Out);
+		LOG_Add(Dev->DevName, Dev->DevId, "Write Out: 0x%02x 0x%02x", cmd, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Out, sizeof(Out)))
 			goto error;
 		Dev->Outs[Bank] = Out;
@@ -89,7 +89,7 @@ int32_t PCAL6524_SetPinPol(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t P
 		Pol = Dev->Pols[Bank] & ~(1 << Pin);
 	if (Dev->Pols[Bank] != Pol)
 	{
-		LOG_Add("PCAL6524 Write: 0x%02x 0x%02x", cmd, Pol);
+		LOG_Add(Dev->DevName, Dev->DevId, "Write Pol: 0x%02x 0x%02x", cmd, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Pol, sizeof(Pol)))
 			goto error;
 		Dev->Pols[Bank] = Pol;
@@ -167,7 +167,7 @@ int32_t PCAL6524_SetBankCfg(PCAL6524_T *Dev, uint8_t Bank, uint8_t Cfg)
 	if (Dev->Cfgs[Bank] != Cfg)
 	{
 		cmd = pcal6524_reg_config[Bank];
-		LOG_Add("PCAL6524 Write: 0x%02x 0x%02x", cmd, Cfg);
+		LOG_Add(Dev->DevName, Dev->DevId, "Write Cfg: 0x%02x 0x%02x", cmd, Cfg);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Cfg, sizeof(Cfg)))
 			goto error;
 		Dev->Cfgs[Bank] = Cfg;
@@ -220,7 +220,7 @@ int32_t PCAL6524_SetBankOut(PCAL6524_T *Dev, uint8_t Bank, uint8_t Out)
 	if (Dev->Outs[Bank] != Out)
 	{
 		cmd = pcal6524_reg_output[Bank];
-		LOG_Add("PCAL6524 Write: 0x%02x 0x%02x", cmd, Out);
+		LOG_Add(Dev->DevName, Dev->DevId, "Write Out: 0x%02x 0x%02x", cmd, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Out, sizeof(Out)))
 			goto error;
 		Dev->Outs[Bank] = Out;
@@ -273,7 +273,7 @@ int32_t PCAL6524_SetBankPol(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pol)
 	if (Dev->Pols[Bank] != Pol)
 	{
 		cmd = pcal6524_reg_polarity[Bank];
-		LOG_Add("PCAL6524 Write: 0x%02x 0x%02x", cmd, Pol);
+		LOG_Add(Dev->DevName, Dev->DevId, "Write Pol: 0x%02x 0x%02x", cmd, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Pol, sizeof(Pol)))
 			goto error;
 		Dev->Pols[Bank] = Pol;
@@ -287,7 +287,7 @@ error:
 	return -1;
 }
 
-int32_t PCAL6524_Init(PCAL6524_T *Dev, I2C_TypeDef *I2C, uint8_t Addr)
+int32_t PCAL6524_Init(PCAL6524_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr)
 {
 	uint8_t Ins[PCAL6524_BANKS_CNT];
 	uint8_t	Outs[PCAL6524_BANKS_CNT];
@@ -298,7 +298,7 @@ int32_t PCAL6524_Init(PCAL6524_T *Dev, I2C_TypeDef *I2C, uint8_t Addr)
 	if ((!Dev) || (!I2C) || (Addr < 0x20) || (Addr > 0x23))
 		return -1;
 	
-	BSP_DEV_INIT(Dev);
+	BSP_DEV_INIT(Dev, "PCAL6524", DevId);
 	BSP_DEV_LOCK(Dev);
 	
 	Dev->Addr = Addr << 1;
@@ -324,13 +324,13 @@ int32_t PCAL6524_Init(PCAL6524_T *Dev, I2C_TypeDef *I2C, uint8_t Addr)
 		Dev->Pols[i] = Pols[i];
 	}
 	
-	LOG_Add("PCAL6524 Init: Ok");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
 error:
-	LOG_Add("PCAL6524 Init: Fail");
+	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
@@ -340,6 +340,6 @@ void PCAL6524_Deinit(PCAL6524_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add("PCAL6524 Deinit");
+	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
