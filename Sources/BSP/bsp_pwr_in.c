@@ -62,7 +62,7 @@ void BSP_PWR_IN_Process(void)
 							dim3r3400_power_good = PowerGood;
 							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "PowerGood: 0x%x", dim3r3400_power_good);
 							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
-							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[1]);
+							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
 						}
 						if (!dim3r3400_power_good)
 						{
@@ -84,7 +84,7 @@ void BSP_PWR_IN_Process(void)
 							dim3r3400_power_good = PowerGood;
 							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "PowerGood: 0x%x", dim3r3400_power_good);
 							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
-							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[1]);
+							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
 						}
 						if (dim3r3400_power_good)
 						{
