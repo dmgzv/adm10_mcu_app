@@ -6,6 +6,8 @@
 #define PERF_CNTR_STATUS_AVALIABLE	0
 #define PERF_CNTR_STATUS_UNAVALIABLE	1
 
+#define PERF_ODUC3_SES_ERRORS_THR		370377
+#define PERF_ODUC2_SES_ERRORS_THR		256918
 #define PERF_ODU4_SES_ERRORS_THR		128459
 #define PERF_ODU3_SES_ERRORS_THR		49424
 #define PERF_ODU2e_SES_ERRORS_THR		12748
@@ -17,11 +19,11 @@ typedef struct {
 	uint32_t State;
 	uint32_t StateTime;
 	
-	uint32_t EB;
-	uint32_t ES;
-	uint32_t BBE;
-	uint32_t SES;
-	uint32_t UAS;
+	uint64_t EB;
+	uint64_t ES;
+	uint64_t BBE;
+	uint64_t SES;
+	uint64_t UAS;
 } PERF_T;
 
 void PERF_Init(PERF_T *Dev);
