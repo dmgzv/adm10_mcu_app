@@ -38,8 +38,8 @@ void __LOG_Add(const char *Name, const char *Id, char *str, ...)
 	vsnprintf(LogLines[LogLineIndex % LOG_LINES_CNT], LOG_LINE_SIZE, str, va);
 	va_end(va);
 	LogLines[LogLineIndex % LOG_LINES_CNT][LOG_LINE_SIZE - 1] = 0;
-	LogName[LogLineIndex % LOG_LINES_CNT] = "";
-	LogId[LogLineIndex % LOG_LINES_CNT] = "";
+	LogName[LogLineIndex % LOG_LINES_CNT] = Name;
+	LogId[LogLineIndex % LOG_LINES_CNT] = Id;
 #ifdef BSP_CONFIG_USE_FREERTOS
 	LogLinesTime[LogLineIndex % LOG_LINES_CNT] = osKernelSysTick();
 #endif /*BSP_CONFIG_USE_FREERTOS*/
