@@ -306,41 +306,34 @@ static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t C
 #endif
 }
 
-const char *pca9536_pcb_id[BSP_SFP_PIN_PCA9536_CNT] = 
-{
-	"D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", 
-	"D13", "D14", "D15", "D16", "D17", "D18", "D19", "D20",
-	"D9", "D10", "D11", "D12"
-};
-
 static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	uint32_t i;
 	
-	SHELL_Transmit(Shell,  "Device     PCB  Presence  Init\r");
-	SHELL_Transmit(Shell,   "PCA9536    D107     1     %s\r", BSP_DEV_GET_STATE_STR(&pwr_pca9536));
-	SHELL_Transmit(Shell,   "DIM3R3400  A5       1     %s\r", BSP_DEV_GET_STATE_STR(&dim3r3400));
-	SHELL_Transmit(Shell,   "UCD90120A  D108     1     %s\r", BSP_DEV_GET_STATE_STR(&ucd90120a));
-	SHELL_Transmit(Shell,   "GDT080A    A6       1     %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[0]));
-	SHELL_Transmit(Shell,   "GDT080A    A7       1     %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[1]));
-	SHELL_Transmit(Shell,   "SI5332     D83      1     %s\r", BSP_DEV_GET_STATE_STR(&si5332[0]));
-	SHELL_Transmit(Shell,   "SI5332     D84      1     %s\r", BSP_DEV_GET_STATE_STR(&si5332[1]));
-	SHELL_Transmit(Shell,   "FPGA_MAXV  D85      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_maxv));
-	SHELL_Transmit(Shell,   "FPGA_LN    D92      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_line));
-	SHELL_Transmit(Shell,   "FPGA_CL1   D88      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_client[0]));
-	SHELL_Transmit(Shell,   "FPGA_CL2   D90      1     %s\r", BSP_DEV_GET_STATE_STR(&fpga_client[0]));
-	SHELL_Transmit(Shell,   "PCA9548    D72      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[0]));
-	SHELL_Transmit(Shell,   "PCA9548    D73      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[1]));
-	SHELL_Transmit(Shell,   "PCA9548    D74      1     %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[2]));
-	SHELL_Transmit(Shell,   "PCAL6624   D67      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[0]));
-	SHELL_Transmit(Shell,   "PCAL6624   D58      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[1]));
-	SHELL_Transmit(Shell,   "PCAL6624   D57      1     %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[2]));
+	SHELL_Transmit(Shell,  "Device       Id   State\r");
+	SHELL_Transmit(Shell,   ".12s %.5s %s\r", at45db641e.DevName, at45db641e.DevId, BSP_DEV_GET_STATE_STR(&at45db641e));
+	SHELL_Transmit(Shell,   ".12s %.5s %s\r", pwr_pca9536.DevName, pwr_pca9536.DevId, BSP_DEV_GET_STATE_STR(&pwr_pca9536));
+	SHELL_Transmit(Shell,   ".12s %.5s %s\r", dim3r3400.DevName, dim3r3400.DevId, BSP_DEV_GET_STATE_STR(&dim3r3400));
+	SHELL_Transmit(Shell,   ".12s %.5s %s\r", ucd90120a.DevName, ucd90120a.DevId, BSP_DEV_GET_STATE_STR(&ucd90120a));
+	SHELL_Transmit(Shell,   ".12s %.5s %s\r", ksz8895.DevName, ksz8895.DevId, BSP_DEV_GET_STATE_STR(&ksz8895));
+	for (i = 0; i < BSP_FPGA_PWR_GDT080A_CNT; i++)
+		SHELL_Transmit(Shell,   ".12s %.5s %s\r", gdt080a[i].DevName, gdt080a[i].DevId, BSP_DEV_GET_STATE_STR(&gdt080a[i]));
+	for (i = 0; i < BSP_CLK_SI5332_CNT; i++)
+		SHELL_Transmit(Shell,   ".12s %.5s %s\r", si5332[i].DevName, si5332[i].DevId, BSP_DEV_GET_STATE_STR(&si5332[i]));
+	SHELL_Transmit(Shell,   ".12s %.5s %s\r", fpga_maxv.DevName, fpga_maxv.DevId, BSP_DEV_GET_STATE_STR(&fpga_maxv));
+	SHELL_Transmit(Shell,   ".12s %.5s %s\r", fpga_line.DevName, fpga_line.DevId, BSP_DEV_GET_STATE_STR(&fpga_line));
+	for (i = 0; i < BSP_FPGA_CLIENT_CNT; i++)
+		SHELL_Transmit(Shell,   ".12s %.5s %s\r", fpga_client[i].DevName, fpga_client[i].DevId, BSP_DEV_GET_STATE_STR(&fpga_client[i]));
+	for (i = 0; i < BSP_PCA9548_CNT; i++)
+		SHELL_Transmit(Shell,   ".12s %.5s %s\r", pca9548a[i].DevName, pca9548a[i].DevId, BSP_DEV_GET_STATE_STR(&pca9548a[i]));
+	for (i = 0; i < BSP_SFP_PIN_PCAL6524_CNT; i++)
+		SHELL_Transmit(Shell,   ".12s %.5s %s\r", pcal6524[i].DevName, pcal6524[i].DevId, BSP_DEV_GET_STATE_STR(&pcal6524[i]));
 	for (i = 0; i < BSP_SFP_PIN_PCA9536_CNT; i++)
-		SHELL_Transmit(Shell,   "PCA9536    %3s      1     %s\r", pca9536_pcb_id[i], BSP_DEV_GET_STATE_STR(&pca9536[i]));
+		SHELL_Transmit(Shell,   ".12s %.5s %s\r", pca9536[i].DevName, pca9536[i].DevId, BSP_DEV_GET_STATE_STR(&pca9536[i]));
 	for (i = 0; i < BSP_SFP_CNT; i++)
-		SHELL_Transmit(Shell,   "SFP        ---      %d     %s\r", sfp[i].Pin.ModAbs ? 0 : 1, BSP_DEV_GET_STATE_STR(&sfp[i]));
-	SHELL_Transmit(Shell,   "KSZ8895    D99      1     %s\r", BSP_DEV_GET_STATE_STR(&ksz8895));
-	SHELL_Transmit(Shell,   "AT45DB641E D94      1     %s\r", BSP_DEV_GET_STATE_STR(&at45db641e));
+		SHELL_Transmit(Shell,   ".12s %.5s %s\r", sfp[i].DevName, sfp[i].DevId, BSP_DEV_GET_STATE_STR(&sfp[i]));
+	
+	
 }
 
 #define SHELL_CMD_DIM3R_HELP \
