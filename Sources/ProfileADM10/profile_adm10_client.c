@@ -346,12 +346,13 @@ static int32_t PROFILE_ADM10_CLIENT_GetXCLineODU1(PROFILE_T *Profile, uint32_t C
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], &Src))
 			return -1;
-		if (Src == (1025 + ClientIdx)) {
+		if (Src == (PROFILE_ADM10_ODU1_XC_SET_SRC_ENUM_CL_1_ODU1 + ClientIdx))
+		{
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], &Dst))
 				return -1;
 			for (j = 0; j < 8; j++)
 			{
-				if (Dst == (1 + j))
+				if (Dst == (PROFILE_ADM10_ODU1_XC_SET_DST_ENUM_LN_1_ODU1_1 + j))
 				{
 					*LineIdx = j / 4;
 					*ODU1Idx = j % 4;
@@ -361,14 +362,16 @@ static int32_t PROFILE_ADM10_CLIENT_GetXCLineODU1(PROFILE_T *Profile, uint32_t C
 			return 0;
 		}
 		
+		/*
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], &Dst))
 			return -1;
-		if (Dst == (1025 + ClientIdx)) {
+		if (Dst == (PROFILE_ADM10_ODU1_XC_SET_DST_ENUM_CL_1_ODU1 + ClientIdx))
+		{
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], &Src))
 				return -1;
 			for (j = 0; j < 8; j++)
 			{
-				if (Src == (1 + j))
+				if (Src == (PROFILE_ADM10_ODU1_XC_SET_SRC_ENUM_LN_1_ODU1_1 + j))
 				{
 					*LineIdx = j / 4;
 					*ODU1Idx = j % 4;
@@ -376,7 +379,8 @@ static int32_t PROFILE_ADM10_CLIENT_GetXCLineODU1(PROFILE_T *Profile, uint32_t C
 				}
 			}
 			return 0;
-		}		
+		}
+		*/
 	}	
 	return 0;
 }
@@ -393,12 +397,13 @@ static int32_t PROFILE_ADM10_CLIENT_GetXCLineODU0(PROFILE_T *Profile, uint32_t C
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], &Src))
 			return -1;
-		if (Src == (1025 + ClientIdx)) {
+		if (Src == (PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_CL_1_ODU0 + ClientIdx)) 
+		{
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], &Dst))
 				return -1;
 			for (j = 0; j < 16; j++)
 			{
-				if (Dst == (1 + j))
+				if (Dst == (PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_LN_1_ODU0_1 + j))
 				{
 					*LineIdx = j / 8;
 					*ODU0Idx = j % 8;
@@ -407,15 +412,15 @@ static int32_t PROFILE_ADM10_CLIENT_GetXCLineODU0(PROFILE_T *Profile, uint32_t C
 			}
 			return 0;
 		}
-		
+		/*
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], &Dst))
 			return -1;
-		if (Dst == (1025 + ClientIdx)) {
+		if (Dst == (PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_CL_1_ODU0 + ClientIdx)) {
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], &Src))
 				return -1;
 			for (j = 0; j < 16; j++)
 			{
-				if (Src == (1 + j))
+				if (Src == (PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_LN_1_ODU0_1 + j))
 				{
 					*LineIdx = j / 8;
 					*ODU0Idx = j % 8;
@@ -423,7 +428,8 @@ static int32_t PROFILE_ADM10_CLIENT_GetXCLineODU0(PROFILE_T *Profile, uint32_t C
 				}
 			}
 			return 0;
-		}		
+		}
+		*/		
 	}	
 	return 0;
 }
@@ -438,7 +444,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &SetState))
 		return -1;
 	
-	if ((SetState == PROFILE_STATE_OOS) && (*(uint32_t*)Value == PROFILE_STATE_IS))
+	if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) && (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_IS))
 		return -1;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
@@ -450,10 +456,10 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx - 1], &DataType))
 		return -1;
 	
-	if (DataType != 130)
+	if (DataType != PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
 		return 0;
 	
-	if (*(uint32_t*)Value != PROFILE_STATE_OOS)
+	if (*(uint32_t*)Value != PROFILE_ADM10_CL_SET_STATE_ENUM_OOS)
 		return -1;
 	
 	return 0;
@@ -464,11 +470,11 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSFPEnableTxValue(PROFILE_T *Profile, 
 	uint32_t SetState;
 	
 	/* Do not alow to enable tx if set state if OOS */
-	if (*(uint32_t*)Value == 1)
+	if (*(uint32_t*)Value == PROFILE_ADM10_CL_SFP_ENABLE_TX_ENUM_ENABLED)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &SetState))
 			return -1;
-		if (SetState == PROFILE_STATE_OOS)
+		if (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS)
 			return -1;
 	}
 	return 0;
@@ -479,11 +485,11 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, 
 	uint32_t SetState;
 	
 	/* Do not alow to enable loopdack if set state if OOS */
-	if (*(uint32_t*)Value != 0)
+	if (*(uint32_t*)Value != PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &SetState))
 			return -1;
-		if ((SetState == PROFILE_STATE_OOS) || (SetState == PROFILE_STATE_IS))
+		if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) || (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_IS))
 			return -1;
 	}
 	return 0;
@@ -491,9 +497,9 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, 
 
 static int32_t PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {	
-	if ((*(uint32_t*)Value == 130) && (Idx % 2))
+	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16) && (Idx % 2))
 	{
-			return -1;
+		return -1;
 	}
 	return 0;
 }
@@ -536,24 +542,19 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(PROFILE_T *Pr
 {
 	uint32_t EnableTx, Loopback;	
 	/* Disable tx and loopback when state is OOS*/
-	if (*(uint32_t*)Value == PROFILE_STATE_OOS)
+	if (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS)
 	{
-		EnableTx = 0;
-		Loopback = 0;
+		EnableTx = PROFILE_ADM10_CL_SFP_ENABLE_TX_ENUM_DISABLED;
 		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx], &EnableTx);
+		Loopback = PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED;
 		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx], &Loopback);
 	}
 	/* Disable loopback when state is IS*/
 	else if (*(uint32_t*)Value == PROFILE_STATE_IS)
 	{
-		Loopback = 0;
+		Loopback = PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED;
 		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx], &Loopback);
 	}
-	return 0;
-}
-
-static int32_t PROFILE_ADM10_CLIENT_SetClSFPEnableTxValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
-{
 	return 0;
 }
 
@@ -566,34 +567,34 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return -1;
 	
-	if (Mode == 0)
+	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 	{
-		if ((*(uint32_t*)Value) == 130)
+		if ((*(uint32_t*)Value) == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
 		{
-			State = 0;
+			State = PROFILE_ADM10_CL_SET_STATE_ENUM_OOS;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx + 1], &State);
-			EnableTx = 0;
+			EnableTx = PROFILE_ADM10_CL_SFP_ENABLE_TX_ENUM_DISABLED;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx + 1], &EnableTx);
-			Loopback = 0;
+			Loopback = PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx + 1], &Loopback);
 		}
 	}
 	else
 	{
-		if ((*(uint32_t*)Value) == 130)
+		if ((*(uint32_t*)Value) == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
 		{
-			OPU1Payload = 0;
+			OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
-			State = 0;
+			State = PROFILE_ADM10_CL_SET_STATE_ENUM_OOS;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx + 1], &State);
-			EnableTx = 0;
+			EnableTx = PROFILE_ADM10_CL_SFP_ENABLE_TX_ENUM_DISABLED;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx + 1], &EnableTx);
-			Loopback = 0;
+			Loopback = PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx + 1], &Loopback);
 		}
 		else
 		{
-			OPU1Payload = 1;
+			OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
 		}
 	}
@@ -604,7 +605,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 {
 	uint32_t i;
 	
-	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 1))
+	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_INFO))
 	{
 		/* Set all info client parametes to factory */
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_1, ProfileADM10InfoClDestinationIdx[Idx]);
@@ -621,7 +622,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 			PROFILE_SetValue(Profile, PROFILE_TABLE_1, ProfileADM10InfoClSFPPtNumberIdx[Idx], sfp[BSP_SFP_CLIENT_IDX(Idx)].Info.PartNumber);
 		}
 	}
-	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 2))
+	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_SETTINGS))
 	{
 		/* Set all config client parametes to factory*/
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx]);
@@ -629,7 +630,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx]);
 	}
-	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 3))
+	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_THRESHOLDS))
 	{
 		/* Set all threshoulds client parametes to factory */
 		if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK)
@@ -659,7 +660,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 			PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][3], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_CMAX]);
 		}
 	}
-	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 4))
+	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_COLORS))
 	{
 		/* Set all dynamic client parametes colors to factory*/
 		PROFILE_SetFactoryAlarmColors(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPStateIdx[Idx]);
@@ -669,7 +670,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 		PROFILE_SetFactoryAlarmColors(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSDHRSAlarmsIdx[Idx]);
 		PROFILE_SetFactoryAlarmColors(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClEthAlarmsIdx[Idx]);
 	}
-	if ((*(uint32_t*)Value == 0) || (*(uint32_t*)Value == 5))
+	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_PORTS))
 	{
 		/* Set all port line parameters to factory */
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_103, ProfileADM10PortClInfoIdx[Idx]);
@@ -687,12 +688,6 @@ int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint
 		if (TableIdx == ProfileADM10ConfigClSetStateIdx[i])
 		{
 			if (PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(Profile, Table, TableIdx, Value, i))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigClSFPEnableTxIdx[i])
-		{
-			if (PROFILE_ADM10_CLIENT_SetClSFPEnableTxValueDependencies(Profile, Table, TableIdx, Value, i))
 				return -1;
 			return 0;
 		}
@@ -735,7 +730,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetALSModeIdx[i], &ALSMode))
 			return;
 		
-		if (ALSMode == 1)
+		if (ALSMode == PROFILE_ADM10_CL_SET_ALS_MODE_ENUM_NEAR_END)
 		{
 			RxLos = 0;
 			if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(i)]) != BSP_DEV_STATE_OK) || \
@@ -748,9 +743,9 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 			ALS_Update(&ClALS[i], ALS_STATE_ENABLED, SFPEnableTx, RxLos, 100, 5);
 			SFP_ConfigTxDisable(&sfp[i], ClALS[i].TxEnable ? 0 : 1);
 		}
-		else if (ALSMode == 2)
+		else if (ALSMode == PROFILE_ADM10_CL_SET_ALS_MODE_ENUM_REMOTE)
 		{
-			if ((DataType == 128) || (DataType == 129) || (DataType == 257))
+			if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1) || (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4) || (DataType == 257))
 			{
 				if (PROFILE_ADM10_CLIENT_GetXCLineODU0(Profile, i, &LineIdx, &ODU0Idx))
 					return;
@@ -758,7 +753,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				if ((LineIdx >= PROFILE_ADM10_LINE_PORTS) || (ODU0Idx >= 8))
 					RxLos = 1;
 				
-				if (Mode == 0)
+				if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 				{
 					if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
 						(fpga_line.Iface[BSP_FPGA_LINE_IFACE_IDX(LineIdx)].ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU0_ALARMS_OPUCSF_MASK)))
@@ -777,7 +772,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				ALS_Update(&ClALS[i], ALS_STATE_ENABLED, SFPEnableTx, RxLos, 100, 5);
 				SFP_ConfigTxDisable(&sfp[i], ClALS[i].TxEnable ? 0 : 1);				
 			}
-			else if (DataType == 130)
+			else if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
 			{
 				if (PROFILE_ADM10_CLIENT_GetXCLineODU1(Profile, i, &LineIdx, &ODU1Idx))
 					return;
@@ -786,7 +781,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 					RxLos = 1;
 				}
 			
-				if (Mode == 0)
+				if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 				{
 					if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
 						(fpga_line.Iface[BSP_FPGA_LINE_IFACE_IDX(LineIdx)].ODU1Alarms[ODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)))
@@ -813,40 +808,40 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 			SFP_ConfigTxDisable(&sfp[i], SFPEnableTx ? 0 : 1);
 		}
 		
-		if (DataType == 128)
+		if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1)
 		{
 			BSP_FPGA_CLIENT_IFACE_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM1);
 			BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM1);
 			SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
 		}
-		else if (DataType == 129)
+		else if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4)
 		{
 			BSP_FPGA_CLIENT_IFACE_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM4);
 			BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM4);
 			SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
 		}
-		else if (DataType == 130)
+		else if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
 		{
 			BSP_FPGA_CLIENT_IFACE_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM16);
 			BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_STM16);
 			SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 1);
 		}
-		else if (DataType == 257)
+		else if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE)
 		{
 			BSP_FPGA_CLIENT_IFACE_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_GE);
 			BSP_FPGA_LINE_DEMUX_CLIENT_MODE_SET(i, BSP_FPGA_CLIENT_IFACE_MODE_GE);
 			SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
 		}
 		
-		if (Loopback == 0)
+		if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED)
 		{
 			BSP_FPGA_CLIENT_LOOPBACK_SET(i, BSP_FPGA_CLIENT_LOOPBACK_NO);
 		}
-		else if (Loopback == 1)
+		else if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_NEAR_END)
 		{
 			BSP_FPGA_CLIENT_LOOPBACK_SET(i, BSP_FPGA_CLIENT_LOOPBACK_POST_CDR);
 		}
-		else if (Loopback == 2)
+		else if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_FAR_END)
 		{
 			BSP_FPGA_CLIENT_LOOPBACK_SET(i, BSP_FPGA_CLIENT_LOOPBACK_SERIAL);
 		}		
@@ -935,21 +930,20 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPStateValue(PROFILE_T *Profile, uint32_
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
 	{
 		case BSP_DEV_STATE_RESET:
-			Value = 0;
+			Value = PROFILE_ADM10_CL_SFP_STATE_ENUM_ABSENT;
 
 			break;
 		case BSP_DEV_STATE_INIT:
-			Value = 2;
+			Value = PROFILE_ADM10_CL_SFP_STATE_ENUM_ABSENT;
 
 			break;
 		case BSP_DEV_STATE_OK:
-			Value = 1;
-
+			Value = PROFILE_ADM10_CL_SFP_STATE_ENUM_OK;
 			/* todo: Add check failure states */
 			break;
 		case BSP_DEV_STATE_FAIL:
 		default:
-			Value = 3;
+			Value = PROFILE_ADM10_CL_SFP_STATE_ENUM_FAIL;
 
 			break;
 	}
@@ -959,7 +953,6 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPStateValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_CLIENT_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
-
 	uint32_t State;	
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
@@ -969,14 +962,12 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].Temp;
-
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
 		case BSP_DEV_STATE_FAIL:
 		default:
 			Value = 0.0;
-
 			break;		
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTempIdx[Idx], &Value, State);
@@ -986,7 +977,6 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_
 {
 	float Value;
 	uint32_t State;
-
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
@@ -995,14 +985,12 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].RxPwr;
-
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
 		case BSP_DEV_STATE_FAIL:
 		default:
 			Value = -40.0f;
-
 			break;
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPRxPwrIdx[Idx], &Value, State);
@@ -1012,7 +1000,6 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_
 {
 	float Value;
 	uint32_t State;
-
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
@@ -1021,14 +1008,12 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].TxPwr;
-
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
 		case BSP_DEV_STATE_FAIL:
 		default:
 			Value = -40.0f;
-
 			break;
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTxPwrIdx[Idx], &Value, State);
@@ -1038,66 +1023,58 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint
 {
 	uint32_t SDHRSAlarms;
 	uint32_t State, DataType;
-
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
 	
-	if ((DataType == 128) || (DataType == 129) || (DataType == 130))
+	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1) || (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4) || (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16))
 	{
 		SDHRSAlarms = 0;
-
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_CLIENT_IDX(Idx)].Pin.RxLos) ||
 			(fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__PMAStatus & BSP_FPGA_CLIENT_IFACE_PMASTATUS_RX_LOS_MASK))
 		{
-			SDHRSAlarms |= 1 << 0;
-
+			SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_LOS;
 		}
 		else if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_LOF_MASK)
 		{
-			SDHRSAlarms |= 1 << 1;
-
+			SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_LOF;
 		}
 		else
 		{
 			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP8)
 			{
-				SDHRSAlarms |= 1 << 2;
-
-			}					
+				SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_RS_BIP;
+			}
+			/*
 			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_AIS_MASK)
 			{
-				SDHRSAlarms |= 1 << 5;
-
+				SDHRSAlarms |= PROFILE_ADM10_CL_SDH_ALARMS_BITMSK_MS_AIS;
 			}
 			else
 			{
 				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP24)
 				{
-					SDHRSAlarms |= 1 << 4;
-
+					SDHRSAlarms |= PROFILE_ADM10_CL_SDH_ALARMS_BITMSK_MS_BIP;
 				}
 				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSRDI_MASK)
 				{
-					SDHRSAlarms |= 1 << 6;
-
+					SDHRSAlarms |= PROFILE_ADM10_CL_SDH_ALARMS_BITMSK_MS_RDI;
 				}
 				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSREI_MASK)
 				{
-					SDHRSAlarms |= 1 << 7;
-
+					SDHRSAlarms |= PROFILE_ADM10_CL_SDH_ALARMS_BITMSK_MS_REI;
 				}
 			}
+			*/
 		}			
 	}
 	else
 	{
 		SDHRSAlarms = 0;
-
 		State = PROFILE_STATE_OOS;
 	}
 
@@ -1115,7 +1092,7 @@ static void PROFILE_ADM10_CLIENT_UpdateEthAlarmsValue(PROFILE_T *Profile, uint32
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
 	
-	if ((DataType == 256) || (DataType == 257))
+	if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE)
 	{
 		EthAlarms = 0;
 
@@ -1124,19 +1101,16 @@ static void PROFILE_ADM10_CLIENT_UpdateEthAlarmsValue(PROFILE_T *Profile, uint32
 			(sfp[BSP_SFP_CLIENT_IDX(Idx)].Pin.RxLos) ||
 			(fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__PMAStatus & BSP_FPGA_CLIENT_IFACE_PMASTATUS_RX_LOS_MASK))
 		{
-			EthAlarms |= 1 << 0;
-
+			EthAlarms |= PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_LOS;
 		}
 		else if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].EthRxErrs)
 		{
-			EthAlarms |= 1 << 2;
-
+			EthAlarms |= PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_FCS;
 		}
 	}
 	else
 	{
 		EthAlarms = 0;
-
 		State = PROFILE_STATE_OOS;
 	}
 
@@ -1152,11 +1126,11 @@ static void PROFILE_ADM10_CLIENT_UpdateALSValue(PROFILE_T *Profile, uint32_t Idx
 		return;
 		
 	if (ClALS[Idx].Status == ALS_STATUS_DISABLED)
-		ALSState = 0;
+		ALSState = PROFILE_ADM10_CL_ALS_STATE_ENUM_DISABLED;
 	else if (ClALS[Idx].Status == ALS_STATUS_PASSIVE)
-		ALSState = 1;
+		ALSState = PROFILE_ADM10_CL_ALS_STATE_ENUM_PASSIVE;
 	else
-		ALSState = 2;
+		ALSState = PROFILE_ADM10_CL_ALS_STATE_ENUM_ACTIVE;
 	
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClALSStateIdx[Idx], &ALSState, State);
 }
@@ -1181,7 +1155,10 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint3
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
-	if ((((DataType == 128) || (DataType == 129) || (DataType == 130))  && (State != PROFILE_STATE_OOS)))
+	if ((((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1) ||
+				(DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4) ||
+				(DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16))  &&
+			(State != PROFILE_ADM10_CL_SET_STATE_ENUM_OOS)))
 	{
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
@@ -1235,7 +1212,8 @@ static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
 	
-	if ((DataType == 257) && (State != PROFILE_STATE_OOS))
+	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE) &&
+			(State != PROFILE_ADM10_CL_SET_STATE_ENUM_OOS))
 	{
 		if (BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK)
 		{
@@ -1294,7 +1272,7 @@ static void PROFILE_ADM10_CLIENT_UpdateAlarmLedValue(PROFILE_T *Profile, uint32_
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
-	if (State == PROFILE_STATE_IS)
+	if (State == PROFILE_ADM10_CL_SET_STATE_ENUM_IS)
 	{
 		Color = PROFILE_COLOR_NORMAL;
 		
