@@ -496,7 +496,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 	for (i = 0; i < BSP_FPGA_LINE_IFACE_CNT; i++)
 	{
 		
-		if ((Dev->Mode == BSP_FPGA_MODE_ADM10) && (i > 2))
+		if ((Dev->Mode == BSP_FPGA_MODE_ADM10) && (i >= 2))
 			continue;
 		
 		Dev->Iface[i].OTU2Alarms = *((uint16_t*)BSP_FPGA_LINE_IFACE_OTU2_ALARMS_ADDR(i));
