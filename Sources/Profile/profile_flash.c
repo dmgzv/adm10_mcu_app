@@ -125,7 +125,7 @@ int32_t PROFILE_FLASH_LoadHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, ui
 	return 0;
 	
 error:
-	LOG_Add("PROFILE_FLASH", "", "Load Header %d: Error", ProfileFlash->HeaderIdx);
+	LOG_Add("PROFILE_FLASH", "", "Load Header %d: Error", Idx);
 	return -1;
 }
 
@@ -162,13 +162,13 @@ int32_t PROFILE_FLASH_InitHeaders(PROFILE_FLASH_T *ProfileFlash)
 	{
 		ProfileFlash->HeaderIdx = HeaderIdxSave + 1;
 		ProfileFlash->Profile->Idx = HeaderProfileIdxSave;
-		LOG_Add("PROFILE_FLASH", "", "Profile Idx %d Class %s", ProfileFlash->Profile->Idx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass);
+		LOG_Add("PROFILE_FLASH", "", "Init Profile Idx %d Class %s", ProfileFlash->Profile->Idx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass);
 		return 0;
 	}
 	
 	ProfileFlash->HeaderIdx = 0;
 	ProfileFlash->Profile->Idx = 0;
-	LOG_Add("PROFILE_FLASH", "", "Profile Idx %d Class %s", ProfileFlash->Profile->Idx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass);
+	LOG_Add("PROFILE_FLASH", "", "Init Profile Idx %d Class %s", ProfileFlash->Profile->Idx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass);
 	return PROFILE_FLASH_SaveHeader(ProfileFlash);
 }
 

@@ -993,6 +993,31 @@ void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 				return;
 		}
 		
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPEnableTxIdx[i], State);
+		if (sfp[BSP_SFP_LINE_IDX(i)].Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK)
+		{
+			PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetFreqIdx[i], State);
+			PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetFreqSpIdx[i], State);
+		}
+		else
+		{
+			PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetFreqIdx[i], PROFILE_STATE_OOS);
+			PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetFreqSpIdx[i], PROFILE_STATE_OOS);
+		}
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[i], State);
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetFECTypeIdx[i], State);
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[i], State);
+		for (j = 0; j < 4; j++)
+		{
+			if (OPU2PayloadType == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1)
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[i][j], State);
+			else
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[i][j], PROFILE_STATE_OOS);
+		}
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetLoopbackIdx[i], State);
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetALSModeIdx[i], State);
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetFactoryIdx[i], State);
+		
 		SFP_ConfigFreq(&sfp[BSP_SFP_LINE_IDX(i)], SFPSetFreq * 1000000);
 		SFP_ConfigRateSel(&sfp[BSP_SFP_LINE_IDX(i)], 1);
 		

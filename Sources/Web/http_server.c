@@ -4,6 +4,7 @@
 #include "profile.h"
 #include "profile_protocol.h"
 #include "profile_types.h"
+#include "bootloader.h"
 #include "bsp.h"
 #include "crc.h"
 #include "log.h"
@@ -79,6 +80,7 @@ extern const char js_bootstrap_min_js[];
 extern const unsigned int js_bootstrap_min_js_size;
 
 extern PROFILE_T Profile;
+extern BOOTLOADER_T Bootloader;
 extern PROFILE_PROTOCOL_T ProfileProtocol;
 
 static char REQUEST_BODY[PROFILE_PROTOCOL_CMD_MAX_SIZE];
@@ -591,6 +593,7 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn)
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\"%s\" : {\r\n\t\t\t\"id\" : \"%s\",\r\n\t\t\t\"status\" : \"%s\"\r\n\t\t},\r\n", ksz8895.DevName, ksz8895.DevId, BSP_DEV_GET_STATE_STR(&ksz8895));
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	
+	/*
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\"%s\" : [\r\n", gdt080a[0].DevName);
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	for (i = 0; i < BSP_FPGA_PWR_GDT080A_CNT; i++)
@@ -603,6 +606,7 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn)
 	}
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t],\r\n");
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
+	*/
 	
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\"%s\" : [\r\n", si5332[0].DevName);
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
@@ -634,6 +638,7 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn)
 		RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	}
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t],\r\n");
+	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\"%s\" : [\r\n", pca9548a[0].DevName);
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
@@ -646,6 +651,7 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn)
 		RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	}
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t],\r\n");
+	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\"%s\" : [\r\n", pcal6524[0].DevName);
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
@@ -658,6 +664,7 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn)
 		RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	}
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t],\r\n");
+	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\"%s\" : [\r\n", pca9536[0].DevName);
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
@@ -670,6 +677,7 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn)
 		RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	}
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t],\r\n");
+	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	
 	snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\"%s\" : [\r\n", sfp[0].DevName);
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
@@ -715,7 +723,7 @@ static void http_server_serve_get_api_v1_log(struct netconn *conn)
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
 	if (LinesCnt > LOG_LINES_CNT)
 	{
-		LinesIdx = LinesCnt - LOG_LINES_CNT;
+		LinesIdx = LinesCnt % LOG_LINES_CNT;
 		LinesCnt = LOG_LINES_CNT;
 	}
 	else
@@ -726,7 +734,7 @@ static void http_server_serve_get_api_v1_log(struct netconn *conn)
 	{
 		LOG_GetLine((i + LinesIdx) % LinesCnt, &LineTime, &Name, &Id, &Line);
 		Time = (float)LineTime / osKernelSysTickFrequency;
-		if (i == LinesCnt - 1)
+		if (i == (LinesCnt - 1))
 			snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t{\r\n\t\t\t\"time\" : \"%.4f\",\r\n\t\t\t\"name\" : \"%s\",\r\n\t\t\t\"id\" : \"%s\",\r\n\t\t\t\"data\" : \"%s\"\r\n\t\t}\r\n", Time, Name, Id, Line);
 		else
 			snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t{\r\n\t\t\t\"time\" : \"%.4f\",\r\n\t\t\t\"name\" : \"%s\",\r\n\t\t\t\"id\" : \"%s\",\r\n\t\t\t\"data\" : \"%s\"\r\n\t\t},\r\n", Time, Name, Id, Line);
@@ -756,7 +764,7 @@ static void http_server_serve_post_api_v1_system_update_software(struct netconn 
 	struct netbuf *inbuf;
 	err_t recv_err;
 	char *p;
-	uint32_t ContentLength;
+	uint32_t i, ContentLength;
 	
 	p = strstr(data, "Content-Length: ");
 	if (!p)
@@ -764,12 +772,16 @@ static void http_server_serve_post_api_v1_system_update_software(struct netconn 
 	
 	p += sizeof("Content-Length: ") - 1;
 	ContentLength = strtoul(p, &p, 10);
+	BOOTLOADER_UpdateNewFwStart(&Bootloader);
 	while(ContentLength) {
 		recv_err = netconn_recv(conn, &inbuf);
 		if (recv_err == ERR_OK)
 		{
 			netbuf_data(inbuf, (void**)&data, &datalen);
-			osDelay(10);
+			for (i = 0; i < datalen; i++)
+			{
+				BOOTLOADER_UpdateNewFwByte(&Bootloader, data[i]);
+			}
 			ContentLength -= datalen;
 			netbuf_delete(inbuf);
 		}
@@ -779,6 +791,8 @@ static void http_server_serve_post_api_v1_system_update_software(struct netconn 
 		}
 	}
 	http_server_write(conn, http_200_ok, sizeof(http_200_ok)-1, NETCONN_NOCOPY);
+	BOOTLOADER_UpdateNewFwComplete(&Bootloader);
+	
 	return;
 	
 error:

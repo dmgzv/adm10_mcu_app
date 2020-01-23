@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI, DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

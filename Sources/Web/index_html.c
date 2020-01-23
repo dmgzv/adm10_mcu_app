@@ -39,9 +39,7 @@ const char index_html[] = \
 	"		        <div class=\"dropdown-menu\" aria-labelledby=\"nav-system\">\r\n"\
 	"		          <a class=\"dropdown-item\" id=\"nav-system-os\" href=\"#\">OS</a>\r\n"\
 	"		          <a class=\"dropdown-item\" id=\"nav-system-hardware\" href=\"#\">Hardware</a>\r\n"\
-	"							<!--\r\n"\
-	"							<a class=\"dropdown-item\" id=\"nav-system-update\" href=\"#\">Update</a>\r\n"\
-	"							-->\r\n"\
+	"		          <a class=\"dropdown-item\" id=\"nav-system-update\" href=\"#\">Update</a>\r\n"\
 	"		        </div>\r\n"\
 	"		      </li>\r\n"\
 	"		      <li class=\"nav-item\" id=\"nav-log\">\r\n"\

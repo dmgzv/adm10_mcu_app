@@ -730,6 +730,12 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetALSModeIdx[i], &ALSMode))
 			return;
 		
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[i], State);
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[i], State);
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[i], State);
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetALSModeIdx[i], State);
+		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetFactoryIdx[i], State);
+		
 		if (ALSMode == PROFILE_ADM10_CL_SET_ALS_MODE_ENUM_NEAR_END)
 		{
 			RxLos = 0;
