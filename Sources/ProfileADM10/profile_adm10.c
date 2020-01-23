@@ -1,4 +1,6 @@
 #include "profile_adm10.h"
+#include "profile_adm10_enums.h"
+#include "profile_adm10_bitmsks.h"
 
 static void PROFILE_ADM10_UpdatepId(PROFILE_T *Profile)
 {
@@ -12,23 +14,23 @@ static void PROFILE_ADM10_UpdateSrNumber(PROFILE_T *Profile)
 
 static void PROFILE_ADM10_UpdateSwNumber(PROFILE_T *Profile)
 {
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_SWNUMBER_IDX, BSP_SW_VERSION, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_SWNUMBER_IDX, BSP_SW_VERSION, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateMCUSwNumber(PROFILE_T *Profile)
 {
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_MCUSWNUMBER_IDX, BSP_MCU_SW_VERSION, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_MCUSWNUMBER_IDX, BSP_MCU_SW_VERSION, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateMaxVFPGASwNumber(PROFILE_T *Profile)
 {
 	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_MAXVFPGASWNUMBER_IDX, "", PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_MAXVFPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_MAXVFPGASWNUMBER_IDX, fpga_maxv.SwVersion, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_MAXVFPGASWNUMBER_IDX, fpga_maxv.SwVersion, PROFILE_STATE_IS);
 	}
 }
 
@@ -36,11 +38,11 @@ static void PROFILE_ADM10_UpdateLineFPGASwNumber(PROFILE_T *Profile)
 {
 	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, "", PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, fpga_line.SwVersion, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, fpga_line.SwVersion, PROFILE_STATE_IS);
 	}
 }
 
@@ -48,11 +50,11 @@ static void PROFILE_ADM10_UpdateClient1FPGASwNumber(PROFILE_T *Profile)
 {
 	if (BSP_DEV_GET_STATE(&fpga_client[0]) != BSP_DEV_STATE_OK)
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, "", PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, fpga_client[0].SwVersion, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, fpga_client[0].SwVersion, PROFILE_STATE_IS);
 	}
 }
 
@@ -60,17 +62,17 @@ static void PROFILE_ADM10_UpdateClient2FPGASwNumber(PROFILE_T *Profile)
 {
 	if (BSP_DEV_GET_STATE(&fpga_client[1]) != BSP_DEV_STATE_OK)
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, "", PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, fpga_client[1].SwVersion, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, fpga_client[1].SwVersion, PROFILE_STATE_IS);
 	}
 }
 
 static void PROFILE_ADM10_UpdateHwNumber(PROFILE_T *Profile)
 {
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_HWNUMBER_IDX, BSP_HW_VERSION, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_HWNUMBER_IDX, BSP_HW_VERSION, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateTimeValue(PROFILE_T *Profile)
@@ -78,36 +80,32 @@ static void PROFILE_ADM10_UpdateTimeValue(PROFILE_T *Profile)
 	uint32_t Time;
 	
 	Time = osKernelSysTick() / osKernelSysTickFrequency;	
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_TIME_IDX, &Time, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_TIME_IDX, &Time, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdatePowerAlarmsValue(PROFILE_T *Profile)
 {
 	uint32_t Value, i;
-	uint8_t ColorType;
 	
 	Value = 0;
-	ColorType = PROFILE_COLOR_TYPE_NORMAL;
 	
 	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 	{
-		Value |= (1 << 0) | (1 << 1);
-		ColorType = PROFILE_COLOR_TYPE_FAILURE;
+		Value |= PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_A | PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B;
 	}
 	else
 	{
 		if (!(dim3r3400_power_good & (1 << 0)))
-			Value |= (1 << 0);
+			Value |= PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_A;
 		if (!(dim3r3400_power_good & (1 << 1)))
-			Value |= (1 << 1);			
+			Value |= PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B;			
 	}
 	
 	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 	{
 		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 		{
-			Value |= (1 << (3 + i));
-			ColorType = PROFILE_COLOR_TYPE_FAILURE;
+			Value |= (1 << (2 + i));
 		}
 	}
 	else
@@ -117,66 +115,60 @@ static void PROFILE_ADM10_UpdatePowerAlarmsValue(PROFILE_T *Profile)
 			//if (!UCD90120A_RAIL_POWER_GOOD(&ucd90120a, i))
 			if (!(ucd90120a.__PowerGood & (1 << (i))))
 			{
-				Value |= (1 << (3 + i));
-				ColorType = PROFILE_COLOR_TYPE_FAILURE;
+				Value |= (1 << (2 + i));
 			}
 		}
 	}
 	
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_POWERALARMS_IDX, &Value, ColorType, PROFILE_STATE_IS);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_POWERALARMS_IDX, &Value, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateHwAlarmsValue(PROFILE_T *Profile)
 {
 	uint32_t Value;
-	uint8_t ColorType;
 	
 	Value = 0;
-	ColorType = PROFILE_COLOR_TYPE_NORMAL;
 	
 	if (BSP_DEV_GET_STATE(&at45db641e) != BSP_DEV_STATE_OK)
-		Value |= 1 << 0;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_AT45DB641E_D94;
 	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
-		Value |= 1 << 1;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_DIM3R3400_A5;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
-		Value |= 1 << 2;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9536_D107;
 	if (BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK)
-		Value |= 1 << 3;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_UCD90120A_D28;
 	//if (BSP_DEV_GET_STATE(&gdt080a[0]) != BSP_DEV_STATE_OK)
-	//	Value |= 1 << 4;
+	//	Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_GDT080A_A6;
 	//if (BSP_DEV_GET_STATE(&gdt080a[1]) != BSP_DEV_STATE_OK)
-	//	Value |= 1 << 5;
+	//	Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_GDT080A_A7;
 	if (BSP_DEV_GET_STATE(&si5332[0]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 6;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_SI5332_D83;
 	if (BSP_DEV_GET_STATE(&si5332[1]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 7;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_SI5332_D84;
 	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
-		Value |= 1 << 8;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_MAXV_D85;
 	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
-		Value |= 1 << 9;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_LN_D92;
 	if (BSP_DEV_GET_STATE(&fpga_client[0]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 10;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_1_D88;
 	if (BSP_DEV_GET_STATE(&fpga_client[1]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 11;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_2_D90;
 	if (BSP_DEV_GET_STATE(&pca9548a[0]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 12;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9548_D72;
 	if (BSP_DEV_GET_STATE(&pca9548a[1]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 13;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9548_D73;
 	if (BSP_DEV_GET_STATE(&pca9548a[2]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 14;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9548_D74;
 	if (BSP_DEV_GET_STATE(&pcal6524[0]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 15;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCAL6624_D67;
 	if (BSP_DEV_GET_STATE(&pcal6524[1]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 16;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCAL6624_D58;
 	if (BSP_DEV_GET_STATE(&pcal6524[2]) != BSP_DEV_STATE_OK)
-		Value |= 1 << 17;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCAL6624_D57;
 	if (BSP_DEV_GET_STATE(&ksz8895) != BSP_DEV_STATE_OK)
-		Value |= 1 << 18;
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_KSZ8895_D99;
 	
-	if (Value)
-		ColorType = PROFILE_COLOR_TYPE_FAILURE;
-	
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_HWALARMS_IDX, &Value, ColorType, PROFILE_STATE_IS);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_HWALARMS_IDX, &Value, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateLineFPGATemp(PROFILE_T *Profile)
@@ -186,11 +178,11 @@ static void PROFILE_ADM10_UpdateLineFPGATemp(PROFILE_T *Profile)
 	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
 	{
 		Temp = 0;
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &fpga_line.Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &fpga_line.Temp, PROFILE_STATE_IS);
 	}
 }
 
@@ -201,11 +193,11 @@ static void PROFILE_ADM10_UpdateClient1FPGATemp(PROFILE_T *Profile)
 	if (BSP_DEV_GET_STATE(&fpga_client[0]) != BSP_DEV_STATE_OK)
 	{
 		Temp = 0;
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &fpga_client[0].Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &fpga_client[0].Temp, PROFILE_STATE_IS);
 	}
 }
 
@@ -216,34 +208,30 @@ static void PROFILE_ADM10_UpdateClient2FPGATemp(PROFILE_T *Profile)
 	if (BSP_DEV_GET_STATE(&fpga_client[1]) != BSP_DEV_STATE_OK)
 	{
 		Temp = 0;
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &fpga_client[1].Temp, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &fpga_client[1].Temp, PROFILE_STATE_IS);
 	}
 }
 
 static void PROFILE_ADM10_UpdateBlockStateValue(PROFILE_T *Profile)
 {
 	uint32_t Value;
-	uint8_t ColorType, HwAlarmsColor, PowerAlarmsColor;
+	uint8_t HwAlarmsColor, PowerAlarmsColor;
 	
-	Value = 1;
-	ColorType = PROFILE_COLOR_TYPE_NORMAL;
+	Value = PROFILE_ADM10_BLOCK_STATE_ENUM_OK;
 	
 	PROFILE_GetColor(Profile, PROFILE_TABLE_2, PROFILE_ADM10_POWERALARMS_IDX, &HwAlarmsColor);
 	PROFILE_GetColor(Profile, PROFILE_TABLE_2, PROFILE_ADM10_HWALARMS_IDX, &PowerAlarmsColor);
 	
 	if (HwAlarmsColor != PROFILE_COLOR_NORMAL)
-		Value = 3;
+		Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
 	if (PowerAlarmsColor != PROFILE_COLOR_NORMAL)
-		Value = 3;
-	
-	if (Value == 3)
-		ColorType = PROFILE_COLOR_TYPE_FAILURE;
+		Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKSTATE_IDX, &Value, ColorType, PROFILE_STATE_IS);	
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKSTATE_IDX, &Value, PROFILE_STATE_IS);	
 }
 
 static void PROFILE_ADM10_UpdateBlockColorValue(PROFILE_T *Profile)
@@ -261,7 +249,7 @@ static void PROFILE_ADM10_UpdateBlockColorValue(PROFILE_T *Profile)
 		if ((State == PROFILE_STATE_IS) && (BlockColor < Color) && (i != PROFILE_ADM10_BLOCKCOLOR_IDX))
 			BlockColor = Color;
 	}
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKCOLOR_IDX, &BlockColor, PROFILE_COLOR_TYPE_NO, PROFILE_STATE_IS);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKCOLOR_IDX, &BlockColor, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateLedsValue(PROFILE_T *Profile)
@@ -370,15 +358,15 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 	
 	if (Idx == PROFILE_ADM10_SETFACTORY_IDX)
 	{
-		if (((*(uint32_t*)Value) == 0) || ((*(uint32_t*)Value) == 1))
+		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_INFO))
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_1);
-		if (((*(uint32_t*)Value) == 0) || ((*(uint32_t*)Value) == 2))
+		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_SETTINGS))
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_3);
-		if (((*(uint32_t*)Value) == 0) || ((*(uint32_t*)Value) == 3))
+		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_THRESHOLDS))
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_4);
-		if (((*(uint32_t*)Value) == 0) || ((*(uint32_t*)Value) == 4))
+		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_COLORS))
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_2);
-		if (((*(uint32_t*)Value) == 0) || ((*(uint32_t*)Value) == 5))
+		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_PORTS))
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_103);
 	}
 	
@@ -407,7 +395,7 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;
 	
-	if (Mode == 0)
+	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 	{
 		BSP_FPGA_MODE_SET(BSP_FPGA_MODE_ADM10);
 	}
@@ -419,7 +407,7 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))
 		return;
 	
-	if (SI5332_1_SetAdjCap == 1)
+	if (SI5332_1_SetAdjCap == PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_10_0)
 	{
 		si5332_cfg[0] = BSP_CLK_SI5332_10P0_CFG;
 	}
@@ -427,31 +415,31 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_2_SETADJCAP_IDX, &SI5332_2_SetAdjCap))
 		return;
 	
-	if (SI5332_2_SetAdjCap == 0)
+	if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_6_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_6P0_CFG;
-	else if (SI5332_2_SetAdjCap == 1)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_6_5)
 		si5332_cfg[1] = BSP_CLK_SI5332_6P5_CFG;
-	else if (SI5332_2_SetAdjCap == 2)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_7_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_7P0_CFG;
-	else if (SI5332_2_SetAdjCap == 3)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_7_5)
 		si5332_cfg[1] = BSP_CLK_SI5332_7P5_CFG;
-	else if (SI5332_2_SetAdjCap == 4)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_8_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_8P0_CFG;
-	else if (SI5332_2_SetAdjCap == 5)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_8_5)
 		si5332_cfg[1] = BSP_CLK_SI5332_8P5_CFG;
-	else if (SI5332_2_SetAdjCap == 6)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_9_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_9P0_CFG;
-	else if (SI5332_2_SetAdjCap == 7)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_9_5)
 		si5332_cfg[1] = BSP_CLK_SI5332_9P5_CFG;
-	else if (SI5332_2_SetAdjCap == 8)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_10_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_10P0_CFG;
-	else if (SI5332_2_SetAdjCap == 9)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_10_5)
 		si5332_cfg[1] = BSP_CLK_SI5332_10P5_CFG;
-	else if (SI5332_2_SetAdjCap == 10)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_11_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_11P0_CFG;
-	else if (SI5332_2_SetAdjCap == 11)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_11_5)
 		si5332_cfg[1] = BSP_CLK_SI5332_11P5_CFG;
-	else if (SI5332_2_SetAdjCap == 12)
+	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_12_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_12P0_CFG;
 	
 	PROFILE_ADM10_LINE_UpdateConfigs(Profile);

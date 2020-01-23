@@ -17,7 +17,7 @@
 #endif
 
 typedef struct {
-	PROFILE_T *Profile;
+	PROFILE_PROTOCOL_T *Protocol;
 	USART_TypeDef *Uart;
 	uint8_t StartByte;
 #ifdef PROFILE_IFACE_MULTITHREAD
@@ -43,8 +43,8 @@ typedef struct {
 } PROFILE_IFACE_T;
 
 #ifdef PROFILE_IFACE_MULTITHREAD
-int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveName, char *ProcessName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile);
+int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveName, char *ProcessName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_PROTOCOL_T *Protocol);
 #else
-int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile);
+int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_PROTOCOL_T *Protocol);
 #endif 
 #endif /* __PROFILE_UART_H */

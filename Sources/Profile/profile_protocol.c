@@ -1,27 +1,25 @@
 #include "profile_protocol.h"
-#include "bootloader_protocol.h"
-#include "profile.h"
 #include <string.h>
 #include "string_fnc.h"
 #include "crc.h"
 
 #define PROFILE_PROTOCOL_LANG_PACKET_SIZE 256
 
-static uint32_t PROFILE_PROTOCOL_GetClass(PROFILE_T *Profile, char * cmd, char * rsp )
+static uint32_t PROFILE_PROTOCOL_GetClass(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
 {
 	char *p = rsp;
 	
 	// для уменьшения путаницы класс берём прямо из профиля!!!
 	memcpy( p, cmd, 2 );
 	p += 2;
-	strcpy( p, Profile->Descr[Profile->Idx]->DeviceClass );
+	strcpy( p, Protocol->Profile->Descr[Protocol->Profile->Idx]->DeviceClass );
 	p += strlen(p);
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
 }
 
-static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_T *Profile, char * cmd, char * rsp )
+static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
 {
 	char *p = rsp;
 	uint32_t i;
@@ -29,11 +27,11 @@ static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_T *Profile, char * cmd, cha
 	// для уменьшения путаницы класс берём прямо из профиля!!!
 	memcpy( p, cmd, 2 );
 	p += 2;
-	strcpy( p, Profile->Descr[Profile->Idx]->DeviceClass );
+	strcpy( p, Protocol->Profile->Descr[Protocol->Profile->Idx]->DeviceClass );
 	p += strlen(p);
 	*p++ = ';';
 	
-	if (Profile->SetEnable)
+	if (Protocol->Profile->SetEnable)
 	{
 		*p++ = 'O';
 		*p++ = 'K';
@@ -45,7 +43,7 @@ static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_T *Profile, char * cmd, cha
 	}
 	*p++ = ';';
 	
-	if (Profile->ProfileFlash.EnableSave)
+	if (Protocol->ProfileFlash->SaveEnable)
 	{
 		*p++ = 'O';
 		*p++ = 'K';
@@ -59,7 +57,7 @@ static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_T *Profile, char * cmd, cha
 	
 	for (i = 0; i < PROFILE_TABLES_CNT; i++)
 	{
-		if (Profile->TablesChanges & (1 << i))
+		if (Protocol->Profile->TablesChanges & (1 << i))
 		{
 			if (i < PROFILE_TABLE_100)
 				p = UintToStr( p, i + 1 );
@@ -74,24 +72,24 @@ static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_T *Profile, char * cmd, cha
 	return p - rsp;	
 }
 
-static uint32_t PROFILE_PROTOCOL_SetAccess(PROFILE_T *Profile, char * cmd, char * rsp )
+static uint32_t PROFILE_PROTOCOL_SetAccess(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
 {
 	if( !strncmp( cmd + 2, "IPG", 3 ) )
 	{//Пароль верный
-		Profile->SetEnable = 1;
+		Protocol->Profile->SetEnable = 1;
 		memcpy( rsp, cmd, 2 );
 		strcpy( rsp + 2, "OK\r");
 	}
 	else
 	{//Пароль не верен
-		Profile->SetEnable = 0;
+		Protocol->Profile->SetEnable = 0;
 		memcpy( rsp, cmd, 2 );
 		strcpy( rsp + 2, "NA\r");
 	}
 	return 5;
 }
 
-static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_T *Profile, char * cmd, char * rsp )
+static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
 {
 	char *p = rsp;
 	
@@ -100,11 +98,11 @@ static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_T *Profile, char * cmd, ch
 	
 	if( (cmd[2] == 'O') && (cmd[3] == 'K') && (cmd[4] == ';')	)
 	{
-		Profile->SetEnable = 1;
+		Protocol->Profile->SetEnable = 1;
 	}
 	else if( (cmd[2] == 'N') && (cmd[3] == 'A') && (cmd[4] == ';')	)
 	{
-		Profile->SetEnable = 0;
+		Protocol->Profile->SetEnable = 0;
 	}
 	else
 	{
@@ -114,13 +112,13 @@ static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_T *Profile, char * cmd, ch
 	
 	if( (cmd[5] == 'O') && (cmd[6] == 'K') && (cmd[7] == ';')	)
 	{
-		if (!Profile->ProfileFlash.EnableSave)
-			PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
-		Profile->ProfileFlash.EnableSave = 1;
+		if (!Protocol->ProfileFlash->SaveEnable)
+			PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
+		Protocol->ProfileFlash->SaveEnable = 1;
 	}
 	else if( (cmd[5] == 'N') && (cmd[6] == 'A') && (cmd[7] == ';')	)
 	{
-		Profile->ProfileFlash.EnableSave = 0;
+		Protocol->ProfileFlash->SaveEnable = 0;
 	}
 	else
 	{
@@ -138,7 +136,7 @@ exit:
 	return p - rsp;
 }
 
-static uint32_t PROFILE_PROTOCOL_GetProfile(PROFILE_T *Profile, char * cmd, char * rsp )
+static uint32_t PROFILE_PROTOCOL_GetProfile(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
 {
 	uint32_t idx;
 	char *p = rsp;
@@ -153,11 +151,11 @@ static uint32_t PROFILE_PROTOCOL_GetProfile(PROFILE_T *Profile, char * cmd, char
 	*p++ = ';'; 
 	if( idx == 0 )
 	{//Запрос количетсва строк
-		p = UintToStr( p, *Profile->Descr[Profile->Idx]->TextSize ); 
+		p = UintToStr( p, *Protocol->Profile->Descr[Protocol->Profile->Idx]->TextSize ); 
 	}
-	else if( idx <= *Profile->Descr[Profile->Idx]->TextSize )
+	else if( idx <= *Protocol->Profile->Descr[Protocol->Profile->Idx]->TextSize )
 	{//Запрос строки профиля
-		strcpy( p, Profile->Descr[Profile->Idx]->Text[ idx - 1 ] );
+		strcpy( p, Protocol->Profile->Descr[Protocol->Profile->Idx]->Text[ idx - 1 ] );
 		p += strlen( p );
 	}
 	else
@@ -172,7 +170,7 @@ static uint32_t PROFILE_PROTOCOL_GetProfile(PROFILE_T *Profile, char * cmd, char
 	return p - rsp;
 }
 
-static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char * rsp)
+static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {	
 	uint32_t AddColor = 0;
 	uint32_t TableId;//номер таблицы (секции)
@@ -198,31 +196,31 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 	{
 		case 1:
 			TableId = PROFILE_TABLE_1;
-			TableSize = Profile->Descr[Profile->Idx]->Table1Size;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table1Size;
 			break;
 		case 2:
 			TableId = PROFILE_TABLE_2;
-			TableSize = Profile->Descr[Profile->Idx]->Table2Size;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
 			break;
 		case 3:
 			TableId = PROFILE_TABLE_3;
-			TableSize = Profile->Descr[Profile->Idx]->Table3Size;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table3Size;
 			break;
 		case 4:
 			TableId = PROFILE_TABLE_4;
-			TableSize = Profile->Descr[Profile->Idx]->Table4Size;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table4Size;
 			break;
 		case 5:
 			TableId = PROFILE_TABLE_5;
-			TableSize = Profile->Descr[Profile->Idx]->Table5Size;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table5Size;
 			break;
 		case 8:
 			TableId = PROFILE_TABLE_8;
-			TableSize = Profile->Descr[Profile->Idx]->Table8Size;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table8Size;
 			break;
 		case 103:
 			TableId = PROFILE_TABLE_103;
-			TableSize = Profile->Descr[Profile->Idx]->Table103Size;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table103Size;
 			break;
 		default:
 			TableId = 0xFFFFFFFF;
@@ -232,37 +230,44 @@ static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_T *Profile, char * cmd, char 
 	
 	if ((TableId != 0xFFFFFFFF) && (TableSize != 0))
 	{
-		if ((cmd[1] == 0x77) && (TableId == PROFILE_TABLE_2))
+		if ((cmd[1] == PROFILE_PROTOCOL_CMD_GET_VALUES_2) && (TableId == PROFILE_TABLE_2))
 			AddColor = 1;
 		
 		for(Item = 1 ; Item <= TableSize; Item++ )//перебор параметров секции	с их печатью
 		{
-			if (PROFILE_GetState(Profile, TableId, Item, &State))
+			if (PROFILE_GetState(Protocol->Profile, TableId, Item, &State))
 				goto error;
-			if (PROFILE_GetColor(Profile, TableId, Item, &Color))
-				goto error;
-			//if (State != PROFILE_STATE_OOS)
+			if (State != PROFILE_STATE_OOS)
 			{
-				if (PROFILE_GetValue(Profile, TableId, Item, TempValue))
+				if (PROFILE_GetValue(Protocol->Profile, TableId, Item, TempValue))
 				{
 					goto error;
 				}
 				else
 				{
-					if (PROFILE_ValueToString( Profile, TableId, Item, TempValue, p , &len) == 0)
+					if (PROFILE_ValueToString(Protocol->Profile, TableId, Item, TempValue, p , &len) == 0)
 						p += len;
 				}
-			}			
-			if( AddColor && (Color != PROFILE_COLOR_NA))//Добавляем цвет, если секция с цветовой раскраской и цвет не равен NA
-			{
-				if (State != PROFILE_STATE_IS)
-					Color = PROFILE_COLOR_NO;
-				strcpy( p++, "@" );
-				p = ByteToStr( p, Color );
+				if (PROFILE_GetColor(Protocol->Profile, TableId, Item, &Color))
+				{
+					goto error;
+				}
+				if( AddColor && (Color != PROFILE_COLOR_NA))//Добавляем цвет, если секция с цветовой раскраской и цвет не равен NA
+				{
+					if (State != PROFILE_STATE_IS)
+						Color = PROFILE_COLOR_NO;
+					strcpy( p++, "@" );
+					p = ByteToStr( p, Color );
+				}
 			}
+			else
+			{
+				*p++ = 0x01;
+			}				
+			
 			*p++ = ';';
 		}
-		Profile->TablesChanges &= ~(1 << TableId);
+		Protocol->Profile->TablesChanges &= ~(1 << TableId);
 	}
 	else
 	{//Нет такой таблицы
@@ -287,7 +292,7 @@ error:
 	return p - rsp;
 }
 
-static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char * rsp)
+static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
 	uint32_t TableId;//номер таблицы (секции)
 	uint32_t Item = 0;
@@ -379,30 +384,30 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_T *Profile, char * cmd, char *
 		break;
 	}
 	
-	if ((!error) && (Profile->SetEnable) && (TableId != 0xFFFFFFFF))
+	if ((!error) && (Protocol->Profile->SetEnable) && (TableId != 0xFFFFFFFF))
 	{	
-		if (PROFILE_StringToValue(Profile, TableId, Item, TempValue, Value) == 0)
+		if (PROFILE_StringToValue(Protocol->Profile, TableId, Item, TempValue, Value) == 0)
 		{
-			if (PROFILE_CheckValue(Profile, TableId, Item, TempValue) == 0)
+			if (PROFILE_CheckValue(Protocol->Profile, TableId, Item, TempValue, 0) == 0)
 			{
-				if (PROFILE_SetValue(Profile, TableId, Item, TempValue))
+				if (PROFILE_SetValue(Protocol->Profile, TableId, Item, TempValue))
 				{
 					goto error;
 				}
-				if (PROFILE_SetValueDependencies(Profile, TableId, Item, TempValue))
+				if (PROFILE_SetValueDependencies(Protocol->Profile, TableId, Item, TempValue, 0))
 				{
 					goto error;
 				}
-				PROFILE_SaveValue(Profile, TableId, Item);
+				PROFILE_FLASH_SaveValue(Protocol->ProfileFlash, TableId, Item);
 			}				
 		}
-		if (PROFILE_GetValue(Profile, TableId, Item, TempValue))
+		if (PROFILE_GetValue(Protocol->Profile, TableId, Item, TempValue))
 		{
 			goto error;
 		}
 		else
 		{
-			if (PROFILE_ValueToString(Profile, TableId, Item, TempValue, p , &len) == 0)
+			if (PROFILE_ValueToString(Protocol->Profile, TableId, Item, TempValue, p , &len) == 0)
 				p += len;
 		}
 	}
@@ -430,14 +435,14 @@ error:
 	return p - rsp;
 }
 
-int32_t PROFILE_PROTOCOL_SetColor(PROFILE_T *Profile, char * cmd, char * rsp)
+int32_t PROFILE_PROTOCOL_SetColor(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
 	uint32_t TableId = 0;
 	uint32_t Item = 0;
 	uint32_t tmp;
 	uint8_t ColorDegrade; //Degrade цвет
 	uint8_t ColorFailure; //Failure цвет
-	uint32_t ParamsCnt = Profile->Descr[Profile->Idx]->Table2Size;
+	uint32_t ParamsCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
 	int32_t error = 0;
 	char *p = rsp;
 	uint32_t CRCRead, CRCCalc;
@@ -480,12 +485,12 @@ int32_t PROFILE_PROTOCOL_SetColor(PROFILE_T *Profile, char * cmd, char * rsp)
 	memcpy(rsp, cmd, 2);
 	p = rsp + 2;
 	// установка при отсутствии ошибок в запросе
-	if( !error && Profile->SetEnable && TableId == 2 && Item && Item <= ParamsCnt)
+	if( !error && Protocol->Profile->SetEnable && TableId == 2 && Item && Item <= ParamsCnt)
 	{
-		if (PROFILE_SetAlarmColors(Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure))
+		if (PROFILE_SetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure))
 			goto error;
-		PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
-		if (PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, Item, &ColorDegrade, &ColorFailure))
+		PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
+		if (PROFILE_GetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, Item, &ColorDegrade, &ColorFailure))
 			goto error;
 		p = UintToStr( p, TableId );
 		*p++ = ';';
@@ -523,12 +528,11 @@ error:
 	return p - rsp;	
 }
 
-int32_t PROFILE_PROTOCOL_GetColors(PROFILE_T *Profile, char * cmd, char * rsp)
+int32_t PROFILE_PROTOCOL_GetColors(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
 	uint32_t TableId;
 	char* p = rsp;
-	PROFILE_TABLE2_PARAM_T *Param = (PROFILE_TABLE2_PARAM_T*)Profile->Descr[Profile->Idx]->Table2;
-	uint32_t ParamsCnt = Profile->Descr[Profile->Idx]->Table2Size;
+	uint32_t ParamsCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
 	uint32_t i;
 	uint8_t ColorDegrade; //Degrade цвет
 	uint8_t ColorFailure; //Failure цвет
@@ -545,20 +549,12 @@ int32_t PROFILE_PROTOCOL_GetColors(PROFILE_T *Profile, char * cmd, char * rsp)
 		//Выводим для всех параметров
 		for( i = 1; i <= ParamsCnt; i++ )
 		{
-			if( Param[i-1].Color )
-			{
-				if (PROFILE_GetAlarmColors(Profile, PROFILE_TABLE_2, i, &ColorDegrade, &ColorFailure))
-					goto error;
-				p = UintToStr( p, ColorDegrade );//Degrade цвет
-				*p++ = '@';
-				p = UintToStr( p, ColorFailure );//Failure цвет
-				*p++ = ';';
-			}
-			else
-			{
-				strcpy( p, "0@0;" ); 
-				p += 4;// для нераскрашиваемых параметров
-			}
+			if (PROFILE_GetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, i, &ColorDegrade, &ColorFailure))
+				goto error;
+			p = UintToStr( p, ColorDegrade );//Degrade цвет
+			*p++ = '@';
+			p = UintToStr( p, ColorFailure );//Failure цвет
+			*p++ = ';';
 		}
 	}
 	else 
@@ -584,7 +580,7 @@ error:
 	return p - rsp;
 }
 
-int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_T *Profile, char * cmd, char * rsp)
+int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
 	char* p;
 	char* LangBlock;
@@ -604,7 +600,7 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_T *Profile, char * cmd, char * rs
 	p += 2;
 	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_PACKET_SIZE)
 	{
-		PROFILE_FLASH_LangpackSave(&Profile->ProfileFlash, LangBlock, Item);
+		PROFILE_FLASH_LangpackSave(Protocol->ProfileFlash, LangBlock, Item);
 		p = UintToStr( p, Item );
 		strcpy( p, ";OK;" );
 		p += 4;
@@ -621,7 +617,7 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_T *Profile, char * cmd, char * rs
 	return p - rsp;
 }
 
-int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_T *Profile, char * cmd, char * rsp)
+int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
 	uint32_t Item;
 	uint32_t error = 0, i;
@@ -638,7 +634,7 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_T *Profile, char * cmd, char * rsp
 	
 	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_PACKET_SIZE )
 	{// читаем блок из флеш, если он доступен
-		PROFILE_FLASH_LangpackLoad(&Profile->ProfileFlash, p, Item);
+		PROFILE_FLASH_LangpackLoad(Protocol->ProfileFlash, p, Item);
 		for(i = 0; i < 256; i++)
 		{
 			if (*p == '\r')
@@ -669,7 +665,7 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_T *Profile, char * cmd, char * rsp
 #define PROFILE_PROTOCOL_CONFIG_WRITEBLOCK "WRITEBLOCK"
 #define PROFILE_PROTOCOL_CONFIG_FINISHWRITE "FINISHWRITE"
 
-int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
+int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
 	char *s, *p, *Data, c;
 	uint32_t CRCRead, Index, DataSize, i;
@@ -701,13 +697,13 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 			goto error;
 		}
 		
-		BlocksCnt = Profile->Values.StaticSize % 256 ? (Profile->Values.StaticSize / 256) + 1 : Profile->Values.StaticSize / 256;
+		BlocksCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize % 256 ? (Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize / 256) + 1 : Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize / 256;
 		BlocksCnt += 1;
 		
-		Profile->ValuesLock = 1;
-		osMutexWait( Profile->Values.Mutex, osWaitForever );
-		Profile->ValuesCRC16 = Calc_CRC16( Profile->Values.Static, Profile->Values.StaticSize, 0);
-		osMutexRelease( Profile->Values.Mutex );
+		Protocol->Profile->ValuesLock = 1;
+		osMutexWait( Protocol->Profile->Values->Mutex, osWaitForever );
+		Protocol->Profile->ValuesCRC16 = Calc_CRC16( Protocol->Profile->Values->Static, Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize, 0);
+		osMutexRelease( Protocol->Profile->Values->Mutex );
 		
 		
 		*p++ = 'O';
@@ -726,7 +722,7 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 			goto error;
 		}
 		
-		BlocksCnt = Profile->Values.StaticSize % 256 ? (Profile->Values.StaticSize / 256) + 1 : Profile->Values.StaticSize / 256;
+		BlocksCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize % 256 ? (Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize / 256) + 1 : Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize / 256;
 		BlocksCnt += 1;
 		
 		s++;		
@@ -798,16 +794,16 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 				Data = ByteToHexStr(Data, BSP_SW_TIME[i]);
 			}
 			
-			Data = WordToHexStr(Data, Profile->ValuesCRC16);
+			Data = WordToHexStr(Data, Protocol->Profile->ValuesCRC16);
 			
 			memset(Data, '0', 512 - (Data - p));
 			p += 512;
 		}
 		else
 		{
-			osMutexWait( Profile->Values.Mutex, osWaitForever );
-			Data = &((char*)Profile->Values.Static)[(Index - 1) * 256];
-			DataSize = Profile->Values.StaticSize - ((Index - 1) * 256);
+			osMutexWait( Protocol->Profile->Values->Mutex, osWaitForever );
+			Data = &((char*)Protocol->Profile->Values->Static)[(Index - 1) * 256];
+			DataSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize - ((Index - 1) * 256);
 			for (i = 0; i < 256; i++)
 			{
 				if (i < DataSize)
@@ -820,7 +816,7 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 					*p++ = '0';
 				}
 			}
-			osMutexRelease( Profile->Values.Mutex );
+			osMutexRelease( Protocol->Profile->Values->Mutex );
 		}
 	}
 	else if (!memcmp(s, PROFILE_PROTOCOL_CONFIG_FINISHREAD, sizeof(PROFILE_PROTOCOL_CONFIG_FINISHREAD) - 1))
@@ -842,7 +838,7 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 			goto error;
 		}
 		
-		Profile->ValuesLock = 0;
+		Protocol->Profile->ValuesLock = 0;
 		
 		*p++ = 'O';
 		*p++ = 'K';
@@ -869,12 +865,12 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 			goto error;
 		}
 		
-		Profile->ValuesLock = 1;
-		osMutexWait( Profile->Values.Mutex, osWaitForever );
-		Profile->ValuesCRC16 = Calc_CRC16( Profile->Values.Static, Profile->Values.StaticSize, 0 );
-		osMutexRelease( Profile->Values.Mutex );
+		Protocol->Profile->ValuesLock = 1;
+		osMutexWait( Protocol->Profile->Values->Mutex, osWaitForever );
+		Protocol->Profile->ValuesCRC16 = Calc_CRC16( Protocol->Profile->Values->Static, Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize, 0 );
+		osMutexRelease( Protocol->Profile->Values->Mutex );
 		
-		BlocksCnt = Profile->Values.StaticSize % 256 ? (Profile->Values.StaticSize / 256) + 1 : Profile->Values.StaticSize / 256;
+		BlocksCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize % 256 ? (Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize / 256) + 1 : Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize / 256;
 		BlocksCnt += 1;
 		
 		*p++ = 'O';
@@ -893,7 +889,7 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 			goto error;
 		}
 		
-		BlocksCnt = Profile->Values.StaticSize % 256 ? (Profile->Values.StaticSize / 256) + 1 : Profile->Values.StaticSize / 256;
+		BlocksCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize % 256 ? (Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize / 256) + 1 : Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize / 256;
 		BlocksCnt += 1;
 		
 		s++;		
@@ -992,19 +988,19 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 			
 			if (!HexStr4ToWord(Data, (uint16_t*)&CRCRead))
 				goto error;
-			Profile->ValuesCRC16 = CRCRead;
+			Protocol->Profile->ValuesCRC16 = CRCRead;
 		}
 		else
 		{
-			osMutexWait( Profile->Values.Mutex, osWaitForever );		
+			osMutexWait( Protocol->Profile->Values->Mutex, osWaitForever );		
 			for (i = 0; i < 256; i++)
 			{
 				HexStr2ToByte(Data, (uint8_t*)&c);
-				if ((((Index - 1) * 256) + i) < Profile->Values.StaticSize)
-					((char*)Profile->Values.Static)[((Index - 1) * 256) + i] = c;
+				if ((((Index - 1) * 256) + i) < Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize)
+					((char*)Protocol->Profile->Values->Static)[((Index - 1) * 256) + i] = c;
 				Data += 2;
 			}
-			osMutexRelease( Profile->Values.Mutex );
+			osMutexRelease( Protocol->Profile->Values->Mutex );
 		}
 		
 		*p++ = 'O';
@@ -1034,18 +1030,14 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 			goto error;
 		}
 		
-		osMutexWait( Profile->Values.Mutex, osWaitForever );	
-		CRCCalc = Calc_CRC16( Profile->Values.Static, Profile->Values.StaticSize, 0 );
-		osMutexRelease( Profile->Values.Mutex );
+		osMutexWait( Protocol->Profile->Values->Mutex, osWaitForever );	
+		CRCCalc = Calc_CRC16( Protocol->Profile->Values->Static, Protocol->Profile->Descr[Protocol->Profile->Idx]->StaticValuesSize, 0 );
+		osMutexRelease( Protocol->Profile->Values->Mutex );
 		
-		if (Profile->ValuesCRC16 != CRCCalc)
+		if (Protocol->Profile->ValuesCRC16 != CRCCalc)
 		{
-			if (PROFILE_FLASH_ConfigsLoad(&Profile->ProfileFlash))
-			{
-				PROFILE_SetFactory(Profile);
-			}
-			PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
-			Profile->ValuesLock = 0;		
+			PROFILE_FLASH_InitConfigs(Protocol->ProfileFlash);
+			Protocol->Profile->ValuesLock = 0;		
 			*p++ = 'N';
 			*p++ = 'A';
 			*p++ =';';
@@ -1056,9 +1048,9 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_T *Profile, char * cmd, char * rsp)
 		}
 		else
 		{
-			Profile->TablesChanges |= (1 << PROFILE_TABLE_1) | (1 << PROFILE_TABLE_2) | (1 << PROFILE_TABLE_3) | (1 << PROFILE_TABLE_4) | (1 << PROFILE_TABLE_103);
-			PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
-			Profile->ValuesLock = 0;			
+			Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_1) | (1 << PROFILE_TABLE_2) | (1 << PROFILE_TABLE_3) | (1 << PROFILE_TABLE_4) | (1 << PROFILE_TABLE_103);
+			PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
+			Protocol->Profile->ValuesLock = 0;			
 			*p++ = 'O';
 			*p++ = 'K';
 			*p++ =';';
@@ -1089,52 +1081,59 @@ error:
 	return p - rsp;
 }
 
-uint32_t PROFILE_PROTOCOL_Command(PROFILE_T *Profile, char *cmd, char *rsp, uint32_t *complete)
+void PROFILE_PROTOCOL_Init(PROFILE_PROTOCOL_T *Protocol, PROFILE_T *Profile, BOOTLOADER_T *Bootloader, PROFILE_FLASH_T *ProfileFlash)
+{
+	Protocol->Profile = Profile;
+	Protocol->Bootloader = Bootloader;
+	Protocol->ProfileFlash = ProfileFlash;
+}
+
+uint32_t PROFILE_PROTOCOL_Command(PROFILE_PROTOCOL_T *Protocol, char *cmd, char *rsp, uint32_t *complete)
 {
 	uint32_t len = 0;
 	
 	switch( cmd[ 1 ] )//Команда
 	{
-		case 0x01://Чтение класса устройства:
-			len = PROFILE_PROTOCOL_GetClass(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_GET_CLASS://Чтение класса устройства:
+			len = PROFILE_PROTOCOL_GetClass(Protocol, cmd, rsp);
 			break;
-		case 0x61://Расширенное чтение класса устройства:
-			len = PROFILE_PROTOCOL_GetClassExt(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_GET_CLASS_EXT://Расширенное чтение класса устройства:
+			len = PROFILE_PROTOCOL_GetClassExt(Protocol, cmd, rsp);
 			break; 
-		case 0x49://Разрешить запись в устройство
-			len = PROFILE_PROTOCOL_SetAccess(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_SET_ACCESS://Разрешить запись в устройство
+			len = PROFILE_PROTOCOL_SetAccess(Protocol, cmd, rsp);
 			break;
-		case 0x62://Расширенное разрешение на запись в устройство
-			len = PROFILE_PROTOCOL_SetAccessExt(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_SET_ACCESS_EXT://Расширенное разрешение на запись в устройство
+			len = PROFILE_PROTOCOL_SetAccessExt(Protocol, cmd, rsp);
 			break;
-		case 0x71:
-		case 0x77://Чтение параметров без раскраски, с раскраской 
-			len = PROFILE_PROTOCOL_GetParams(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_GET_VALUES_1:
+		case PROFILE_PROTOCOL_CMD_GET_VALUES_2://Чтение параметров без раскраски, с раскраской 
+			len = PROFILE_PROTOCOL_GetParams(Protocol, cmd, rsp);
 			break;
-		case 0x72:
-		case 0x76://Запись парамерта в профиль
-			len = PROFILE_PROTOCOL_SetParam(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_SET_VALUE_1:
+		case PROFILE_PROTOCOL_CMD_SET_VALUE_2://Запись парамерта в профиль
+			len = PROFILE_PROTOCOL_SetParam(Protocol, cmd, rsp);
 			break;
-		case 0x73://Запрос строки из профиля
-			len = PROFILE_PROTOCOL_GetProfile(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_GET_PROFILE://Запрос строки из профиля
+			len = PROFILE_PROTOCOL_GetProfile(Protocol, cmd, rsp);
 			break;
-		case 0x7C://Запись цветов	состояния
-			len = PROFILE_PROTOCOL_SetColor(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_SET_COLOR://Запись цветов	состояния
+			len = PROFILE_PROTOCOL_SetColor(Protocol, cmd, rsp);
 			break;
-		case 0x7D://Чтение цветов	состояния
-			len = PROFILE_PROTOCOL_GetColors(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_GET_COLORS://Чтение цветов	состояния
+			len = PROFILE_PROTOCOL_GetColors(Protocol, cmd, rsp);
 			break;
-		case 0x7A://Запись языкового пакета
-			len = PROFILE_PROTOCOL_WriteLangpack(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_WRITE_LANG://Запись языкового пакета
+			len = PROFILE_PROTOCOL_WriteLangpack(Protocol, cmd, rsp);
 			break;
-		case 0x7B://Чтение языкового пакета
-			len = PROFILE_PROTOCOL_ReadLangpack(Profile, cmd, rsp);
+		case PROFILE_PROTOCOL_CMD_READ_LANG://Чтение языкового пакета
+			len = PROFILE_PROTOCOL_ReadLangpack(Protocol, cmd, rsp);
 			break;
-		case 0x0F:
-			len = BOOTLOADER_PROTOCOL_UpdateFw(&Profile->Bootloader, cmd, rsp, complete);
+		case PROFILE_PROTOCOL_CMD_UPDATE_FW:
+			len = BOOTLOADER_PROTOCOL_UpdateFw(Protocol->Bootloader, cmd, rsp, complete);
 			break;
 		case 0x63://Расширенное чтение/запись конфигурации устройства
-			len = PROFILE_PROTOCOL_ConfigExt(Profile, cmd, rsp);
+			len = PROFILE_PROTOCOL_ConfigExt(Protocol, cmd, rsp);
 			break;
 	}
 	if( len == 0 )// если нет ответа, отвечаем об ошибке

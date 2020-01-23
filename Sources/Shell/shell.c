@@ -1,11 +1,10 @@
 #include "shell.h"
-#include "stm32f4xx_hal.h"
-#include <string.h>
+#include "string.h"
 #include <stdio.h>
 #include <stdarg.h>
 
 #define SHELL_THREAD_PRIORITY		osPriorityAboveNormal
-#define SHELL_THREAD_STACK_SIZE	1024
+#define SHELL_THREAD_STACK_SIZE	512
 
 #define SHELL_CMD_PARAMS_MAX_CNT	8
 
@@ -183,6 +182,7 @@ int32_t SHELL_Transmit(void *Shell, char *str, ...)
 		return -1;
 	if (SHELL_IFACE_Transmit((SHELL_T*)Shell, ((SHELL_T*)Shell)->TxBuffer, TxBufferLen))
 		return -1;
+	osDelay(1);
   return 0;
 }
 

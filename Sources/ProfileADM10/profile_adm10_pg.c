@@ -1,5 +1,7 @@
 #include "profile_adm10_pg.h"
 #include "profile_adm10_values.h"
+#include "profile_adm10_enums.h"
+#include "profile_adm10_bitmsks.h"
 #include "profile_adm10_xc.h"
 
 uint32_t ProfileADM10DynamicODU2PGStateIdx[PROFILE_ADM10_ODU2_PGS] = {
@@ -1404,8 +1406,8 @@ static void PROFILE_ADM10_ODU2PG_UpdateValues(PROFILE_T *Profile)
 				{
 					PGState = 0;
 					PGActiveODUk = 0;
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				}
 				else
 				{
@@ -1438,15 +1440,15 @@ static void PROFILE_ADM10_ODU2PG_UpdateValues(PROFILE_T *Profile)
 					else
 						PGActiveODUk = PGPrimaryODUk;						
 				}					
-				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				break;
 			case 0:
 			default:
 				PGState = 0;
 				PGActiveODUk = 0;
-				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				break;
 		}
 	}
@@ -1487,8 +1489,8 @@ static void PROFILE_ADM10_ODU1PG_UpdateValues(PROFILE_T *Profile)
 				{
 					PGState = 0;
 					PGActiveODUk = 0;
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				}
 				else
 				{
@@ -1546,16 +1548,16 @@ static void PROFILE_ADM10_ODU1PG_UpdateValues(PROFILE_T *Profile)
 						else
 							PGActiveODUk = PGPrimaryODUk;					
 					}					
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				}
 				break;
 			case 3:
 			default:
 				PGState = 0;
 				PGActiveODUk = 0;
-				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				break;
 		}
 	}	
@@ -1596,8 +1598,8 @@ static void PROFILE_ADM10_ODU0PG_UpdateValues(PROFILE_T *Profile)
 				{
 					PGState = 0;
 					PGActiveODUk = 0;
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				}
 				else
 				{
@@ -1656,16 +1658,16 @@ static void PROFILE_ADM10_ODU0PG_UpdateValues(PROFILE_T *Profile)
 						else
 							PGActiveODUk = PGPrimaryODUk;						
 					}					
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				}
 				break;
 			case 3:
 			default:
 				PGState = 0;
 				PGActiveODUk = 0;
-				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGStateIdx[i], &PGState, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
-				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_COLOR_NO, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				break;
 		}
 	}	

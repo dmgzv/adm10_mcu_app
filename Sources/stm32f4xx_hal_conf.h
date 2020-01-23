@@ -60,7 +60,7 @@
 #define HAL_DMA_MODULE_ENABLED
 #define HAL_DMA2D_MODULE_ENABLED
 #define HAL_ETH_MODULE_ENABLED
-#define HAL_FLASH_MODULE_ENABLED 
+#define HAL_FLASH_MODULE_ENABLED
 /* #define HAL_NAND_MODULE_ENABLED     */
 #define HAL_NOR_MODULE_ENABLED
 /* #define HAL_PCCARD_MODULE_ENABLED   */
@@ -79,7 +79,7 @@
 /* #define HAL_SAI_MODULE_ENABLED */
 /* #define HAL_SD_MODULE_ENABLED         */
 #define HAL_SPI_MODULE_ENABLED   
-/* #define HAL_TIM_MODULE_ENABLED       */
+#define HAL_TIM_MODULE_ENABLED
 #define HAL_UART_MODULE_ENABLED
 #define HAL_USART_MODULE_ENABLED
 /* #define HAL_IRDA_MODULE_ENABLED      */
@@ -170,8 +170,8 @@
 /* Definition of the Ethernet driver buffers size and count */   
 #define ETH_RX_BUF_SIZE                ETH_MAX_PACKET_SIZE /* buffer size for receive               */
 #define ETH_TX_BUF_SIZE                ETH_MAX_PACKET_SIZE /* buffer size for transmit              */
-#define ETH_RXBUFNB                    (5U)       /* 5 Rx buffers of size ETH_RX_BUF_SIZE  */
-#define ETH_TXBUFNB                    (5U)       /* 5 Tx buffers of size ETH_TX_BUF_SIZE  */
+#define ETH_RXBUFNB                    (4U)       /* 4 Rx buffers of size ETH_RX_BUF_SIZE  */
+#define ETH_TXBUFNB                    (4U)       /* 4 Tx buffers of size ETH_TX_BUF_SIZE  */
 
 /* Section 2: PHY configuration section */
 /* PHY Address*/

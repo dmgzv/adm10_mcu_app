@@ -93,7 +93,7 @@
 #define configTICK_RATE_HZ             			( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES           			( 8 )
 #define configMINIMAL_STACK_SIZE       			( ( uint16_t ) 128 )
-#define configTOTAL_HEAP_SIZE       				( ( size_t ) ( 60 * 1024 ) )  /* 48 Kbytes */
+#define configTOTAL_HEAP_SIZE       				( ( size_t ) ( 32 * 1024 ) )  /* 48 Kbytes */
 #define configMAX_TASK_NAME_LEN        			( 16 )
 #define configUSE_16_BIT_TICKS         			0
 #define configIDLE_SHOULD_YIELD        			1
@@ -169,7 +169,7 @@ standard names. */
 
 /* IMPORTANT: This define MUST be commented when used with STM32Cube firmware, 
               to prevent overwriting SysTick_Handler defined within STM32Cube HAL */
-/* #define xPortSysTickHandler SysTick_Handler */
+#define xPortSysTickHandler SysTick_Handler
 
 #endif /* FREERTOS_CONFIG_H */
 

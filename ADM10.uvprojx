@@ -549,6 +549,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sram.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_hal_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_tim_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -779,6 +789,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\tftp_client.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_hal_msp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\stm32f4xx_hal_msp.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_timebase_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\stm32f4xx_hal_timebase_tim.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -858,6 +878,16 @@
               <FileName>profile_adm10_xc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_xc.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_bitmsks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_bitmsks.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_enums.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_enums.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1088,6 +1118,51 @@
               <FileName>shell_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Shell\shell_uart.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Web</GroupName>
+          <Files>
+            <File>
+              <FileName>bootstrap_min_css.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\css\bootstrap_min_css.c</FilePath>
+            </File>
+            <File>
+              <FileName>style_css.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\css\style_css.c</FilePath>
+            </File>
+            <File>
+              <FileName>bootstrap_min_js.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\js\bootstrap_min_js.c</FilePath>
+            </File>
+            <File>
+              <FileName>jquery_3_4_1_slim_min_js.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\js\jquery_3_4_1_slim_min_js.c</FilePath>
+            </File>
+            <File>
+              <FileName>popper_min_js.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\js\popper_min_js.c</FilePath>
+            </File>
+            <File>
+              <FileName>script_js.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\js\script_js.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>index_html.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\index_html.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1422,7 +1497,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1635,6 +1710,16 @@
               <FileName>stm32f4xx_hal_sram.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_sram.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_tim_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1866,6 +1951,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\tftp_client.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_hal_msp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\stm32f4xx_hal_msp.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_timebase_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\stm32f4xx_hal_timebase_tim.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1945,6 +2040,16 @@
               <FileName>profile_adm10_xc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_xc.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_bitmsks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_bitmsks.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_enums.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_enums.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2175,6 +2280,51 @@
               <FileName>shell_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Shell\shell_uart.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Web</GroupName>
+          <Files>
+            <File>
+              <FileName>bootstrap_min_css.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\css\bootstrap_min_css.c</FilePath>
+            </File>
+            <File>
+              <FileName>style_css.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\css\style_css.c</FilePath>
+            </File>
+            <File>
+              <FileName>bootstrap_min_js.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\js\bootstrap_min_js.c</FilePath>
+            </File>
+            <File>
+              <FileName>jquery_3_4_1_slim_min_js.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\js\jquery_3_4_1_slim_min_js.c</FilePath>
+            </File>
+            <File>
+              <FileName>popper_min_js.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\js\popper_min_js.c</FilePath>
+            </File>
+            <File>
+              <FileName>script_js.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\js\script_js.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>index_html.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\index_html.c</FilePath>
             </File>
           </Files>
         </Group>

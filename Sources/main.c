@@ -2,70 +2,36 @@
 #include <string.h>
 #include "cmsis_os.h"
 #include "bsp.h"
-
-#include "bsp_eth.h"
-#include "tftp_client.h"
-
-#include "shell_cmd.h"
-#include "shell_uart.h"
-#include "shell_telnet.h"
-
-#include "log.h"
-#include "watchdog.h"
-
 #include "profile.h"
 #include "profile_iface.h"
 #include "profile_types.h"
 #include "profile_protocol.h"
 #include "profile_adm10.h"
-
+#include "shell_cmd.h"
+#include "shell_uart.h"
+#include "shell_telnet.h"
+#include "http_server.h"
+#include "tftp_client.h"
+#include "log.h"
+#include "watchdog.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define PROFILE_IFACE_UART_4 UART4
+#define PROFILE_IFACE_UART4 UART4
 #ifndef BSP_CONFIG_USE_UART4
 	#error	Define BSP_CONFIG_USE_UART4 in bsp_config.h for PROFILE_IFACE
 #endif
-	
-#define PROFILE_IFACE_UART_5 UART5
+
+#define PROFILE_IFACE_UART5 UART5
 #ifndef BSP_CONFIG_USE_UART5
 	#error	Define BSP_CONFIG_USE_UART5 in bsp_config.h for PROFILE_IFACE
 #endif
 	
-#define SHELL_IFACE_UART4 UART4
-#ifndef BSP_CONFIG_USE_UART4
-	#error	Define BSP_CONFIG_USE_UART4 in bsp_config.h for SHELL_IFACE
-#endif
-	
-#define SHELL_IFACE_UART5 UART5
-#ifndef BSP_CONFIG_USE_UART5
-	#error	Define BSP_CONFIG_USE_UART5 in bsp_config.h for SHELL_IFACE
-#endif
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
 
-SHELL_T __attribute__((section ("CCM_DATA"))) ShellUart4;
-const SHELL_IFACE_T ShellUart4Iface = 
-{
-	NULL,
-	NULL,
-	&SHELL_UART_Receive,
-	&SHELL_UART_Transmit,
-	NULL,
-	SHELL_IFACE_UART4
-};
-
-SHELL_T __attribute__((section ("CCM_DATA"))) ShellUart5;
-const SHELL_IFACE_T ShellUart5Iface = 
-{
-	NULL,
-	NULL,
-	&SHELL_UART_Receive,
-	&SHELL_UART_Transmit,
-	NULL,
-	SHELL_IFACE_UART5
-};
-
-SHELL_T __attribute__((section ("CCM_DATA"))) ShellTelnet;
-SHELL_TELNET_PRIV_T __attribute__((section ("CCM_DATA"))) ShellTelnetPriv;
+SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnet;
+SHELL_TELNET_PRIV_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnetPriv;
 const SHELL_IFACE_T ShellTelnetIface = 
 {
 	&SHELL_TELNET_Init,
@@ -76,19 +42,16 @@ const SHELL_IFACE_T ShellTelnetIface =
 	&ShellTelnetPriv
 };
 	
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
 typedef union {
-	PROFILE_ADM10_VALUES_DYNAMIC_T	adm;
+	PROFILE_ADM10_VALUES_DYNAMIC_T	ADM10;
 } PROFILE_VALUES_DYNAMIC_T;
 
 typedef union {
-	PROFILE_ADM10_VALUES_STATIC_T	adm;
+	PROFILE_ADM10_VALUES_STATIC_T	ADM10;
 }PROFILE_VALUES_STATIC_T;
 
 typedef union {
-	PROFILE_ADM10_VALUES_CALIB_T	adm;
+	PROFILE_ADM10_VALUES_STATIC_T	ADM10;
 }PROFILE_VALUES_CALIB_T;
 
 extern PROFILE_DESCR_T ProfileADM10Descr;
@@ -98,9 +61,17 @@ PROFILE_T __attribute__((section ("CCM_DATA"))) Profile;
 PROFILE_VALUES_STATIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesStatic;
 PROFILE_VALUES_DYNAMIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesDynamic;
 PROFILE_VALUES_CALIB_T __attribute__((section ("CCM_DATA"))) ProfileValuesCalib;
-PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart4;
+PROFILE_VALUES_T __attribute__((section ("CCM_DATA"))) ProfileValues = {
+	.Dynamic = &ProfileValuesDynamic,
+	.Static = &ProfileValuesStatic,
+	.Calib = &ProfileValuesCalib,
+};
+PROFILE_FLASH_T __attribute__((section ("CCM_DATA"))) ProfileFlash;
+PROFILE_PROTOCOL_T __attribute__((section ("CCM_DATA"))) ProfileProtocol;
 PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart5;
+PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart4;
 
+BOOTLOADER_T __attribute__((section ("CCM_DATA"))) Bootloader;
 const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= {
 	BSP_PROJECT,
 	BSP_HW_VERSION,
@@ -116,9 +87,29 @@ osThreadId SystemThreadHandle;
 /* Private function prototypes -----------------------------------------------*/
 static void System_Thread(void const *argument);
 /* System Thread definition */
-osThreadDef(System, System_Thread, osPriorityNormal, 0, 1024);
+osThreadDef(System, System_Thread, osPriorityNormal, 0, 256);
 
 /* Private functions ---------------------------------------------------------*/
+
+/**
+  * @brief  Main program
+  * @param  None
+  * @retval None
+  */
+int main(void)
+{	
+	/* Initialization of MCU and Pereferia*/
+ 	BSP_Init();
+  WATCHDOG_Init(10000);
+  /* Start System thread */
+  SystemThreadHandle = osThreadCreate (osThread(System), NULL);
+  
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
+  for(;;);
+}
 
 void PROFILE_UpdateValues(void)
 {
@@ -142,26 +133,6 @@ int32_t PROFILE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, ui
 void PROFILE_UpdateConfigs(void)
 {
 	PROFILE_ADM10_UpdateConfigs(&Profile);
-}
-
-/**
-  * @brief  Main program
-  * @param  None
-  * @retval None
-  */
-int main(void)
-{	
-	/* Initialization of MCU*/
- 	BSP_Init();
-  WATCHDOG_Init(10000);
-  /* Start System thread */
-  SystemThreadHandle = osThreadCreate (osThread(System), NULL);
-  
-  /* Start scheduler */
-  osKernelStart();
-
-  /* We should never get here as control is now taken by the scheduler */
-  for(;;);
 }
 
 /**
@@ -194,24 +165,33 @@ static void System_Thread(void const *argument)
 	WATCHDOG_Refresh();
 	
 	/* Init Profile*/
-	PROFILE_Init(&Profile, ProfileDescr, &ProfileValuesStatic, sizeof(ProfileValuesStatic), &ProfileValuesDynamic, sizeof(ProfileValuesDynamic), &ProfileValuesCalib, sizeof(ProfileValuesCalib));
+	PROFILE_Init(&Profile, ProfileDescr, &ProfileValues);
+	WATCHDOG_Refresh();
+	
+	/* Init Profile Flash*/
+	PROFILE_FLASH_Init(&ProfileFlash, "Profile FLASH", &Profile);
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Protocol*/
-	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", PROFILE_IFACE_UART_4, SlotAddress, &Profile);
-	WATCHDOG_Refresh();
-	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Profile UART5", PROFILE_IFACE_UART_5, SlotAddress, &Profile);
-	WATCHDOG_Refresh();
-
-	BSP_ETH_Init();
-	TFTP_CLIENT_Init();
-	SHELL_Init(&ShellTelnet, "Shell Telnet" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellTelnetIface);
-	//WATCHDOG_Refresh();
-	//SHELL_Init(&ShellUart4, "Shell UART4" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart4Iface);
-	//WATCHDOG_Refresh();
-	//SHELL_Init(&ShellUart5, "Shell UART5" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart5Iface);
+	PROFILE_PROTOCOL_Init(&ProfileProtocol, &Profile, &Bootloader, &ProfileFlash);
 	
+	/* Init Profile Interfaces*/
+	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Profile UART5", PROFILE_IFACE_UART5, SlotAddress, &ProfileProtocol);
 	WATCHDOG_Refresh();
+	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", PROFILE_IFACE_UART4, SlotAddress, &ProfileProtocol);
+	WATCHDOG_Refresh();
+	
+	/*Init Ethernet stack*/
+	BSP_ETH_Init();
+	WATCHDOG_Refresh();
+	
+	/*Init Shell over Ethernet*/
+	SHELL_Init(&ShellTelnet, "Shell TELNET" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellTelnetIface);
+	WATCHDOG_Refresh();	
+	
+	TFTP_CLIENT_Init();	
+	HTTP_SERVER_Init();
+	
 	for(;;)
   {
 		WATCHDOG_Refresh();

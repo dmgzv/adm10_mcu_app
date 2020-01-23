@@ -2,12 +2,6 @@
 
 #define SHELL_TELNET_PORT 23
 
-#define SHELL_TELNET_RING_BUFFER_SIZE	(1 << 12) 
-
-static char ring_buffer[SHELL_TELNET_RING_BUFFER_SIZE];
-static uint32_t ring_buffer_ptr = 0;
-static uint32_t ring_buffer_len = 0;
-
 int32_t SHELL_TELNET_Init(void *Priv)
 {
 	SHELL_TELNET_PRIV_T *Telnet = Priv;
@@ -44,8 +38,8 @@ int32_t SHELL_TELNET_Connect(void *Priv)
 	/* Process the new connection. */
 	if (err == ERR_OK) 
 	{
-		ring_buffer_ptr = 0;
-		ring_buffer_len = 0;
+		Telnet->ring_buffer_ptr = 0;
+		Telnet->ring_buffer_len = 0;
 		return 0;
 	}
 	return -1;
@@ -61,11 +55,11 @@ int32_t SHELL_TELNET_Receive(void *Priv, char *Buffer, uint32_t BufferSize)
 	
 	i = 0;
 	do {
-		while (ring_buffer_len)
+		while (Telnet->ring_buffer_len)
 		{
-			Buffer[i] = ring_buffer[ring_buffer_ptr & (SHELL_TELNET_RING_BUFFER_SIZE - 1)];
-			ring_buffer_len--;
-			ring_buffer_ptr++;
+			Buffer[i] = Telnet->ring_buffer[Telnet->ring_buffer_ptr & (SHELL_TELNET_RING_BUFFER_SIZE - 1)];
+			Telnet->ring_buffer_len--;
+			Telnet->ring_buffer_ptr++;
 			if (Buffer[i] == '\r')
 			{
 				Buffer[i] = 0;
@@ -83,7 +77,7 @@ int32_t SHELL_TELNET_Receive(void *Priv, char *Buffer, uint32_t BufferSize)
 			{
 				if (((char*)data)[j] == '\n')
 					continue;
-				ring_buffer[(ring_buffer_ptr + ring_buffer_len++) & (SHELL_TELNET_RING_BUFFER_SIZE - 1)] = ((char*)data)[j];
+				Telnet->ring_buffer[(Telnet->ring_buffer_ptr + Telnet->ring_buffer_len++) & (SHELL_TELNET_RING_BUFFER_SIZE - 1)] = ((char*)data)[j];
 			}          
 		} 
 		while (netbuf_next(buf) >= 0);

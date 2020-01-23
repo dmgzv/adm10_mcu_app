@@ -53,7 +53,7 @@ static void PROFILE_IFACE_ProcessThread(void const *argument)
 		TimeStart = osKernelSysTick();
 		Complete = 0;
 		
-		Iface->ResponceLen = PROFILE_PROTOCOL_Command(Iface->Profile, Iface->Commands[Event.value.v], Iface->Responce, &Complete);		
+		Iface->ResponceLen = PROFILE_PROTOCOL_Command(Iface->Protocol, Iface->Commands[Event.value.v], Iface->Responce, &Complete);		
 		
 		TimeEnd = osKernelSysTick();		
 		if (Iface->MaxParseTime < (TimeEnd - TimeStart))
@@ -94,10 +94,10 @@ static void PROFILE_IFACE_ProcessThread(void const *argument)
   }
 }
 
-int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveThreadName, char *ProcessThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile)
+int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveThreadName, char *ProcessThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_PROTOCOL_T *Protocol)
 {
-	osThreadDef_t ReceiveThreadDef = { ReceiveThreadName, PROFILE_IFACE_ReceiveThread, osPriorityHigh, 0, 512};
-	osThreadDef_t ProcessThreadDef = { ProcessThreadName, PROFILE_IFACE_ProcessThread, osPriorityHigh, 0, 512};
+	osThreadDef_t ReceiveThreadDef = { ReceiveThreadName, PROFILE_IFACE_ReceiveThread, osPriorityAboveNormal, 0, 512};
+	osThreadDef_t ProcessThreadDef = { ProcessThreadName, PROFILE_IFACE_ProcessThread, osPriorityAboveNormal, 0, 512};
 	osMessageQDef(Receive, PROFILE_IFACE_CMD_QUEUE_SIZE, uint32_t);
 	osMessageQDef(Process, PROFILE_IFACE_CMD_QUEUE_SIZE, uint32_t);
 	uint32_t i;	
@@ -154,7 +154,7 @@ static void PROFILE_IFACE_Thread(void const *argument)
 		TimeStart = osKernelSysTick();
 		Complete = 0;
 		
-		Iface->ResponceLen = PROFILE_PROTOCOL_Command(Iface->Profile, Iface->Command, Iface->Responce, &Complete);		
+		Iface->ResponceLen = PROFILE_PROTOCOL_Command(Iface->Protocol, Iface->Command, Iface->Responce, &Complete);		
 		
 		TimeEnd = osKernelSysTick();		
 		if (Iface->MaxParseTime < (TimeEnd - TimeStart))
@@ -189,13 +189,13 @@ static void PROFILE_IFACE_Thread(void const *argument)
   }	
 }
 
-int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_T *Profile)
+int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_PROTOCOL_T *Protocol)
 {
-	osThreadDef_t ThreadDef = { ThreadName, PROFILE_IFACE_Thread, osPriorityHigh, 0, 512};
+	osThreadDef_t ThreadDef = { ThreadName, PROFILE_IFACE_Thread, osPriorityAboveNormal, 0, 256};
 	
 	Iface->StartByte = 0x80 + SlotAddress;
 	Iface->Uart = Uart;
-	Iface->Profile = Profile;
+	Iface->Protocol = Protocol;
 	Iface->MaxParseTime = 0;
 	Iface->MaxParseTimeCommand = 0;
 	Iface->MaxResponceLen = 0;

@@ -2,6 +2,7 @@
 #define __SHELL_H
 
 #include "cmsis_os.h"
+#include "stm32f4xx_hal.h"
 
 #define SHELL_CMD_NAME_MAX_LEN				16
 #define SHELL_CMD_DESCRIPTION_MAX_LEN	128

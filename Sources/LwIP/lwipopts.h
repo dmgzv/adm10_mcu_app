@@ -8,7 +8,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright © 2017 STMicroelectronics International N.V. 
+  * <h2><center>&copy; Copyright Â© 2017 STMicroelectronics International N.V. 
   * All rights reserved.</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without 
@@ -61,35 +61,32 @@
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE                (10*1024)
+#define MEM_SIZE                (16*1024)
 
+/* MEMP_NUM_NETBUF: the number of struct netbufs.*/
+#define MEMP_NUM_NETBUF   8
+/* MEMP_NUM_NETCONN: the number of struct netconns.*/
+#define MEMP_NUM_NETCONN   8
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
    should be set high. */
-#define MEMP_NUM_PBUF           10
+#define MEMP_NUM_PBUF           16
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
-#define MEMP_NUM_UDP_PCB        6
+#define MEMP_NUM_UDP_PCB        2
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
-#define MEMP_NUM_TCP_PCB        10
+#define MEMP_NUM_TCP_PCB        8
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
-#define MEMP_NUM_TCP_PCB_LISTEN 5
+#define MEMP_NUM_TCP_PCB_LISTEN 4
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
-#define MEMP_NUM_TCP_SEG        8
-/* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active
-   timeouts. */
-#define MEMP_NUM_SYS_TIMEOUT    10
-
+#define MEMP_NUM_TCP_SEG        16
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
 #define PBUF_POOL_SIZE          8
-
-/* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
-#define PBUF_POOL_BUFSIZE       1524
 
 /* ---------- IPv4 options ---------- */
 #define LWIP_IPV4               1
@@ -131,7 +128,7 @@ a lot of data that needs to be copied, this should be set high. */
 
 
 /* ---------- Statistics options ---------- */
-#define LWIP_STATS 0
+#define LWIP_STATS 1
 
 /* ---------- link callback options ---------- */
 /* LWIP_NETIF_LINK_CALLBACK==1: Support a callback function from an interface
@@ -207,27 +204,18 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define LWIP_SOCKET                     0
 
 /*
-   ------------------------------------
-   ---------- httpd options ----------
-   ------------------------------------
-*/
-/** Set this to 1 to include "fsdata_custom.c" instead of "fsdata.c" for the
- * file system (to prevent changing the file included in CVS) */
-#define HTTPD_USE_CUSTOM_FSDATA   1
-
-/*
    ---------------------------------
    ---------- OS options ----------
    ---------------------------------
 */
 
 #define TCPIP_THREAD_NAME              "TCP/IP"
-#define TCPIP_THREAD_STACKSIZE          1000
-#define TCPIP_MBOX_SIZE                 6
-#define DEFAULT_UDP_RECVMBOX_SIZE       6
-#define DEFAULT_TCP_RECVMBOX_SIZE       6
-#define DEFAULT_ACCEPTMBOX_SIZE         6
-#define DEFAULT_THREAD_STACKSIZE        500
+#define TCPIP_THREAD_STACKSIZE          512
+#define TCPIP_MBOX_SIZE                 16
+#define DEFAULT_UDP_RECVMBOX_SIZE       16
+#define DEFAULT_TCP_RECVMBOX_SIZE       16
+#define DEFAULT_ACCEPTMBOX_SIZE         16
+#define DEFAULT_THREAD_STACKSIZE        256
 #define TCPIP_THREAD_PRIO               osPriorityHigh
 
 

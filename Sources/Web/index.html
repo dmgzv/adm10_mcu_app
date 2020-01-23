@@ -1,0 +1,179 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>IPG Horizon: ADM-10</title>
+		<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/bootstrap.min.css">
+		<!--
+		<script src="js/profile_adm200.js"></script>
+		<script src="js/colors_adm200.js"></script>
+		<script src="js/info_adm200.js"></script>
+		<script src="js/dynamic_adm200.js"></script>
+		<script src="js/config_adm200.js"></script>
+		<script src="js/thr_adm200.js"></script>
+		<script src="js/led_adm200.js"></script>
+		<script src="js/perf_adm200.js"></script>
+		<script src="js/port_adm200.js"></script>
+		<script src="js/log.js"></script>
+		-->
+		<script src="js/jquery-3.4.1.slim.min.js"></script>
+		<script src="js/popper.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/script.js"></script>
+	</head>
+		<nav class="navbar navbar-expand navbar-light bg-light fixed-top">
+		  <a class="navbar-brand" href="#">ADM-10</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+		    <span class="navbar-toggler-icon"></span>
+		  </button>
+		  <div class="collapse navbar-collapse" id="navbarNav">
+		    <ul class="navbar-nav">
+		      <li class="nav-item">
+		        <a class="nav-link active" id="nav-profile" href="#">Profile</a>
+		      </li>
+					<li class="nav-item dropdown">
+		        <a class="nav-link dropdown-toggle" href="#" id="nav-system" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		          System
+		        </a>
+		        <div class="dropdown-menu" aria-labelledby="nav-system">
+		          <a class="dropdown-item" id="nav-system-os" href="#">OS</a>
+		          <a class="dropdown-item" id="nav-system-hardware" href="#">Hardware</a>
+							<!--
+							<a class="dropdown-item" id="nav-system-update" href="#">Update</a>
+							-->
+		        </div>
+		      </li>
+		      <li class="nav-item" id="nav-log">
+		        <a class="nav-link" href="#">Log</a>
+		      </li>
+		    </ul>
+		  </div>
+		</nav>
+		<div class="container-fluid content" id="profile-content">
+			<div class="row overflow-hidden align-content-center" id="profile" style="height:100%">
+				<div class="d-flex justify-content-center" style="width:100%">
+					<div class="spinner-grow" role="status"></div>
+				</div>
+				<div class="d-flex justify-content-center" style="width:100%">
+		    	<p id="system_text">Loading profile...</p>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid content" id="system-os-content" style="display:none">
+			<div class="row" id="system-os" >
+				<div class="col">
+					<div class="card">
+				    <div class="m-0 p-0 card-header">
+				      <span class="m-0 p-1">CPU</span>
+				    </div>
+			      <div class="m-0 p-0 card-body">
+							<div class="m-0 p-0" id="system-os-cpu-heap" >
+								<span id="system-os-cpu-heap-label" class="m-0 p-1 font-weight-light m-0 p-2">Heap:</span>
+								<span id="system-os-cpu-heap-value" class="m-0 p-1 font-weight-bold m-0 p-2">0</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col">
+					<div class="card">
+				    <div class="m-0 p-0 card-header">
+				      <span class="m-0 p-1">Threads</span>
+				    </div>
+			      <div class="m-0 p-0 card-body">
+							<table class="m-0 p-1 table" id="system-os-threads-table">
+								<thead>
+									<tr>
+										<th scope="col">Name</th>
+										<th scope="col">State</th>
+										<th scope="col">Priority</th>
+										<th scope="col">Stack</th>
+										<th scope="col">Number</th>
+									</tr>
+								</thead>
+								<tbody id="system-os-threads-tbody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid content" id="system-hardware-content" style="display:none">
+			<div class="row" id="system-hardware">
+				<div class="col">
+					<div class="card">
+				    <div class="m-0 p-0 card-header">
+				      <span class="m-0 p-1">Power</span>
+				    </div>
+			      <div class="m-0 p-0 card-body">
+							<table class="m-0 p-1 table" id="system-hardware-power-table">
+								<thead>
+									<tr>
+										<th scope="col">Name</th>
+										<th scope="col">Value</th>
+									</tr>
+								</thead>
+								<tbody id="system-hardware-power-tbody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="col">
+					<div class="card">
+				    <div class="m-0 p-0 card-header">
+				      <span class="m-0 p-1">IC</span>
+				    </div>
+			      <div class="m-0 p-0 card-body">
+							<table class="m-0 p-1 table" id="system-hardware-ic-table">
+								<thead>
+									<tr>
+										<th scope="col">Name</th>
+										<th scope="col">ID</th>
+										<th scope="col">Status</th>
+									</tr>
+								</thead>
+								<tbody id="system-hardware-ic-tbody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid content" id="system-update-content" style="display:none">
+			<div class="card m-1 p-1">
+				<div class="m-0 p-0 card-header">
+					<span class="m-0 p-1">Software</span>
+				</div>
+				<div class="m-1 p-1 card-body">
+					<div class="input-group">
+					  <div class="input-group-prepend">
+					    <span class="input-group-text" id="system-update-software-btn">Upload</span>
+					  </div>
+					  <div class="custom-file">
+					    <input type="file" class="custom-file-input" id="system-update-software-input">
+					    <label class="custom-file-label" for="system-update-software-input">Browse</label>
+					  </div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid content" id="log-content" style="display:none">
+			<div class="row" id="log" style="height:100%">
+				<table class="m-0 p-1 table" id="log-table">
+					<thead>
+						<tr>
+							<th scope="col">Time</th>
+							<th scope="col">Name</th>
+							<th scope="col">Id</th>
+							<th scope="col">Data</th>
+						</tr>
+					</thead>
+					<tbody id="log-tbody">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>

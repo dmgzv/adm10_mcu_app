@@ -1,5 +1,7 @@
 #include "profile_adm10_client.h"
 #include "profile_adm10_values.h"
+#include "profile_adm10_enums.h"
+#include "profile_adm10_bitmsks.h"
 #include "profile_adm10_xc.h"
 #include "als.h"
 #include "perf.h"
@@ -903,8 +905,6 @@ static void PROFILE_ADM10_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, u
 				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][1], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_WMIN]);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][2], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_WMAX]);
 				PROFILE_SetValue(Profile, PROFILE_TABLE_4, ProfileADM10StaticClSFPTempIdx[Idx][3], &sfp[BSP_SFP_CLIENT_IDX(Idx)].Thr.Temp[SFP_THR_CMAX]);
-				
-				PROFILE_FLASH_ConfigsSave(&Profile->ProfileFlash);
 			}
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoClDestinationIdx[Idx], State);
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoClSFPVendorIdx[Idx], State);
@@ -926,7 +926,7 @@ static void PROFILE_ADM10_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, u
 static void PROFILE_ADM10_CLIENT_UpdateSFPStateValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t Value;
-	uint8_t ColorType;
+
 	uint32_t State;	
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
@@ -936,30 +936,30 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPStateValue(PROFILE_T *Profile, uint32_
 	{
 		case BSP_DEV_STATE_RESET:
 			Value = 0;
-			ColorType = PROFILE_COLOR_TYPE_FAILURE;
+
 			break;
 		case BSP_DEV_STATE_INIT:
 			Value = 2;
-			ColorType = PROFILE_COLOR_TYPE_NORMAL;
+
 			break;
 		case BSP_DEV_STATE_OK:
 			Value = 1;
-			ColorType = PROFILE_COLOR_TYPE_NORMAL;
+
 			/* todo: Add check failure states */
 			break;
 		case BSP_DEV_STATE_FAIL:
 		default:
 			Value = 3;
-			ColorType = PROFILE_COLOR_TYPE_FAILURE;
+
 			break;
 	}
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPStateIdx[Idx], &Value, ColorType, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPStateIdx[Idx], &Value, State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
-	uint8_t ColorType;
+
 	uint32_t State;	
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
@@ -969,24 +969,24 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].Temp;
-			ColorType = PROFILE_COLOR_TYPE_AUTO;
+
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
 		case BSP_DEV_STATE_FAIL:
 		default:
 			Value = 0.0;
-			ColorType = PROFILE_COLOR_TYPE_AUTO;
+
 			break;		
 	}
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTempIdx[Idx], &Value, ColorType, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTempIdx[Idx], &Value, State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
 	uint32_t State;
-	uint8_t ColorType;
+
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
@@ -995,24 +995,24 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].RxPwr;
-			ColorType = PROFILE_COLOR_TYPE_AUTO;
+
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
 		case BSP_DEV_STATE_FAIL:
 		default:
 			Value = -40.0f;
-			ColorType = PROFILE_COLOR_TYPE_AUTO;
+
 			break;
 	}
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPRxPwrIdx[Idx], &Value, ColorType, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPRxPwrIdx[Idx], &Value, State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
 	uint32_t State;
-	uint8_t ColorType;
+
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
@@ -1021,24 +1021,24 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_
 	{
 		case BSP_DEV_STATE_OK:
 			Value = sfp[BSP_SFP_CLIENT_IDX(Idx)].TxPwr;
-			ColorType = PROFILE_COLOR_TYPE_AUTO;
+
 			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
 		case BSP_DEV_STATE_FAIL:
 		default:
 			Value = -40.0f;
-			ColorType = PROFILE_COLOR_TYPE_AUTO;
+
 			break;
 	}
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTxPwrIdx[Idx], &Value, ColorType, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTxPwrIdx[Idx], &Value, State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t SDHRSAlarms;
 	uint32_t State, DataType;
-	uint8_t ColorType;
+
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
 		return;
@@ -1048,48 +1048,48 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint
 	if ((DataType == 128) || (DataType == 129) || (DataType == 130))
 	{
 		SDHRSAlarms = 0;
-		ColorType = PROFILE_COLOR_TYPE_NORMAL;
+
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_CLIENT_IDX(Idx)].Pin.RxLos) ||
 			(fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__PMAStatus & BSP_FPGA_CLIENT_IFACE_PMASTATUS_RX_LOS_MASK))
 		{
 			SDHRSAlarms |= 1 << 0;
-			ColorType = PROFILE_COLOR_TYPE_FAILURE;
+
 		}
 		else if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_LOF_MASK)
 		{
 			SDHRSAlarms |= 1 << 1;
-			ColorType = PROFILE_COLOR_TYPE_FAILURE;
+
 		}
 		else
 		{
 			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP8)
 			{
 				SDHRSAlarms |= 1 << 2;
-				ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+
 			}					
 			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_AIS_MASK)
 			{
 				SDHRSAlarms |= 1 << 5;
-				ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+
 			}
 			else
 			{
 				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHBIP24)
 				{
 					SDHRSAlarms |= 1 << 4;
-					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+
 				}
 				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSRDI_MASK)
 				{
 					SDHRSAlarms |= 1 << 6;
-					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+
 				}
 				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSREI_MASK)
 				{
 					SDHRSAlarms |= 1 << 7;
-					ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+
 				}
 			}
 		}			
@@ -1097,18 +1097,18 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint
 	else
 	{
 		SDHRSAlarms = 0;
-		ColorType = PROFILE_COLOR_TYPE_NORMAL;
+
 		State = PROFILE_STATE_OOS;
 	}
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSDHRSAlarmsIdx[Idx], &SDHRSAlarms, ColorType, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSDHRSAlarmsIdx[Idx], &SDHRSAlarms, State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdateEthAlarmsValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t EthAlarms;
 	uint32_t State, DataType;
-	uint8_t ColorType;
+
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
 		return;
@@ -1118,29 +1118,29 @@ static void PROFILE_ADM10_CLIENT_UpdateEthAlarmsValue(PROFILE_T *Profile, uint32
 	if ((DataType == 256) || (DataType == 257))
 	{
 		EthAlarms = 0;
-		ColorType = PROFILE_COLOR_TYPE_NORMAL;
+
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_CLIENT_IDX(Idx)].Pin.RxLos) ||
 			(fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__PMAStatus & BSP_FPGA_CLIENT_IFACE_PMASTATUS_RX_LOS_MASK))
 		{
 			EthAlarms |= 1 << 0;
-			ColorType = PROFILE_COLOR_TYPE_FAILURE;
+
 		}
 		else if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].EthRxErrs)
 		{
 			EthAlarms |= 1 << 2;
-			ColorType = PROFILE_COLOR_TYPE_DEGRADE;
+
 		}
 	}
 	else
 	{
 		EthAlarms = 0;
-		ColorType = PROFILE_COLOR_TYPE_NORMAL;
+
 		State = PROFILE_STATE_OOS;
 	}
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClEthAlarmsIdx[Idx], &EthAlarms, ColorType, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClEthAlarmsIdx[Idx], &EthAlarms, State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdateALSValue(PROFILE_T *Profile, uint32_t Idx)
@@ -1158,7 +1158,7 @@ static void PROFILE_ADM10_CLIENT_UpdateALSValue(PROFILE_T *Profile, uint32_t Idx
 	else
 		ALSState = 2;
 	
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClALSStateIdx[Idx], &ALSState, PROFILE_COLOR_TYPE_NO, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClALSStateIdx[Idx], &ALSState, State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdateDynamicValues(PROFILE_T *Profile, uint32_t Idx)
@@ -1218,11 +1218,11 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint3
 		PERF_Reset(&ClSDHRSPerf[Idx]);
 	}
 	
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSEBIdx[Idx], &ClSDHRSPerf[Idx].EB, PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSESIdx[Idx], &ClSDHRSPerf[Idx].ES, PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSSESIdx[Idx], &ClSDHRSPerf[Idx].SES, PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSBBEIdx[Idx], &ClSDHRSPerf[Idx].BBE, PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSUASIdx[Idx], &ClSDHRSPerf[Idx].UAS, PROFILE_COLOR_TYPE_NO, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSEBIdx[Idx], &ClSDHRSPerf[Idx].EB, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSESIdx[Idx], &ClSDHRSPerf[Idx].ES, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSSESIdx[Idx], &ClSDHRSPerf[Idx].SES, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSBBEIdx[Idx], &ClSDHRSPerf[Idx].BBE, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClSDHRSUASIdx[Idx], &ClSDHRSPerf[Idx].UAS, State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_t Idx)
@@ -1273,12 +1273,12 @@ static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_
 	ClEthTxOcts[Idx] += TxOcts;
 	ClEthTxErrs[Idx] += TxErrs;
 	
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthRxPktsIdx[Idx], &ClEthRxPkts[Idx], PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthRxOctsIdx[Idx], &ClEthRxOcts[Idx], PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthRxErrsIdx[Idx], &ClEthRxErrs[Idx], PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthTxPktsIdx[Idx], &ClEthTxPkts[Idx], PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthTxOctsIdx[Idx], &ClEthTxOcts[Idx], PROFILE_COLOR_TYPE_NO, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthTxErrsIdx[Idx], &ClEthTxErrs[Idx], PROFILE_COLOR_TYPE_NO, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthRxPktsIdx[Idx], &ClEthRxPkts[Idx], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthRxOctsIdx[Idx], &ClEthRxOcts[Idx], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthRxErrsIdx[Idx], &ClEthRxErrs[Idx], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthTxPktsIdx[Idx], &ClEthTxPkts[Idx], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthTxOctsIdx[Idx], &ClEthTxOcts[Idx], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthTxErrsIdx[Idx], &ClEthTxErrs[Idx], State);
 }
 
 static void PROFILE_ADM10_CLIENT_UpdatePerfValues(PROFILE_T *Profile, uint32_t Idx)

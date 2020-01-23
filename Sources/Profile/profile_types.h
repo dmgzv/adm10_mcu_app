@@ -33,6 +33,10 @@
 #define PROFILE_COLOR_MAJOR 		6 //- Оранжевый
 #define PROFILE_COLOR_CRITICAL 	7 //- Красный
 
+#define PROFILE_COLOR_TYPE_NORMAL	0
+#define PROFILE_COLOR_TYPE_DEGRADE	1
+#define PROFILE_COLOR_TYPE_FAILURE	2
+
 #define	PROFILE_STATE_OOS 0
 #define	PROFILE_STATE_MT	1
 #define	PROFILE_STATE_IS	2
@@ -52,77 +56,87 @@
 #define PROFILE_ACCESS(MN, US, AD, SU)	(((MN) << 0) | ((US) << 2) | ((AD) << 4) | ((SU) << 6))
 
 typedef struct {
-	uint8_t Table;
-	uint16_t Index;
-	uint8_t Access;
-	uint8_t	Type;
-	void *Value;
-	uint8_t *State;
+	const char *Name;
+	const uint8_t Table;
+	const uint16_t Index;
+	const uint8_t Access;
+	const uint8_t	Type;
+	const void *Value;
+	const uint8_t *State;
 } PROFILE_TABLE1_PARAM_T;
 
 typedef struct {
-	uint8_t Table;
-	uint16_t Index;
-	uint8_t Access;
-	uint8_t	Type;
-	void *Value;
-	uint8_t *Color;
-	uint8_t *DegradeColor;//Цвет предупреждения
-	uint8_t *FailureColor;//Цвет критического значения
-	void *Thesholds; 
-	uint8_t *State;
+	const char *Name;
+	const uint8_t Table;
+	const uint16_t Index;
+	const uint8_t Access;
+	const uint8_t	Type;
+	const void *Value;
+	const uint8_t *DegradeColor;//Цвет предупреждения
+	const uint8_t *FailureColor;//Цвет критического значения
+	const void *Thesholds; 
+	const uint8_t *State;
 } PROFILE_TABLE2_PARAM_T;
 
 typedef struct {
-	uint8_t Table;
-	uint16_t Index;
-	uint8_t Access;
-	uint8_t	Type;
-	void *Value;
-	void *Thesholds; 
+	const char *Name;
+	const uint8_t Table;
+	const uint16_t Index;
+	const uint8_t Access;
+	const uint8_t	Type;
+	const void *Value;
+	const void *Thesholds; 
+	const uint8_t *State;
 } PROFILE_TABLE3_PARAM_T;
 
 typedef struct {
-	uint8_t Table;
-	uint16_t Index;
-	uint8_t Access;
-	uint8_t	Type;
-	void *Value;
-	void *Thesholds; 
+	const char *Name;
+	const uint8_t Table;
+	const uint16_t Index;
+	const uint8_t Access;
+	const uint8_t	Type;
+	const void *Value;
+	const void *Thesholds;
+	const uint8_t *State;
 } PROFILE_TABLE4_PARAM_T;
 
 typedef struct {
-	uint8_t Table;
-	uint16_t Index;
-	uint8_t Access;
-	uint8_t	Type;
-	void *Value;
+	const char *Name;
+	const uint8_t Table;
+	const uint16_t Index;
+	const uint8_t Access;
+	const uint8_t	Type;
+	const void *Value;
 } PROFILE_TABLE5_PARAM_T;
 
 typedef struct {
-	uint8_t Table;
-	uint16_t Index;
-	uint8_t Access;
-	uint8_t	Type;
-	void *Value;
-	uint8_t *State;
+	const char *Name;
+	const uint8_t Table;
+	const uint16_t Index;
+	const uint8_t Access;
+	const uint8_t	Type;
+	const void *Value;
+	const uint8_t *State;
 } PROFILE_TABLE8_PARAM_T;
 
 typedef struct {
-	uint8_t Table;
-	uint16_t Index;
-	uint8_t Access;
-	uint8_t	Type;
-	void *Value;
+	const char *Name;
+	const uint8_t Table;
+	const uint16_t Index;
+	const uint8_t Access;
+	const uint8_t	Type;
+	const void *Value;
 } PROFILE_TABLE103_PARAM_T;
 
 typedef struct {
-	uint8_t Table;
-	uint16_t Index;
-	uint8_t Access;
-	uint8_t	Type;
-	void *Value;
-} PROFILE_PARAM_T;
+	const uint32_t Value;
+	const uint8_t Color;
+} PROFILE_ENUM_T;
+
+typedef struct {
+	const uint32_t Value;
+	const uint8_t Color;
+} PROFILE_BITMSK_T;
 
 //=============================================================================
 // список возможных таблиц профиля
@@ -162,18 +176,18 @@ typedef struct {
 	const uint32_t Table103Size;	//Количество строк (параметров) для таблицы профиля
 	const char 			**Text; //Указатель на файл профиля
 	const uint32_t	*TextSize;	//Количество строк в профиле
+	const uint32_t	DynamicValuesSize;	//Количество строк в профиле
 	const void 			*StaticDefaultValues; //Указатель на дефолтные значения
+	const uint32_t	StaticValuesSize;	//Количество строк в профиле
 	const void 			*CalibDefaultValues; //Указатель на дефолтные значения
+	const uint32_t	CalibValuesSize;	//Количество строк в профиле
 } PROFILE_DESCR_T;
 
 typedef struct {
 	osMutexId Mutex;
 	void *Dynamic;
-	uint32_t DynamicSize;
 	void *Static;
-	uint32_t StaticSize;
 	void *Calib;
-	uint32_t CalibSize;
 }	PROFILE_VALUES_T;
 
 #endif /* __PROFILE_TYPES_H */
