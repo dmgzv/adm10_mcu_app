@@ -68,7 +68,7 @@ function updateProfileTable(section) {
 						color.css('background-color', '#a1c4d6');
 					} else if (section.params[i].colors.current == 3) {
 						color.css('background-color', '#b6d8be');
-					} else if (section.params[i].colors.current == 3) {
+					} else {
 						color.css('background-color', 'transparent');
 					}
 				}

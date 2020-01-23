@@ -69,7 +69,7 @@ const char js_script_js[] = \
 	"						color.css('background-color', '#a1c4d6');\r\n"\
 	"					} else if (section.params[i].colors.current == 3) {\r\n"\
 	"						color.css('background-color', '#b6d8be');\r\n"\
-	"					} else if (section.params[i].colors.current == 3) {\r\n"\
+	"					} else {\r\n"\
 	"						color.css('background-color', 'transparent');\r\n"\
 	"					}\r\n"\
 	"				}\r\n"\
