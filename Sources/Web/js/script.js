@@ -1161,13 +1161,13 @@ function registerUploadCallbacks() {
 		let xhr = new XMLHttpRequest();
 		xhr.open('POST', '/api/v1/system/update/software', true);
 		xhr.upload.onprogress = function(event) {
-		  console.log( 'Загружено на сервер ' + event.loaded + ' байт из ' + event.total );
+		  console.log( 'Отправлено ' + event.loaded + ' байт из ' + event.total );
 		}
-		xhr.upload.onload = function() {
-		  console.log( 'Данные полностью загружены на сервер!' );
+		xhr.onload = function() {
+		  console.log( 'Данные полностью загружены' );
 		}
-		xhr.upload.onerror = function() {
-		  console.log( 'Произошла ошибка при загрузке данных на сервер!' );
+		xhr.onerror = function() {
+		  console.log( 'Произошла ошибка при загрузке данных' );
 		}
 		xhr.send(file_data);
 	});

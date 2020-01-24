@@ -37,6 +37,7 @@ int32_t BOOTLOADER_CheckAndUpdateFw(BOOTLOADER_T *Bootloader);
 void BOOTLOADER_StartFw(BOOTLOADER_T *Bootloader);
 int32_t BOOTLOADER_UpdateNewFwStart(BOOTLOADER_T *Bootloader);
 int32_t BOOTLOADER_UpdateNewFwByte(BOOTLOADER_T *Bootloader, uint8_t FwByte);
+int32_t BOOTLOADER_UpdateNewFwBlock(BOOTLOADER_T *Bootloader, char *FwBlock, uint32_t FwBlockSize);
 int32_t BOOTLOADER_UpdateNewFwComplete(BOOTLOADER_T *Bootloader);
 
 #endif /* __BOOTLOADER_H */

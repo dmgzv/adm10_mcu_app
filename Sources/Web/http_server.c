@@ -220,27 +220,28 @@ void http_server_serve_get_api_v1_profile(struct netconn *conn)
 	if (http_server_write(conn, http_plain_hdr, sizeof(http_plain_hdr)-1, NETCONN_NOCOPY))
 		return;
 	
-	REQUEST_BODY_LEN = 0;
+	RESPONCE_BODY_LEN = 0;
 	
 	for (i = 0; i < *Profile.Descr[Profile.Idx]->TextSize; i++)
 	{
 		len = strlen(Profile.Descr[Profile.Idx]->Text[i]) + 1;
 		
-		memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], Profile.Descr[Profile.Idx]->Text[i], len);
-		REQUEST_BODY_LEN += len;
-		if (REQUEST_BODY_LEN > 1024)
+		memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], Profile.Descr[Profile.Idx]->Text[i], len);
+		RESPONCE_BODY_LEN += len;
+		if (RESPONCE_BODY_LEN > 1024)
 		{
-			if (http_server_write(conn, REQUEST_BODY, REQUEST_BODY_LEN, NETCONN_MORE | NETCONN_COPY))
+			if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_MORE | NETCONN_COPY))
 				return;
-			REQUEST_BODY_LEN = 0;
+			RESPONCE_BODY_LEN = 0;
+			osDelay(1);
 		}
 	}
-	if (REQUEST_BODY_LEN)
+	if (RESPONCE_BODY_LEN)
 	{
-		if (http_server_write(conn, REQUEST_BODY, REQUEST_BODY_LEN, NETCONN_MORE | NETCONN_COPY))
+		if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_MORE | NETCONN_COPY))
 			return;
 	}
-	REQUEST_BODY_LEN = 0;
+	RESPONCE_BODY_LEN = 0;
 }
 
 /**
@@ -739,7 +740,7 @@ static void http_server_serve_get_api_v1_log(struct netconn *conn)
 		else
 			snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t{\r\n\t\t\t\"time\" : \"%.4f\",\r\n\t\t\t\"name\" : \"%s\",\r\n\t\t\t\"id\" : \"%s\",\r\n\t\t\t\"data\" : \"%s\"\r\n\t\t},\r\n", Time, Name, Id, Line);
 		RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
-		if (RESPONCE_BODY_LEN > (sizeof(RESPONCE_BODY) - 256))
+		if (RESPONCE_BODY_LEN > 1024)
 		{
 			if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
 				return;
@@ -778,10 +779,8 @@ static void http_server_serve_post_api_v1_system_update_software(struct netconn 
 		if (recv_err == ERR_OK)
 		{
 			netbuf_data(inbuf, (void**)&data, &datalen);
-			for (i = 0; i < datalen; i++)
-			{
-				BOOTLOADER_UpdateNewFwByte(&Bootloader, data[i]);
-			}
+			if (BOOTLOADER_UpdateNewFwBlock(&Bootloader, data, datalen))
+				goto error;
 			ContentLength -= datalen;
 			netbuf_delete(inbuf);
 		}
@@ -790,8 +789,14 @@ static void http_server_serve_post_api_v1_system_update_software(struct netconn 
 			break;
 		}
 	}
+	if(BOOTLOADER_UpdateNewFwComplete(&Bootloader))
+		goto error;
+	
 	http_server_write(conn, http_200_ok, sizeof(http_200_ok)-1, NETCONN_NOCOPY);
-	BOOTLOADER_UpdateNewFwComplete(&Bootloader);
+	netconn_close(conn);
+	netconn_delete(conn);
+	osDelay(100);
+	BSP_Reset();
 	
 	return;
 	

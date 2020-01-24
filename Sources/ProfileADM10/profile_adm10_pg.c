@@ -1663,8 +1663,8 @@ static void PROFILE_ADM10_ODU1PG_UpdateValues(PROFILE_T *Profile)
 						else
 							PGActiveODUk = PGPrimaryODUk;					
 					}					
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
-					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_STATE_IS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_IS);
 				}
 				break;
 			case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:

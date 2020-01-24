@@ -1162,13 +1162,13 @@ const char js_script_js[] = \
 	"		let xhr = new XMLHttpRequest();\r\n"\
 	"		xhr.open('POST', '/api/v1/system/update/software', true);\r\n"\
 	"		xhr.upload.onprogress = function(event) {\r\n"\
-	"		  console.log( 'Загружено на сервер ' + event.loaded + ' байт из ' + event.total );\r\n"\
+	"		  console.log( 'Отправлено ' + event.loaded + ' байт из ' + event.total );\r\n"\
 	"		}\r\n"\
-	"		xhr.upload.onload = function() {\r\n"\
-	"		  console.log( 'Данные полностью загружены на сервер!' );\r\n"\
+	"		xhr.onload = function() {\r\n"\
+	"		  console.log( 'Данные полностью загружены' );\r\n"\
 	"		}\r\n"\
-	"		xhr.upload.onerror = function() {\r\n"\
-	"		  console.log( 'Произошла ошибка при загрузке данных на сервер!' );\r\n"\
+	"		xhr.onerror = function() {\r\n"\
+	"		  console.log( 'Произошла ошибка при загрузке данных' );\r\n"\
 	"		}\r\n"\
 	"		xhr.send(file_data);\r\n"\
 	"	});\r\n"\
