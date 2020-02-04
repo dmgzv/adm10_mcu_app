@@ -7,6 +7,33 @@ let profile = {
 	sections: []
 }
 
+function showToast(severity, name, data) {
+	let toastContent = $('#toast-content');
+	let toast = $('<div/>', {
+		class : 'toast',
+		'data-delay' : '10000',
+		css : {
+			width : '300px',
+		},
+	}).prependTo(toastContent);
+	if (severity == 'alarm')
+		toast.css('background-color', '#e7a8ad');
+	else if (severity == 'normal')
+		toast.css('background-color', '#b6d8be');
+	else
+		toast.css('background-color', 'transparent');
+	toast.append(
+		'<div class="toast-header">' +
+	    '<strong class="mr-auto">'+ name + '</strong>' +
+	    '<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">' +
+	      '<span aria-hidden="true">&times;</span>' +
+	    '</button>' +
+	  '</div>' +
+	  '<div class="toast-body">' + data + '</div>'
+	);
+	toast.toast('show');
+}
+
 function getParamColorString(color) {
 	if (color == 3) {
 		return 'Normal';
@@ -112,6 +139,7 @@ function getProfileSectionValues (sectionIdx, callback) {
 				return;
 			if (xhr.status != 200) {
 				console.log('[Error] getProfileSectionValues() Status: ' + xhr.status);
+				showToast('alarm', 'Profile', 'Get section ' + profile.sections[sectionIdx].idx + ' values: failed');
 			} else {
 				parseProfileSectionValues(profile.sections[sectionIdx], xhr.responseText);
 				updateProfileTable(profile.sections[sectionIdx]);
@@ -467,7 +495,7 @@ function profileParamValueEditButtonOnClick(id, param) {
 
 function updateProfileParamValue(id, param, value) {
 	param.value = value;
-	$('#profile_' + id + '_' + param.name + '_p').text(getParamValueString(id, param));
+	$('#profile_' + id + '_' + param.name + '_p').text(getParamValueString(param));
 	$('#profile_' + id + '_' + param.name + '_spinner').hide();
 	$('#profile_' + id + '_' + param.name + '_edit').show()
 }
@@ -483,8 +511,14 @@ function putProfileParamValue(id, param, value) {
 				return;
 			if (xhr.status != 200) {
 				console.log('[Error] putProfileParamValue() Status: ' + xhr.status);
+				updateProfileParamValue(id, param, param.value);
+				let valueSave = param.value;
+				param.value = value;
+				showToast('alarm', 'Profile', 'Set '+ param.name + '=' + getParamValueString(param) + ': failed');
+				param.value = valueSave;
 			} else {
 				updateProfileParamValue(id, param, value);
+				showToast('normal', 'Profile', 'Set '+ param.name + '=' + getParamValueString(param) + ': ok');
 			}
 		}
 	}	else {
@@ -627,8 +661,28 @@ function putProfileParamColor(id, param, color, value) {
 
 			if (xhr.status != 200) {
 				console.log('[Error] putProfileParamColor() Status: ' + xhr.status);
+				if (color == 'wcolor') {
+					updateProfileParamColor(id, param, color, param.colors.warning);
+					let colorSave = param.colors.warning;
+					param.colors.warning = color;
+					showToast('alarm', 'Profile', 'Set ' + param.name + 'WColor=' + getParamColorString(param.colors.warning) + ': failed');
+					param.colors.warning = colorSave;
+				}
+				else if (color == 'ccolor')	{
+					let colorSave = param.colors.critical;
+					param.colors.warning = color;
+					updateProfileParamColor(id, param, color, param.colors.critical);
+					showToast('alarm', 'Profile', 'Set ' + param.name + 'CColor=' + getParamColorString(param.colors.critical) + ': failed');
+					param.colors.critical = colorSave;
+				}
 			} else {
 				updateProfileParamColor(id, param, color, value);
+				if (color == 'wcolor') {
+					showToast('normal', 'Profile', 'Set ' + param.name + 'WColor=' + getParamColorString(param.colors.warning) + ': ok');
+				}
+				else if (color == 'ccolor')	{
+					showToast('normal', 'Profile', 'Set ' + param.name + 'CColor=' + getParamColorString(param.colors.critical) + ': ok');
+				}
 			}
 		}
 	}	else {
@@ -907,7 +961,8 @@ function getProfileColors(callback) {
 			if (xhr.readyState != 4)
 				return;
 			if (xhr.status != 200) {
-				console.log('[Error] getProfile() Status: ' + xhr.status);
+				console.log('[Error] getProfileColors() Status: ' + xhr.status);
+				showToast('alarm', 'Profile', 'Get section 2 colors: failed');
 			} else {
 				parseProfileColors(xhr.responseText);
 				if (callback != undefined)
@@ -932,6 +987,7 @@ function getProfile(callback) {
 				return;
 			if (xhr.status != 200) {
 				console.log('[Error] getProfile() Status: ' + xhr.status);
+				showToast('alarm', 'Profile', 'Get profile: failed');
 			} else {
 				parseProfileText(xhr.responseText);
 				if (callback != undefined)
@@ -1002,6 +1058,7 @@ function getSystemOS() {
 
 			if (xhr.status != 200) {
 				console.log('[Error] getSystemOS() Status: ' + xhr.status);
+				showToast('alarm', 'System', 'Get OS: failed');
 			} else {
 				let systemOS = JSON.parse(xhr.responseText);
 				updateSystemOS(systemOS);
@@ -1065,6 +1122,7 @@ function getSystemHardware() {
 				return;
 			if (xhr.status != 200) {
 				console.log('[Error] getSystemHardware() Status: ' + xhr.status);
+				showToast('alarm', 'System', 'Get hardware: failed');
 			} else {
 				let systemHardware = JSON.parse(xhr.responseText);
 				updateSystemHardware(systemHardware);
@@ -1105,6 +1163,7 @@ function getLog() {
 				return;
 			if (xhr.status != 200) {
 				console.log('[Error] getLog() Status: ' + xhr.status);
+				showToast('alarm', 'Log', 'Get log: failed');
 			} else {
 				let log = JSON.parse(xhr.responseText);
 				updateLog(log);

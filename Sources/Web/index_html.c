@@ -2,7 +2,7 @@ const char index_html[] = \
 	"<html>\r\n"\
 	"	<head>\r\n"\
 	"		<meta charset=\"utf-8\">\r\n"\
-	"		<title>IPG Horizon: ADM-10</title>\r\n"\
+	"		<title>IPG Horizon: ADM-200</title>\r\n"\
 	"		<link rel=\"stylesheet\" href=\"css/style.css\">\r\n"\
 	"		<link rel=\"stylesheet\" href=\"css/bootstrap.min.css\">\r\n"\
 	"		<!--\r\n"\
@@ -23,7 +23,7 @@ const char index_html[] = \
 	"		<script src=\"js/script.js\"></script>\r\n"\
 	"	</head>\r\n"\
 	"		<nav class=\"navbar navbar-expand navbar-light bg-light fixed-top\">\r\n"\
-	"		  <a class=\"navbar-brand\" href=\"#\">ADM-10</a>\r\n"\
+	"		  <a class=\"navbar-brand\" href=\"#\">ADM-200</a>\r\n"\
 	"		  <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarNav\" aria-controls=\"navbarNav\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\r\n"\
 	"		    <span class=\"navbar-toggler-icon\"></span>\r\n"\
 	"		  </button>\r\n"\
@@ -32,7 +32,7 @@ const char index_html[] = \
 	"		      <li class=\"nav-item\">\r\n"\
 	"		        <a class=\"nav-link active\" id=\"nav-profile\" href=\"#\">Profile</a>\r\n"\
 	"		      </li>\r\n"\
-	"					<li class=\"nav-item dropdown\">\r\n"\
+	"		      <li class=\"nav-item dropdown\">\r\n"\
 	"		        <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"nav-system\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\r\n"\
 	"		          System\r\n"\
 	"		        </a>\r\n"\
@@ -174,6 +174,8 @@ const char index_html[] = \
 	"				</table>\r\n"\
 	"			</div>\r\n"\
 	"		</div>\r\n"\
+	"	  <div id=\"toast-content\" style=\"position: absolute; top: 65px; right: 0;\">\r\n"\
+	"	  </div>\r\n"\
 	"	</body>\r\n"\
 	"</html>\r\n"\
 	"\r\n"\

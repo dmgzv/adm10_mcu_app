@@ -8,6 +8,33 @@ const char js_script_js[] = \
 	"	sections: []\r\n"\
 	"}\r\n"\
 	"\r\n"\
+	"function showToast(severity, name, data) {\r\n"\
+	"	let toastContent = $('#toast-content');\r\n"\
+	"	let toast = $('<div/>', {\r\n"\
+	"		class : 'toast',\r\n"\
+	"		'data-delay' : '10000',\r\n"\
+	"		css : {\r\n"\
+	"			width : '300px',\r\n"\
+	"		},\r\n"\
+	"	}).prependTo(toastContent);\r\n"\
+	"	if (severity == 'alarm')\r\n"\
+	"		toast.css('background-color', '#e7a8ad');\r\n"\
+	"	else if (severity == 'normal')\r\n"\
+	"		toast.css('background-color', '#b6d8be');\r\n"\
+	"	else\r\n"\
+	"		toast.css('background-color', 'transparent');\r\n"\
+	"	toast.append(\r\n"\
+	"		'<div class=\"toast-header\">' +\r\n"\
+	"	    '<strong class=\"mr-auto\">'+ name + '</strong>' +\r\n"\
+	"	    '<button type=\"button\" class=\"ml-2 mb-1 close\" data-dismiss=\"toast\" aria-label=\"Close\">' +\r\n"\
+	"	      '<span aria-hidden=\"true\">&times;</span>' +\r\n"\
+	"	    '</button>' +\r\n"\
+	"	  '</div>' +\r\n"\
+	"	  '<div class=\"toast-body\">' + data + '</div>'\r\n"\
+	"	);\r\n"\
+	"	toast.toast('show');\r\n"\
+	"}\r\n"\
+	"\r\n"\
 	"function getParamColorString(color) {\r\n"\
 	"	if (color == 3) {\r\n"\
 	"		return 'Normal';\r\n"\
@@ -113,6 +140,7 @@ const char js_script_js[] = \
 	"				return;\r\n"\
 	"			if (xhr.status != 200) {\r\n"\
 	"				console.log('[Error] getProfileSectionValues() Status: ' + xhr.status);\r\n"\
+	"				showToast('alarm', 'Profile', 'Get section ' + profile.sections[sectionIdx].idx + ' values: failed');\r\n"\
 	"			} else {\r\n"\
 	"				parseProfileSectionValues(profile.sections[sectionIdx], xhr.responseText);\r\n"\
 	"				updateProfileTable(profile.sections[sectionIdx]);\r\n"\
@@ -468,7 +496,7 @@ const char js_script_js[] = \
 	"\r\n"\
 	"function updateProfileParamValue(id, param, value) {\r\n"\
 	"	param.value = value;\r\n"\
-	"	$('#profile_' + id + '_' + param.name + '_p').text(getParamValueString(id, param));\r\n"\
+	"	$('#profile_' + id + '_' + param.name + '_p').text(getParamValueString(param));\r\n"\
 	"	$('#profile_' + id + '_' + param.name + '_spinner').hide();\r\n"\
 	"	$('#profile_' + id + '_' + param.name + '_edit').show()\r\n"\
 	"}\r\n"\
@@ -484,8 +512,14 @@ const char js_script_js[] = \
 	"				return;\r\n"\
 	"			if (xhr.status != 200) {\r\n"\
 	"				console.log('[Error] putProfileParamValue() Status: ' + xhr.status);\r\n"\
+	"				updateProfileParamValue(id, param, param.value);\r\n"\
+	"				let valueSave = param.value;\r\n"\
+	"				param.value = value;\r\n"\
+	"				showToast('alarm', 'Profile', 'Set '+ param.name + '=' + getParamValueString(param) + ': failed');\r\n"\
+	"				param.value = valueSave;\r\n"\
 	"			} else {\r\n"\
 	"				updateProfileParamValue(id, param, value);\r\n"\
+	"				showToast('normal', 'Profile', 'Set '+ param.name + '=' + getParamValueString(param) + ': ok');\r\n"\
 	"			}\r\n"\
 	"		}\r\n"\
 	"	}	else {\r\n"\
@@ -628,8 +662,28 @@ const char js_script_js[] = \
 	"\r\n"\
 	"			if (xhr.status != 200) {\r\n"\
 	"				console.log('[Error] putProfileParamColor() Status: ' + xhr.status);\r\n"\
+	"				if (color == 'wcolor') {\r\n"\
+	"					updateProfileParamColor(id, param, color, param.colors.warning);\r\n"\
+	"					let colorSave = param.colors.warning;\r\n"\
+	"					param.colors.warning = color;\r\n"\
+	"					showToast('alarm', 'Profile', 'Set ' + param.name + 'WColor=' + getParamColorString(param.colors.warning) + ': failed');\r\n"\
+	"					param.colors.warning = colorSave;\r\n"\
+	"				}\r\n"\
+	"				else if (color == 'ccolor')	{\r\n"\
+	"					let colorSave = param.colors.critical;\r\n"\
+	"					param.colors.warning = color;\r\n"\
+	"					updateProfileParamColor(id, param, color, param.colors.critical);\r\n"\
+	"					showToast('alarm', 'Profile', 'Set ' + param.name + 'CColor=' + getParamColorString(param.colors.critical) + ': failed');\r\n"\
+	"					param.colors.critical = colorSave;\r\n"\
+	"				}\r\n"\
 	"			} else {\r\n"\
 	"				updateProfileParamColor(id, param, color, value);\r\n"\
+	"				if (color == 'wcolor') {\r\n"\
+	"					showToast('normal', 'Profile', 'Set ' + param.name + 'WColor=' + getParamColorString(param.colors.warning) + ': ok');\r\n"\
+	"				}\r\n"\
+	"				else if (color == 'ccolor')	{\r\n"\
+	"					showToast('normal', 'Profile', 'Set ' + param.name + 'CColor=' + getParamColorString(param.colors.critical) + ': ok');\r\n"\
+	"				}\r\n"\
 	"			}\r\n"\
 	"		}\r\n"\
 	"	}	else {\r\n"\
@@ -908,7 +962,8 @@ const char js_script_js[] = \
 	"			if (xhr.readyState != 4)\r\n"\
 	"				return;\r\n"\
 	"			if (xhr.status != 200) {\r\n"\
-	"				console.log('[Error] getProfile() Status: ' + xhr.status);\r\n"\
+	"				console.log('[Error] getProfileColors() Status: ' + xhr.status);\r\n"\
+	"				showToast('alarm', 'Profile', 'Get section 2 colors: failed');\r\n"\
 	"			} else {\r\n"\
 	"				parseProfileColors(xhr.responseText);\r\n"\
 	"				if (callback != undefined)\r\n"\
@@ -933,6 +988,7 @@ const char js_script_js[] = \
 	"				return;\r\n"\
 	"			if (xhr.status != 200) {\r\n"\
 	"				console.log('[Error] getProfile() Status: ' + xhr.status);\r\n"\
+	"				showToast('alarm', 'Profile', 'Get profile: failed');\r\n"\
 	"			} else {\r\n"\
 	"				parseProfileText(xhr.responseText);\r\n"\
 	"				if (callback != undefined)\r\n"\
@@ -1003,6 +1059,7 @@ const char js_script_js[] = \
 	"\r\n"\
 	"			if (xhr.status != 200) {\r\n"\
 	"				console.log('[Error] getSystemOS() Status: ' + xhr.status);\r\n"\
+	"				showToast('alarm', 'System', 'Get OS: failed');\r\n"\
 	"			} else {\r\n"\
 	"				let systemOS = JSON.parse(xhr.responseText);\r\n"\
 	"				updateSystemOS(systemOS);\r\n"\
@@ -1066,6 +1123,7 @@ const char js_script_js[] = \
 	"				return;\r\n"\
 	"			if (xhr.status != 200) {\r\n"\
 	"				console.log('[Error] getSystemHardware() Status: ' + xhr.status);\r\n"\
+	"				showToast('alarm', 'System', 'Get hardware: failed');\r\n"\
 	"			} else {\r\n"\
 	"				let systemHardware = JSON.parse(xhr.responseText);\r\n"\
 	"				updateSystemHardware(systemHardware);\r\n"\
@@ -1106,6 +1164,7 @@ const char js_script_js[] = \
 	"				return;\r\n"\
 	"			if (xhr.status != 200) {\r\n"\
 	"				console.log('[Error] getLog() Status: ' + xhr.status);\r\n"\
+	"				showToast('alarm', 'Log', 'Get log: failed');\r\n"\
 	"			} else {\r\n"\
 	"				let log = JSON.parse(xhr.responseText);\r\n"\
 	"				updateLog(log);\r\n"\

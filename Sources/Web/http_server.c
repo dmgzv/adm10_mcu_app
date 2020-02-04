@@ -404,6 +404,12 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
 		goto error;
 	
+	for (i = 0; i < body_len; i++)
+	{
+		if (REQUEST_BODY[header_len + 1 + i] != RESPONCE_BODY[header_len + 1 + i])
+			goto error;
+	}
+		
 	while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
 	{
 		RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
@@ -765,7 +771,7 @@ static void http_server_serve_post_api_v1_system_update_software(struct netconn 
 	struct netbuf *inbuf;
 	err_t recv_err;
 	char *p;
-	uint32_t i, ContentLength;
+	uint32_t ContentLength;
 	
 	p = strstr(data, "Content-Length: ");
 	if (!p)
@@ -786,7 +792,7 @@ static void http_server_serve_post_api_v1_system_update_software(struct netconn 
 		}
 		else
 		{
-			break;
+			goto error;
 		}
 	}
 	if(BOOTLOADER_UpdateNewFwComplete(&Bootloader))
