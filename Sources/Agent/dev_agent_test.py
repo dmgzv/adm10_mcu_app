@@ -96,13 +96,13 @@ def recv_resp(sock):
     (msg_len, junk) = unpack_uint16(binstr, 0)
     #print msg_len
     #msg_len = msg_len[0]
-    print "Response size:", msg_len
+    #print "Response size:", msg_len
     msg_len -= 2
     binstr = sock.recv(msg_len)
     if (len(binstr) != msg_len):
         print 'Received: %d, Expected: %d' % (len(binstr), msg_len)
-    print 'Received:', binascii.hexlify(binstr)
-    print 'Received:', repr(binstr)
+    #print 'Received:', binascii.hexlify(binstr)
+    #print 'Received:', repr(binstr)
     fmt = '!IBBBB'
     idx = struct.calcsize(fmt)
     (msg_id, msg_type, target_schema, id_notation, last_fragment) = struct.unpack(fmt, binstr[0:idx])
@@ -144,10 +144,10 @@ def recv_resp(sock):
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address = ('192.168.2.11', 50000)
+server_address = ('192.168.56.48', 50000)
 sock.connect(server_address)
 
-schema_id = "adm-200-2019-11-28"
+schema_id = "adm-10-2019-11-28"
 
 def get_schema_payload():
     (ip, port, path) = ("10.11.12.13"+'\x00', 125, "/tmp/schema_dir"+'\x00')
@@ -159,6 +159,50 @@ def get_schema_payload():
             'tftp_path' + '\x00', DT_STRING_128, path)
     return payload
 
+def get_slot_param_payload():
+    payload = pack_ptv('num_of_objs', DT_UINT16, 'H', 1)
+    payload += pack_str('/__HIDDEN__')
+    payload += pack_ptv('num_of_params', DT_UINT16, 'H', 2)
+    payload += pack_str('admin-state')
+    payload += pack_str('service-state')
+    return payload
+
+def get_card_param_payload(card):
+    payload = pack_ptv('num_of_objs', DT_UINT16, 'H', 1)
+    payload += pack_str('/' + card)
+    payload += pack_ptv('num_of_params', DT_UINT16, 'H', 3)
+    payload += pack_str('vendor')
+    payload += pack_str('serial-number')
+    payload += pack_str('part-number')
+    return payload
+
+def get_device_param_payload(card, device):
+    payload = pack_ptv('num_of_objs', DT_UINT16, 'H', 1)
+    payload += pack_str('/' + card + '/' + device)
+    payload += pack_ptv('num_of_params', DT_UINT16, 'H', 2)
+    payload += pack_str('admin-state')
+    payload += pack_str('service-state')
+    return payload
+
+def get_interface_param_payload(card, device, iface):
+    payload = pack_ptv('num_of_objs', DT_UINT16, 'H', 1)
+    payload += pack_str('/' + card + '/' + device + '/' + iface)
+    payload += pack_ptv('num_of_params', DT_UINT16, 'H', 3)
+    payload += pack_str('admin-state')
+    payload += pack_str('service-state')
+    payload += pack_str('module-type')
+    return payload
+
+def get_module_param_payload(card, device, iface, module):
+    payload = pack_ptv('num_of_objs', DT_UINT16, 'H', 1)
+    payload += pack_str('/' + card + '/' + device + '/' + iface + '/' + module)
+    payload += pack_ptv('num_of_params', DT_UINT16, 'H', 3)
+    payload += pack_str('vendor')
+    payload += pack_str('serial-number')
+    payload += pack_str('part-number')
+    return payload
+
+'''
 def get_param_payload():
     payload = pack_ptv('num_of_objs', DT_UINT16, 'H', 9)
     payload += pack_str('/__HIDDEN__')
@@ -204,7 +248,6 @@ def get_param_payload():
     payload += pack_str('vendor')
     payload += pack_str('serial-number')
     payload += pack_str('part-number')
-    '''
     payload += pack_str('/adm-200-2019-11-28/adm/client[1]')
     payload += pack_ptv('num_of_params', DT_UINT16, 'H', 2)
     payload += pack_str('admin-state')
@@ -232,8 +275,8 @@ def get_param_payload():
     payload += pack_str('vendor')
     payload += pack_str('serial-number')
     payload += pack_str('part-number')
-    '''
     return payload
+'''
 
 def send_req(req_type, payload):
     global schema_id
@@ -245,40 +288,94 @@ def send_req(req_type, payload):
     hdr_part = packer.pack(*values)
     sock.sendall(hdr_part)
     # Send data
-    print 'Sending seq=', req_type, values, binascii.hexlify(hdr_part)
+    #print 'Sending seq=', req_type, values, binascii.hexlify(hdr_part)
+    print 'Sending seq=', req_type, values
     if (payload):
-        print '        payload =', binascii.hexlify(payload)
-        print '        payload =', repr(payload)
+        #print '        payload =', binascii.hexlify(payload)
+        #print '        payload =', repr(payload)
         sock.sendall(payload)
 
 try:
-    for k in range (1, 2):
-        send_req(6, get_param_payload())
+    for i in range (1, 100):
+        # HELLO
+        send_req(2, None)
         try:
             recv_resp(sock)
         except Exception as ex:
             print 'Caught exception', (str(ex))
         finally:
             print 'final from recv_resp'
-        '''
-        for j in range(1, 7):
-            payload = ''
-            print '-' * 80
-            if (j == 4):  # GET_SCHEMA
-                send_req(4, get_schema_payload())
-            elif (j == 6):  # GET_PARAM
-                send_req(6, get_param_payload())
-            elif (j==7):
-                send_req(6, get_param_payload())
-            else:
-                send_req(j, None)
+
+        # GET_SCHEMA
+        send_req(4, get_schema_payload())
+        try:
+            recv_resp(sock)
+        except Exception as ex:
+            print 'Caught exception', (str(ex))
+        finally:
+            print 'final from recv_resp'
+
+        # GET_PARAM
+        send_req(6, get_slot_param_payload())
+        try:
+            recv_resp(sock)
+        except Exception as ex:
+            print 'Caught exception', (str(ex))
+        finally:
+            print 'final from recv_resp'
+
+        # GET_PARAM
+        send_req(6, get_card_param_payload('adm-10-2019-11-28'))
+        try:
+            recv_resp(sock)
+        except Exception as ex:
+            print 'Caught exception', (str(ex))
+        finally:
+            print 'final from recv_resp'
+
+        # GET_PARAM
+        send_req(6, get_device_param_payload('adm-10-2019-11-28', 'adm'))
+        try:
+            recv_resp(sock)
+        except Exception as ex:
+            print 'Caught exception', (str(ex))
+        finally:
+            print 'final from recv_resp'
+
+        # GET_PARAM
+        for k in range (1, 5):
+            send_req(6, get_interface_param_payload('adm-10-2019-11-28', 'adm', 'line[' + str(k) + ']'))
             try:
                 recv_resp(sock)
             except Exception as ex:
                 print 'Caught exception', (str(ex))
             finally:
                 print 'final from recv_resp'
-        '''
+            send_req(6, get_module_param_payload('adm-10-2019-11-28', 'adm', 'line[' + str(k) + ']', 'sfp'))
+            try:
+                recv_resp(sock)
+            except Exception as ex:
+                print 'Caught exception', (str(ex))
+            finally:
+                print 'final from recv_resp'
+
+        # GET_PARAM
+        for k in range (1, 17):
+            send_req(6, get_interface_param_payload('adm-10-2019-11-28', 'adm', 'client[' + str(k) + ']'))
+            try:
+                recv_resp(sock)
+            except Exception as ex:
+                print 'Caught exception', (str(ex))
+            finally:
+                print 'final from recv_resp'
+            send_req(6, get_module_param_payload('adm-10-2019-11-28', 'adm', 'client[' + str(k) + ']', 'sfp'))
+            try:
+                recv_resp(sock)
+            except Exception as ex:
+                print 'Caught exception', (str(ex))
+            finally:
+                print 'final from recv_resp'
+
 except KeyboardInterrupt:
     print 'caught KeyboardInterrupt'
     pass
