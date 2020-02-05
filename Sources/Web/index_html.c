@@ -2,7 +2,7 @@ const char index_html[] = \
 	"<html>\r\n"\
 	"	<head>\r\n"\
 	"		<meta charset=\"utf-8\">\r\n"\
-	"		<title>IPG Horizon: ADM-200</title>\r\n"\
+	"		<title>IPG Horizon: ADM-10</title>\r\n"\
 	"		<link rel=\"stylesheet\" href=\"css/style.css\">\r\n"\
 	"		<link rel=\"stylesheet\" href=\"css/bootstrap.min.css\">\r\n"\
 	"		<!--\r\n"\
@@ -23,7 +23,7 @@ const char index_html[] = \
 	"		<script src=\"js/script.js\"></script>\r\n"\
 	"	</head>\r\n"\
 	"		<nav class=\"navbar navbar-expand navbar-light bg-light fixed-top\">\r\n"\
-	"		  <a class=\"navbar-brand\" href=\"#\">ADM-200</a>\r\n"\
+	"		  <a class=\"navbar-brand\" href=\"#\">ADM-10</a>\r\n"\
 	"		  <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarNav\" aria-controls=\"navbarNav\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\r\n"\
 	"		    <span class=\"navbar-toggler-icon\"></span>\r\n"\
 	"		  </button>\r\n"\
