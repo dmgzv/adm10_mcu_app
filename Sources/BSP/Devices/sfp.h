@@ -67,6 +67,7 @@ typedef struct {
 	float Temp;
 	float RxPwr;
 	float TxPwr;
+	float RDT;
 } SFP_T;
 
 int32_t SFP_GetInfo(SFP_T *Dev, SFP_INFO_T *Info);
@@ -86,9 +87,11 @@ int32_t SFP_GetTxDisable(SFP_T *Dev, uint32_t *TxDisable);
 int32_t SFP_SetTxDisable(SFP_T *Dev, uint32_t TxDisable);
 int32_t SFP_ConfigTxDisable(SFP_T *Dev, uint32_t TxDisable);
 
-int32_t SFP_ReadFreq(SFP_T *Dev, uint32_t *Freq);
 int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq);
 int32_t SFP_ConfigFreq(SFP_T *Dev, uint32_t Freq);
+
+int32_t SFP_WriteRDT(SFP_T *Dev, float RDT);
+int32_t SFP_ConfigRDT(SFP_T *Dev, float RDT);
 
 int32_t SFP_Update(SFP_T *Dev);
 int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, const BSP_PIN_CTRL_T *PinCtrl);

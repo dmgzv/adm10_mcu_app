@@ -54,7 +54,132 @@ static int32_t SFP_ReadSerialNumber(SFP_T *Dev)
 	return 0;
 }
 
-int32_t SFP_ReadFreq(SFP_T *Dev, uint32_t *Freq)
+static int32_t SFP_ReadRDT(SFP_T *Dev, uint32_t *Freq)
+{
+	uint8_t Addr;
+	uint8_t Data;
+	
+	if (Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_RDT_MASK)
+	{
+		Addr = 127;
+		Data = 0x02;
+		if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 1))
+			return -1;
+		
+		osDelay(1);
+		
+		Addr = 131;
+		if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 2))
+			return -1;
+		Dev->RDT = ((Data + 128) & 0xFF) / 255.0f;
+	}
+	else
+	{
+		Dev->RDT = 0.0f;
+	}
+	return 0;
+}
+
+static int32_t SFP_UpdateRDT(SFP_T *Dev)
+{
+	uint8_t Addr;
+	uint8_t Data;
+	
+	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_RDT_MASK))
+		return -1;
+	
+	Addr = 127;
+	Data = 0x02;
+	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 1))
+		return -1;
+	
+	osDelay(1);
+	
+	Addr = 131;
+	if (I2C_Sequential_Receive(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 2))
+		return -1;
+	
+	if (Data == ((Dev->RDT * 255.0f) - 128))
+		return 0;
+	
+	Data = ((Dev->RDT * 255.0f) - 128);
+	Addr = 131;
+	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 2))
+		return -1;
+	LOG_Add(Dev->DevName, Dev->DevId, "Write RDT: %.2f", Dev->RDT);
+	
+	return 0;
+}
+
+int32_t SFP_WriteRDT(SFP_T *Dev, float RDT)
+{
+	uint8_t Addr;
+	uint8_t Data;
+	
+	if (!Dev)
+		return -1;
+	
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_RDT_MASK))
+		goto error;
+	
+	if ((RDT > 100.0f) && (RDT < 0.0f))
+		goto error;
+	
+	Addr = 127;
+	Data = 0x02;
+	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 1))
+		return -1;
+	
+	osDelay(1);
+	
+	Data = (RDT * 255.0f) - 128;
+	Addr = 131;
+	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 2))
+		return -1;
+	Dev->RDT = RDT;
+	
+	LOG_Add(Dev->DevName, Dev->DevId, "Write RDT: %.2f", Dev->RDT);	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+int32_t SFP_ConfigRDT(SFP_T *Dev, float RDT)
+{	
+	if (!Dev)
+		return -1;
+	
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_RDT_MASK))
+		goto error;
+	
+	if ((RDT > 100.0f) && (RDT < 0.0f))
+		goto error;
+	
+	Dev->RDT = RDT;
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+
+static int32_t SFP_ReadFreq(SFP_T *Dev, uint32_t *Freq)
 {
 	uint8_t Addr;
 	uint8_t Data[2];
@@ -118,9 +243,6 @@ static int32_t SFP_UpdateFreq(SFP_T *Dev)
 	uint8_t Addr;
 	uint8_t Data[2];
 	uint16_t Channel;
-	
-	if (!Dev)
-		return -1;
 	
 	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK))
 		return 0;
@@ -439,6 +561,8 @@ int32_t SFP_Update(SFP_T *Dev)
 	if (SFP_I2C_ConfigSwitch(Dev))
 		goto error;
 	
+	if (SFP_UpdateRDT(Dev))
+		goto error;	
 	if (SFP_UpdateFreq(Dev))
 		goto error;	
 	if (SFP_ReadTemp(Dev))
@@ -512,6 +636,8 @@ int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, c
 	if (SFP_ReadPartNumber(Dev))
 		goto error;
 	if (SFP_ReadSerialNumber(Dev))
+		goto error;
+	if (SFP_ReadRDT(Dev, NULL))
 		goto error;
 	if (SFP_ReadFreq(Dev, NULL))
 		goto error;
