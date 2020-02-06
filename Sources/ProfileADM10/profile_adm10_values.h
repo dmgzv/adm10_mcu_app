@@ -702,7 +702,6 @@ typedef struct {
     uint8_t Ln_1_SFP_EnableTxState;
     uint8_t Ln_1_SFP_SetTxFreqState;
     uint8_t Ln_1_SFP_SetTxFreqSpState;
-    uint8_t Ln_1_SFP_SetRxDTState;
     uint8_t Ln_1_SetDataTypeState;
     uint8_t Ln_1_SetFECTypeState;
     uint8_t Ln_1_OPU2_SetPayloadState;
@@ -717,7 +716,6 @@ typedef struct {
     uint8_t Ln_2_SFP_EnableTxState;
     uint8_t Ln_2_SFP_SetTxFreqState;
     uint8_t Ln_2_SFP_SetTxFreqSpState;
-    uint8_t Ln_2_SFP_SetRxDTState;
     uint8_t Ln_2_SetDataTypeState;
     uint8_t Ln_2_SetFECTypeState;
     uint8_t Ln_2_OPU2_SetPayloadState;
@@ -732,7 +730,6 @@ typedef struct {
     uint8_t Ln_3_SFP_EnableTxState;
     uint8_t Ln_3_SFP_SetTxFreqState;
     uint8_t Ln_3_SFP_SetTxFreqSpState;
-    uint8_t Ln_3_SFP_SetRxDTState;
     uint8_t Ln_3_SetDataTypeState;
     uint8_t Ln_3_SetFECTypeState;
     uint8_t Ln_3_OPU2_SetPayloadState;
@@ -747,7 +744,6 @@ typedef struct {
     uint8_t Ln_4_SFP_EnableTxState;
     uint8_t Ln_4_SFP_SetTxFreqState;
     uint8_t Ln_4_SFP_SetTxFreqSpState;
-    uint8_t Ln_4_SFP_SetRxDTState;
     uint8_t Ln_4_SetDataTypeState;
     uint8_t Ln_4_SetFECTypeState;
     uint8_t Ln_4_OPU2_SetPayloadState;
@@ -2527,7 +2523,6 @@ typedef struct {
     uint32_t Ln_1_SFP_EnableTx;
     float Ln_1_SFP_SetTxFreq;
     float Ln_1_SFP_SetTxFreqSp;
-    float Ln_1_SFP_SetRxDT;
     uint32_t Ln_1_SetDataType;
     uint32_t Ln_1_SetFECType;
     uint32_t Ln_1_OPU2_SetPayload;
@@ -2542,7 +2537,6 @@ typedef struct {
     uint32_t Ln_2_SFP_EnableTx;
     float Ln_2_SFP_SetTxFreq;
     float Ln_2_SFP_SetTxFreqSp;
-    float Ln_2_SFP_SetRxDT;
     uint32_t Ln_2_SetDataType;
     uint32_t Ln_2_SetFECType;
     uint32_t Ln_2_OPU2_SetPayload;
@@ -2557,7 +2551,6 @@ typedef struct {
     uint32_t Ln_3_SFP_EnableTx;
     float Ln_3_SFP_SetTxFreq;
     float Ln_3_SFP_SetTxFreqSp;
-    float Ln_3_SFP_SetRxDT;
     uint32_t Ln_3_SetDataType;
     uint32_t Ln_3_SetFECType;
     uint32_t Ln_3_OPU2_SetPayload;
@@ -2572,7 +2565,6 @@ typedef struct {
     uint32_t Ln_4_SFP_EnableTx;
     float Ln_4_SFP_SetTxFreq;
     float Ln_4_SFP_SetTxFreqSp;
-    float Ln_4_SFP_SetRxDT;
     uint32_t Ln_4_SetDataType;
     uint32_t Ln_4_SetFECType;
     uint32_t Ln_4_OPU2_SetPayload;
@@ -2944,13 +2936,9 @@ typedef struct {
     uint32_t ODU0_PG_7_SetHOTmrThrs[2];
     uint32_t ODU0_PG_8_SetHOTmrThrs[2];
     float Ln_1_SFP_SetTxFreqThrs[2];
-    float Ln_1_SFP_SetRxDTThrs[2];
     float Ln_2_SFP_SetTxFreqThrs[2];
-    float Ln_2_SFP_SetRxDTThrs[2];
     float Ln_3_SFP_SetTxFreqThrs[2];
-    float Ln_3_SFP_SetRxDTThrs[2];
     float Ln_4_SFP_SetTxFreqThrs[2];
-    float Ln_4_SFP_SetRxDTThrs[2];
     char ptLine1Info[PROFILE_STRING_MAX_LEN];
     uint32_t ptLine1Cat;
     char ptLine2Info[PROFILE_STRING_MAX_LEN];

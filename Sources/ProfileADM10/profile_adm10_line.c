@@ -156,12 +156,12 @@ static const uint32_t ProfileADM10ConfigLnSFPSetFreqSpIdx[PROFILE_ADM10_LINE_POR
 {
 	PROFILE_ADM10_LN_1_SFP_SETTXFREQSP_IDX, PROFILE_ADM10_LN_2_SFP_SETTXFREQSP_IDX, PROFILE_ADM10_LN_3_SFP_SETTXFREQSP_IDX, PROFILE_ADM10_LN_4_SFP_SETTXFREQSP_IDX,
 };
-
+/*
 static const uint32_t ProfileADM10ConfigLnSFPSetRxDTIdx[PROFILE_ADM10_LINE_PORTS] = 
 {
 	PROFILE_ADM10_LN_1_SFP_SETRXDT_IDX, PROFILE_ADM10_LN_2_SFP_SETRXDT_IDX, PROFILE_ADM10_LN_3_SFP_SETRXDT_IDX, PROFILE_ADM10_LN_4_SFP_SETRXDT_IDX,
 };
-
+*/
 static const uint32_t ProfileADM10ConfigLnSetDataTypeIdx[PROFILE_ADM10_LINE_PORTS] = 
 {
 	PROFILE_ADM10_LN_1_SETDATATYPE_IDX, PROFILE_ADM10_LN_2_SETDATATYPE_IDX, PROFILE_ADM10_LN_3_SETDATATYPE_IDX, PROFILE_ADM10_LN_4_SETDATATYPE_IDX,
@@ -973,7 +973,7 @@ void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 	uint32_t State, SFPEnableTx, Loopback, FECType, ALSMode;
 	uint32_t OPU2PayloadType;
 	uint32_t OPU1PayloadType[4];
-	float SFPSetFreq, SFPSetRxDT;
+	float SFPSetFreq/*, SFPSetRxDT*/;
 	uint32_t RxLos;
 	
 	for (i = 0; i < PROFILE_ADM10_LINE_PORTS; i++)
@@ -984,8 +984,10 @@ void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 			return;
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetFreqIdx[i], &SFPSetFreq))
 			return;
+		/*
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetRxDTIdx[i], &SFPSetRxDT))
 			return;
+		*/
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetFECTypeIdx[i], &FECType))
 			return;
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[i], &OPU2PayloadType))
@@ -1011,6 +1013,7 @@ void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 			PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetFreqIdx[i], PROFILE_STATE_OOS);
 			PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetFreqSpIdx[i], PROFILE_STATE_OOS);
 		}
+		/*
 		if (sfp[BSP_SFP_LINE_IDX(i)].Info.ProductOpts & SFP_PRODUCT_OPTS_RDT_MASK)
 		{
 			PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetRxDTIdx[i], State);
@@ -1019,6 +1022,7 @@ void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 		{
 			PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPSetRxDTIdx[i], PROFILE_STATE_OOS);
 		}
+		*/
 		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[i], State);
 		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetFECTypeIdx[i], State);
 		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[i], State);
@@ -1033,7 +1037,7 @@ void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetALSModeIdx[i], State);
 		PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetFactoryIdx[i], State);
 		
-		SFP_ConfigRDT(&sfp[BSP_SFP_LINE_IDX(i)], SFPSetRxDT);
+		//SFP_ConfigRDT(&sfp[BSP_SFP_LINE_IDX(i)], SFPSetRxDT);
 		SFP_ConfigFreq(&sfp[BSP_SFP_LINE_IDX(i)], SFPSetFreq * 1000000);
 		SFP_ConfigRateSel(&sfp[BSP_SFP_LINE_IDX(i)], 1);
 		
