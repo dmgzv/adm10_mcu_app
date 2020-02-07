@@ -6,20 +6,18 @@
 
 #ifdef BSP_CONFIG_USE_LOG
 
-char __attribute__((section ("CCM_DATA"))) LogLines[LOG_LINES_CNT][LOG_LINE_SIZE];
-const char* __attribute__((section ("CCM_DATA"))) LogName[LOG_LINES_CNT];
-const char* __attribute__((section ("CCM_DATA"))) LogId[LOG_LINES_CNT];
-uint32_t LogLineIndex = 0;
-uint32_t LogLinesCnt = 0;
+static char __attribute__((section ("CCM_DATA"))) LogLines[LOG_LINES_CNT][LOG_LINE_SIZE];
+static const char* __attribute__((section ("CCM_DATA"))) LogName[LOG_LINES_CNT];
+static const char* __attribute__((section ("CCM_DATA"))) LogId[LOG_LINES_CNT];
+static uint32_t LogLineIndex = 0;
 #ifdef BSP_CONFIG_USE_FREERTOS
 static osMutexId LogMutexId;
 osMutexDef(Log);
-uint32_t __attribute__((section ("CCM_DATA"))) LogLinesTime[LOG_LINES_CNT];
+static uint32_t __attribute__((section ("CCM_DATA"))) LogLinesTime[LOG_LINES_CNT];
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 
 void __LOG_Init(void)
 {
-	LogLinesCnt = 0;
 	LogLineIndex = 0;
 	memset(LogLines, 0, sizeof(LogLines));
 #ifdef BSP_CONFIG_USE_FREERTOS
@@ -44,7 +42,6 @@ void __LOG_Add(const char *Name, const char *Id, char *str, ...)
 	LogLinesTime[LogLineIndex % LOG_LINES_CNT] = osKernelSysTick();
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 	LogLineIndex++;
-	LogLinesCnt = LogLineIndex < LOG_LINES_CNT ? LogLineIndex : LOG_LINES_CNT;
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexRelease( LogMutexId);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -52,13 +49,15 @@ void __LOG_Add(const char *Name, const char *Id, char *str, ...)
 
 uint32_t __LOG_GetLinesCnt(void)
 {
-	return LogLinesCnt;
+	return (LogLineIndex >= LOG_LINES_CNT ? LOG_LINES_CNT : LogLineIndex);
 }
 
 void __LOG_GetLine(uint32_t Index, uint32_t *Time, const char **Name, const char **Id, const char **Line)
-{	
-	if (Index >= LOG_LINES_CNT)
-		return;
+{
+	if (Index >= (LogLineIndex >= LOG_LINES_CNT ? LOG_LINES_CNT : LogLineIndex))
+		return;		
+	if (LogLineIndex >= LOG_LINES_CNT)
+		Index = (LogLineIndex + Index) % LOG_LINES_CNT;
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexWait( LogMutexId, osWaitForever);
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -70,7 +69,7 @@ void __LOG_GetLine(uint32_t Index, uint32_t *Time, const char **Name, const char
 #endif /*BSP_CONFIG_USE_FREERTOS*/		
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexRelease( LogMutexId);
-#endif /*BSP_CONFIG_USE_FREERTOS*/	
+#endif /*BSP_CONFIG_USE_FREERTOS*/
 }
 
 #endif /*BSP_CONFIG_USE_LOG*/
