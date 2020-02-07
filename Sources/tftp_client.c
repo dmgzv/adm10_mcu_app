@@ -1,7 +1,7 @@
 #include "tftp_client.h"
 #include <string.h>
 
-static struct udp_pcb *tftp_client_udp_pcb = NULL;
+struct udp_pcb *tftp_client_udp_pcb = NULL;
 static void (*TFTP_CLIENT_Program)(void *Priv, uint32_t Addr, char *Source, uint32_t Size) = NULL;
 uint32_t TFTP_CLIENT_BaseAddr = 0;
 void *TFTP_CLIENT_Priv = NULL;
@@ -96,8 +96,8 @@ int32_t TFTP_CLIENT_Init(void)
 		return -1;
 	}
 	
-	/* Bind this PCB to port 69  */
-  err = udp_bind(tftp_client_udp_pcb, IP_ADDR_ANY, 69);
+	/* Bind this PCB to port TFTP_PORT  */
+  err = udp_bind(tftp_client_udp_pcb, IP_ADDR_ANY, TFTP_PORT);
 	if (err != ERR_OK)
 		goto error;
 	
@@ -110,10 +110,10 @@ error:
 	return -1;
 }
 
-void TFTP_CLIENT_DownloadFile(char *filename, const ip_addr_t *addr, uint16_t port, void (*Program)(void *Priv, uint32_t Addr, char *Source, uint32_t Size), void *Priv, uint32_t BaseAddr)
+void TFTP_CLIENT_DownloadFile(char *filename, const ip_addr_t *addr, void (*Program)(void *Priv, uint32_t Addr, char *Source, uint32_t Size), void *Priv, uint32_t BaseAddr)
 {
 	TFTP_CLIENT_Program = Program;
 	TFTP_CLIENT_BaseAddr = BaseAddr;
 	TFTP_CLIENT_Priv = Priv;
-	TFTP_CLIENT_SendReadRequest(tftp_client_udp_pcb, filename, addr, port);
+	TFTP_CLIENT_SendReadRequest(tftp_client_udp_pcb, filename, addr, TFTP_PORT);
 }

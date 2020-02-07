@@ -26,6 +26,7 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_TFTPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 
 const SHELL_CMD_T ShellCmdList[] = 
 {
@@ -47,7 +48,8 @@ const SHELL_CMD_T ShellCmdList[] =
 	{ "pcal6524", "PCAL6524 control", &SHELL_CMD_PCAL6524Callback},
 	{ "pca9548", 	"PCA9548 control", &SHELL_CMD_PCA9548Callback},
 	{ "ksz", 			"KSZ8895 control", &SHELL_CMD_KSZCallback},
-	{ "sdram", 		"SDRAM control", &SHELL_CMD_SDRAMCallback}
+	{ "sdram", 		"SDRAM control", &SHELL_CMD_SDRAMCallback},
+	{ "tftp", 		"TFTP client control", &SHELL_CMD_TFTPCallback},
 };
 
 const uint32_t ShellCmdListSize = sizeof(ShellCmdList)/ sizeof(ShellCmdList[0]);
@@ -953,14 +955,14 @@ invalid_init_state:
 "    fpga <cmd> [<data1> <data2> ...]\r"\
 "Commands:\r"\
 "    help - Display this help.\r"\
-"    select <dev> - Select fpga device. <dev>: 0 - MAXV, 1 - FPGA Line, 2 - FPGA Client 1, 3 - FPGA Client 2\r"\
+"    select <dev> - Select fpga device. <dev>: 0 - FPGA Line, 1 - FPGA Client 1, 2 - FPGA Client 2, 3 - MAXV\r"\
 "    test - Test fpga device.\r"\
 "        Example: fpga test 0x01 0x10\r"\
 "    r <addr> - Read device register.\r"\
 "        Example: fpga r 0x01\r"\
 "    w <addr> <data> - Write device register.\r"\
 "        Example: fpga w 0x01 0x10\r"\
-"    update <filename> - Update FPGA firmware via TFTP.\r"\
+"    update <file> <ip> - Update FPGA firmware via TFTP.\r"\
 
 static void TFTP_CLIENT_ProgramFPGA(void *Priv, uint32_t Addr, char *Source, uint32_t Size)
 {
@@ -970,13 +972,15 @@ static void TFTP_CLIENT_ProgramFPGA(void *Priv, uint32_t Addr, char *Source, uin
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	static uint8_t Dev = 3;
-	ip_addr_t tftp_server_ip;
 	uint32_t Addr, Data, i;
 	char *p;
+	uint32_t ip[4];
+	ip_addr_t ip_addr;
 	
 	if (CmdParamsCnt == 1)
 	{
 		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&fpga_maxv));
+		SHELL_Transmit(Shell, "Device: %d\r", Dev);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1074,25 +1078,48 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			
 			Dev = Data;
 		}
-		else if (!strcmp(CmdParamsList[1], "update"))
+		else
 		{
-			IP_ADDR4(&tftp_server_ip,192,168,2,32);
+			goto invalid_dev;
+		}
+	}
+	else if (CmdParamsCnt == 4)
+	{
+		if (!strcmp(CmdParamsList[1], "update"))
+		{			
+			p = CmdParamsList[3];
+			ip[0] = strtoul(p, &p, 10);
+			if ((ip[0] == 0) || (ip[0] > 255) || (*p != '.'))
+				goto invalid_ip_addr;
+			p++;
+			ip[1] = strtoul(p, &p, 10);
+			if ((ip[1] > 255) || (*p != '.'))
+				goto invalid_ip_addr;
+			p++;
+			ip[2] = strtoul(p, &p, 10);
+			if ((ip[2] > 255) || (*p != '.'))
+				goto invalid_ip_addr;
+			p++;
+			ip[3] = strtoul(p, &p, 10);
+			if ((ip[3] == 0) || (ip[3] > 255) || (*p != 0))
+				goto invalid_ip_addr;
 			
+			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);			
 			
 			if (Dev == 0)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(0);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &tftp_server_ip, 69, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_1_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_1_FW_ADDR_START);
 			}
 			else if (Dev == 1)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(1);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &tftp_server_ip, 69, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_2_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_2_FW_ADDR_START);
 			}
 			else if (Dev == 2)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(2);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &tftp_server_ip, 69, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_3_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_3_FW_ADDR_START);
 			}
 			else
 			{
@@ -1100,15 +1127,7 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			}
 			
 		}
-		else
-		{
-			goto invalid_cmd;
-		}	
-	}
-	else if (CmdParamsCnt == 4)
-	{
-		
-		if (!strcmp(CmdParamsList[1], "w"))
+		else if (!strcmp(CmdParamsList[1], "w"))
 		{
 			if ((CmdParamsList[2][0] != '0') || (CmdParamsList[2][1] != 'x'))
 				goto invalid_addr;
@@ -1164,6 +1183,9 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 	return;
 invalid_cmd:
 	SHELL_Transmit(Shell, "Error: invalid command\r");
+	return;
+invalid_ip_addr:
+	SHELL_Transmit(Shell, "Error: invalid ip address\r");
 	return;
 invalid_addr:
 	SHELL_Transmit(Shell, "Error: invalid address\r");
@@ -1535,7 +1557,8 @@ invalid_data:
 "    sdram <cmd> [<data1> <data2> ...]\r"\
 "Commands:\r"\
 "    help - Display this help.\r"\
-"    load <filename> - Load file via TFTP.\r"\
+"    cmp <dev> - Compare SDRAM data and FPGA flash data. <dev>: 0 - FPGA Line, 1 - FPGA Client 1, 2 - FPGA Client 2\r"\
+"    load <file> <ip> - Load file to SDRAM via TFTP.\r"\
 
 static void TFTP_CLIENT_ProgramSDRAM(void *Priv, uint32_t Addr, char *Source, uint32_t Size)
 {
@@ -1548,7 +1571,8 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 {
 	uint32_t Dev, Addr;
 	char *p;
-	ip_addr_t tftp_server_ip;
+	uint32_t ip[4];
+	ip_addr_t ip_addr;
 	
 	if (CmdParamsCnt == 1)
 	{
@@ -1567,13 +1591,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 	}
 	else if (CmdParamsCnt == 3)
 	{
-		if (!strcmp(CmdParamsList[1], "load"))
-		{
-			memset((char*)BSP_SDRAM_ADDR, 0xFF, BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START);
-			IP_ADDR4(&tftp_server_ip,192,168,2,32);
-			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &tftp_server_ip, 69, TFTP_CLIENT_ProgramSDRAM, NULL, BSP_SDRAM_ADDR);
-		}
-		else if (!strcmp(CmdParamsList[1], "cmp"))
+		if (!strcmp(CmdParamsList[1], "cmp"))
 		{
 			Dev = strtoul(&CmdParamsList[2][0], &p, 10);
 			if ((*p != 0) || (p == &CmdParamsList[2][2]))
@@ -1625,6 +1643,38 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 			goto invalid_cmd;
 		}
 	}
+	else if (CmdParamsCnt == 4)
+	{
+		if (!strcmp(CmdParamsList[1], "load"))
+		{
+			p = CmdParamsList[3];
+			ip[0] = strtoul(p, &p, 10);
+			if ((ip[0] == 0) || (ip[0] > 255) || (*p != '.'))
+				goto invalid_ip_addr;
+			p++;
+			ip[1] = strtoul(p, &p, 10);
+			if ((ip[1] > 255) || (*p != '.'))
+				goto invalid_ip_addr;
+			p++;
+			ip[2] = strtoul(p, &p, 10);
+			if ((ip[2] > 255) || (*p != '.'))
+				goto invalid_ip_addr;
+			p++;
+			ip[3] = strtoul(p, &p, 10);
+			if ((ip[3] == 0) || (ip[3] > 255) || (*p != 0))
+				goto invalid_ip_addr;
+			
+			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);
+			
+			memset((char*)BSP_SDRAM_ADDR, 0xFF, BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START);
+			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramSDRAM, NULL, BSP_SDRAM_ADDR);
+		}
+	}
+	else
+	{
+		goto invalid_cmd;
+	}
+	
 	return;
 	
 invalid_cmd:
@@ -1632,5 +1682,95 @@ invalid_cmd:
 	return;
 invalid_dev:
 	SHELL_Transmit(Shell, "Error: invalid device\r");
+	return;
+invalid_ip_addr:
+	SHELL_Transmit(Shell, "Error: invalid ip address\r");
+	return;
+}
+
+#define SHELL_CMD_TFTP_HELP \
+"Usage:\r"\
+"    tftp <cmd> [<data1> <data2> ...]\r"\
+"Commands:\r"\
+"    help - Display this help.\r"\
+"    load <file> <ip> <addr> - Load file to external flash.\r"
+
+static void SHELL_CMD_TFTPProgram(void *Priv, uint32_t Addr, char *Source, uint32_t Size)
+{
+	BSP_FLASH_WaitReady();
+	BSP_FLASH_ProgramPage(Addr, &Source[0], BSP_FLASH_PAGE_SIZE);
+	BSP_FLASH_WaitReady();
+	BSP_FLASH_ProgramPage(Addr + BSP_FLASH_PAGE_SIZE, &Source[BSP_FLASH_PAGE_SIZE], BSP_FLASH_PAGE_SIZE);
+}
+
+static void SHELL_CMD_TFTPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{
+	char *c;
+	uint32_t addr;
+	uint32_t ip[4];
+	ip_addr_t ip_addr;
+	
+	
+	if (CmdParamsCnt == 1)
+	{		
+		SHELL_Transmit(Shell, "TFTP client thread: %s\r", tftp_client_udp_pcb ? "Ok" : "Fail");
+	}
+	else if (CmdParamsCnt == 2)
+	{
+		if (!strcmp(CmdParamsList[1], "help"))
+		{
+			SHELL_Transmit(Shell, SHELL_CMD_TFTP_HELP);
+		}
+		else
+		{
+			goto invalid_cmd;
+		}
+	}
+	else if (CmdParamsCnt == 5)
+	{
+		if (!strcmp(CmdParamsList[1], "load"))
+		{
+			c = CmdParamsList[3];
+			ip[0] = strtoul(c, &c, 10);
+			if ((ip[0] == 0) || (ip[0] > 255) || (*c != '.'))
+				goto invalid_ip_addr;
+			c++;
+			ip[1] = strtoul(c, &c, 10);
+			if ((ip[1] > 255) || (*c != '.'))
+				goto invalid_ip_addr;
+			c++;
+			ip[2] = strtoul(c, &c, 10);
+			if ((ip[2] > 255) || (*c != '.'))
+				goto invalid_ip_addr;
+			c++;
+			ip[3] = strtoul(c, &c, 10);
+			if ((ip[3] == 0) || (ip[3] > 255) || (*c != 0))
+				goto invalid_ip_addr;
+			
+			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);
+			
+			if ((CmdParamsList[4][0] != '0') || (CmdParamsList[4][1] != 'x'))
+				goto invalid_addr;
+			addr = strtoul(&CmdParamsList[4][2], &c, 16);
+			if ((addr < BSP_FLASH_FW_ADDR) && (addr > BSP_FLASH_SIZE))
+				goto invalid_addr;			
+			
+			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, SHELL_CMD_TFTPProgram, NULL, addr);
+		}
+	}
+	else 
+	{
+		goto invalid_cmd;
+	}
+	
+	return;
+invalid_cmd:
+	SHELL_Transmit(Shell, "Error: invalid command\r");
+	return;
+invalid_ip_addr:
+	SHELL_Transmit(Shell, "Error: invalid ip address\r");
+	return;
+invalid_addr:
+	SHELL_Transmit(Shell, "Error: invalid address\r");
 	return;
 }
