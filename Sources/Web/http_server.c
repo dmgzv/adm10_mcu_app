@@ -4,7 +4,6 @@
 #include "profile.h"
 #include "profile_protocol.h"
 #include "profile_types.h"
-#include "bootloader.h"
 #include "bsp.h"
 #include "crc.h"
 #include "log.h"
@@ -32,7 +31,7 @@ static const char http_css_hdr[] = \
 	"Content-type: text/css\r\n"\
 	"\r\n";
  
-static const char http_font_woff2_hdr[] = \
+static const char http_woff2_hdr[] = \
 	"HTTP/1.1 200 OK\r\n"\
 	"Content-type: font/woff2\r\n"\
 	"\r\n";
@@ -44,7 +43,7 @@ static const char http_js_hdr[] = \
  
 static const char http_plain_hdr[] = \
 	"HTTP/1.1 200 OK\r\n"\
-	"Content-type: text/plain\r\n"\
+	"Content-type: text/plain; charset=windows-1251\r\n"\
 	"\r\n";
  
 static const char http_json_hdr[] = \
@@ -59,25 +58,6 @@ static const char http_404_err[] = \
 static const char http_400_err[] = \
 	"HTTP/1.1 400 Bad Request\r\n"\
 	"\r\n";
-
-extern const char index_html[];
-extern const unsigned int index_html_size;
-extern const char css_bootstrap_min_css[];
-extern const unsigned int css_bootstrap_min_css_size;
-extern const char css_style_css[];
-extern const unsigned int css_style_css_size;
-/*extern const char css_font_awesome_min_css[];
-extern const unsigned int css_font_awesome_min_css_size;
-extern const char fonts_fontawesome_webfont_woff2[];
-extern const unsigned int fonts_fontawesome_webfont_woff2_size;*/
-extern const char js_script_js[];
-extern const unsigned int js_script_js_size;
-extern const char js_jquery_3_4_1_slim_min_js[];
-extern const unsigned int js_jquery_3_4_1_slim_min_js_size;
-extern const char js_popper_min_js[];
-extern const unsigned int js_popper_min_js_size;
-extern const char js_bootstrap_min_js[];
-extern const unsigned int js_bootstrap_min_js_size;
 
 extern PROFILE_T Profile;
 extern BOOTLOADER_T Bootloader;
@@ -135,75 +115,98 @@ static void http_server_serve_404_error(struct netconn *conn)
 		return;
 }
 
-static void http_server_serve_get_index_html(struct netconn *conn)
-{
-	if (http_server_write(conn, http_html_hdr, sizeof(http_html_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, index_html, index_html_size, NETCONN_NOCOPY))
-		return;
-}
- 
-static void http_server_serve_get_css_bootstrap_min_css(struct netconn *conn)
-{
-	if (http_server_write(conn, http_css_hdr, sizeof(http_css_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, css_bootstrap_min_css, css_bootstrap_min_css_size, NETCONN_NOCOPY))
-		return;
-}
-
-static void http_server_serve_get_css_style_css(struct netconn *conn)
-{
-	if (http_server_write(conn, http_css_hdr, sizeof(http_css_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, css_style_css, css_style_css_size, NETCONN_NOCOPY))
-		return;
-}
-/*
-static void http_server_serve_get_css_font_awesome_min_css(struct netconn *conn)
-{
-	if (http_server_write(conn, http_css_hdr, sizeof(http_css_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, css_font_awesome_min_css, css_font_awesome_min_css_size, NETCONN_NOCOPY))
-		return;
-}
- 
-static void http_server_serve_get_fonts_fontawesome_webfont_woff2(struct netconn *conn)
-{
-	if (http_server_write(conn, http_font_woff2_hdr, sizeof(http_font_woff2_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, fonts_fontawesome_webfont_woff2, fonts_fontawesome_webfont_woff2_size, NETCONN_NOCOPY))
-		return;
-}
-*/
-static void http_server_serve_get_js_jquery_3_4_1_slim_min_js(struct netconn *conn)
-{
-	if (http_server_write(conn, http_js_hdr, sizeof(http_js_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, js_jquery_3_4_1_slim_min_js, js_jquery_3_4_1_slim_min_js_size, NETCONN_NOCOPY))
-		return;
-}
- 
-static void http_server_serve_get_js_popper_min_js(struct netconn *conn)
-{
-	if (http_server_write(conn, http_js_hdr, sizeof(http_js_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, js_popper_min_js, js_popper_min_js_size, NETCONN_NOCOPY))
-		return;
-}
- 
-static void http_server_serve_get_js_bootstrap_min_js(struct netconn *conn)
-{
-	if (http_server_write(conn, http_js_hdr, sizeof(http_js_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, js_bootstrap_min_js, js_bootstrap_min_js_size, NETCONN_NOCOPY))
-		return;
-}
- 
-static void http_server_serve_get_js_script_js(struct netconn *conn)
-{
-	if (http_server_write(conn, http_js_hdr, sizeof(http_js_hdr) - 1, NETCONN_NOCOPY))
-		return;
-	if (http_server_write(conn, js_script_js, js_script_js_size, NETCONN_NOCOPY))
+static void http_server_serve_get_file(struct netconn *conn, char* data)
+{	
+	uint32_t addr;
+	char *name;
+	char *fname, *fname_end, *ftype, *fsize, *fdata;
+	uint32_t fname_size, size;
+	
+	name = &data[sizeof("GET /") - 1];
+	
+	addr = 0x300000;
+	while(1) {
+		if (BSP_FLASH_Read(addr, RESPONCE_BODY, 256))
+			goto error;
+		RESPONCE_BODY[256] = 0;
+		fname = strstr(RESPONCE_BODY, "name: ");
+		if (fname)
+			fname += sizeof("name: ") - 1;
+		
+		ftype = strstr(RESPONCE_BODY, "type: ");
+		if (ftype)
+			ftype += sizeof("type: ") - 1;
+		
+		fsize = strstr(RESPONCE_BODY, "size: ");
+		if (fsize)
+			fsize += sizeof("size: ") - 1;
+		
+		fdata = strstr(RESPONCE_BODY, "\r\n\r\n");
+		if (fdata)
+			fdata += sizeof("\r\n\r\n") - 1;
+		
+		if ((!fname) || (!ftype) || (!fsize) || (!fdata))
+			goto error;
+		
+		fname_end = strchr(fname, '\r');
+		fname_size = fname_end - fname;
+		
+		size = strtoul(fsize, NULL, 10);
+		
+		if (!memcmp(name, fname, fname_size))
+		{
+			if (!memcmp(ftype, "html", sizeof("html") - 1))
+			{
+				if (http_server_write(conn, http_html_hdr, sizeof(http_html_hdr) - 1, NETCONN_NOCOPY))
+					return;
+			}
+			else if (!memcmp(ftype, "js", sizeof("js") - 1))
+			{
+				if (http_server_write(conn, http_js_hdr, sizeof(http_js_hdr) - 1, NETCONN_NOCOPY))
+					return;
+			}
+			else if (!memcmp(ftype, "css", sizeof("css") - 1))
+			{
+				if (http_server_write(conn, http_css_hdr, sizeof(http_css_hdr) - 1, NETCONN_NOCOPY))
+					return;
+			}
+			else if (!memcmp(ftype, "woff2", sizeof("woff2") - 1))
+			{
+				if (http_server_write(conn, http_woff2_hdr, sizeof(http_woff2_hdr) - 1, NETCONN_NOCOPY))
+					return;
+			}
+			else if (!memcmp(ftype, "json", sizeof("json") - 1))
+			{
+				if (http_server_write(conn, http_json_hdr, sizeof(http_json_hdr) - 1, NETCONN_NOCOPY))
+					return;
+			}
+			else
+			{
+				if (http_server_write(conn, http_plain_hdr, sizeof(http_plain_hdr) - 1, NETCONN_NOCOPY))
+					return;
+			}
+				
+			addr += fdata - RESPONCE_BODY;
+			while(size)
+			{
+				if (size > 1024)
+					RESPONCE_BODY_LEN = 1024;
+				else
+					RESPONCE_BODY_LEN = size;
+				if (BSP_FLASH_Read(addr, RESPONCE_BODY, RESPONCE_BODY_LEN))
+					return;
+				if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+					return;
+				addr += RESPONCE_BODY_LEN;
+				size -= RESPONCE_BODY_LEN;
+				osDelay(1);
+			}
+			return;			
+		}		
+		addr += size + fdata - RESPONCE_BODY;		
+	}
+error:
+	if (http_server_write(conn, http_404_err, sizeof(http_404_err)-1, NETCONN_NOCOPY))
 		return;
 }
 
@@ -717,7 +720,7 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn)
   */
 static void http_server_serve_get_api_v1_log(struct netconn *conn)
 {
-	uint32_t i, LinesCnt, LinesIdx, LineTime;
+	uint32_t i, LinesCnt, LineTime;
 	float Time;
 	const char *Line;
 	const char *Name;
@@ -728,18 +731,9 @@ static void http_server_serve_get_api_v1_log(struct netconn *conn)
 	LinesCnt = LOG_GetLinesCnt();
 	snprintf (RESPONCE_BODY, sizeof(RESPONCE_BODY), "{\r\n\t\"max-records-cnt\" : \"%d\",\r\n\t\"records-cnt\" : \"%d\",\r\n\t\"records\" : [\r\n", LOG_LINES_CNT, LinesCnt);
 	RESPONCE_BODY_LEN = strlen(RESPONCE_BODY);
-	if (LinesCnt > LOG_LINES_CNT)
-	{
-		LinesIdx = LinesCnt % LOG_LINES_CNT;
-		LinesCnt = LOG_LINES_CNT;
-	}
-	else
-	{
-		LinesIdx = 0;
-	}
 	for (i = 0; i < LinesCnt; i++)
 	{
-		LOG_GetLine((i + LinesIdx) % LinesCnt, &LineTime, &Name, &Id, &Line);
+		LOG_GetLine(i, &LineTime, &Name, &Id, &Line);
 		Time = (float)LineTime / osKernelSysTickFrequency;
 		if (i == (LinesCnt - 1))
 			snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t{\r\n\t\t\t\"time\" : \"%.4f\",\r\n\t\t\t\"name\" : \"%s\",\r\n\t\t\t\"id\" : \"%s\",\r\n\t\t\t\"data\" : \"%s\"\r\n\t\t}\r\n", Time, Name, Id, Line);
@@ -840,45 +834,7 @@ static void http_server_serve(struct netconn *conn)
 		   there are other formats for GET, and we're keeping it very simple )*/
 		if ((datalen >=5) && (strncmp(data, "GET /", sizeof("GET /") - 1) == 0))
 		{
-			if (strncmp(data, "GET /index.html", sizeof("GET /index.html") - 1) == 0)
-			{
-				http_server_serve_get_index_html(conn);
-			}
-			else if (strncmp(data, "GET /css/bootstrap.min.css", sizeof("GET /css/bootstrap.min.css") - 1) == 0)
-			{
-				http_server_serve_get_css_bootstrap_min_css(conn);
-			}
-			else if (strncmp(data, "GET /css/style.css", sizeof("GET /css/style.css") - 1) == 0)
-			{
-				http_server_serve_get_css_style_css(conn);
-			}
-			/*
-			else if (strncmp(data, "GET /css/font-awesome.min.css", sizeof("GET /css/font-awesome.min.css") - 1) == 0)
-			{
-				http_server_serve_get_css_font_awesome_min_css(conn);
-			}
-			else if (strncmp(data, "GET /fonts/fontawesome-webfont.woff2", sizeof("GET /fonts/fontawesome-webfont.woff2") - 1) == 0)
-			{
-				http_server_serve_get_fonts_fontawesome_webfont_woff2(conn);
-			}
-			*/
-			else if (strncmp(data, "GET /js/jquery-3.4.1.slim.min.js", sizeof("GET /js/jquery-3.4.1.slim.min.js") - 1) == 0)
-			{
-				http_server_serve_get_js_jquery_3_4_1_slim_min_js(conn);
-			}
-			else if (strncmp(data, "GET /js/popper.min.js", sizeof("GET /js/popper.min.js") - 1) == 0)
-			{
-				http_server_serve_get_js_popper_min_js(conn);
-			}
-			else if (strncmp(data, "GET /js/bootstrap.min.js", sizeof("GET /js/bootstrap.min.js") - 1) == 0)
-			{
-				http_server_serve_get_js_bootstrap_min_js(conn);
-			}
-			else if (strncmp(data, "GET /js/script.js", sizeof("GET /js/script.js") - 1) == 0)
-			{
-				http_server_serve_get_js_script_js(conn);
-			}
-			else if (strncmp(data, "GET /api/v1/log", sizeof("GET /api/v1/log") - 1) == 0)
+			if (strncmp(data, "GET /api/v1/log", sizeof("GET /api/v1/log") - 1) == 0)
 			{
 				http_server_serve_get_api_v1_log(conn);
 			}
@@ -906,7 +862,7 @@ static void http_server_serve(struct netconn *conn)
 			}
 			else
 			{
-				http_server_serve_404_error(conn);
+				http_server_serve_get_file(conn, data);
 			}
 		}      
 		else if (strncmp(data, "PUT /", sizeof("PUT /") - 1) == 0)

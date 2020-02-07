@@ -1125,44 +1125,9 @@
           <GroupName>Web</GroupName>
           <Files>
             <File>
-              <FileName>bootstrap_min_css.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\css\bootstrap_min_css.c</FilePath>
-            </File>
-            <File>
-              <FileName>style_css.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\css\style_css.c</FilePath>
-            </File>
-            <File>
-              <FileName>bootstrap_min_js.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\js\bootstrap_min_js.c</FilePath>
-            </File>
-            <File>
-              <FileName>jquery_3_4_1_slim_min_js.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\js\jquery_3_4_1_slim_min_js.c</FilePath>
-            </File>
-            <File>
-              <FileName>popper_min_js.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\js\popper_min_js.c</FilePath>
-            </File>
-            <File>
-              <FileName>script_js.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\js\script_js.c</FilePath>
-            </File>
-            <File>
               <FileName>http_server.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server.c</FilePath>
-            </File>
-            <File>
-              <FileName>index_html.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\index_html.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2287,44 +2252,9 @@
           <GroupName>Web</GroupName>
           <Files>
             <File>
-              <FileName>bootstrap_min_css.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\css\bootstrap_min_css.c</FilePath>
-            </File>
-            <File>
-              <FileName>style_css.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\css\style_css.c</FilePath>
-            </File>
-            <File>
-              <FileName>bootstrap_min_js.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\js\bootstrap_min_js.c</FilePath>
-            </File>
-            <File>
-              <FileName>jquery_3_4_1_slim_min_js.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\js\jquery_3_4_1_slim_min_js.c</FilePath>
-            </File>
-            <File>
-              <FileName>popper_min_js.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\js\popper_min_js.c</FilePath>
-            </File>
-            <File>
-              <FileName>script_js.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\js\script_js.c</FilePath>
-            </File>
-            <File>
               <FileName>http_server.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server.c</FilePath>
-            </File>
-            <File>
-              <FileName>index_html.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\index_html.c</FilePath>
             </File>
           </Files>
         </Group>
