@@ -2,8 +2,7 @@
 #include <string.h>
 
 struct udp_pcb *tftp_client_udp_pcb = NULL;
-static void (*TFTP_CLIENT_Program)(void *Priv, uint32_t Addr, char *Source, uint32_t Size) = NULL;
-uint32_t TFTP_CLIENT_BaseAddr = 0;
+static void (*TFTP_CLIENT_ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size) = NULL;
 void *TFTP_CLIENT_Priv = NULL;
 
 static tftp_opcode TFTP_CLIENT_GetOpcode(char *buf)
@@ -69,7 +68,7 @@ static int32_t TFTP_CLIENT_SendAck(struct udp_pcb *upcb, uint16_t block, const i
 	return 0;
 }
 
-static void TFTP_CLIENT_ReceiveCallback(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf, const ip_addr_t *addr, uint16_t port)
+static void __TFTP_CLIENT_ReceiveCallback(void *arg, struct udp_pcb *upcb, struct pbuf *pkt_buf, const ip_addr_t *addr, uint16_t port)
 {
 	tftp_opcode opcode;
 	uint16_t block;
@@ -79,8 +78,8 @@ static void TFTP_CLIENT_ReceiveCallback(void *arg, struct udp_pcb *upcb, struct 
 	if (opcode == TFTP_DATA)
 	{
 		block = ntohs(((uint16_t*)pkt_buf->payload)[1]);
-		if (TFTP_CLIENT_Program)
-			TFTP_CLIENT_Program(TFTP_CLIENT_Priv, TFTP_CLIENT_BaseAddr + (block - 1) * 512, &((char*)pkt_buf->payload)[4], pkt_buf->len - 4);
+		if (TFTP_CLIENT_ReceiveCallback)
+			TFTP_CLIENT_ReceiveCallback(TFTP_CLIENT_Priv, block, &((char*)pkt_buf->payload)[4], pkt_buf->len - 4);
 		TFTP_CLIENT_SendAck(upcb, block, addr, port);
 	}
 	pbuf_free(pkt_buf);
@@ -101,7 +100,7 @@ int32_t TFTP_CLIENT_Init(void)
 	if (err != ERR_OK)
 		goto error;
 	
-	udp_recv(tftp_client_udp_pcb, TFTP_CLIENT_ReceiveCallback, NULL);
+	udp_recv(tftp_client_udp_pcb, __TFTP_CLIENT_ReceiveCallback, NULL);
 	
 	return 0;
 
@@ -110,10 +109,9 @@ error:
 	return -1;
 }
 
-void TFTP_CLIENT_DownloadFile(char *filename, const ip_addr_t *addr, void (*Program)(void *Priv, uint32_t Addr, char *Source, uint32_t Size), void *Priv, uint32_t BaseAddr)
+void TFTP_CLIENT_DownloadFile(char *filename, const ip_addr_t *addr, void (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void *Priv)
 {
-	TFTP_CLIENT_Program = Program;
-	TFTP_CLIENT_BaseAddr = BaseAddr;
+	TFTP_CLIENT_ReceiveCallback = ReceiveCallback;
 	TFTP_CLIENT_Priv = Priv;
 	TFTP_CLIENT_SendReadRequest(tftp_client_udp_pcb, filename, addr, TFTP_PORT);
 }

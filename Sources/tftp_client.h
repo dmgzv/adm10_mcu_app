@@ -6,6 +6,7 @@
 #include "lwip/udp.h"
 
 #define TFTP_PORT	69
+#define TFTP_BLOCK_SIZE	512
 
 #define TFTP_OPCODE_LEN         2
 #define TFTP_BLKNUM_LEN         2
@@ -26,9 +27,7 @@ typedef enum {
   TFTP_ERROR = 5
 } tftp_opcode;
 
-extern struct udp_pcb *tftp_client_udp_pcb;
-
 int32_t TFTP_CLIENT_Init(void);
-void TFTP_CLIENT_DownloadFile(char *filename, const ip_addr_t *addr, void (*Program)(void *Priv, uint32_t Addr, char *Source, uint32_t Size), void *Priv, uint32_t BaseAddr);
+void TFTP_CLIENT_DownloadFile(char *filename, const ip_addr_t *addr, void (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void *Priv);
 
 #endif /*TFTP_CLIENT_H*/

@@ -124,7 +124,7 @@ static void http_server_serve_get_file(struct netconn *conn, char* data)
 	
 	name = &data[sizeof("GET /") - 1];
 	
-	addr = 0x300000;
+	addr = BSP_FLASH_WEB_ADDR;
 	while(1) {
 		if (BSP_FLASH_Read(addr, RESPONCE_BODY, 256))
 			goto error;

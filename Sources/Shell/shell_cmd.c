@@ -6,6 +6,9 @@
 #include "bsp.h"
 #include "tftp_client.h"
 #include "log.h"
+#include "bootloader.h"
+
+extern BOOTLOADER_T Bootloader;
 
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -16,6 +19,7 @@ static void SHELL_CMD_I2CCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 static void SHELL_CMD_SPICallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -26,7 +30,6 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
-static void SHELL_CMD_TFTPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 
 const SHELL_CMD_T ShellCmdList[] = 
 {
@@ -38,7 +41,8 @@ const SHELL_CMD_T ShellCmdList[] =
 	{ "i2c", 			"I2C statistics", &SHELL_CMD_I2CCallback},
 	{ "spi", 			"SPI statistics", &SHELL_CMD_SPICallback},
 	{ "uart", 		"UART statistics", &SHELL_CMD_UARTCallback},
-	{ "status", 	"Status of devices", &SHELL_CMD_StatusCallback},
+	{ "status", 	"Status of devices", &SHELL_CMD_StatusCallback},	
+	{ "flash", 		"External flash control", &SHELL_CMD_FLASHCallback},
 	{ "dim3r", 		"DIM3R3400 control", &SHELL_CMD_DIM3RCallback},
 	{ "ucd", 			"UCD90120A control", &SHELL_CMD_UCDCallback},
 	{ "gdt", 			"GDT080A control", &SHELL_CMD_GDTCallback},
@@ -49,7 +53,6 @@ const SHELL_CMD_T ShellCmdList[] =
 	{ "pca9548", 	"PCA9548 control", &SHELL_CMD_PCA9548Callback},
 	{ "ksz", 			"KSZ8895 control", &SHELL_CMD_KSZCallback},
 	{ "sdram", 		"SDRAM control", &SHELL_CMD_SDRAMCallback},
-	{ "tftp", 		"TFTP client control", &SHELL_CMD_TFTPCallback},
 };
 
 const uint32_t ShellCmdListSize = sizeof(ShellCmdList)/ sizeof(ShellCmdList[0]);
@@ -964,8 +967,9 @@ invalid_init_state:
 "        Example: fpga w 0x01 0x10\r"\
 "    update <file> <ip> - Update FPGA firmware via TFTP.\r"\
 
-static void TFTP_CLIENT_ProgramFPGA(void *Priv, uint32_t Addr, char *Source, uint32_t Size)
+static void TFTP_CLIENT_ProgramFPGA(void *Priv, uint16_t Block, char *Source, uint32_t Size)
 {
+	uint32_t Addr = ((uint32_t)Priv) + ((Block - 1) * TFTP_BLOCK_SIZE);
 	BSP_FPGA_FLASH_ProgramSector(Addr, Source, Size);
 }
 
@@ -1109,17 +1113,17 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			if (Dev == 0)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(0);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_1_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_1_FW_ADDR_START);
 			}
 			else if (Dev == 1)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(1);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_2_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_2_FW_ADDR_START);
 			}
 			else if (Dev == 2)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(2);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, BSP_FLASH_FPGA_3_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_3_FW_ADDR_START);
 			}
 			else
 			{
@@ -1560,8 +1564,9 @@ invalid_data:
 "    cmp <dev> - Compare SDRAM data and FPGA flash data. <dev>: 0 - FPGA Line, 1 - FPGA Client 1, 2 - FPGA Client 2\r"\
 "    load <file> <ip> - Load file to SDRAM via TFTP.\r"\
 
-static void TFTP_CLIENT_ProgramSDRAM(void *Priv, uint32_t Addr, char *Source, uint32_t Size)
+static void TFTP_CLIENT_ProgramSDRAM(void *Priv, uint16_t Block, char *Source, uint32_t Size)
 {
+	uint32_t Addr = ((uint32_t)Priv) + ((Block - 1) * TFTP_BLOCK_SIZE);
 	memcpy((char*)Addr, Source, Size);
 }
 
@@ -1667,7 +1672,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);
 			
 			memset((char*)BSP_SDRAM_ADDR, 0xFF, BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START);
-			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramSDRAM, NULL, BSP_SDRAM_ADDR);
+			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramSDRAM, (void*)BSP_SDRAM_ADDR);
 		}
 	}
 	else
@@ -1688,47 +1693,72 @@ invalid_ip_addr:
 	return;
 }
 
-#define SHELL_CMD_TFTP_HELP \
+#define SHELL_CMD_FLASH_HELP \
 "Usage:\r"\
-"    tftp <cmd> [<data1> <data2> ...]\r"\
+"    flash <cmd> [<data1> <data2> ...]\r"\
 "Commands:\r"\
 "    help - Display this help.\r"\
-"    load <file> <ip> <addr> - Load file to external flash.\r"
+"    update <file-name> <ip> - Update software via TFTP.\r"\
+"    load	<file-type> <file-name> <ip> - Load file via TFTP.\r"\
+"      <file-type>: lng - langpack file, web - web file.\r"\
 
-static void SHELL_CMD_TFTPProgram(void *Priv, uint32_t Addr, char *Source, uint32_t Size)
+static void SHELL_CMD_FLASH_LOAD_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
-	BSP_FLASH_WaitReady();
-	BSP_FLASH_ProgramPage(Addr, &Source[0], BSP_FLASH_PAGE_SIZE);
-	BSP_FLASH_WaitReady();
-	BSP_FLASH_ProgramPage(Addr + BSP_FLASH_PAGE_SIZE, &Source[BSP_FLASH_PAGE_SIZE], BSP_FLASH_PAGE_SIZE);
+	uint32_t BaseAddr = (uint32_t)Priv;
+	uint32_t Addr;
+	uint32_t Size;
+	
+	Addr = BaseAddr + ((Block - 1) * TFTP_BLOCK_SIZE);
+	
+	while (DataSize)
+	{
+		if (DataSize > BSP_FLASH_PAGE_SIZE)
+			Size = BSP_FLASH_PAGE_SIZE;
+		else
+			Size = DataSize;
+		BSP_FLASH_WaitReady();
+		BSP_FLASH_ProgramPage(Addr, Data, Size);
+		Addr += Size;
+		Data += Size;
+		DataSize -= Size;
+	}
 }
 
-static void SHELL_CMD_TFTPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+static void SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
+{	
+	BOOTLOADER_UpdateNewFwBlock(&Bootloader, Data, DataSize);
+	if (DataSize != TFTP_BLOCK_SIZE)
+	{
+		if (!BOOTLOADER_UpdateNewFwComplete(&Bootloader))
+			BSP_Reset();
+	}
+}
+
+static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	char *c;
 	uint32_t addr;
 	uint32_t ip[4];
 	ip_addr_t ip_addr;
-	
-	
+		
 	if (CmdParamsCnt == 1)
-	{		
-		SHELL_Transmit(Shell, "TFTP client thread: %s\r", tftp_client_udp_pcb ? "Ok" : "Fail");
+	{
+		SHELL_Transmit(Shell, "Init state: %d (%s)\r", BSP_DEV_GET_STATE(&at45db641e), BSP_DEV_GET_STATE_STR(&at45db641e));
 	}
 	else if (CmdParamsCnt == 2)
 	{
 		if (!strcmp(CmdParamsList[1], "help"))
 		{
-			SHELL_Transmit(Shell, SHELL_CMD_TFTP_HELP);
+			SHELL_Transmit(Shell, SHELL_CMD_FLASH_HELP);
 		}
 		else
 		{
 			goto invalid_cmd;
 		}
 	}
-	else if (CmdParamsCnt == 5)
+	else if (CmdParamsCnt == 4)
 	{
-		if (!strcmp(CmdParamsList[1], "load"))
+		if (!strcmp(CmdParamsList[1], "update"))
 		{
 			c = CmdParamsList[3];
 			ip[0] = strtoul(c, &c, 10);
@@ -1747,15 +1777,52 @@ static void SHELL_CMD_TFTPCallback(void *Shell, char **CmdParamsList, uint32_t C
 			if ((ip[3] == 0) || (ip[3] > 255) || (*c != 0))
 				goto invalid_ip_addr;
 			
-			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);
+			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);	
 			
-			if ((CmdParamsList[4][0] != '0') || (CmdParamsList[4][1] != 'x'))
-				goto invalid_addr;
-			addr = strtoul(&CmdParamsList[4][2], &c, 16);
-			if ((addr < BSP_FLASH_FW_ADDR) && (addr > BSP_FLASH_SIZE))
-				goto invalid_addr;			
+			BOOTLOADER_UpdateNewFwStart(&Bootloader);
 			
-			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, SHELL_CMD_TFTPProgram, NULL, addr);
+			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback, (void*)BSP_FLASH_FW_ADDR);
+		}
+		else 
+		{
+			goto invalid_cmd;
+		}
+	}
+	else if (CmdParamsCnt == 5)
+	{
+		if (!strcmp(CmdParamsList[1], "load"))
+		{
+			if (!strcmp(CmdParamsList[2], "lng"))
+				addr = BSP_FLASH_LANG_ADDR;
+			else if (!strcmp(CmdParamsList[2], "web"))
+				addr = BSP_FLASH_WEB_ADDR;
+			else
+				goto invalid_file_type;
+			
+			c = CmdParamsList[4];
+			ip[0] = strtoul(c, &c, 10);
+			if ((ip[0] == 0) || (ip[0] > 255) || (*c != '.'))
+				goto invalid_ip_addr;
+			c++;
+			ip[1] = strtoul(c, &c, 10);
+			if ((ip[1] > 255) || (*c != '.'))
+				goto invalid_ip_addr;
+			c++;
+			ip[2] = strtoul(c, &c, 10);
+			if ((ip[2] > 255) || (*c != '.'))
+				goto invalid_ip_addr;
+			c++;
+			ip[3] = strtoul(c, &c, 10);
+			if ((ip[3] == 0) || (ip[3] > 255) || (*c != 0))
+				goto invalid_ip_addr;
+			
+			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);	
+			
+			TFTP_CLIENT_DownloadFile(CmdParamsList[3], &ip_addr, SHELL_CMD_FLASH_LOAD_TFTP_ReceiveCallback, (void*)addr);
+		}
+		else 
+		{
+			goto invalid_cmd;
 		}
 	}
 	else 
@@ -1767,10 +1834,10 @@ static void SHELL_CMD_TFTPCallback(void *Shell, char **CmdParamsList, uint32_t C
 invalid_cmd:
 	SHELL_Transmit(Shell, "Error: invalid command\r");
 	return;
+invalid_file_type:
+	SHELL_Transmit(Shell, "Error: invalid file type\r");
+	return;
 invalid_ip_addr:
 	SHELL_Transmit(Shell, "Error: invalid ip address\r");
-	return;
-invalid_addr:
-	SHELL_Transmit(Shell, "Error: invalid address\r");
 	return;
 }

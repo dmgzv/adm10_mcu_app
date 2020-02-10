@@ -129,7 +129,7 @@ static int32_t BOOTLOADER_UpdateFw(BOOTLOADER_T *Bootloader)
 
 void BOOTLOADER_StartFw(BOOTLOADER_T *Bootloader)
 {
-	// В нормальном режиме копия равна оригиналу и обе целостные, попадаем сюда
+	// ¬ нормальном режиме копи¤ равна оригиналу и обе целостные, попадаем сюда
 	uint32_t SP = *(uint32_t*)( BSP_FLASH_FW_ADDR );
 	uint32_t FwAddr;
 	if( ( SP & 0x2FFE0000 ) == 0x20000000 )
@@ -137,7 +137,7 @@ void BOOTLOADER_StartFw(BOOTLOADER_T *Bootloader)
 		__disable_irq();
 		__set_MSP( SP );// инициализируем SP значением из основной программы (первые 4 байта)
 		FwAddr = *(uint32_t*)( BSP_FLASH_FW_ADDR + 4 );//стартовый адрес в следующих 4 байтах
-		( (void (*)(void))FwAddr )();//Запуск программы
+		( (void (*)(void))FwAddr )();//«апуск программы
 	}
 }
 
@@ -206,24 +206,22 @@ int32_t BOOTLOADER_UpdateNewFwByte(BOOTLOADER_T *Bootloader, uint8_t FwByte)
 int32_t BOOTLOADER_UpdateNewFwBlock(BOOTLOADER_T *Bootloader, char *FwBlock, uint32_t FwBlockSize)
 {
 	uint32_t Size;
-	/*Check that FW is not too big*/
-	if (Bootloader->FlashAddr > BSP_FLASH_FW_INFO)
-		return -1;
 	
 	while (FwBlockSize)
 	{
+		if (Bootloader->FlashAddr > BSP_FLASH_FW_INFO)
+			return -1;		
 		if (FwBlockSize > (BSP_FLASH_PAGE_SIZE - Bootloader->BufferAddr) )
 			Size = BSP_FLASH_PAGE_SIZE - Bootloader->BufferAddr;
 		else
-			Size = FwBlockSize;
-		
+			Size = FwBlockSize;		
 		memcpy(&Bootloader->Buffer[Bootloader->BufferAddr], FwBlock, Size);
-		Bootloader->FwCRC16 = Calc_CRC16(FwBlock, Size, Bootloader->FwCRC16);
 		Bootloader->BufferAddr += Size;
 		FwBlock += Size;
 		FwBlockSize -= Size;
 		if (Bootloader->BufferAddr == BSP_FLASH_PAGE_SIZE)
 		{
+			Bootloader->FwCRC16 = Calc_CRC16((char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE, Bootloader->FwCRC16);
 			if (BSP_FLASH_WaitReady())
 				return -1;
 			if (BSP_FLASH_ProgramPage(Bootloader->FlashAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
