@@ -86,7 +86,7 @@ static int32_t SFP_UpdateRDT(SFP_T *Dev)
 	uint8_t Data;
 	
 	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_RDT_MASK))
-		return -1;
+		return 0;
 	
 	Addr = 127;
 	Data = 0x02;
