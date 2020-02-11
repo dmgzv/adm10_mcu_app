@@ -1576,6 +1576,7 @@ const char *const ProfileADM10Text[] = {
 "Client15;3;Cl_15_SFP_State|Cl_15_SFP_Temp|Cl_15_SFP_RxPwr|Cl_15_SFP_TxPwr|Cl_15_SDH_RS_Alarms|Cl_15_Eth_Alarms;Client 15;ptClient15",
 "Client16;3;Cl_16_SFP_State|Cl_16_SFP_Temp|Cl_16_SFP_RxPwr|Cl_16_SFP_TxPwr|Cl_16_SDH_RS_Alarms|Cl_16_Eth_Alarms;Client 16;ptClient16",
 "[EnumParam]",
+"FormFactor;FullSlot@0",
 "BlockState;Absent@0|Ok@1|Not ready@2|Fail@3",
 "ODU2_PG_1_State;Normal@0|Manual@8|Signal Degrade@10|Signal Fail@12|Forced@14|Lockout@15",
 "ODU2_PG_2_State;Normal@0|Manual@8|Signal Degrade@10|Signal Fail@12|Forced@14|Lockout@15",
