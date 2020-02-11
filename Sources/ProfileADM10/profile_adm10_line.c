@@ -786,7 +786,7 @@ static int32_t PROFILE_ADM10_LINE_SetModeValueDependencies(PROFILE_T *Profile, u
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetLoopbackIdx[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			break;
 		default:
 			return -1;

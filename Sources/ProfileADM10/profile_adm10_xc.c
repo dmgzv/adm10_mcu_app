@@ -76,7 +76,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8
 					return -1;	
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
 				return -1;
 			if (Src != *(uint32_t*)Value)
@@ -130,7 +130,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8
 				}					
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
 				return -1;
 			if (Dst != *(uint32_t*)Value)
@@ -187,7 +187,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8
 					return -1;	
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
 				return -1;
 			if (Src != *(uint32_t*)Value)
@@ -241,7 +241,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetDstValue(PROFILE_T *Profile, uint8
 				}					
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
 				return -1;
 			if (Dst != *(uint32_t*)Value)
@@ -335,7 +335,7 @@ static int32_t PROFILE_ADM10_XC_SetModeValueDependencies(PROFILE_T *Profile, uin
 			}
 			*/
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], (uint32_t*)&ODU1XCSrcFactory[i]);
@@ -369,7 +369,7 @@ static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profi
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], (uint32_t*)&ODU1XCSrcFactory[i]);
@@ -398,7 +398,7 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_ATP_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], (uint32_t*)&ODU0XCSrcFactory[i]);
