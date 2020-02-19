@@ -171,7 +171,7 @@ int32_t SHELL_Init(SHELL_T *Shell, char *Name, SHELL_CMD_T* CmdList, uint32_t Cm
 	return 0;
 }
 
-int32_t SHELL_Transmit(void *Shell, char *str, ...)
+int32_t SHELL_Transmit(void *Shell, const char *str, ...)
 {
 	int32_t TxBufferLen;
 	

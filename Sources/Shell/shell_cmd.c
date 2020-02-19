@@ -7,7 +7,7 @@
 #include "tftp_client.h"
 #include "log.h"
 #include "dm.h"
-#include "dm_adm10.h"
+#include "dm_adm_10.h"
 
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -308,6 +308,8 @@ static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t C
 #endif
 }
 
+extern struct dm g_dm;
+
 #define SHELL_CMD_DM_HELP \
 "Usage:\r"\
 "    dm <cmd> [<data1> <data2> ...]\r"\
@@ -351,10 +353,10 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 	{
 		if (!strcmp(CmdParamsList[1], "get"))
 		{
-			dm_node = get_schema_node(&sn_adm10_root_,CmdParamsList[2]);
+			dm_node = dm_get_node(&g_dm, DM_TYPE_MGMT, CmdParamsList[2]);
 			if (dm_node)
 			{
-				dm_print_tree(dm_node, &SHELL_Transmit, Shell);
+				dm_print_tree(&g_dm, dm_node, &SHELL_Transmit, Shell);
 			}
 			else
 			{
@@ -370,7 +372,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 	{
 		if (!strcmp(CmdParamsList[1], "set"))
 		{
-			dm_node = get_schema_node(&sn_adm10_root_,CmdParamsList[2]);
+			dm_node = dm_get_node(&g_dm, DM_TYPE_MGMT, CmdParamsList[2]);
 			if (dm_node)
 			{
 				switch (dm_node->category)
@@ -386,7 +388,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.u8))
+								if (dm_set_param_value(&g_dm, dm_node, &value.u8))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -395,7 +397,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.s32))
+								if (dm_set_param_value(&g_dm, dm_node, &value.s32))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -404,7 +406,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.s8))
+								if (dm_set_param_value(&g_dm, dm_node, &value.s8))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -413,7 +415,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.u8))
+								if (dm_set_param_value(&g_dm, dm_node, &value.u8))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -422,7 +424,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.s16))
+								if (dm_set_param_value(&g_dm, dm_node, &value.s16))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -431,7 +433,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.u16))
+								if (dm_set_param_value(&g_dm, dm_node, &value.u16))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -440,7 +442,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.s32))
+								if (dm_set_param_value(&g_dm, dm_node, &value.s32))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -449,7 +451,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.u32))
+								if (dm_set_param_value(&g_dm, dm_node, &value.u32))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -458,7 +460,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.s64))
+								if (dm_set_param_value(&g_dm, dm_node, &value.s64))
 									goto invalid_param_value_out_of_range;
 								
 								break;
@@ -467,7 +469,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.u64))
+								if (dm_set_param_value(&g_dm, dm_node, &value.u64))
 									goto invalid_param_value_out_of_range;
 
 								break;
@@ -480,7 +482,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 								if ((*p != 0) || (p == CmdParamsList[3]))
 									goto invalid_param_value;
 							
-								if (dm_set_param_value(dm_node, &value.f))
+								if (dm_set_param_value(&g_dm, dm_node, &value.f))
 									goto invalid_param_value_out_of_range;
 			
 								break;
@@ -489,7 +491,7 @@ static void SHELL_CMD_DMCallback(void *Shell, char **CmdParamsList, uint32_t Cmd
 							case SCHEMA_DATATYPE_STRING_64:
 							case SCHEMA_DATATYPE_STRING_128:
 							case SCHEMA_DATATYPE_STRING_256:
-								if (dm_set_param_value(dm_node, CmdParamsList[3]))
+								if (dm_set_param_value(&g_dm, dm_node, CmdParamsList[3]))
 									goto invalid_param_value_out_of_range;
 								break;
 							default:

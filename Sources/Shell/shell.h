@@ -35,7 +35,7 @@ typedef struct {
 
 int32_t SHELL_Init(SHELL_T *Shell, char *Name, SHELL_CMD_T* CmdList, uint32_t CmdListSize, SHELL_IFACE_T *Iface);
 
-int32_t SHELL_Transmit(void *Shell, char *str, ...);
+int32_t SHELL_Transmit(void *Shell, const char *str, ...);
 int32_t SHELL_TransmitBuffer(void *Shell, char *TxBuffer, uint32_t TxBufferLen);
 
 #endif /* __SHELL_H */

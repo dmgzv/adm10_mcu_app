@@ -1,0 +1,193 @@
+module ipg-software-update {
+  yang-version 1;
+
+  namespace "http://www.ipg.com/horizon/software-update";
+  prefix su;
+
+  import ipg-ecs-common {
+    prefix "ipg-ecmn";
+    revision-date "2019-08-14";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "Software update module";
+  revision "2019-08-14" {
+    description "Initial revision";
+    reference "";
+  }
+
+  grouping slot-id {
+    description "slot-id grouping";
+    leaf slot-category {
+      type enumeration {
+        enum CC {
+          value 0;
+          description "Control card slot.";
+        }
+        enum SC {
+          value 1;
+          description "Slot card slot.";
+        }
+      }
+      description "Slot category (CC or SC).";
+    }
+    leaf slot-num {
+      type uint8;
+      description "slot number of the card.";
+    }
+  }
+
+  grouping progress-reporting {
+    description "Progress reporting group";
+      uses slot-id {
+        description "Slot number and slot category of the card.";
+      }
+    leaf status {
+      type enumeration {
+        enum SUCCESS {
+          value 0;
+          description "Software update is successful.";
+        }
+        enum FAIL {
+          value 1;
+          description "Software update failed.";
+        }
+        enum RUNNING {
+          value 2;
+          description "Software update is in progress.";
+        }
+        enum IDLE {
+          value 3;
+          description "No software update invoked";
+        }
+      }
+      description "Software update status";
+    }
+    leaf total-nstages {
+      type int32;
+      description "Total number of stages of software update.";
+    }
+    leaf current-stage {
+      type string {
+        length "0..63";
+      }
+      description "Current stage of software update.";
+    }
+    leaf error-string {
+       type string {
+                length "0..255";
+       }
+      description "Error when status is FAIL.";
+    }
+  }
+
+  rpc start-sw-update {
+    description "Update software";
+    input {
+      uses slot-id {
+        description "Slot number and slot category of the card.";
+        refine slot-category {
+          mandatory true;
+        }
+        refine slot-num {
+          mandatory true;
+        }
+      }
+      uses ipg-ecmn:sftp-server-with-remote-file {
+        refine file-path-name {
+          description "Path name of software image file on the server.";
+        }
+      }
+    }
+    output {
+      leaf status {
+        type enumeration {
+          enum SUCCESS {
+            value 0;
+            description "Request validation successful.";
+          }
+          enum FAIL {
+            value 1;
+            description "Request validation failed.";
+          }
+        }
+        description "Status of software update request.";
+      }
+      leaf error-string {
+        type string {
+          length "0..255";
+        }
+        description "Error when status is FAIL.";
+      }
+    }
+  }
+
+  rpc get-sw-update-status {
+    description "Get software update status.";
+    input {
+      uses slot-id {
+        description "Slot number and slot category of the card.";
+      }
+    }
+    output {
+      list status-update {
+        key id;
+        description
+          "Status is updated in a list.
+          Each list entry contains status update for specific slot.";
+        leaf id {
+          type int32;
+          description "list index";
+        }
+        uses progress-reporting;
+      }
+    }
+  }
+
+  rpc cancel-sw-update {
+    description "Cancel software update.";
+    input {
+      uses slot-id {
+        description "Slot number and slot category of the card.";
+      }
+    }
+    output {
+      list cancel-resp {
+        key id;
+        description
+          "Cancel software update response.
+          Each list entry contains status for specific slot.";
+        leaf id {
+          type int32;
+          description "list index ";
+        }
+        uses slot-id {
+          description "Slot number and slot category of the card.";
+        }
+        leaf status {
+          type enumeration {
+
+            enum SUCCESS {
+              value 0;
+              description "Cancel request is successful.";
+            }
+
+            enum FAIL {
+              value 1;
+              description "Cancel request failed.";
+            }
+
+          }
+          description "Cancel update request status";
+        }
+        leaf error-string {
+          type string {
+            length "0..255";
+          }
+          description "Error when status is FAIL.";
+        }
+      }
+    }
+  }
+}

@@ -7,14 +7,14 @@ module ipg-adm-10 {
         prefix "ipg-cmn";
         revision-date "2019-08-10";
     }
-    /*import ipg-system { 
+    import ipg-system { 
         prefix "ipg-sys";
         revision-date "2019-08-10";
     }
     import ipg-lcs { 
         prefix "ipg-lcs";
-        revision-date "2019-11-20";
-    }*/
+        revision-date "2019-11-27";
+    }
     import ipg-sfp { 
         prefix "ipg-sfp";
         revision-date "2019-11-27";
@@ -28,9 +28,9 @@ module ipg-adm-10 {
     }
 
 
-    //augment /ipg-sys:system/ipg-lcs:line-card-slot {
+    augment /ipg-sys:system/ipg-lcs:line-card-slot {
         container adm-10-2019-11-28 {
-            //when "(../ipg-lcs:card-module-name = 'adm-10-2019-11-28') and (../ipg-lcs:admin-state != 'DSBLD')";    
+            when "(../ipg-lcs:card-module-name = 'adm-10-2019-11-28') and (../ipg-lcs:admin-state != 'DSBLD')";    
             description "ADM-10";
             ipg-cmn:object "card";
 
@@ -122,7 +122,7 @@ module ipg-adm-10 {
                     description "Client interface";
                     ipg-cmn:object "interface";
                     max-elements 16;
-					min-elements 16;
+		//			min-elements 16;
                     key "id";
                     leaf id {
                         type uint32 {
@@ -192,7 +192,7 @@ module ipg-adm-10 {
                     description "Line interface";
                     ipg-cmn:object "interface";
                     max-elements 4;
-					min-elements 4;
+			//		min-elements 4;
                     key "id";
                     leaf id {
                         type uint32 {
@@ -252,6 +252,6 @@ module ipg-adm-10 {
                 }
             }
         }
-    //}
+    }
 
 }

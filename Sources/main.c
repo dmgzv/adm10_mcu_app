@@ -13,10 +13,11 @@
 #include "log.h"
 #include "watchdog.h"
 
+#include "pl.h"
 #include "dm.h"
-#include "dm_link.h"
-#include "dev_agent.h"
-#include "dev_agent_backend.h"
+#include "dev_agent_conf.h"
+#include "agt.h"
+#include "dm_link_adm_10.h"
 
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,6 +71,31 @@ const SHELL_IFACE_T ShellTelnetIface =
 /* Private variables ---------------------------------------------------------*/
 osThreadId SystemThreadHandle;
 
+struct agt __attribute__((section ("CCM_DATA"))) g_agt;
+struct dm __attribute__((section ("CCM_DATA"))) g_dm;
+
+struct dm_schema mgmt = {
+	.root = &DM_MGMT_SN_ROOT,
+	.attribute = { &DM_MGMT_ATTRIBUTE_VAL, sizeof(DM_MGMT_ATTRIBUTE_VAL) },
+	.config = { &DM_MGMT_CONFIG_VAL, sizeof(DM_MGMT_CONFIG_VAL) },
+	.inventory = { &DM_MGMT_INVENTORY_VAL, sizeof(DM_MGMT_INVENTORY_VAL) },
+	.monitor = { &DM_MGMT_MONITOR_VAL, sizeof(DM_MGMT_MONITOR_VAL) },
+	.fault = { &DM_MGMT_FAULT_VAL, sizeof(DM_MGMT_FAULT_VAL) },
+	.gauge = { &DM_MGMT_GAUGE_VAL, sizeof(DM_MGMT_GAUGE_VAL) },
+	.counter = { NULL, 0 },
+};
+
+struct dm_schema calib = {  // FIXME for using calibration schema
+	.root = &DM_CALIB_SN_ROOT,
+	.attribute = { NULL, 0 },
+	.config = { &DM_CALIB_CONFIG_VAL, sizeof(DM_CALIB_CONFIG_VAL) },
+	.inventory = { NULL, 0 },
+	.monitor = { NULL, 0 },
+	.fault = { NULL, 0 },
+	.gauge = { NULL, 0 },
+	.counter = { NULL, 0 },
+};
+
 /* Private functions */
 
 /* Threads */
@@ -108,8 +134,20 @@ int main(void)
 
 static void Agent_Thread(void const *argument)
 {
+	g_agt.listen_port = AGT_SERVER_PORT;
 	while (1) {
-		dev_agent_process();
+		PL_LOG_INFO("Listening on port %u", g_agt.listen_port);
+		g_agt.agt_listen_sock = -1;
+		g_agt.agt_listen_sock = pl_init_listen_sock(
+				INADDR_ANY, g_agt.listen_port);
+
+		if (g_agt.agt_listen_sock == -1) {
+			PL_LOG_ERROR("Failed to init listen sock");
+			continue;
+		}
+
+		PL_LOG_DEBUG("Entering infinite loop");
+		agt_run_agent(g_agt.agt_listen_sock, &g_agt.req_buf, &g_agt.rsp_buf);
 	}
 }
 
@@ -142,9 +180,7 @@ static void System_Thread(void const *argument)
 	BSP_InitMemory();
 	WATCHDOG_Refresh();
 	
-	dm_lock_init();
-	dm_init_data_model();
-	load_startup_config();
+	dm_init(&g_dm, DM_FULL_SLOT, SCHEMA_ID, &mgmt, &calib);
 	
 	BSP_ETH_Init();
 	TFTP_CLIENT_Init();

@@ -1,0 +1,65 @@
+module ipg-lcs {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/lcs";
+  prefix ipg-lcs;
+
+  import ipg-common {
+    prefix "ipg-cmn";
+    revision-date "2019-08-10";
+  }
+
+  import ipg-system {
+    prefix "ipg-sys";
+    revision-date "2019-08-10";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "This module describes line card slots";
+  revision "2019-11-27" {
+    description "Fix admin state and service state";
+    reference "";
+  }
+  revision "2019-11-20" {
+    description "Initial revision of line cards slots schema";
+    reference "";
+  }
+
+  augment /ipg-sys:system {
+    description "Augment of /system with line card slots";
+
+    list line-card-slot {
+      description "Line card slot";
+      key "id";
+      max-elements 24;
+      leaf id {
+        description "Slot ID";
+        type uint32 {
+          range "1..24";
+        }
+      }
+      leaf admin-state {
+        description "Administrative state";
+        ipg-cmn:category "config";
+        type ipg-cmn:admin-state-type;
+        default MT;
+        config true;
+      }
+      leaf service-state {
+        description "Service state";
+        ipg-cmn:category "monitor";
+        ipg-cmn:condition;
+        type ipg-cmn:service-state-type;
+        config false;
+      }
+      leaf card-module-name {
+        when "../admin-state != 'DSBLD'";
+        description "Card module name";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        default "unknown";
+        //config false;
+      }
+    }
+  }
+}

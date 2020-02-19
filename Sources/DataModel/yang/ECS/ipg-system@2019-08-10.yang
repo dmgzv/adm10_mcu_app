@@ -1,0 +1,43 @@
+module ipg-system {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/system";
+  prefix "ipg-sys";
+
+  import ietf-yang-types {
+    prefix yang;
+    revision-date "2013-07-15";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "";
+  revision "2019-08-10" {
+    description "Initial revision of NE system schema";
+    reference "";
+  }
+
+  container system {
+    description "System group configuration";
+  }
+
+  rpc reset {
+    description
+      "Request that the specific object to be reset to
+       default configuration immediately.";
+    input {
+      leaf object {
+        type yang:xpath1.0;
+        mandatory true;
+        description "XPATH to object that needs to be reset.";
+      }
+    }
+    output {
+      leaf err-msg {
+        type string {
+          length "1 .. 128";
+        }
+        description "Error message in case failure";
+      }
+    }
+  }
+}

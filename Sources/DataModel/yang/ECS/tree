@@ -1,0 +1,244 @@
+module: ipg-ecs
+
+  rpcs:
+    +---x set-current-datetime
+    |  +---w input
+    |     +---w current-datetime    yang:date-and-time
+    +---x get-current-datetime
+    |  +--ro output
+    |     +--ro current-datetime?   string
+    +---x cc-reboot
+       +---w input
+          +---w cc-card    enumeration
+module: ipg-hidden
+  +--rw __HIDDEN__
+     +--rw admin-state?     ipg-cmn:admin-state-type
+     +--ro service-state?   ipg-cmn:service-state-type
+module: ipg-log
+
+  rpcs:
+    +---x download-req
+       +---w input
+          +---w req-id            uint32
+          +---w requester-ip      ipg-cmn:ipv4-address
+          +---w log-type          log-type
+          +---w record-index      uint32
+          +---w count             uint32
+          +---w server-details
+             +---w ip-address       ipg-cmn:ipv4-address
+             +---w port-num?        ipg-cmn:port-number
+             +---w sftp-login       string
+             +---w sftp-password    string
+             +---w directory        string
+
+  notifications:
+    +---n new-log-notif
+    |  +--ro log-type        log-type
+    |  +--ro record-index    uint32
+    |  +--ro log-record      string
+    +---n download-status-notif
+       +--ro req-id            uint32
+       +--ro requester-ip      ipg-cmn:ipv4-address
+       +--ro err-code          int32
+       +--ro (download-status)?
+          +--:(success)
+          |  +--ro filename*   string
+          +--:(failure)
+             +--ro err-msg?    string
+module: ipg-management
+
+  rpcs:
+    +---x backup
+    |  +---w input
+    |  |  +---w ip-address        ipg-cmn:ipv4-address
+    |  |  +---w port-num?         ipg-cmn:port-number
+    |  |  +---w sftp-login        string
+    |  |  +---w sftp-password     string
+    |  |  +---w file-path-name    string
+    |  +--ro output
+    |     +--ro err-msg?   string
+    +---x restore
+       +---w input
+       |  +---w ip-address        ipg-cmn:ipv4-address
+       |  +---w port-num?         ipg-cmn:port-number
+       |  +---w sftp-login        string
+       |  +---w sftp-password     string
+       |  +---w file-path-name    string
+       +--ro output
+          +--ro err-msg?   string
+
+  notifications:
+    +---n invalid-schema
+    |  +--ro err-msg?   string
+    +---n startup-config-invalid
+    |  +--ro err-msg?   string
+    +---n sc-initial-config-error
+    |  +--ro sc-slot-id?   uint8
+    |  +--ro err-msg?      string
+    +---n card-ready
+       +--ro sc-slot-id?         uint8
+       +--ro card-module-name?   ipg-cmn:string-64
+module: ipg-software-update
+
+  rpcs:
+    +---x start-sw-update
+    |  +---w input
+    |  |  +---w slot-category     enumeration
+    |  |  +---w slot-num          uint8
+    |  |  +---w ip-address        ipg-cmn:ipv4-address
+    |  |  +---w port-num?         ipg-cmn:port-number
+    |  |  +---w sftp-login        string
+    |  |  +---w sftp-password     string
+    |  |  +---w file-path-name    string
+    |  +--ro output
+    |     +--ro status?         enumeration
+    |     +--ro error-string?   string
+    +---x get-sw-update-status
+    |  +---w input
+    |  |  +---w slot-category?   enumeration
+    |  |  +---w slot-num?        uint8
+    |  +--ro output
+    |     +--ro status-update* [id]
+    |        +--ro id               int32
+    |        +--ro slot-category?   enumeration
+    |        +--ro slot-num?        uint8
+    |        +--ro status?          enumeration
+    |        +--ro total-nstages?   int32
+    |        +--ro current-stage?   string
+    |        +--ro error-string?    string
+    +---x cancel-sw-update
+       +---w input
+       |  +---w slot-category?   enumeration
+       |  +---w slot-num?        uint8
+       +--ro output
+          +--ro cancel-resp* [id]
+             +--ro id               int32
+             +--ro slot-category?   enumeration
+             +--ro slot-num?        uint8
+             +--ro status?          enumeration
+             +--ro error-string?    string
+module: ipg-system
+  +--rw system
+     +--rw ipg-ccs:control-card-slot* [id]
+     |  +--rw ipg-ccs:id                    uint32
+     |  +--rw ipg-ccs:admin-state?          ipg-cmn:admin-state-type-IS
+     |  +--ro ipg-ccs:service-state?        ipg-cmn:service-state-type-UEQ-IS
+     |  +--ro ipg-ccs:card-module-name?     ipg-cmn:string-64
+     |  +--rw ipg-cu-h5:cu-h5-2019-11-29
+     |     +--ro ipg-cu-h5:serial-number?     ipg-cmn:string-64
+     |     +--ro ipg-cu-h5:part-number?       ipg-cmn:string-64
+     |     +--ro ipg-cu-h5:vendor?            ipg-cmn:string-64
+     |     +--ro ipg-cu-h5:hardware-number?   ipg-cmn:string-64
+     |     +--ro ipg-cu-h5:software-number?   ipg-cmn:string-64
+     +--rw chassis:chassis
+     |  +--ro chassis:serial-number?     ipg-cmn:string-64
+     |  +--ro chassis:part-number?       ipg-cmn:string-64
+     |  +--ro chassis:vendor?            ipg-cmn:string-64
+     |  +--ro chassis:hardware-number?   ipg-cmn:string-64
+     +--rw ipg-ecs:ecs
+     |  +--rw ipg-ecs:network-interfaces
+     |  |  +--rw ipg-ecs:active
+     |  |  |  +--rw ipg-ecs:ip?     ipg-cmn:ipv4-address
+     |  |  |  +--rw ipg-ecs:mask?   uint8
+     |  |  |  +--rw ipg-ecs:gw?     ipg-cmn:ipv4-address
+     |  |  +--rw ipg-ecs:primary
+     |  |  |  +--rw ipg-ecs:ip?     ipg-cmn:ipv4-address
+     |  |  |  +--rw ipg-ecs:mask?   uint8
+     |  |  |  +--rw ipg-ecs:gw?     ipg-cmn:ipv4-address
+     |  |  +--rw ipg-ecs:protect
+     |  |     +--rw ipg-ecs:ip?     ipg-cmn:ipv4-address
+     |  |     +--rw ipg-ecs:mask?   uint8
+     |  |     +--rw ipg-ecs:gw?     ipg-cmn:ipv4-address
+     |  +--rw ipg-ecs:snmp
+     |  |  +--rw ipg-ecs:sysDescr?       ipg-cmn:string-64
+     |  |  +--rw ipg-ecs:sysObjectID?    ipg-cmn:string-64
+     |  |  +--rw ipg-ecs:sysContact?     ipg-cmn:string-64
+     |  |  +--rw ipg-ecs:sysName?        ipg-cmn:string-64
+     |  |  +--rw ipg-ecs:sysLocation?    ipg-cmn:string-64
+     |  |  +--rw ipg-ecs:enable-traps?   boolean
+     |  |  +--rw ipg-ecs:snmp-server* [id]
+     |  |     +--rw ipg-ecs:id    uint32
+     |  |     +--rw ipg-ecs:ip?   ipg-cmn:ipv4-address-or-none
+     |  +--rw ipg-ecs:ntp
+     |  |  +--rw ipg-ecs:enabled?      boolean
+     |  |  +--rw ipg-ecs:ntp-server* [id]
+     |  |     +--rw ipg-ecs:id               uint32
+     |  |     +--rw ipg-ecs:ntp-server-ip?   ipg-cmn:ipv4-address-or-none
+     |  +--rw ipg-ecs:ha
+     |     +--rw ipg-ecs:active-cc?   enumeration
+     +--rw ipg-fcs:fan-card-slot* [id]
+     |  +--rw ipg-fcs:id                      uint32
+     |  +--rw ipg-fcs:admin-state?            ipg-cmn:admin-state-type-IS
+     |  +--ro ipg-fcs:service-state?          ipg-cmn:service-state-type-UEQ-IS
+     |  +--ro ipg-fcs:card-module-name?       ipg-cmn:string-64
+     |  +--rw ipg-fb-k10:fb-k10-2019-11-27
+     |     +--ro ipg-fb-k10:serial-number?     ipg-cmn:string-64
+     |     +--ro ipg-fb-k10:part-number?       ipg-cmn:string-64
+     |     +--ro ipg-fb-k10:vendor?            ipg-cmn:string-64
+     |     +--ro ipg-fb-k10:hardware-number?   ipg-cmn:string-64
+     |     +--ro ipg-fb-k10:software-number?   ipg-cmn:string-64
+     +--rw ipg-lcs:line-card-slot* [id]
+     |  +--rw ipg-lcs:id                  uint32
+     |  +--rw ipg-lcs:admin-state?        ipg-cmn:admin-state-type
+     |  +--ro ipg-lcs:service-state?      ipg-cmn:service-state-type
+     |  +--ro ipg-lcs:card-module-name?   ipg-cmn:string-64
+     +--rw ipg-pcs:power-card-slot* [id]
+        +--rw ipg-pcs:id                      uint32
+        +--rw ipg-pcs:admin-state?            ipg-cmn:admin-state-type-IS
+        +--ro ipg-pcs:service-state?          ipg-cmn:service-state-type-UEQ-IS
+        +--ro ipg-pcs:card-module-name?       ipg-cmn:string-64
+        +--rw ipg-pem-h3:pem-h3-2019-11-29
+           +--ro ipg-pem-h3:serial-number?     ipg-cmn:string-64
+           +--ro ipg-pem-h3:part-number?       ipg-cmn:string-64
+           +--ro ipg-pem-h3:vendor?            ipg-cmn:string-64
+           +--ro ipg-pem-h3:hardware-number?   ipg-cmn:string-64
+           +--ro ipg-pem-h3:software-number?   ipg-cmn:string-64
+
+  rpcs:
+    +---x reset
+       +---w input
+       |  +---w object    yang:xpath1.0
+       +--ro output
+          +--ro err-msg?   string
+module: ipg-users
+
+  rpcs:
+    +---x create-user
+    |  +---w input
+    |     +---w login-name    loginstr
+    |     +---w password      passwdstr
+    |     +---w user-role     roles
+    |     +---w full-name?    namestr
+    |     +---w e-mail?       emailstr
+    |     +---w phone?        phonestr
+    +---x update-user-details
+    |  +---w input
+    |     +---w login-name    loginstr
+    |     +---w full-name?    namestr
+    |     +---w e-mail?       emailstr
+    |     +---w phone?        phonestr
+    +---x update-user-password
+    |  +---w input
+    |     +---w login-name            loginstr
+    |     +---w requester-password    passwdstr
+    |     +---w new-password          passwdstr
+    +---x delete-user
+    |  +---w input
+    |     +---w login-name    loginstr
+    +---x get-user
+    |  +---w input
+    |  |  +---w login-name    loginstr
+    |  +--ro output
+    |     +--ro login-name?   loginstr
+    |     +--ro user-role?    roles
+    |     +--ro full-name?    namestr
+    |     +--ro e-mail?       emailstr
+    |     +--ro phone?        phonestr
+    +---x get-users
+       +--ro output
+          +--ro users* [login-name]
+             +--ro login-name    loginstr
+             +--ro user-role?    roles
+             +--ro full-name?    namestr
+             +--ro e-mail?       emailstr
+             +--ro phone?        phonestr

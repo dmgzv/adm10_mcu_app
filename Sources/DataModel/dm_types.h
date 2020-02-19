@@ -1,4 +1,4 @@
-/* Auto-generated with cmd-line: c:\python27\scripts\pyang --plugindir .\plugin -V -f dm_codegen_plugin --dm-name adm10 YangFiles\ipg-common@2019-08-10.yang YangFiles\ipg-sfp@2019-11-27.yang YangFiles\ipg-adm-10@2019-11-28.yang YangFiles\ipg-hidden@2019-08-28.yang */
+/* Auto-generated with cmd-line: c:\python27\scripts\pyang -p .\yang\ECS --plugindir .\plugin -V -f dm_codegen_plugin --dm-name adm_10_clbr yang\ADM-10\ipg-common@2019-08-10.yang yang\ADM-10\ipg-adm-10-clbr@2020-02-10.yang */
 #ifndef _DM_TYPES_H_
 #define _DM_TYPES_H_
 

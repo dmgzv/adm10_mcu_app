@@ -1,0 +1,43 @@
+module ipg-adm-10-clbr {
+    yang-version 1;
+    namespace "http://www.ipg.com/horizon/adm-10-clbr";
+    prefix ipg-adm-10-clbr;
+
+    import ipg-common { 
+        prefix "ipg-cmn";
+        revision-date "2019-08-10";
+    }
+    /*import ipg-system { 
+        prefix "ipg-sys";
+        revision-date "2019-08-10";
+    }
+    import ipg-lcs { 
+        prefix "ipg-lcs";
+        revision-date "2019-11-20";
+    }*/
+
+    organization "IPG";
+    contact "IPG";
+    description "Calibration YANG model for ADM-10 card";
+	revision 2020-02-10 {
+        description "Initial revision of ADM-10 calibration card schema";
+    }
+
+
+    //augment /ipg-sys:system/ipg-lcs:line-card-slot {
+        container adm-10-clbr-2020-02-10 {
+            //when "(../ipg-lcs:card-module-name = 'adm-10-clbr-2020-02-10') and (../ipg-lcs:admin-state != 'DSBLD')";    
+            description "ADM-10";
+            ipg-cmn:object "card";
+
+            leaf serial-number {
+                description "Serial number";
+                ipg-cmn:category "config";
+                type ipg-cmn:string-64;
+        		default "0000-0000-0000";
+                config true;
+            }
+		}
+	//}
+
+}

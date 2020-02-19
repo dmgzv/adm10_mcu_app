@@ -1,0 +1,118 @@
+module: ipg-adm-10
+  +--rw adm-10-2019-11-28
+     +--ro serial-number?       ipg-cmn:string-64
+     +--ro part-number?         ipg-cmn:string-64
+     +--ro vendor?              ipg-cmn:string-64
+     +--ro hardware-number?     ipg-cmn:string-64
+     +--ro software-number?     ipg-cmn:string-64
+     +--ro temperature?         ipg-cmn:float-1
+     +--ro temperature-fault?   boolean
+     +--ro power-fault?         boolean
+     +--ro hardware-fault?      boolean
+     +--rw adm
+        +--rw admin-state?     ipg-cmn:admin-state-type
+        +--ro service-state?   ipg-cmn:service-state-type
+        +--rw client* [id]
+        |  +--rw id               uint32
+        |  +--rw admin-state?     ipg-cmn:admin-state-type
+        |  +--ro service-state?   ipg-cmn:service-state-type
+        |  +--rw signal-type?     enumeration
+        |  +--rw loopback?        enumeration
+        |  +--rw module-type?     enumeration
+        |  +--rw sfp
+        |     +--ro serial-number?       ipg-cmn:string-64
+        |     +--ro part-number?         ipg-cmn:string-64
+        |     +--ro vendor?              ipg-cmn:string-64
+        |     +--ro temperature?         ipg-cmn:float-1
+        |     +--ro temperature-min?     ipg-cmn:float-1
+        |     +--ro temperature-max?     ipg-cmn:float-1
+        |     +--ro temperature-fault?   boolean
+        |     +--rw rx-port
+        |     |  +--rw direction?   enumeration
+        |     |  +--rw connector?   enumeration
+        |     |  +--rw channel
+        |     |     +--rw wavelength?            ipg-cmn:float-2
+        |     |     +--ro wavelength-min?        ipg-cmn:float-2
+        |     |     +--ro wavelength-max?        ipg-cmn:float-2
+        |     |     +--ro wavelength-default?    ipg-cmn:float-2
+        |     |     +--rw frequency?             ipg-cmn:float-2
+        |     |     +--ro frequency-min?         ipg-cmn:float-2
+        |     |     +--ro frequency-max?         ipg-cmn:float-2
+        |     |     +--ro frequency-default?     ipg-cmn:float-2
+        |     |     +--rw width?                 enumeration
+        |     |     +--ro optical-power?         ipg-cmn:float-1
+        |     |     +--ro optical-power-min?     ipg-cmn:float-1
+        |     |     +--ro optical-power-max?     ipg-cmn:float-1
+        |     |     +--ro optical-power-fault?   boolean
+        |     +--rw tx-port
+        |        +--rw laser-enable?   enumeration
+        |        +--rw direction?      enumeration
+        |        +--rw connector?      enumeration
+        |        +--rw channel
+        |           +--rw wavelength?            ipg-cmn:float-2
+        |           +--ro wavelength-min?        ipg-cmn:float-2
+        |           +--ro wavelength-max?        ipg-cmn:float-2
+        |           +--ro wavelength-default?    ipg-cmn:float-2
+        |           +--rw frequency?             ipg-cmn:float-2
+        |           +--ro frequency-min?         ipg-cmn:float-2
+        |           +--ro frequency-max?         ipg-cmn:float-2
+        |           +--ro frequency-default?     ipg-cmn:float-2
+        |           +--rw width?                 enumeration
+        |           +--ro optical-power?         ipg-cmn:float-1
+        |           +--ro optical-power-min?     ipg-cmn:float-1
+        |           +--ro optical-power-max?     ipg-cmn:float-1
+        |           +--ro optical-power-fault?   boolean
+        +--rw line* [id]
+           +--rw id               uint32
+           +--rw admin-state?     ipg-cmn:admin-state-type
+           +--ro service-state?   ipg-cmn:service-state-type
+           +--rw signal-type?     enumeration
+           +--rw loopback?        enumeration
+           +--rw module-type?     enumeration
+           +--rw sfp
+              +--ro serial-number?       ipg-cmn:string-64
+              +--ro part-number?         ipg-cmn:string-64
+              +--ro vendor?              ipg-cmn:string-64
+              +--ro temperature?         ipg-cmn:float-1
+              +--ro temperature-min?     ipg-cmn:float-1
+              +--ro temperature-max?     ipg-cmn:float-1
+              +--ro temperature-fault?   boolean
+              +--rw rx-port
+              |  +--rw direction?   enumeration
+              |  +--rw connector?   enumeration
+              |  +--rw channel
+              |     +--rw wavelength?            ipg-cmn:float-2
+              |     +--ro wavelength-min?        ipg-cmn:float-2
+              |     +--ro wavelength-max?        ipg-cmn:float-2
+              |     +--ro wavelength-default?    ipg-cmn:float-2
+              |     +--rw frequency?             ipg-cmn:float-2
+              |     +--ro frequency-min?         ipg-cmn:float-2
+              |     +--ro frequency-max?         ipg-cmn:float-2
+              |     +--ro frequency-default?     ipg-cmn:float-2
+              |     +--rw width?                 enumeration
+              |     +--ro optical-power?         ipg-cmn:float-1
+              |     +--ro optical-power-min?     ipg-cmn:float-1
+              |     +--ro optical-power-max?     ipg-cmn:float-1
+              |     +--ro optical-power-fault?   boolean
+              +--rw tx-port
+                 +--rw laser-enable?   enumeration
+                 +--rw direction?      enumeration
+                 +--rw connector?      enumeration
+                 +--rw channel
+                    +--rw wavelength?            ipg-cmn:float-2
+                    +--ro wavelength-min?        ipg-cmn:float-2
+                    +--ro wavelength-max?        ipg-cmn:float-2
+                    +--ro wavelength-default?    ipg-cmn:float-2
+                    +--rw frequency?             ipg-cmn:float-2
+                    +--ro frequency-min?         ipg-cmn:float-2
+                    +--ro frequency-max?         ipg-cmn:float-2
+                    +--ro frequency-default?     ipg-cmn:float-2
+                    +--rw width?                 enumeration
+                    +--ro optical-power?         ipg-cmn:float-1
+                    +--ro optical-power-min?     ipg-cmn:float-1
+                    +--ro optical-power-max?     ipg-cmn:float-1
+                    +--ro optical-power-fault?   boolean
+module: ipg-hidden
+  +--rw __HIDDEN__
+     +--rw admin-state?     ipg-cmn:admin-state-type
+     +--ro service-state?   ipg-cmn:service-state-type

@@ -1,0 +1,117 @@
+module ipg-fb-k10 {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/fb-k10";
+  prefix ipg-fb-k10;
+
+  import ipg-common {
+    prefix "ipg-cmn";
+    revision-date "2019-08-10";
+  }
+  import ipg-system {
+    prefix "ipg-sys";
+    revision-date "2019-08-10";
+  }
+  import ipg-fcs {
+    prefix "ipg-fcs";
+    revision-date "2019-11-20";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "YANG model for FB-K10 fan card";
+  revision 2019-11-27 {
+    description "Initial revision of FB-K10 fan card schema";
+  }
+
+  augment /ipg-sys:system/ipg-fcs:fan-card-slot {
+    container fb-k10-2019-11-27 {
+      /* Temporary change until DSL support is available */
+      // when "(../ipg-fcs:card-module-name = 'fb-k10-2019-11-27') and (../ipg-fcs:admin-state != 'DSBLD')";
+      when "(../ipg-fcs:admin-state != 'DSBLD')";
+      description "Fan card";
+      ipg-cmn:object "fan-card";
+      
+      leaf serial-number {
+        description "Serial number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "0000-0000-0000";
+      }
+      leaf part-number {
+        description "Part number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "FB-K10";
+      }
+	   leaf vendor {
+        description "Vendor";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "IPG Photonics";
+      }
+      leaf hardware-number {
+        description "Hardware number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "1.0.0.0";
+      }
+      leaf software-number {
+        description "Software number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "1.0.0.0";
+      }
+      /*
+      leaf hardware-fault {
+        description "Hardware fault";
+        ipg-cmn:category "fault";
+        type  boolean;
+        ipg-cmn:severity "critical";
+        config false;
+      }
+      leaf inlet-temperature {
+        description "Inlet temperature";
+        ipg-cmn:category "gauge";
+        type ipg-cmn:float-1;
+        units "Centigrade";
+        config false;
+      }
+      leaf outlet-temperature {
+        description "Outlet temperature";
+        ipg-cmn:category "gauge";
+        type ipg-cmn:float-1;
+        units "Centigrade";
+        config false;
+      }
+      leaf fan-1-speed {
+        description "Fan 1 speed";
+        ipg-cmn:category "gauge";
+        type ipg-cmn:float-1;
+        units "Percentage";
+        config false;
+      }
+      leaf fan-2-speed {
+        description "Fan 2 speed";
+        ipg-cmn:category "gauge";
+        type ipg-cmn:float-1;
+        units "Percentage";
+        config false;
+      }
+      leaf fans-speed {
+        description "Fan speed";
+        ipg-cmn:category "config";
+        type ipg-cmn:float-1 {
+          range "0.0..100.0";
+        }
+        config true;
+        default "50.0";
+      }
+      */
+    }
+  }
+}

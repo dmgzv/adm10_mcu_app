@@ -1,0 +1,193 @@
+module ipg-users {
+  namespace "http://www.ipg.com/horizon/users"; 
+  prefix "um";
+  organization "IPG";
+  contact "IPG";
+  description "YANG module for NE user management";
+
+  revision "2019-08-13" {
+    description "Initial Version";
+    reference "";
+  }
+
+  typedef loginstr {
+    type string {
+      length "1..32";
+      pattern "[a-z_][a-z0-9_-]*[$]?";
+    }
+    description "Login name of the user";
+  }
+
+  typedef namestr {
+    type string {
+      length "0..80";
+      pattern "[a-zA-Z '.-]*";
+    }
+    description "Full name of the user ";
+  }
+
+  typedef passwdstr {
+    type string {
+      length "8..128";
+      pattern ".*[0-9]{1,}.*";
+      pattern ".*[A-Z]{1,}.*";
+      pattern ".*[a-zA-Z0-9].*";
+    }
+    description "Password of the user";
+  }
+
+  typedef roles {
+    type enumeration {
+      enum "monitor-user" {
+        value "1";
+        description "User Role with monitoring permissions only";
+      }
+      enum "admin-user" {
+        value "2";
+        description "User Role with monitoring and configuration permissions";
+      }
+    }
+    description "Roles";
+  }
+
+  typedef emailstr {
+    type string {
+      length "0..63";
+      pattern "()|[A-Za-z0-9._%+-]{1,}@[A-Za-z0-9.-]{1,}([.]{1}[a-zA-Z]{2,}|[.]{1}[a-zA-Z]{2,}[.]{1}[a-zA-Z]{2,})";
+    }
+    description "E-mail address of the user";
+  }
+
+  typedef phonestr {
+    type string {
+      length "0..53";
+      pattern "()|([+]?([0-9]{1,3})?)?([-. (]*([0-9]{3})[-. )]*)?(([0-9]{3})?[-. ]*([0-9]{1,4})([-.x ]*([0-9]+))?)";
+    }
+    description "Phone number of the user";
+  }
+
+  grouping user-personal-attrs {
+    description "User personal attributes - full-name, e-mail, phone-number";
+    leaf full-name {
+      type namestr;
+      description "Full name of the user";
+    }
+    leaf e-mail {
+      type emailstr;
+      description "User's e-mail address";
+    }
+    leaf phone {
+      type phonestr;
+      description "Phone number of the user";
+    }
+  }
+
+  grouping user-config-attrs {
+    description
+      "User who has access to NE";
+    leaf login-name {
+      type loginstr;
+      mandatory true;
+      description "User login name";
+    }
+    leaf password {
+      type passwdstr;
+      mandatory true;
+      description "User's password";
+    }
+    leaf user-role {
+      type roles;
+      mandatory true;
+      description "User's role";
+    }
+    uses user-personal-attrs;
+  }
+
+  grouping user-get-attrs {
+    description "";
+    leaf login-name {
+      type loginstr;
+      description "User's login name";
+    }
+
+    leaf user-role {
+      type roles;
+      description "User's role";
+    }
+    uses user-personal-attrs;
+  }
+
+  /*****************************************************************************
+    RPC Actions 
+   *****************************************************************************/
+  rpc create-user {
+    description "Create user";
+    input {
+      uses user-config-attrs;
+    }
+  }
+
+  rpc update-user-details {
+    description "Update user details";
+    input {
+      leaf login-name {
+       	type loginstr;
+        mandatory true;
+        description "User's login name";
+      }
+      uses user-personal-attrs;
+    }
+  }
+
+  rpc update-user-password {
+    description "Update user password";
+    input {
+      leaf login-name {
+        type loginstr;
+        mandatory true;
+        description "User's login name";
+      }
+      leaf new-password {
+        type passwdstr;
+        mandatory true;
+        description "User's new password";
+      }
+     }
+  }
+
+  rpc delete-user {
+    description "Delete user";
+    input {
+      leaf login-name {
+        type loginstr;
+        mandatory true;
+        description "Login name of the user";
+      }
+    }
+  }
+
+  rpc get-user {
+    description "Get user";
+    input {
+      leaf login-name {
+        type loginstr;
+        mandatory true;
+        description "Login name of the user";
+      }
+    }
+    output {
+      uses user-get-attrs;
+    }
+  }
+
+  rpc get-users {
+    description "Get users";
+    output {
+      list users {
+        key login-name;
+        description "Users of the NE";
+        uses user-get-attrs;
+      }
+    }
+  }
+}

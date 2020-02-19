@@ -1020,19 +1020,24 @@
               <FilePath>.\Sources\DataModel\dm.c</FilePath>
             </File>
             <File>
-              <FileName>dm_adm10.c</FileName>
+              <FileName>dm_adm_10.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\DataModel\dm_adm10.c</FilePath>
+              <FilePath>.\Sources\DataModel\dm_adm_10.c</FilePath>
             </File>
             <File>
-              <FileName>dm_adm10_link.c</FileName>
+              <FileName>dm_adm_10_clbr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\DataModel\dm_adm10_link.c</FilePath>
+              <FilePath>.\Sources\DataModel\dm_adm_10_clbr.c</FilePath>
             </File>
             <File>
-              <FileName>dm_freertos.c</FileName>
+              <FileName>dm_persist.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\DataModel\dm_freertos.c</FilePath>
+              <FilePath>.\Sources\DataModel\dm_persist.c</FilePath>
+            </File>
+            <File>
+              <FileName>pl_freertos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\pl_freertos.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1045,19 +1050,9 @@
               <FilePath>.\Sources\Agent\dev_agent.c</FilePath>
             </File>
             <File>
-              <FileName>dev_agent_backend.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Agent\dev_agent_backend.c</FilePath>
-            </File>
-            <File>
               <FileName>devapi_packer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Agent\devapi_packer.c</FilePath>
-            </File>
-            <File>
-              <FileName>ospl_linux.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Agent\ospl_linux.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2077,19 +2072,24 @@
               <FilePath>.\Sources\DataModel\dm.c</FilePath>
             </File>
             <File>
-              <FileName>dm_adm10.c</FileName>
+              <FileName>dm_adm_10.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\DataModel\dm_adm10.c</FilePath>
+              <FilePath>.\Sources\DataModel\dm_adm_10.c</FilePath>
             </File>
             <File>
-              <FileName>dm_adm10_link.c</FileName>
+              <FileName>dm_adm_10_clbr.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\DataModel\dm_adm10_link.c</FilePath>
+              <FilePath>.\Sources\DataModel\dm_adm_10_clbr.c</FilePath>
             </File>
             <File>
-              <FileName>dm_freertos.c</FileName>
+              <FileName>dm_persist.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\DataModel\dm_freertos.c</FilePath>
+              <FilePath>.\Sources\DataModel\dm_persist.c</FilePath>
+            </File>
+            <File>
+              <FileName>pl_freertos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\DataModel\pl_freertos.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2102,19 +2102,9 @@
               <FilePath>.\Sources\Agent\dev_agent.c</FilePath>
             </File>
             <File>
-              <FileName>dev_agent_backend.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Agent\dev_agent_backend.c</FilePath>
-            </File>
-            <File>
               <FileName>devapi_packer.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Agent\devapi_packer.c</FilePath>
-            </File>
-            <File>
-              <FileName>ospl_linux.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Agent\ospl_linux.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -8,10 +8,10 @@
 
 struct devapi_msg_packer_ctx {
 	uint8_t hdr_done;
-	uint8_t *hdr_ptr;
-	uint8_t *curr_buf_ptr;
-	uint8_t *obj_start_ptr;
-	uint8_t *param_start_ptr;
+	char *hdr_ptr;
+	char *curr_buf_ptr;
+	char *obj_start_ptr;
+	char *param_start_ptr;
 	size_t curr_buf_size;
 	size_t max_buf_size;
 };

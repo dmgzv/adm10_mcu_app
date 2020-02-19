@@ -1,0 +1,387 @@
+module ipg-cu-h5 {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/cu-h5";
+  prefix ipg-cu-h5;
+
+  import ipg-common {
+    prefix "ipg-cmn";
+    revision-date "2019-08-10";
+  }
+  import ipg-system {
+    prefix "ipg-sys";
+    revision-date "2019-08-10";
+  }
+  import ipg-ccs {
+    prefix "ipg-ccs";
+    revision-date "2019-11-20";
+  }
+  /*
+  import ipg-sfp {
+    prefix "ipg-sfp";
+    revision-date "2019-11-20";
+  }
+  */
+
+  organization "IPG";
+  contact "IPG";
+  description "YANG model for CU-H5 control card";
+  revision 2019-11-29 {
+    description 
+    "
+      1.Add config false to card hardware-number
+      2.Fix issue with container name and when condition
+    ";
+  }
+  revision 2019-11-27 {
+    description "Fix issue with container name";
+  }
+  revision 2019-11-20 {
+    description "Initial revision of CU-H5 control card schema";
+  }
+
+  augment /ipg-sys:system/ipg-ccs:control-card-slot {
+    container cu-h5-2019-11-29 {
+      /* Temporary change until DSL support is available */
+      // when "(../ipg-ccs:card-module-name = 'cu-h5-2019-11-29') and (../ipg-ccs:admin-state != 'DSBLD')";
+      when "(../ipg-ccs:admin-state != 'DSBLD')";
+      description "Control unit card";
+      ipg-cmn:object "control-card";
+
+      leaf serial-number {
+        description "Serial number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "0000-0000-0000";
+      }
+      leaf part-number {
+        description "Part number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "CU-H5";
+      }
+	  leaf vendor {
+        description "Vendor";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "IPG Photonics";
+      }
+      leaf hardware-number {
+        description "Hardware number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "IP1432-1";
+      }
+      leaf software-number {
+        description "Software number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "1.0.0.0";
+      }
+      /*
+      leaf temperature {
+        description "Temperature";
+        units "Centigrade";
+        ipg-cmn:category "gauge";
+        type ipg-cmn:float-1;
+        ipg-cmn:min-val "5.0";
+        ipg-cmn:max-val "45.0";
+        config false;
+      }
+      leaf temperature-fault {
+        description "Temperature fault";
+        ipg-cmn:category "fault";
+        type  boolean;
+        ipg-cmn:severity "critical";
+        config false;
+      }
+      leaf power-fault {
+        description "Power fault";
+        ipg-cmn:category "fault";
+        type  boolean;
+        ipg-cmn:severity "critical";
+        config false;
+      }
+      leaf hardware-fault {
+        description "Hardware fault";
+        ipg-cmn:category "fault";
+        type  boolean;
+        ipg-cmn:severity "critical";
+        config false;
+      }
+
+      container cu {
+        description "Control unit device";
+        ipg-cmn:object "device";
+
+        leaf admin-state {
+          description "Administrative state";
+          ipg-cmn:category "config";
+          ipg-cmn:condition;
+          type ipg-cmn:admin-state-type-IS;
+          config true;
+          default "IS";
+        }
+        leaf service-state {
+          description "Service state";
+          ipg-cmn:category "monitor";
+          type ipg-cmn:service-state-type;
+          config false;
+        }
+
+        list optical-interface {
+          when "../admin-state != 'DSBLD'";
+          description "Optical interface";
+          ipg-cmn:object "interface";
+          key "id";
+          max-elements 4;
+          leaf id {
+            description "Interface ID";
+            type uint32 {
+              range "1..4";
+            }
+          }
+
+          leaf admin-state {
+            description "Administrative state";
+            ipg-cmn:category "config";
+            ipg-cmn:condition;
+            type ipg-cmn:admin-state-type;
+            config true;
+            default DSBLD;
+          }
+          leaf service-state {
+            description "Service state";
+            ipg-cmn:category "monitor";
+            type ipg-cmn:service-state-type;
+            config false;
+          }
+
+          leaf module-type {
+            when "../admin-state != 'DSBLD'";
+            description "Module type";
+            ipg-cmn:category "config";
+            ipg-cmn:condition;
+            type enumeration {
+              enum SFP   { value 0; }
+            }
+            config true;
+            default "SFP";
+          }
+
+          leaf signal-type {
+            when "../admin-state != 'DSBLD'";
+            description "Signal type";
+            ipg-cmn:category "config";
+            ipg-cmn:condition;
+            type enumeration {
+              enum "Autoneg"   { value 32; }
+              enum "1000BASE-X Full Duplex"   { value 37; }
+            }
+            config true;
+            default Autoneg;
+          }
+
+          uses ipg-sfp:sfp;
+
+          container ethernet {
+            when "../admin-state != 'DSBLD'";
+            description "Ethernet signal";
+
+            leaf mode {
+              description "Ethernet mode";
+              ipg-cmn:category "monitor";
+              type enumeration {
+                enum "Unknown" {value 0; }
+                enum "1000BASE-X Full Duplex"  {value 37; }
+              }
+              config false;
+            }
+            leaf los {
+              description "Loss of signal";
+              ipg-cmn:category "fault";
+              ipg-cmn:severity "critical";
+              type  boolean;
+              config false;
+            }
+            leaf link-down {
+              description "Link down";
+              ipg-cmn:category "fault";
+              ipg-cmn:severity "critical";
+              type  boolean;
+              config false;
+            }
+            leaf rx-pkts {
+              description "Rx packets";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;              
+            }
+            leaf rx-octs {
+              description "Rx octets";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;
+            }
+            leaf rx-errs {
+              description "Rx errors";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;
+            }
+            leaf tx-pkts {
+              description "Tx packets";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;              
+            }
+            leaf tx-octs {
+              description "Tx octets";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;
+            }
+            leaf tx-errs {
+              description "Tx errors";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;
+            }
+          }
+        }
+
+        list copper-interface {
+          description "Copper interface";
+          ipg-cmn:object "interface";
+          key "id";
+          max-elements 4;
+          leaf id {
+            description "Interface ID";
+            type uint32 {
+              range "5..8";
+            }
+          }
+          leaf admin-state {
+            description "Administrative state";
+            ipg-cmn:category "config";
+            ipg-cmn:condition;
+            type ipg-cmn:admin-state-type;
+            config true;
+            default DSBLD;
+          }
+          leaf service-state {
+            description "Service state";
+            ipg-cmn:category "monitor";
+            type ipg-cmn:service-state-type;
+            config false;
+          }
+
+          leaf signal-type {
+            when "../admin-state != 'DSBLD'";
+            description "Signal type";
+            ipg-cmn:category "config";
+            ipg-cmn:condition;
+            type enumeration {
+              enum "Autoneg"   { value 32; }
+              enum "10BASE-T Full Duplex"   { value 33; }
+              enum "10BASE-T Half Duplex"   { value 34; }
+              enum "100BASE-TX Full Duplex"   { value 35; }
+              enum "100BASE-TX Half Duplex"   { value 36; }
+            }
+            config true;
+            default Autoneg;
+          }
+
+          container rj45-port {
+            when "../admin-state != 'DSBLD'";
+            description "RJ45 port";
+            leaf direction {
+              description "Direction";
+              ipg-cmn:category "config";
+              type enumeration {
+                enum "In/Out"  { value 3; }
+              }
+              config true;
+              default "In/Out";
+            }
+            leaf connector {
+              description "Connector";
+              ipg-cmn:category "config";
+              type enumeration {
+                enum RJ45 { value 10; }
+              }
+              config true;
+              default RJ45;
+            }
+          }
+
+          container ethernet {
+            when "../admin-state != 'DSBLD'";
+            description "Ethernet signal";
+
+            leaf mode {
+              description "Ethernet mode";
+              ipg-cmn:category "monitor";
+              type enumeration {
+                enum "Unknown" {value 0; }
+                enum "10BASE-T Full Duplex"   { value 33; }
+                enum "10BASE-T Half Duplex"   { value 34; }
+                enum "100BASE-TX Full Duplex"   { value 35; }
+                enum "100BASE-TX Half Duplex"   { value 36; }
+              }
+              config false;
+            }
+            leaf link-down {
+              description "Link down";
+              ipg-cmn:category "fault";
+              ipg-cmn:severity "critical";
+              type  boolean;
+              config false;
+            }
+            leaf rx-pkts {
+              description "Rx packets";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;              
+            }
+            leaf rx-octs {
+              description "Rx octets";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;
+            }
+            leaf rx-errs {
+              description "Rx errors";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;
+            }
+            leaf tx-pkts {
+              description "Tx packets";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;              
+            }
+            leaf tx-octs {
+              description "Tx octets";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;
+            }
+            leaf tx-errs {
+              description "Tx errors";
+              ipg-cmn:category "counter";
+              type uint64;
+              config false;
+            }
+          }
+        }  // List of copper interfaces
+      }
+      */
+    }
+  }
+}

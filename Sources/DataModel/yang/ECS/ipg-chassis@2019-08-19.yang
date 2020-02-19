@@ -1,0 +1,93 @@
+module ipg-chassis {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/chassis";
+  prefix "chassis";
+
+  import ipg-common {
+    prefix "ipg-cmn";
+    revision-date "2019-08-10";
+  }
+  import ipg-system {
+    prefix "ipg-sys";
+    revision-date "2019-08-10";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "Chassis model.";
+
+  revision "2019-08-19" {
+    description "Initial revision.";
+    reference "";
+  }
+
+  augment /ipg-sys:system {
+    description "Augments /system with chassis";
+
+    container chassis {
+      ipg-cmn:object "chassis";
+      description "Chassis";
+
+      leaf serial-number {
+        description "Serial number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "0000-0000-0000";
+      }
+      leaf part-number {
+        description "Part number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "K10-H8";
+      }
+	    leaf vendor {
+        description "Vendor";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "IPG Photonics";
+      }
+      leaf hardware-number {
+        description "Hardware number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "1.0.0.0";
+      }
+      /*
+      list eeprom {
+        description "EEPROM";
+        ipg-cmn:object "eeprom";
+        key "id";
+        max-elements 2;
+        leaf id {
+          type uint32 {
+            range "1..2";
+          }
+          description "EEPROM ID";
+        }
+
+        leaf hardware-status {
+          description "Hardware status";
+          ipg-cmn:category "monitor";
+          type enumeration {
+            enum Absent { value 0; }
+            enum Ok     { value 1; }
+            enum Fail   { value 2; }
+          }
+          config false;
+        }
+        leaf hardware-fault {
+          description "Hardware fault";
+          ipg-cmn:category "fault";
+          ipg-cmn:severity "critical";
+          type  boolean;   // raised | clear
+          config false;
+        }
+      }
+      */
+    }
+  }
+}

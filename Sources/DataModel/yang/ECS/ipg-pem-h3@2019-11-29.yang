@@ -1,0 +1,130 @@
+module ipg-pem-h3 {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/pem-h3";
+  prefix ipg-pem-h3;
+
+  import ipg-common {
+    prefix "ipg-cmn";
+    revision-date "2019-08-10";
+  }
+  import ipg-system {
+    prefix "ipg-sys";
+    revision-date "2019-08-10";
+  }
+  import ipg-pcs {
+    prefix "ipg-pcs";
+    revision-date "2019-11-20";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "YANG model for PEM-H3 power card";
+  revision "2019-11-29" {
+    description 
+    "
+      1. Fix issue with container name and when condition
+    ";
+    reference "";
+  }
+  revision "2019-11-27" {
+    description "Initial revision of PEM-H3 power card schema";
+    reference "";
+  }
+
+  augment /ipg-sys:system/ipg-pcs:power-card-slot {
+  //augment /ipg-pcs:power-card-slot {
+    container pem-h3-2019-11-29 {
+      /* Temporary change until DSL support is available */
+      // when "(../ipg-pcs:card-module-name = 'pem-h3-2019-11-29') and (../ipg-pcs:admin-state != 'DSBLD')";
+      when "(../ipg-pcs:admin-state != 'DSBLD')";
+      description "PEM card";
+      ipg-cmn:object "power-card";
+      
+      leaf serial-number {
+        description "Serial number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "0000-0000-0000";
+      }
+      leaf part-number {
+        description "Part number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "PEM-H3";
+      }
+      leaf vendor {
+        description "Vendor";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "IPG Photonics";
+      }
+      leaf hardware-number {
+        description "Hardware number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "1.0.0.0";
+      }
+      leaf software-number {
+        description "Software number";
+        ipg-cmn:category "inventory";
+        type ipg-cmn:string-64;
+        config false;
+        default "1.0.0.0";
+      }
+      /*
+      leaf hardware-fault {
+        description "Hardware fault";
+        ipg-cmn:category "fault";
+        type  boolean;
+        ipg-cmn:severity "critical";
+        config false;
+      }
+      leaf temperature {
+        description "Temperature.";
+        ipg-cmn:category "gauge";
+        type ipg-cmn:float-1;
+        units "Centigrade";
+        config false;
+      }
+      leaf input-voltage {
+        description "Input voltage.";
+        ipg-cmn:category "gauge";
+        type ipg-cmn:float-1;
+        units "Volts";
+        config false;        
+      }
+      leaf input-current {
+        description "Input current.";
+        ipg-cmn:category "gauge";
+        type ipg-cmn:float-1;
+        units "Ampere";
+        config false;
+      }
+
+      list output-voltage-fuse {
+        description "Fault for output voltage fuse";
+        key "id";
+        max-elements 4;        
+        leaf id {
+          description "Output voltage fuse ID";
+          type uint32 {
+            range "1..4";
+          }
+        }
+
+        leaf fuse-fault {
+          description "Fuse fault";
+          ipg-cmn:category "fault";
+          type  boolean; // raised, cleared
+          ipg-cmn:severity "critical";
+          config false;
+        }
+      }
+      */
+    }
+  }
+}

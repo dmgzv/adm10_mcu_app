@@ -1,0 +1,110 @@
+module ipg-management {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/management";
+  prefix mgmt;
+
+  import ipg-common {
+    prefix "ipg-cmn";
+  }
+
+  import ipg-ecs-common {
+    prefix ipg-ecmn;
+    revision-date "2019-08-14";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "";
+  revision "2019-08-14" {
+    description "Initial revision.";
+    reference "";
+  }
+
+  //--------------------------------------------------------------------
+  // External Notifications
+  //--------------------------------------------------------------------
+  notification invalid-schema {
+    description
+      "Notification to indicate failure when loading schema file";
+    leaf err-msg {
+      type string {
+        length "1..128";
+      }
+      description "error message.";
+    }
+  }
+
+  notification startup-config-invalid {
+    description "Notification to indicate that Startup Configuration file was invalid";
+    leaf err-msg {
+      type string {
+        length "1..128";
+      }
+      description "error message.";
+    }
+  }
+
+  notification sc-initial-config-error {
+    description
+      "Failed to apply Slot Card initial configuration";
+    leaf sc-slot-id {
+      type uint8;
+      description "Slot Card slot id";
+    }
+
+    leaf err-msg {
+      type string {
+        length "1..128";
+      }
+      description "error message.";
+    }
+  }
+
+  notification card-ready {
+    description
+      "Notification to indicate that Slot Card configuration is ready";
+    leaf sc-slot-id {
+      type uint8;
+      description "";
+    }
+    leaf card-module-name {
+      type ipg-cmn:string-64;
+      description "Unique card module name";
+    }
+  }
+
+  /****************************************************************************
+   *                    RPCs                                                  *
+   ****************************************************************************/
+  rpc backup {
+    description
+      "Backup the current running configuration";
+    input {
+      uses ipg-ecmn:sftp-server-with-remote-file;
+    }
+    output {
+      leaf err-msg {
+        type string {
+          length "1 .. 128";
+        }
+        description "Error message in case the operation failed.";
+      }
+    }
+  }
+
+  rpc restore {
+    description
+      "Restore configuration from the given backup file";
+    input {
+      uses ipg-ecmn:sftp-server-with-remote-file;
+    }
+    output {
+      leaf err-msg {
+        type string {
+          length "1 .. 128";
+        }
+        description "Error message in case the operation failed";
+      }
+    }
+  }
+}

@@ -63,7 +63,7 @@ enum devapi_datatype {
 };
 
 enum devapi_param_category {
-	DEVAPI_PARAMCAR_INVALID = 0,
+	DEVAPI_PARAMCAT_INVALID = 0,
 	DEVAPI_PARAMCAT_INVENTORY = 1,
 	DEVAPI_PARAMCAT_CONFIG = 2,
 	DEVAPI_PARAMCAT_MONITOR = 3,
@@ -78,6 +78,7 @@ enum devapi_card_type {
 	DEVAPI_DOUBLE_SLOT = 3
 };
 
+// Same as enum dm_type in dm.h
 enum devapi_schema_type {
 	DEVAPI_SCHEMA_CARDMGMT = 0,
 	DEVAPI_SCHEMA_CALIBRATION = 1
@@ -114,11 +115,9 @@ enum devapi_rsp_status {
 
 enum devapi_sw_update_status {
 	DEVAPI_SU_STATUS_IDLE = 0,
-	// General SWU errors
-	DEVAPI_SU_STATUS_FAILED = 10,
-	// SWU Download errors
-	DEVAPI_SU_STATUS_DOWNLOAD_SUCCESS = 20,
-	DEVAPI_SU_STATUS_DOWNLOAD_FAILED = 21,
+	DEVAPI_SU_STATUS_DOWNLOAD_FAILED = 1,
+	DEVAPI_SU_STATUS_DOWNLOAD_SUCCESS = 2,
+	DEVAPI_SU_STATUS_UPDATE_FAILED = 3
 };
 
 enum devapi_commit_opt {
@@ -134,7 +133,7 @@ struct __attribute__((__packed__)) devapi_msg_hdr {
 	uint8_t  id_notation;   // 0=XPATH, 1=OID
 	uint8_t  msg_last_fragment;
 	// uint8_t  schema_id[DEVAPI_SCHEMA_ID_LEN];
-	// TODO: schema_id is of dynamic size in the message
+	// XXX: schema_id is of dynamic size in the message
 };
 
 struct devapi_req_result {

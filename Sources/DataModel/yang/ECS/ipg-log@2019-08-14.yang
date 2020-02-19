@@ -1,0 +1,147 @@
+module ipg-log {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/log";
+  prefix "log";
+
+  import ipg-common {
+    prefix ipg-cmn;
+    revision-date "2019-08-10";
+  }
+
+  import ipg-ecs-common {
+    prefix ipg-ecmn;
+    revision-date "2019-08-14";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description "Log model.";
+  revision 2019-08-14 {
+    description "Initial revision.";
+    reference "";
+  }
+
+  typedef log-type {
+    type enumeration {
+      enum "UserLog"  {
+        value 0;
+        description "User Log";
+      }
+      enum "EventLog" {
+        value 1;
+        description "Event Log";
+      }
+    }
+    description "log type";
+  }
+
+  rpc download-req {
+    description "Request log download from NE to SFTP server";
+    input {    
+      leaf req-id {
+        type uint32;
+        mandatory true;
+        description "An unique identifier of the request";
+      }
+      leaf requester-ip {
+        type ipg-cmn:ipv4-address;
+        mandatory true;
+        description "Requester's IPv4 address.";
+      }
+      leaf log-type {
+        type log-type;
+        mandatory true;
+        description "Log Type (UserLog or EventLog)";
+      }
+      leaf record-index {
+        type uint32;
+        mandatory true;
+        description
+          "Starting index of the log record to be downloaded";
+      }
+      leaf count {
+        type uint32;
+        mandatory true;
+        description
+          "Minimum number of log records needs to be downloaded
+          from the record index.";
+      }
+      container server-details {
+        description "Remote location deatils";
+        uses ipg-ecmn:sftp-server-with-remote-dir;
+      }
+    }
+  }
+
+  notification new-log-notif {
+    description 
+      "Notification for the new log record.";
+    leaf log-type {
+      type log-type;
+      mandatory true;
+      description "log type (UserLog or EventLog).";
+    }
+    leaf record-index {
+      type uint32;
+      mandatory true;
+      description
+        "Index number of the log record.";
+    }
+    leaf log-record {
+      type string {
+        length "1..512";
+      }
+      mandatory true;
+      description
+        'Composed log record in text format.
+         Fields seperated with (\t) delimiter.
+         Log record Format as follows:
+ 
+         UserLogs: Sequence_Num\tUTC_Timestamp\tCCnumber\tECSUserID\tNMSUserID\t
+         Client-IPAddress\tRemoteInterface\tOperationCategory
+         \tOperationObject\tOperationResult\tDetail\r\n
+ 
+         EventLogs:Sequence_Num\tUTC_Timestamp\tCCNumber\tEventCategory\t
+         EventObject\tEventName\tEventDetails\r\n';
+    }
+  }
+
+  notification download-status-notif {
+    description "Log download satus notificaiton";
+    leaf req-id {
+      type uint32;
+      mandatory true;
+      description "An unique identifier of the request";
+    }
+    leaf requester-ip {
+      type ipg-cmn:ipv4-address;
+      mandatory true;
+      description "Requester's IPv4 address.";
+    }
+    leaf err-code {
+      type int32;
+      mandatory true;
+      description "Error code (Success (0) or failure (-1))";
+    }
+
+    choice download-status {
+      description "Download status";
+        case success {
+          leaf-list filename {
+            type string {
+              length "1..80";
+            }
+            description "Name of log files which are copied.";
+          }
+        }
+      case failure {
+        leaf err-msg {
+          type string {
+            length "1..128";    
+          }
+          description "error message.";
+        }
+      }
+    }
+  }
+}

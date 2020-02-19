@@ -1,0 +1,74 @@
+module ipg-ecs-common {
+  yang-version 1;
+
+  namespace "http://www.ipg.com/horizon/ipg-ecs-common";
+  prefix "ipg-ecmn";
+
+  import ipg-common {
+    prefix "ipg-cmn";
+    revision-date "2019-08-10";
+  }
+
+  organization "IPG";
+  contact "IPG";
+  description
+    "This module describe common typedefs, extension,
+    parameters templates for ECS";
+
+  revision "2019-08-14" {
+    description "Initial revision.";
+    reference "";
+  }
+
+  grouping sftp-server-info {
+    description "SFTP server details";
+    leaf ip-address {
+      type ipg-cmn:ipv4-address;
+      mandatory true;
+      description "IPv4 address of SFTP server.";
+    }
+    leaf  port-num {
+      type ipg-cmn:port-number;
+      default 22;
+      description "SFTP port number.";
+    }
+    leaf sftp-login {
+      type string {
+        length "1..511";
+      }
+      mandatory true;
+      description "Login id  used to log into SFTP server.";
+    }
+    leaf sftp-password {
+      type string {
+        length "1..511";
+      }
+      mandatory true;
+      description "Password of SFTP login user";
+    }
+  }
+
+  grouping sftp-server-with-remote-dir {
+    description "SFTP server and remote directory details";
+    uses sftp-server-info;
+    leaf directory {
+      type string {
+        length "1..1023";
+      }
+      mandatory true;
+      description "Directory name on the SFTP server ";
+    }
+  }
+
+  grouping sftp-server-with-remote-file {
+    description "SFTP server and remote file details";
+    uses sftp-server-info;
+    leaf file-path-name {
+      type string {
+        length "1..1023";
+      }
+      mandatory true;
+      description "Path name of file on  remote SFTP server.";
+    }
+  }
+}

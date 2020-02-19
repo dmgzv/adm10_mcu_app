@@ -1404,8 +1404,6 @@ class DmCodegenPlugin(plugin.PyangPlugin):
         print ' * ENUMERATION #DEFINES                                                        *'
         print '*******************************************************************************/'
         get_root_node().emit_agt_enum_defines()
-        print
-        print '#endif  /* _DM_%s_H_ */' % dm_name.upper()
 
         for param_type in ['attribute', 'config', 'fault', 'inventory', 'monitor', 'gauge', 'counter']:
             get_root_node().emit_agt_param_struct(param_type)
@@ -1465,6 +1463,8 @@ class DmCodegenPlugin(plugin.PyangPlugin):
         #for param_type in ['attribute', 'config', 'fault', 'inventory', 'monitor', 'gauge', 'counter']:
         #    print 'extern %s_%s_values_t %s_%s_values;' % (dm_type, param_type, dm_type, param_type);
         #print 'extern const schema_node_t sn_%s_root_;' % dm_name
+        print
+        print '#endif  /* _DM_%s_H_ */' % dm_name.upper()
 
 
 def emit_main():
@@ -1719,15 +1719,21 @@ def print_node(s, module, fd, prefix, path, mode, depth, llen,
         name = s.arg
     else:
         name = s.i_module.i_prefix + ':' + s.arg
+
+
     flags = get_flags_str(s, mode)
 
     oid = p_oid
     if (p_oid) :
         oid += "."
     oid += str(ch_idx+1)
-    xpath = p_xpath + "/" + name
+    #xpath = p_xpath + "/" + name
+    xpath = p_xpath + "/" + s.arg
 
-    schema_node = SchemaNode(name)
+    print ">>>>>>>>>>>>>>>>>>", xpath
+
+    #schema_node = SchemaNode(name)
+    schema_node = SchemaNode(s.arg)
     schema_node.yang_type = s.keyword
 
     ipg_attrs = "{"

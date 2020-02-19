@@ -1,0 +1,46 @@
+#ifndef _DM_LINK_ADM_10_H_
+#define _DM_LINK_ADM_10_H_
+
+#include <string.h>
+
+#include "dm_adm_10.h"
+#include "dm_adm_10_clbr.h"
+
+#define SCHEMA_ID "adm-10-2019-11-28"
+
+extern struct adm_10_attribute_values adm_10_attribute_values;
+extern struct adm_10_config_values adm_10_config_values;
+extern struct adm_10_fault_values adm_10_fault_values;
+extern struct adm_10_inventory_values adm_10_inventory_values;
+extern struct adm_10_monitor_values adm_10_monitor_values;
+extern struct adm_10_gauge_values adm_10_gauge_values;
+extern struct adm_10_counter_values adm_10_counter_values;
+
+extern struct adm_10_clbr_attribute_values adm_10_clbr_attribute_values;
+extern struct adm_10_clbr_config_values adm_10_clbr_config_values;
+extern struct adm_10_clbr_fault_values adm_10_clbr_fault_values;
+extern struct adm_10_clbr_inventory_values adm_10_clbr_inventory_values;
+extern struct adm_10_clbr_monitor_values adm_10_clbr_monitor_values;
+extern struct adm_10_clbr_gauge_values adm_10_clbr_gauge_values;
+extern struct adm_10_clbr_counter_values adm_10_clbr_counter_values;
+
+#define DM_MGMT_ATTRIBUTE_VAL adm_10_attribute_values
+#define DM_MGMT_CONFIG_VAL adm_10_config_values
+#define DM_MGMT_INVENTORY_VAL adm_10_inventory_values
+#define DM_MGMT_MONITOR_VAL adm_10_monitor_values
+#define DM_MGMT_FAULT_VAL adm_10_fault_values
+#define DM_MGMT_COUNTER_VAL adm_10_counter_values
+#define DM_MGMT_GAUGE_VAL adm_10_gauge_values
+
+#define DM_CALIB_ATTRIBUTE_VAL adm_10_clbr_attribute_values
+#define DM_CALIB_CONFIG_VAL adm_10_clbr_config_values
+#define DM_CALIB_INVENTORY_VAL adm_10_clbr_inventory_values
+#define DM_CALIB_MONITOR_VAL adm_10_clbr_monitor_values
+#define DM_CALIB_FAULT_VAL adm_10_clbr_fault_values
+#define DM_CALIB_COUNTER_VAL adm_10_clbr_counter_values
+#define DM_CALIB_GAUGE_VAL adm_10_clbr_gauge_values
+
+#define DM_MGMT_SN_ROOT sn_adm_10_root_
+#define DM_CALIB_SN_ROOT sn_adm_10_clbr_root_
+
+#endif  /* _DM_LINK_ADM_10_H_ */

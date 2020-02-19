@@ -1,0 +1,257 @@
+module ipg-ecs {
+  yang-version 1;
+  namespace "http://www.ipg.com/horizon/ecs";
+  prefix "ipg-ecs";
+
+  import ietf-yang-types { prefix yang; }
+  import ipg-common { prefix ipg-cmn; }
+  import ipg-system { prefix sys; }
+
+  organization "IPG";
+  contact "IPG";
+  description "YANG model of ECS";
+  revision "2019-11-20" {
+    description "Initial revision of chassis model";
+    reference "";
+  }
+
+  augment /sys:system {
+    description "Augments /system with chassis";
+
+    container ecs {
+      ipg-cmn:object "ecs";
+      description "Embedded control system";
+
+      container network-interfaces {
+        description "Network interfaces";
+        ipg-cmn:object "network";
+
+        container active {
+          ipg-cmn:object "network-interface";
+          description "Active CC Interface";
+          leaf ip {
+            ipg-cmn:category "config";
+            type ipg-cmn:ipv4-address;
+            default "192.168.1.10";
+            description "IP address";
+          }
+          leaf mask {
+            ipg-cmn:category "config";
+            type uint8 {
+              range "1..32";
+            }
+            default 27;
+            description "netmask";
+          }
+          leaf gw {
+            ipg-cmn:category "config";
+            type ipg-cmn:ipv4-address;
+            default "192.168.1.1";
+            description "gateway";
+          }
+        }
+
+        container primary {
+          ipg-cmn:object "network-interface";
+          description "Primary CC Interface";
+
+          leaf ip {
+            ipg-cmn:category "config";
+            type ipg-cmn:ipv4-address;
+            default "192.168.1.11";
+            description "IP address";
+          }
+          leaf mask {
+            ipg-cmn:category "config";
+            type uint8 {
+              range "1..32";
+            }
+            default 27;
+            description "netmask";
+          }
+          leaf gw {
+            ipg-cmn:category "config";
+            type ipg-cmn:ipv4-address;
+            default "192.168.1.1";
+            description "gateway";
+          }
+        }
+
+        container protect {
+          description "Protected CC Interface";
+          ipg-cmn:object "network-interface";
+          leaf ip {
+            ipg-cmn:category "config";
+            type ipg-cmn:ipv4-address;
+            default "192.168.1.12";
+            description "Protect CC IP address";
+          }
+          leaf mask {
+            ipg-cmn:category "config";
+            type uint8 {
+              range "1..32";
+            }
+            default 27;
+            description "Protect CC netmask";
+          }
+          leaf gw {
+            ipg-cmn:category "config";
+            type ipg-cmn:ipv4-address;
+            default "192.168.1.1";
+            description "Protect CC gateway";
+          }
+        }
+      }
+
+      container snmp {
+        ipg-cmn:object "snmp";
+        description "SNMP";
+
+        leaf sysDescr {
+          ipg-cmn:category "config";
+          type ipg-cmn:string-64;
+          description "system description";
+        }
+        leaf sysObjectID {
+          ipg-cmn:category "config";
+          type ipg-cmn:string-64;
+          description "system ObjectID";
+        }
+        leaf sysContact {
+          ipg-cmn:category "config";
+          type ipg-cmn:string-64;
+          description "system contact";
+        }
+        leaf sysName {
+          ipg-cmn:category "config";
+          type ipg-cmn:string-64;
+          description "system name";
+        }
+        leaf sysLocation {
+          ipg-cmn:category "config";
+          type ipg-cmn:string-64;
+          description "system location";
+        }
+        leaf enable-traps {
+          type boolean;
+          description "Enable/disable SNMP traps";
+        }
+        list snmp-server {
+          ipg-cmn:object "SNMP Server";
+          key "id";
+          //TODO min-elements 4;     Augmentation error
+          max-elements 4;
+          description "SNMP server IPs";
+          leaf id {
+            type uint32 {
+              range "1..4";
+            }
+            description "SNMP Server ID";
+          }
+          leaf ip {
+            ipg-cmn:category "config";
+            type ipg-cmn:ipv4-address-or-none;
+            default "";
+            description "IP address";
+          }
+        }
+      }
+
+      container ntp {
+        ipg-cmn:object "ntp";
+        description
+          "Configuration of the NTP client.";
+        leaf enabled {
+          type boolean;
+          default true;
+          description
+            "Indicates that the system should attempt to
+            synchronize the system clock with an NTP server
+            from the 'ntp/ntp-server' list.";
+        }
+
+        list ntp-server {
+          ipg-cmn:object "NTP Server";
+          key "id";
+          //TODO min-elements 2; Augmentation error
+          max-elements 2;
+          description "NTP server IPs";
+          leaf id {
+            type uint32 {
+              range "1..2";
+            }
+            description "NTP ID";
+          }
+          leaf ntp-server-ip {
+            ipg-cmn:category "config";
+            type ipg-cmn:ipv4-address-or-none;
+            default "";
+            description "NTP server ip";
+          }
+        }
+      }
+
+      container ha {
+        description "High avaliability";
+        ipg-cmn:object "ha";
+
+        leaf active-cc {
+          ipg-cmn:category "config";
+          type enumeration {
+            enum Auto    { value 0; description "Auto"; }
+            enum Primary { value 1; description "Primary"; }
+            enum Protect { value 2; description "Protect"; }
+          }
+          default "Auto";
+          description "Active CC";
+        }
+      }
+    }
+  }
+
+  /*
+   * RPC
+   */
+
+  rpc set-current-datetime {
+    description
+      "Set the /system/system-state/clock/current-datetime leaf
+      to the specified value. It is allowed only if 'ntp.enabled'
+      leaf is set as 'false'.";
+      input {
+        leaf current-datetime {
+          type yang:date-and-time;
+          mandatory true;
+          description "The current system date and time.";
+        }
+      }
+  }
+
+  rpc get-current-datetime {
+    description
+      "Returns current system date and time.";
+    output {
+      leaf current-datetime {
+        type string;
+        description "current system date and time.";
+      }
+    }
+  }
+
+  rpc cc-reboot {
+    description
+      "Request that the specific card to be rebooted immediately.
+      A server SHOULD send an rpc reply to the client before
+      restarting the card.";
+    input {
+      leaf cc-card {
+        type enumeration {
+          enum Primary   { value 0; description "Primary"; }
+          enum Protected { value 1; description "Protected"; }
+        }
+        mandatory true;
+        description "CC Card that needs to be rebooted.";
+      }
+    }
+  }
+}

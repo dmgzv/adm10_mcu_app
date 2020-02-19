@@ -1,17 +1,13 @@
-#include <assert.h>
-#include <string.h>
-#include <stdbool.h>
-#include "endian.h"
 #include "devapi.h"
 #include "devapi_packer.h"
-#include "dev_agent_log.h"
+#include "pl.h"
 #include "dm.h"
 
 /* WARNGING: not reentrant */
 const void *
 ptr_htobe(enum devapi_datatype type, const void *val)
 {
-	assert(val != NULL);
+	pl_assert(val != NULL);
 
 	static uint8_t val_dup[8];
 
@@ -19,7 +15,7 @@ ptr_htobe(enum devapi_datatype type, const void *val)
 	case DEVAPI_DATATYPE_INT16:
 	case DEVAPI_DATATYPE_UINT16:
 		memcpy(val_dup, val, 2);
-		*(int16_t*)val_dup = htobe16(*(int16_t*)val_dup);
+		*(int16_t*)val_dup = pl_htobe16(*(int16_t*)val_dup);
 		return val_dup;
 	case DEVAPI_DATATYPE_ENUM:
 	case DEVAPI_DATATYPE_INT32:
@@ -30,12 +26,12 @@ ptr_htobe(enum devapi_datatype type, const void *val)
 	case DEVAPI_DATATYPE_FLOATE1:
 	case DEVAPI_DATATYPE_FLOATE18:
 		memcpy(val_dup, val, 4);
-		*(int32_t*)val_dup = htobe32(*(int32_t*)val_dup);
+		*(int32_t*)val_dup = pl_htobe32(*(int32_t*)val_dup);
 		return val_dup;
 	case DEVAPI_DATATYPE_INT64:
 	case DEVAPI_DATATYPE_UINT64:
 		memcpy(val_dup, val, 8);
-		*(int64_t*)val_dup = htobe64(*(int64_t*)val_dup);
+		*(int64_t*)val_dup = pl_htobe64(*(int64_t*)val_dup);
 		return val_dup;
 	default:
 		return val;
@@ -46,7 +42,7 @@ ptr_htobe(enum devapi_datatype type, const void *val)
 static inline void
 pack(struct devapi_msg_packer_ctx *ctx, const void *val, size_t val_len)
 {
-	assert(ctx != NULL && val != NULL);
+	pl_assert(ctx != NULL && val != NULL);
 	
 	memcpy(ctx->curr_buf_ptr, val, val_len);
 	ctx->curr_buf_ptr += val_len;
@@ -57,10 +53,10 @@ static inline enum devapi_return
 unpack(struct devapi_msg_packer_ctx *ctx, const char *param,
 		void *val, size_t val_len)
 {
-	assert(ctx != NULL && param != NULL && val != NULL);
+	pl_assert(ctx != NULL && param != NULL && val != NULL);
 
 	if (ctx->max_buf_size < ctx->curr_buf_size + val_len) {
-		LOG_ERROR("Unpack %s - no memory, has [%u], need [%u]", param,
+		PL_LOG_ERROR("Unpack %s - no memory, has [%u], need [%u]", param,
 			(ctx->max_buf_size - ctx->curr_buf_size), val_len);
 		return DEVAPI_PACKER_NO_MEM;
 	}
@@ -74,11 +70,11 @@ static inline enum devapi_return
 unpack_str(struct devapi_msg_packer_ctx *ctx, const char *param,
 		void *str, size_t str_max_len)  // str_max_len including '\0'
 {
-	assert(ctx != NULL && param != NULL && str != NULL);
+	pl_assert(ctx != NULL && param != NULL && str != NULL);
 
-	size_t slen = strlen((const char*)ctx->curr_buf_ptr) + 1;  // XXX: possible buffer overflow read
+	size_t slen = strlen(ctx->curr_buf_ptr) + 1;  // XXX: possible buffer overflow read
 	if (slen > str_max_len) {
-		LOG_ERROR("Received %s's length is [%u], expected < [%d]",
+		PL_LOG_ERROR("Received %s's length is [%u], expected < [%d]",
 				param, slen, str_max_len);
 		return DEVAPI_PACKER_NO_MEM;
 	}
@@ -87,9 +83,9 @@ unpack_str(struct devapi_msg_packer_ctx *ctx, const char *param,
 
 static inline void
 adjust_msg_hdr_size(struct devapi_msg_packer_ctx *ctx) {
-	assert(ctx != NULL);
+	pl_assert(ctx != NULL);
 	// Re-adjust the message size in the header
-	uint16_t new_len = htons(ctx->curr_buf_size);
+	uint16_t new_len = pl_htobe16(ctx->curr_buf_size);
 	memcpy(ctx->hdr_ptr, &new_len, sizeof(new_len));
 }
 
@@ -97,7 +93,7 @@ void
 devapi_msg_packer_init(struct devapi_msg_packer_ctx *ctx,
 		void *buf, size_t buf_size)
 {
-	assert(ctx != NULL);
+	pl_assert(ctx != NULL);
 	ctx->hdr_done = 0;
 	ctx->hdr_ptr = buf;
 	ctx->curr_buf_ptr = buf;
@@ -105,7 +101,7 @@ devapi_msg_packer_init(struct devapi_msg_packer_ctx *ctx,
 	ctx->param_start_ptr = NULL;
 	ctx->curr_buf_size = 0;
 	ctx->max_buf_size = buf_size;
-	LOG_DEBUG("Packer ctx initialized");
+	PL_LOG_DEBUG("Packer ctx initialized");
 }
 
 enum devapi_return
@@ -115,19 +111,19 @@ devapi_msg_pack_msghdr(struct devapi_msg_packer_ctx *ctx,
 		enum devapi_schema_type target_schema,
 		const char *schema_id)
 {
-	assert (ctx != NULL && schema_id != NULL);
+	pl_assert (ctx != NULL && schema_id != NULL);
 	// Fill the header
 	struct devapi_msg_hdr hdr;
 	uint16_t hdr_len = 2 + 4 + 1 + 1 + 1 + 1 + (strlen(schema_id) + 1);
 
 	if (ctx->max_buf_size < hdr_len) {
-		LOG_ERROR("Bufsize[%u] not enough for msg_hdr [%u]",
+		PL_LOG_ERROR("Bufsize[%u] not enough for msg_hdr [%u]",
 				ctx->max_buf_size, hdr_len);
 		return DEVAPI_PACKER_NO_MEM;
 	}
 
-	hdr.msg_len = htons(hdr_len);
-	hdr.msg_id = htonl(msg_id);
+	hdr.msg_len = pl_htobe16(hdr_len);
+	hdr.msg_id = pl_htobe32(msg_id);
 	hdr.msg_type = msg_type;
 	hdr.target_schema = target_schema;
 	hdr.id_notation = DEVAPI_NOTATION_XPATH;	// Default: XPATH
@@ -135,17 +131,17 @@ devapi_msg_pack_msghdr(struct devapi_msg_packer_ctx *ctx,
 
 	ctx->hdr_ptr = ctx->curr_buf_ptr;
 
-	pack(ctx, (const void*)&hdr.msg_len, sizeof(hdr.msg_len));
-	pack(ctx, (const void*)&hdr.msg_id, sizeof(hdr.msg_id));
-	pack(ctx, &hdr.msg_type, sizeof(hdr.msg_type));
-	pack(ctx, &hdr.target_schema, sizeof(hdr.target_schema));
-	pack(ctx, &hdr.id_notation, sizeof(hdr.id_notation));
-	pack(ctx, &hdr.msg_last_fragment, sizeof(hdr.msg_last_fragment));
+	pack(ctx, (void*)&hdr.msg_len, sizeof(hdr.msg_len));
+	pack(ctx, (void*)&hdr.msg_id, sizeof(hdr.msg_id));
+	pack(ctx, (void*)&hdr.msg_type, sizeof(hdr.msg_type));
+	pack(ctx, (void*)&hdr.target_schema, sizeof(hdr.target_schema));
+	pack(ctx, (void*)&hdr.id_notation, sizeof(hdr.id_notation));
+	pack(ctx, (void*)&hdr.msg_last_fragment, sizeof(hdr.msg_last_fragment));
 	pack(ctx, schema_id, strlen(schema_id) + 1);
 
 	ctx->hdr_done = 1;
 
-	LOG_DEBUG("Header packed. Len[%d]", hdr_len);
+	PL_LOG_DEBUG("Header packed. Len[%d]", hdr_len);
 	return DEVAPI_SUCCESS;
 }
 
@@ -155,7 +151,7 @@ devapi_msg_pack_ptv(struct devapi_msg_packer_ctx *ctx,
 		enum devapi_datatype datatype,
 		const void *value)
 {
-	assert(ctx != NULL && name != NULL && value != NULL);
+	pl_assert(ctx != NULL && name != NULL && value != NULL);
 
 	size_t name_len, type_len, val_len;
 	bool is_str = false;
@@ -163,8 +159,8 @@ devapi_msg_pack_ptv(struct devapi_msg_packer_ctx *ctx,
 	name_len = strlen(name) + 1; // Include null-term
 	type_len = sizeof(uint8_t);
 
-	if (get_datatype_size((uint8_t)datatype, &val_len, &is_str) != 0) {
-		LOG_ERROR("Invalid datatype: %d", datatype);
+	if (dm_get_datatype_size((uint8_t)datatype, &val_len, &is_str) != 0) {
+		PL_LOG_ERROR("Invalid datatype: %d", datatype);
 		return DEVAPI_INVALID_PARAM;
 	}
 	if (is_str) {
@@ -174,7 +170,7 @@ devapi_msg_pack_ptv(struct devapi_msg_packer_ctx *ctx,
 
 	if (ctx->max_buf_size <
 			(ctx->curr_buf_size + name_len + type_len + val_len)) {
-		LOG_ERROR("Bufsize[%u - %u] not enough for TLV [%u + %u + %u]",
+		PL_LOG_ERROR("Bufsize[%u - %u] not enough for TLV [%u + %u + %u]",
 				ctx->max_buf_size, ctx->curr_buf_size,
 				name_len, type_len, val_len);
 		return DEVAPI_PACKER_NO_MEM;
@@ -185,7 +181,7 @@ devapi_msg_pack_ptv(struct devapi_msg_packer_ctx *ctx,
 	pack(ctx, ptr_htobe(datatype, value), val_len);  // Add value
 	adjust_msg_hdr_size(ctx);  // Re-adjust the message size in the header
 
-	LOG_DEBUG("Name[%s] datatype[%s] val with length [%d] added",
+	PL_LOG_DEBUG("Name[%s] datatype[%s] val with length [%d] added",
 		name, devapi_datatype_str(datatype), val_len);
 	return DEVAPI_SUCCESS;
 }
@@ -193,12 +189,12 @@ devapi_msg_pack_ptv(struct devapi_msg_packer_ctx *ctx,
 enum devapi_return
 devapi_msg_pack_string(struct devapi_msg_packer_ctx *ctx, const char *xpath)
 {
-	assert(ctx != NULL && xpath != NULL);
+	pl_assert(ctx != NULL && xpath != NULL);
 
 	uint32_t len = strlen(xpath) + 1;
 
 	if (ctx->max_buf_size < (ctx->curr_buf_size + len)) {
-		LOG_ERROR("Bufsize[%u - %u] not enough to add XPATH[%u]",
+		PL_LOG_ERROR("Bufsize[%u - %u] not enough to add XPATH[%u]",
 				ctx->max_buf_size, ctx->curr_buf_size, len);
 		return DEVAPI_PACKER_NO_MEM;
 	}
@@ -206,14 +202,14 @@ devapi_msg_pack_string(struct devapi_msg_packer_ctx *ctx, const char *xpath)
 	pack(ctx, xpath, len);
 	adjust_msg_hdr_size(ctx);  // Re-adjust the message size in the header
 
-	LOG_DEBUG("Added XPATH[%s]", xpath);
+	PL_LOG_DEBUG("Added XPATH[%s]", xpath);
 	return DEVAPI_SUCCESS;
 }
 
 enum devapi_return
 devapi_msg_pack_obj(struct devapi_msg_packer_ctx *ctx, const char *xpath)
 {
-	assert(ctx != NULL && xpath != NULL);
+	pl_assert(ctx != NULL && xpath != NULL);
 
 	/*
 	 * Adds the following 3 only if it is the first object (!obj_start_ptr):
@@ -235,7 +231,7 @@ devapi_msg_pack_obj(struct devapi_msg_packer_ctx *ctx, const char *xpath)
 	}
 
 	if ((ctx->curr_buf_size + len) > ctx->max_buf_size) {
-		LOG_ERROR("Bufsize[%u - %u] not enough to add obj[%u]",
+		PL_LOG_ERROR("Bufsize[%u - %u] not enough to add obj[%u]",
 				ctx->max_buf_size, ctx->curr_buf_size, len);
 		return DEVAPI_PACKER_NO_MEM;
 	}
@@ -245,12 +241,12 @@ devapi_msg_pack_obj(struct devapi_msg_packer_ctx *ctx, const char *xpath)
 		uint16_t nobjs = 1;
 		devapi_msg_pack_ptv(ctx, S_NUM_OF_OBJS, DEVAPI_DATATYPE_UINT16,
 				&nobjs);
-		LOG_DEBUG("Added first object with header");
+		PL_LOG_DEBUG("Added first object with header");
 	} else {  // This is not the first object
 		// Increment num_of_objs existing in the message
 		uint8_t *ptr = ctx->obj_start_ptr + strlen(S_NUM_OF_OBJS)+1 + 1;
-		*(uint16_t *)ptr = htons(1 + ntohs(*(uint16_t *)ptr));
-		LOG_DEBUG("Object count incremented");
+		*(uint16_t *)ptr = pl_htobe16(1 + pl_be16toh(*(uint16_t *)ptr));
+		PL_LOG_DEBUG("Object count incremented");
 	}
 
 	// Add object xpath
@@ -262,7 +258,7 @@ devapi_msg_pack_obj(struct devapi_msg_packer_ctx *ctx, const char *xpath)
 	uint16_t cnt = 0;
 	devapi_msg_pack_ptv(ctx, S_NUM_OF_PARAMS, DEVAPI_DATATYPE_UINT16, &cnt);
 
-	LOG_DEBUG("Current buffer size[%u]", ctx->curr_buf_size);
+	PL_LOG_DEBUG("Current buffer size[%u]", ctx->curr_buf_size);
 	return DEVAPI_SUCCESS;
 }
 
@@ -272,8 +268,8 @@ devapi_msg_pack_obj_param(struct devapi_msg_packer_ctx *ctx,
 		enum devapi_datatype param_type,
 		const void *val)
 {
-	assert(ctx != NULL && param_name != NULL);
-	assert(ctx->obj_start_ptr != NULL);  // Object header should be there
+	pl_assert(ctx != NULL && param_name != NULL);
+	pl_assert(ctx->obj_start_ptr != NULL);  // Object header should be there
 
 	uint32_t len = strlen(param_name) + 1;
 	if (val) {
@@ -286,7 +282,7 @@ devapi_msg_pack_obj_param(struct devapi_msg_packer_ctx *ctx,
 	}
 
 	if ((ctx->curr_buf_size + len) > ctx->max_buf_size) {
-		LOG_ERROR("Bufsize[%u - %u] not enough to add param[%u]",
+		PL_LOG_ERROR("Bufsize[%u - %u] not enough to add param[%u]",
 				ctx->max_buf_size, ctx->curr_buf_size, len);
 		return DEVAPI_PACKER_NO_MEM;
 	}
@@ -301,21 +297,21 @@ devapi_msg_pack_obj_param(struct devapi_msg_packer_ctx *ctx,
 
 	// Increment num_of_params existing in the message
 	uint8_t *ptr = ctx->param_start_ptr + strlen(S_NUM_OF_PARAMS)+1 + 1;
-	*(uint16_t *)ptr = htons(1 + ntohs(*(uint16_t *)ptr));
+	*(uint16_t *)ptr = pl_htobe16(1 + pl_be16toh(*(uint16_t *)ptr));
 
-	LOG_DEBUG("Current buffer size[%u]", ctx->curr_buf_size);
+	PL_LOG_DEBUG("Current buffer size[%u]", ctx->curr_buf_size);
 	return DEVAPI_SUCCESS;
 }
 
 uint16_t
 devapi_msg_get_num_objs(const struct devapi_msg_packer_ctx *ctx) {
-	assert(ctx != NULL);
+	pl_assert(ctx != NULL);
 
 	if (ctx->obj_start_ptr == NULL) {
 		return 0;
 	}
 	uint8_t *ptr = ctx->obj_start_ptr + strlen(S_NUM_OF_OBJS)+1 + 1;
-	return ntohs(*(uint16_t *)ptr);
+	return pl_be16toh(*(uint16_t *)ptr);
 }
 
 enum devapi_return
@@ -323,7 +319,7 @@ devapi_msg_pack_status(struct devapi_msg_packer_ctx *ctx,
 		enum devapi_rsp_status status,
 		const char *err_msg)
 {
-	assert(ctx != NULL);
+	pl_assert(ctx != NULL);
 
 	// Add the status
 	uint32_t slen = sizeof(uint8_t);
@@ -333,7 +329,7 @@ devapi_msg_pack_status(struct devapi_msg_packer_ctx *ctx,
 	}
 
 	if (ctx->max_buf_size < (ctx->curr_buf_size + slen + elen)) {
-		LOG_ERROR("Bufsize[%u - %u] not enough to pack status[%u]",
+		PL_LOG_ERROR("Bufsize[%u - %u] not enough to pack status[%u]",
 				ctx->max_buf_size, ctx->curr_buf_size,
 				(slen+elen));
 		return DEVAPI_PACKER_NO_MEM;
@@ -346,14 +342,14 @@ devapi_msg_pack_status(struct devapi_msg_packer_ctx *ctx,
 	}
 	adjust_msg_hdr_size(ctx);  // Re-adjust the message size in the header
 
-	LOG_DEBUG("Current buffer size[%u]", ctx->curr_buf_size);
+	PL_LOG_DEBUG("Current buffer size[%u]", ctx->curr_buf_size);
 	return DEVAPI_SUCCESS;
 }
 
 void
 devapi_msg_mark_fragment(struct devapi_msg_packer_ctx *ctx)
 {
-	assert(ctx != NULL && ctx->hdr_ptr != NULL);
+	pl_assert(ctx != NULL && ctx->hdr_ptr != NULL);
 
 	((struct devapi_msg_hdr *)(ctx->hdr_ptr))->msg_last_fragment = 0;
 }
@@ -363,31 +359,28 @@ enum devapi_return
 devapi_msg_unpack_msghdr(struct devapi_msg_packer_ctx *ctx,
 		struct devapi_msg_hdr *hdr, const char **schema_id)
 {
-	assert(ctx != NULL && hdr != NULL && schema_id != NULL);
+	pl_assert(ctx != NULL && hdr != NULL && schema_id != NULL);
 	enum devapi_return ret;
 
 	memset(hdr, 0, sizeof(*hdr));
 
-	if (((ret = unpack(ctx, "msg_len", (void*)&hdr->msg_len, sizeof(hdr->msg_len)))
-				== DEVAPI_SUCCESS) &&
+	if (((ret = unpack(ctx, "msg_len", (void*)&hdr->msg_len,
+			sizeof(hdr->msg_len))) == DEVAPI_SUCCESS) &&
 		((ret = unpack(ctx, "msg_id", (void*)&hdr->msg_id,
 				sizeof(hdr->msg_id))) == DEVAPI_SUCCESS) &&
-		((ret = unpack(ctx, "msg_type", &hdr->msg_type,
+		((ret = unpack(ctx, "msg_type", (void*)&hdr->msg_type,
 				sizeof(hdr->msg_type))) == DEVAPI_SUCCESS) &&
-		((ret = unpack(ctx, "target_schema", &hdr->target_schema,
-				sizeof(hdr->target_schema)))
-				== DEVAPI_SUCCESS) &&
-		((ret = unpack(ctx, "id_notation", &hdr->id_notation,
+		((ret = unpack(ctx, "target_schema", (void*)&hdr->target_schema,
+				sizeof(hdr->target_schema))) == DEVAPI_SUCCESS) &&
+		((ret = unpack(ctx, "id_notation", (void*)&hdr->id_notation,
 				sizeof(hdr->id_notation))) == DEVAPI_SUCCESS) &&
-		((ret = unpack(ctx, "msg_last_fragment",
-				&hdr->msg_last_fragment,
-				sizeof(hdr->msg_last_fragment)))
-				== DEVAPI_SUCCESS)) {
+		((ret = unpack(ctx, "msg_last_fragment", (void*)&hdr->msg_last_fragment,
+				sizeof(hdr->msg_last_fragment))) == DEVAPI_SUCCESS)) {
 		// set schema_id and adjust pointers
-		*schema_id = (const char*)ctx->curr_buf_ptr;
-		size_t schema_id_len = strlen((const char*)ctx->curr_buf_ptr) + 1;  // XXX: possible buffer overflow on read
+		*schema_id = ctx->curr_buf_ptr;
+		size_t schema_id_len = strlen(ctx->curr_buf_ptr) + 1;  // XXX: possible buffer overflow on read
 		if (ctx->max_buf_size < ctx->curr_buf_size + schema_id_len) {
-			LOG_ERROR("Unpack schema_id - no memory,"
+			PL_LOG_ERROR("Unpack schema_id - no memory,"
 				" has [%u], need [%u]",
 				(ctx->max_buf_size - ctx->curr_buf_size),
 				schema_id_len);
@@ -398,9 +391,9 @@ devapi_msg_unpack_msghdr(struct devapi_msg_packer_ctx *ctx,
 
 		ctx->hdr_done = 1;
 		// convert network to host order
-		hdr->msg_len = ntohs(hdr->msg_len);
-		hdr->msg_id = ntohl(hdr->msg_id);
-		LOG_DEBUG("Unpacked header len[%u], id[%u], type[%s], "
+		hdr->msg_len = pl_be16toh(hdr->msg_len);
+		hdr->msg_id = pl_be32toh(hdr->msg_id);
+		PL_LOG_DEBUG("Unpacked header len[%u], id[%u], type[%s], "
 				"last_fragement?[%d], schema[%s]",
 				hdr->msg_len, hdr->msg_id,
 				devapi_msg_type_str(hdr->msg_type),
@@ -413,8 +406,8 @@ enum devapi_return
 devapi_msg_unpack_status(struct devapi_msg_packer_ctx *ctx,
 		struct devapi_req_result *result)
 {
-	assert(ctx != NULL && result != NULL);
-	assert(ctx->hdr_done == 1);
+	pl_assert(ctx != NULL && result != NULL);
+	pl_assert(ctx->hdr_done == 1);
 
 	enum devapi_return ret;
 	uint8_t rsp_status;
@@ -434,7 +427,7 @@ devapi_msg_unpack_status(struct devapi_msg_packer_ctx *ctx,
 		}
 	}
 
-	LOG_DEBUG("Unpacked status successfully");
+	PL_LOG_DEBUG("Unpacked status successfully");
 	return DEVAPI_SUCCESS;
 }
 
@@ -442,12 +435,13 @@ enum devapi_return
 devapi_msg_unpack_ptv(struct devapi_msg_packer_ctx *ctx,
 		char *name, size_t name_len,
 		enum devapi_datatype *datatype,
-		void *val, size_t val_len)
+		void *val, size_t arg_val_len)
 {
-	assert(ctx != NULL && name != NULL && datatype != NULL && val != NULL);
+	pl_assert(ctx != NULL && name != NULL && datatype != NULL && val != NULL);
 	enum devapi_return ret;
 	uint8_t type;
 	bool is_str;
+	size_t val_len;
 
 	// Extract name
 	ret = unpack_str(ctx, "PTV-name", name, name_len);
@@ -459,8 +453,13 @@ devapi_msg_unpack_ptv(struct devapi_msg_packer_ctx *ctx,
 		return ret;
 	*datatype = type;
 	// Extract value
-	if (get_datatype_size(type, &val_len, &is_str) != 0) {
-		LOG_ERROR("Invalid datatype: %d", *datatype);
+	if (dm_get_datatype_size(type, &val_len, &is_str) != 0) {
+		PL_LOG_ERROR("Invalid datatype: %d", *datatype);
+		return DEVAPI_INVALID_PARAM;
+	}
+	if (arg_val_len < val_len) {
+		PL_LOG_ERROR("Valsize[%u] not enough for type[%u] val_len[%u]",
+				arg_val_len, type, val_len);
 		return DEVAPI_INVALID_PARAM;
 	}
 	if (is_str) {
@@ -470,9 +469,27 @@ devapi_msg_unpack_ptv(struct devapi_msg_packer_ctx *ctx,
 	}
 	if (ret != DEVAPI_SUCCESS)
 		return ret;
-	LOG_DEBUG("Extracted name [%s], type [%s], len [%u], val [%s]",
-			name, devapi_datatype_str(*datatype),
-			val_len, (is_str ? val : ""));
+	if (!is_str) {
+		PL_LOG_DEBUG("Extracted name[%s], type[%s], len[%u]",
+				name, devapi_datatype_str(*datatype),
+				val_len);
+		// XXX: crude simplification to decide byte-order conversion
+		if (val_len == 2) {
+			*(uint16_t*)val = pl_be16toh(*(uint16_t*)val);
+			//TODO: %d format specifier not the right one.
+			PL_LOG_DEBUG("Extracted val[%d]", *(uint16_t*)val);
+		} else if (val_len == 4) {
+			*(uint32_t*)val = pl_be32toh(*(uint32_t*)val);
+			PL_LOG_DEBUG("Extracted val[%d]", *(uint32_t*)val);
+		} else if (val_len == 8) {
+			*(uint64_t*)val = pl_be64toh(*(uint64_t*)val);
+			PL_LOG_DEBUG("Extracted val[%d]", *(uint64_t*)val);
+		}
+	} else {
+		PL_LOG_DEBUG("Extracted name[%s], type[%s], len[%u], val[%s]",
+				name, devapi_datatype_str(*datatype),
+				val_len, val);
+	}
 	return DEVAPI_SUCCESS;
 }
 
@@ -480,7 +497,7 @@ enum devapi_return
 devapi_msg_unpack_ptv_val(struct devapi_msg_packer_ctx *ctx,
 		const char *name, enum devapi_datatype datatype, void *val)
 {
-	assert(ctx != NULL && name != NULL && val != NULL);
+	pl_assert(ctx != NULL && name != NULL && val != NULL);
 
 	enum devapi_return ret;
 	uint8_t type;
@@ -488,7 +505,7 @@ devapi_msg_unpack_ptv_val(struct devapi_msg_packer_ctx *ctx,
 	size_t param_len = strlen(ctx->curr_buf_ptr) + 1;  // XXX: possible buffer overflow on read
 	
 	if (ctx->max_buf_size < ctx->curr_buf_size + param_len) {
-		LOG_ERROR("Unpack PTV-Param %s: no memory,"
+		PL_LOG_ERROR("Unpack PTV-Param %s: no memory,"
 			" has [%u], need [%u]", name,
 			(ctx->max_buf_size - ctx->curr_buf_size),
 			param_len);
@@ -498,7 +515,7 @@ devapi_msg_unpack_ptv_val(struct devapi_msg_packer_ctx *ctx,
 	ctx->curr_buf_size += param_len;
 
 	if (strcmp(name, param) != 0) {
-		LOG_ERROR("PTV-Param %s: Found %s", name, param);
+		PL_LOG_ERROR("PTV-Param %s: Found %s", name, param);
 		return DEVAPI_INVALID_PARAM;
 	}
 
@@ -507,7 +524,7 @@ devapi_msg_unpack_ptv_val(struct devapi_msg_packer_ctx *ctx,
 		return ret;
 	}
 	if (type != datatype) {
-		LOG_ERROR("PTV-Type %s: Found %d, expected %d",
+		PL_LOG_ERROR("PTV-Type %s: Found %d, expected %d",
 				name, type, datatype);
 		return DEVAPI_INVALID_PARAM;
 	}
@@ -521,15 +538,15 @@ devapi_msg_unpack_field(struct devapi_msg_packer_ctx *ctx,
 		enum devapi_datatype datatype,
 		void *val)
 {
-	assert(field != NULL && val != NULL);
+	pl_assert(field != NULL && val != NULL);
 
 	enum devapi_return ret;
 	size_t val_len;
 	bool is_str;
 
 	// Extract value
-	if (get_datatype_size((uint8_t)datatype, &val_len, &is_str) != 0) {
-		LOG_ERROR("Invalid datatype: %d", datatype);
+	if (dm_get_datatype_size((uint8_t)datatype, &val_len, &is_str) != 0) {
+		PL_LOG_ERROR("Invalid datatype: %d", datatype);
 		return DEVAPI_INVALID_PARAM;
 	}
 	if (is_str) {
@@ -543,14 +560,14 @@ devapi_msg_unpack_field(struct devapi_msg_packer_ctx *ctx,
 	if (!is_str) {
 		// XXX: crude simplification to decide byte-order conversion
 		if (val_len == 2) {
-			*(uint16_t*)val = be16toh(*(uint16_t*)val);
+			*(uint16_t*)val = pl_be16toh(*(uint16_t*)val);
 		} else if (val_len == 4) {
-			*(uint32_t*)val = be32toh(*(uint32_t*)val);
+			*(uint32_t*)val = pl_be32toh(*(uint32_t*)val);
 		} else if (val_len == 8) {
-			*(uint64_t*)val = be64toh(*(uint64_t*)val);
+			*(uint64_t*)val = pl_be64toh(*(uint64_t*)val);
 		}
 	}
-	LOG_DEBUG("Extracted %s - len [%u], val [%s]",
+	PL_LOG_DEBUG("Extracted %s - len [%u], val [%s]",
 			field, val_len, (is_str ? val : ""));
 	return DEVAPI_SUCCESS;
 }
@@ -585,21 +602,21 @@ devapi_get_val_len(enum devapi_datatype datatype, const void *val)
 	case DEVAPI_DATATYPE_FLOATE1:
 	case DEVAPI_DATATYPE_FLOATE18:
 		ret = sizeof(float);  // 4 bytes?
-		assert(ret == 4);
+		pl_assert(ret == 4);
 		break;
 	case DEVAPI_DATATYPE_STRING16:
 	case DEVAPI_DATATYPE_STRING32:
 	case DEVAPI_DATATYPE_STRING64:
 	case DEVAPI_DATATYPE_STRING128:
 	case DEVAPI_DATATYPE_STRING256:
-		assert(val != NULL);
+		pl_assert(val != NULL);
 		ret = strlen(val) + 1;
 		break;
 	case DEVAPI_DATATYPE_INVALID:
 	default:
 		ret = 0;
 	}
-	LOG_DEBUG("Length[%u] type[%s]", ret, devapi_datatype_str(datatype));
+	PL_LOG_DEBUG("Length[%u] type[%s]", ret, devapi_datatype_str(datatype));
 	return ret;
 }
 
@@ -659,12 +676,12 @@ devapi_sw_update_status_str(enum devapi_sw_update_status stat)
 	switch (stat) {
 		case DEVAPI_SU_STATUS_IDLE:
 			return "DEVAPI_SU_STATUS_IDLE";
-		case DEVAPI_SU_STATUS_FAILED:
-			return "DEVAPI_SU_STATUS_FAILED";
-		case DEVAPI_SU_STATUS_DOWNLOAD_SUCCESS:
-			return "DEVAPI_SU_STATUS_DOWNLOAD_SUCCESS";
 		case DEVAPI_SU_STATUS_DOWNLOAD_FAILED:
 			return "DEVAPI_SU_STATUS_DOWNLOAD_FAILED";
+		case DEVAPI_SU_STATUS_DOWNLOAD_SUCCESS:
+			return "DEVAPI_SU_STATUS_DOWNLOAD_SUCCESS";
+		case DEVAPI_SU_STATUS_UPDATE_FAILED:
+			return "DEVAPI_SU_STATUS_UPDATE_FAILED";
 		default:
 			return "UNKNOWN";
 	}
@@ -788,8 +805,8 @@ const char *
 devapi_param_category_str(enum devapi_param_category pc)
 {
 	switch (pc) {
-		case DEVAPI_PARAMCAR_INVALID:
-			return "DEVAPI_PARAMCAR_INVALID";
+		case DEVAPI_PARAMCAT_INVALID:
+			return "DEVAPI_PARAMCAT_INVALID";
 		case DEVAPI_PARAMCAT_INVENTORY:
 			return "DEVAPI_PARAMCAT_INVENTORY";
 		case DEVAPI_PARAMCAT_CONFIG:
