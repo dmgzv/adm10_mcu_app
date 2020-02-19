@@ -6,7 +6,7 @@
 #define BSP_HW_VERSION	"IP1459-1"
 #define BSP_SW_DATE			__DATE__
 #define BSP_SW_TIME			__TIME__
-#define BSP_MCU_SW_VERSION	"1.0.0.24"
+#define BSP_MCU_SW_VERSION	"1.0.0.25"
 
 #define BSP_CONFIG_PROFILES_CNT	1
 
