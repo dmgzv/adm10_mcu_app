@@ -267,7 +267,7 @@ static int32_t SFP_UpdateFreq(SFP_T *Dev)
 	Addr = 144;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
 		return -1;
-	LOG_Add(Dev->DevName, Dev->DevId, "Write Freq: %.2f", Dev->Freq.Cur);
+	LOG_Add(Dev->DevName, Dev->DevId, "Write Freq: %d", Dev->Freq.Cur);
 	
 	return 0;
 }
@@ -308,7 +308,7 @@ int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq)
 	Dev->Freq.Channel = Channel;
 	Dev->Freq.Cur = Freq;
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Write Freq: %.2f", Dev->Freq.Cur);	
+	LOG_Add(Dev->DevName, Dev->DevId, "Write Freq: %d", Dev->Freq.Cur);	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 
