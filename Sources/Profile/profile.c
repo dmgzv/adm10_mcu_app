@@ -1063,11 +1063,13 @@ int32_t PROFILE_GetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_
 int32_t PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t SetState)
 {
 	uint8_t *State;
+	void *ParamValueThr;
 	
 	if (Profile->ValuesLock)
 		return -1;
 	
 	__PROFILE_GetState(Profile, Table, Idx, &State);
+	__PROFILE_GetThr(Profile, Table, Idx, &ParamValueThr);
 	
 	osMutexWait( Profile->Values->Mutex, osWaitForever );
 	if (State)
@@ -1076,6 +1078,10 @@ int32_t PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_
 		{
 			*State = SetState;
 			Profile->TablesChanges |= 1 << Table;
+			if (ParamValueThr)
+			{
+				Profile->TablesChanges |= 1 << PROFILE_TABLE_4;
+			}
 		}
 	}
 	osMutexRelease( Profile->Values->Mutex );
