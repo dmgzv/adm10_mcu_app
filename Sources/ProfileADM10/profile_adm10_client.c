@@ -325,12 +325,12 @@ static const uint32_t ProfileADM10PortClCatIdx[PROFILE_ADM10_CLIENT_PORTS] =
 extern const uint32_t ProfileADM10ConfigLnOPU1SetPayloadIdx[PROFILE_ADM10_LINE_PORTS][4];
 
 static PERF_T ClSDHRSPerf[PROFILE_ADM10_CLIENT_PORTS];
-static uint32_t ClEthRxPkts[PROFILE_ADM10_CLIENT_PORTS];
-static uint32_t ClEthRxOcts[PROFILE_ADM10_CLIENT_PORTS];
-static uint32_t ClEthRxErrs[PROFILE_ADM10_CLIENT_PORTS];
-static uint32_t ClEthTxPkts[PROFILE_ADM10_CLIENT_PORTS];
-static uint32_t ClEthTxOcts[PROFILE_ADM10_CLIENT_PORTS];
-static uint32_t ClEthTxErrs[PROFILE_ADM10_CLIENT_PORTS];
+static uint64_t ClEthRxPkts[PROFILE_ADM10_CLIENT_PORTS];
+static uint64_t ClEthRxOcts[PROFILE_ADM10_CLIENT_PORTS];
+static uint64_t ClEthRxErrs[PROFILE_ADM10_CLIENT_PORTS];
+static uint64_t ClEthTxPkts[PROFILE_ADM10_CLIENT_PORTS];
+static uint64_t ClEthTxOcts[PROFILE_ADM10_CLIENT_PORTS];
+static uint64_t ClEthTxErrs[PROFILE_ADM10_CLIENT_PORTS];
 
 static ALS_T ClALS[PROFILE_ADM10_CLIENT_PORTS];
 
@@ -1196,6 +1196,7 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint3
 	}
 	else
 	{
+		State = PROFILE_ADM10_CL_SET_STATE_ENUM_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&ClSDHRSPerf[Idx]);
@@ -1242,6 +1243,7 @@ static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_
 	}
 	else
 	{
+		State = PROFILE_ADM10_CL_SET_STATE_ENUM_OOS;
 		RxPkts = 0;
 		RxOcts = 0;
 		RxErrs = 0;
