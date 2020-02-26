@@ -1473,7 +1473,7 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 	{
 		ODU1Alarms = 0;
 		
-		if (OPU1Payload == 0)
+		if (OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY)
 		{
 			if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
 				return;
@@ -1592,7 +1592,7 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 	{
 		OPU1Alarms = 0;
 		
-		if (OPU1Payload == 0)
+		if (OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY)
 		{
 			if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
 				return;
@@ -1887,6 +1887,7 @@ static void PROFILE_ADM10_LINE_UpdateOTU2PerfValues(PROFILE_T *Profile, uint32_t
 	}
 	else
 	{
+		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&LnOTU2Perf[Idx]);
@@ -1942,6 +1943,7 @@ static void PROFILE_ADM10_LINE_UpdateODU2PerfValues(PROFILE_T *Profile, uint32_t
 	}
 	else
 	{
+		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&LnODU2Perf[Idx]);
@@ -1957,15 +1959,29 @@ static void PROFILE_ADM10_LINE_UpdateODU2PerfValues(PROFILE_T *Profile, uint32_t
 static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU1Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t State, DataType, OPU2Payload;
+	uint32_t State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
+
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
-		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
 		return;
-
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU1Idx], &OPU1Payload))
+		return;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+		return;
+		
+	if (OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY)
+	{
+		if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
+			return;
+		if (PROFILE_ADM10_LINE_GetPGODU1(Profile, Idx, ODU1Idx, &PGPortType, &PGPortIdx, &PGPortODU1Idx))
+			return;
+		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU1Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU1Idx == 0xFF)))
+			State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
+	}
+	
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
 			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
 			(State != PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
@@ -2022,6 +2038,7 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 	}
 	else
 	{
+		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&LnODU1Perf[Idx][ODU1Idx]);
@@ -2037,16 +2054,27 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU0Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t State, DataType, OPU1Payload;
+	uint32_t State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+		return;	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU0Idx / 2], &OPU1Payload))
 		return;
+	
+	if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &XCPortType, &XCPortIdx, &XCPortODU0Idx))
+		return;
+	if (PROFILE_ADM10_LINE_GetPGODU0(Profile, Idx, ODU0Idx, &PGPortType, &PGPortIdx, &PGPortODU0Idx))
+		return;
+	if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU0Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU0Idx == 0xFF)))
+		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
 
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
 			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
 			(State != PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
 	{
@@ -2103,6 +2131,7 @@ static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t
 	}
 	else
 	{
+		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&LnODU0Perf[Idx][ODU0Idx]);
