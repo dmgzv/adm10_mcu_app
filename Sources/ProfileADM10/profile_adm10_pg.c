@@ -1120,12 +1120,12 @@ static void PROFILE_ADM10_ODU2PG_UpdateConfigs(PROFILE_T *Profile)
 				}
 				else if (ODU2PGMode[i] == PROFILE_ADM10_ODU2_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
 				{
-					if ((!((fpga_line.Iface[i + 2].ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK)) || \
-						(fpga_line.Iface[i + 2].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK) || \
-						((fpga_line.Iface[i + 2].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_OCI_MASK) || \
-						((fpga_line.Iface[i + 2].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_LCK_MASK))) && \
-						(!(fpga_line.Iface[i + 2].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_SD_MASK)) && \
-						(!(fpga_line.Iface[i + 2].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_OPUCSF_MASK)))
+					if ((!((fpga_line.Iface[i + 2].__ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK)) || \
+						(fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK) || \
+						((fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_OCI_MASK) || \
+						((fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_LCK_MASK))) && \
+						(!(fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_SD_MASK)) && \
+						(!(fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_OPUCSF_MASK)))
 					{
 						BSP_FPGA_LINE_AGG_MODE_SET(i, BSP_FPGA_LINE_AGG_MODE_MANUAL_LINE_1);
 					}
@@ -1284,12 +1284,12 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 						}
 						else if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
 						{
-							if ((!((fpga_line.Iface[ProtectLineIdx].ODU1Alarms[ProtectODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK)) || \
-								(fpga_line.Iface[ProtectLineIdx].ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_OCI_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_LCK_MASK))) && \
-								(!(fpga_line.Iface[ProtectLineIdx].ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_SD_MASK)) && \
-								(!(fpga_line.Iface[ProtectLineIdx].ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_OPUCSF_MASK)))
+							if ((!((fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK)) || \
+								(fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK) || \
+								((fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_OCI_MASK) || \
+								((fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_LCK_MASK))) && \
+								(!(fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_SD_MASK)) && \
+								(!(fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_OPUCSF_MASK)))
 							{
 								BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(Client, 0x01);
 							}
@@ -1457,12 +1457,12 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 						}
 						else if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
 						{
-							if ((!((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK)) || \
-								(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_OCI_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_LCK_MASK))) && \
-								(!(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_SD_MASK)) && \
-								(!(fpga_line.Iface[ProtectLineIdx].ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_OPUCSF_MASK)))
+							if ((!((fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK)) || \
+								(fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK) || \
+								((fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_OCI_MASK) || \
+								((fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_LCK_MASK))) && \
+								(!(fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_SD_MASK)) && \
+								(!(fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_OPUCSF_MASK)))
 							{
 								BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(Client, 0x01);
 							}
@@ -1527,7 +1527,7 @@ static void PROFILE_ADM10_ODU2PG_UpdateValues(PROFILE_T *Profile)
 					PGState = PROFILE_ADM10_ODU2_PG_STATE_ENUM_NORMAL;
 					PGActiveODUk = PROFILE_ADM10_ODU2_PG_ACTIVE_ODUK_ENUM_NONE;
 					
-					FPGAPGStatus = fpga_line.AGG[i].Status;						
+					FPGAPGStatus = fpga_line.AGG[i].__Status;						
 					if (PGMode == PROFILE_ADM10_ODU2_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 					{
 						if (FPGAPGStatus & (0x03 << 1)) /*SF*/

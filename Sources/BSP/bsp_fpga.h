@@ -145,7 +145,7 @@ do { \
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(ClientIdx, PGMode) (((ClientIdx) / 2) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].Mode = (PGMode)) , 0)
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].Mode)
 
-#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_STATUS_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].Status)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_STATUS_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].__Status)
 
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(ClientIdx, LineIdx, ODU1Idx) (((ClientIdx) / 2) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].PrimaryODUk = (((LineIdx) * 4) + ODU1Idx)), 0)
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_GET(ClientIdx) 									(fpga_line.Demux.ClientODU1PG[(ClientIdx) / 2].PrimaryODUk)
@@ -170,7 +170,7 @@ do { \
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(ClientIdx, PGMode) ((ClientIdx) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU0PG[ClientIdx].Mode = (PGMode)) , 0)
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU0PG[ClientIdx].Mode)
 
-#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_STATUS_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU0PG[ClientIdx].Status)
+#define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_STATUS_GET(ClientIdx) 									 (fpga_line.Demux.ClientODU0PG[ClientIdx].__Status)
 
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(ClientIdx, LineIdx, ODU0Idx) ((ClientIdx) >= BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT) ? -1: ((fpga_line.Demux.ClientODU0PG[ClientIdx].PrimaryODUk = (((LineIdx) * 8) + ODU0Idx)), 0)
 #define BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_GET(ClientIdx) 									(fpga_line.Demux.ClientODU0PG[ClientIdx].PrimaryODUk)
@@ -371,7 +371,7 @@ typedef struct {
 typedef struct {
 	uint8_t Mode;
 	uint8_t __Mode;
-	uint8_t Status;
+	uint8_t __Status;
 	uint8_t PrimaryODUk;
 	uint8_t __PrimaryODUk;
 	uint8_t ProtectODUk;
@@ -403,22 +403,22 @@ typedef struct {
 typedef struct {
 	uint8_t PMAStatus;
 	uint8_t __PMAStatus;
-	uint16_t OTU2Alarms;
 	uint8_t Ctrl;
 	uint8_t __Ctrl;
+	uint16_t __OTU2Alarms;
 	uint16_t OTU2BIP;
 	uint16_t __OTU2BIP;
 	uint32_t OTU2FECCorr;
 	uint32_t __OTU2FECCorr;
 	uint16_t OTU2FECUncorr;
 	uint16_t __OTU2FECUncorr;
-	uint16_t ODU2Alarms;
+	uint16_t __ODU2Alarms;
 	uint16_t ODU2BIP;
 	uint16_t __ODU2BIP;
-	uint16_t ODU1Alarms[BSP_FPGA_LINE_IFACE_ODU1_CNT];
+	uint16_t __ODU1Alarms[BSP_FPGA_LINE_IFACE_ODU1_CNT];
 	uint16_t ODU1BIP[BSP_FPGA_LINE_IFACE_ODU1_CNT];
 	uint16_t __ODU1BIP[BSP_FPGA_LINE_IFACE_ODU1_CNT];
-	uint16_t ODU0Alarms[BSP_FPGA_LINE_IFACE_ODU0_CNT];
+	uint16_t __ODU0Alarms[BSP_FPGA_LINE_IFACE_ODU0_CNT];
 	uint16_t ODU0BIP[BSP_FPGA_LINE_IFACE_ODU0_CNT];
 	uint16_t __ODU0BIP[BSP_FPGA_LINE_IFACE_ODU0_CNT];
 } BSP_FPGA_LINE_IFACE_T;
@@ -426,7 +426,7 @@ typedef struct {
 typedef struct {
 	uint8_t __Mode;
 	uint8_t Mode;
-	uint8_t Status;
+	uint8_t __Status;
 	uint8_t WTR;
 	uint8_t __WTR;
 	uint8_t HO;
@@ -456,7 +456,7 @@ typedef struct {
 	uint8_t Ctrl;
 	uint8_t __Ctrl;
 	
-	uint16_t SDHRxStatus;
+	uint16_t __SDHRxStatus;
 	uint16_t SDHBIP8;
 	uint16_t __SDHBIP8;
 	uint16_t SDHBIP24;
@@ -485,11 +485,11 @@ typedef struct {
 	float Temp;
 	BSP_FPGA_CLIENT_IFACE_T Iface[BSP_FPGA_CLIENT_IFACE_CNT];
 	
-	uint16_t ODU1Alarms[BSP_FPGA_CLIENT_ODU1_CNT];
+	uint16_t __ODU1Alarms[BSP_FPGA_CLIENT_ODU1_CNT];
 	uint16_t ODU1BIP[BSP_FPGA_CLIENT_ODU1_CNT];
 	uint16_t __ODU1BIP[BSP_FPGA_CLIENT_ODU1_CNT];
 	
-	uint16_t ODU0Alarms[BSP_FPGA_CLIENT_ODU0_CNT];
+	uint16_t __ODU0Alarms[BSP_FPGA_CLIENT_ODU0_CNT];
 	uint16_t ODU0BIP[BSP_FPGA_CLIENT_ODU0_CNT];
 	uint16_t __ODU0BIP[BSP_FPGA_CLIENT_ODU0_CNT];
 	

@@ -762,7 +762,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 				{
 					if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
-						(fpga_line.Iface[BSP_FPGA_LINE_IFACE_IDX(LineIdx)].ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU0_ALARMS_OPUCSF_MASK)))
+						(fpga_line.Iface[BSP_FPGA_LINE_IFACE_IDX(LineIdx)].__ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU0_ALARMS_OPUCSF_MASK)))
 					{
 						RxLos = 1;
 					}
@@ -770,7 +770,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				else
 				{
 					if ((BSP_DEV_GET_STATE(&fpga_client[LineIdx]) != BSP_DEV_STATE_OK) || \
-						(fpga_client[LineIdx].ODU0Alarms[ODU0Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_LOM_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)))
+						(fpga_client[LineIdx].__ODU0Alarms[ODU0Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_LOM_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)))
 					{
 						RxLos = 1;
 					}
@@ -790,7 +790,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 				{
 					if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
-						(fpga_line.Iface[BSP_FPGA_LINE_IFACE_IDX(LineIdx)].ODU1Alarms[ODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)))
+						(fpga_line.Iface[BSP_FPGA_LINE_IFACE_IDX(LineIdx)].__ODU1Alarms[ODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)))
 					{
 						RxLos = 1;
 					}
@@ -798,7 +798,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				else
 				{
 					if ((BSP_DEV_GET_STATE(&fpga_client[LineIdx]) != BSP_DEV_STATE_OK) || \
-						(fpga_client[LineIdx].ODU1Alarms[ODU1Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_LOM_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)))
+						(fpga_client[LineIdx].__ODU1Alarms[ODU1Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_LOM_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)))
 					{
 						RxLos = 1;
 					}
@@ -1045,7 +1045,7 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint
 		{
 			SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_LOS;
 		}
-		else if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_LOF_MASK)
+		else if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_LOF_MASK)
 		{
 			SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_LOF;
 		}
@@ -1056,7 +1056,7 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint
 				SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_RS_BIP;
 			}
 			/*
-			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_AIS_MASK)
+			if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_AIS_MASK)
 			{
 				SDHRSAlarms |= PROFILE_ADM10_CL_SDH_ALARMS_BITMSK_MS_AIS;
 			}
@@ -1066,11 +1066,11 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint
 				{
 					SDHRSAlarms |= PROFILE_ADM10_CL_SDH_ALARMS_BITMSK_MS_BIP;
 				}
-				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSRDI_MASK)
+				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSRDI_MASK)
 				{
 					SDHRSAlarms |= PROFILE_ADM10_CL_SDH_ALARMS_BITMSK_MS_RDI;
 				}
-				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSREI_MASK)
+				if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_MSREI_MASK)
 				{
 					SDHRSAlarms |= PROFILE_ADM10_CL_SDH_ALARMS_BITMSK_MS_REI;
 				}
@@ -1169,12 +1169,8 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint3
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_CLIENT_IDX(Idx)].Pin.RxLos) ||
-			(fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__PMAStatus & BSP_FPGA_CLIENT_IFACE_PMASTATUS_RX_LOS_MASK))
-		{
-			Defects = 1;
-			Errors = 0;
-		}
-		else if (fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_LOF_MASK)
+			(fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__PMAStatus & BSP_FPGA_CLIENT_IFACE_PMASTATUS_RX_LOS_MASK) || \
+			(fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].__SDHRxStatus & BSP_FPGA_CLIENT_IFACE_SDH_RX_STATUS_LOF_MASK))
 		{
 			Defects = 1;
 			Errors = 0;
@@ -1240,24 +1236,25 @@ static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_
 			TxOcts = fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].EthTxOcts;
 			TxErrs = fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)].Iface[BSP_FPGA_CLIENT_IFACE_IDX(Idx)].EthTxErrs;
 		}
+		ClEthRxPkts[Idx] += RxPkts;
+		ClEthRxOcts[Idx] += RxOcts;
+		ClEthRxErrs[Idx] += RxErrs;
+		ClEthTxPkts[Idx] += TxPkts;
+		ClEthTxOcts[Idx] += TxOcts;
+		ClEthTxErrs[Idx] += TxErrs;
 	}
 	else
 	{
 		State = PROFILE_ADM10_CL_SET_STATE_ENUM_OOS;
-		RxPkts = 0;
-		RxOcts = 0;
-		RxErrs = 0;
-		TxPkts = 0;
-		TxOcts = 0;
-		TxErrs = 0;
+		ClEthRxPkts[Idx] = 0;
+		ClEthRxOcts[Idx] = 0;
+		ClEthRxErrs[Idx] = 0;
+		ClEthTxPkts[Idx] = 0;
+		ClEthTxOcts[Idx] = 0;
+		ClEthTxErrs[Idx] = 0;
 	}
 	
-	ClEthRxPkts[Idx] += RxPkts;
-	ClEthRxOcts[Idx] += RxOcts;
-	ClEthRxErrs[Idx] += RxErrs;
-	ClEthTxPkts[Idx] += TxPkts;
-	ClEthTxOcts[Idx] += TxOcts;
-	ClEthTxErrs[Idx] += TxErrs;
+
 	
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthRxPktsIdx[Idx], &ClEthRxPkts[Idx], State);
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfClEthRxOctsIdx[Idx], &ClEthRxOcts[Idx], State);

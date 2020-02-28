@@ -8,8 +8,9 @@ void PERF_Init(PERF_T *Dev)
 
 void PERF_Reset(PERF_T *Dev)
 {
-	Dev->State = PERF_CNTR_STATUS_AVALIABLE;
-	Dev->StateTime = 0;
+	//Dev->State = PERF_CNTR_STATUS_AVALIABLE;
+	//Dev->StateTime = 0;
+	memset(Dev, 0, sizeof(*Dev));
 }
 
 void PERF_Update(PERF_T *Dev, uint32_t Defects, uint32_t Errors, uint32_t ErrorsThr)

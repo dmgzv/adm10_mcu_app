@@ -654,7 +654,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSetLoopbackValue(PROFILE_T *Profile, ui
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &SetState))
 			return -1;
-		if ((SetState == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) || (SetState == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
+		if ((SetState == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) || (SetState == PROFILE_ADM10_LN_SET_STATE_ENUM_IS))
 			return -1;
 	}
 	return 0;
@@ -1288,17 +1288,17 @@ static void PROFILE_ADM10_LINE_UpdateOTU2AlarmsValue(PROFILE_T *Profile, uint32_
 		OTU2Alarms = 0;
 		
 		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
-			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
-			sfp[BSP_SFP_LINE_IDX(Idx)].Pin.RxLos || \
-			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK))
+				(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
+				sfp[BSP_SFP_LINE_IDX(Idx)].Pin.RxLos || \
+				(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK))
 		{
 			OTU2Alarms = PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_LOS | PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_SF;
 		}
-		else if (fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK)
+		else if (fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK)
 		{
 			OTU2Alarms = PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_LOF | PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_SF;
 		}
-		else if (fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK)
+		else if (fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK)
 		{
 			OTU2Alarms = PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_LOM | PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_SF;
 		}
@@ -1308,15 +1308,15 @@ static void PROFILE_ADM10_LINE_UpdateOTU2AlarmsValue(PROFILE_T *Profile, uint32_
 			{
 				OTU2Alarms |= PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_BIP;
 			}
-			if (fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_SMIAE_MASK)
+			if (fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_SMIAE_MASK)
 			{
 				OTU2Alarms |= PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_IAE;
 			}
-			if (fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_SMBEI_MASK)
+			if (fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_SMBEI_MASK)
 			{
 				OTU2Alarms |= PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_BEI_BIAE;
 			}
-			if (fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_SMBDI_MASK)
+			if (fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_SMBDI_MASK)
 			{
 				OTU2Alarms |= PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_BDI;
 			}
@@ -1373,43 +1373,41 @@ static void PROFILE_ADM10_LINE_UpdateODU2AlarmsValue(PROFILE_T *Profile, uint32_
 	{
 		ODU2Alarms = 0;
 		
-		if (BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK)
+		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
+				(fpga_line.Iface[Idx].__ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK)))
 		{
-			if (fpga_line.Iface[Idx].ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK))
+			ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if (fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK)
+		{
+			ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_OCI_MASK)
+		{
+			ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_LCK_MASK)
+		{
+			ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else
+		{
+			if (fpga_line.Iface[Idx].ODU2BIP)
 			{
-				ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+				ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
 			}
-			else if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK)
+			if (fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_PMBEI_MASK)
 			{
-				ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+				ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
 			}
-			else if ((fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_OCI_MASK)
+			if (fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_PMBDI_MASK)
 			{
-				ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+				ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
 			}
-			else if ((fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_LCK_MASK)
+			if (fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_SD_MASK)
 			{
-				ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+				ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
 			}
-			else
-			{
-				if (fpga_line.Iface[Idx].ODU2BIP)
-				{
-					ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
-				}
-				if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_PMBEI_MASK)
-				{
-					ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
-				}
-				if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_PMBDI_MASK)
-				{
-					ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
-				}
-				if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_SD_MASK)
-				{
-					ODU2Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
-				}
-			}				
 		}
 	}
 	else
@@ -1437,7 +1435,7 @@ static void PROFILE_ADM10_LINE_UpdateOPU2AlarmsValue(PROFILE_T *Profile, uint32_
 		
 		if (BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK)
 		{
-			if (fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_OPUCSF_MASK)
+			if (fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_OPUCSF_MASK)
 			{
 				OPU2Alarms |= PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;
 			}			
@@ -1455,10 +1453,11 @@ static void PROFILE_ADM10_LINE_UpdateOPU2AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU1Idx)
 {
 	uint32_t ODU1Alarms;
-	uint32_t State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
 
-	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
@@ -1467,99 +1466,102 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
-
+	
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1))
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY))
 	{
-		ODU1Alarms = 0;
+		if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
+			return;
+		if (PROFILE_ADM10_LINE_GetPGODU1(Profile, Idx, ODU1Idx, &PGPortType, &PGPortIdx, &PGPortODU1Idx))
+			return;
+		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU1Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU1Idx == 0xFF)))
+			State = PROFILE_STATE_OOS;
+	}
+
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) &&
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		ODU1Alarms = 0;		
 		
-		if (OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY)
+		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
+				(fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK)))
 		{
-			if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
-				return;
-			if (PROFILE_ADM10_LINE_GetPGODU1(Profile, Idx, ODU1Idx, &PGPortType, &PGPortIdx, &PGPortODU1Idx))
-				return;
-			if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU1Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU1Idx == 0xFF)))
-				State = PROFILE_STATE_OOS;
+			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
-		
-		if ((BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK) && (fpga_line.Mode == BSP_FPGA_MODE_ADM10))
+		else if (fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK)
 		{
-			if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK))
+			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_OCI_MASK)
+		{
+			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_LCK_MASK)
+		{
+			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else
+		{
+			if (fpga_line.Iface[Idx].ODU1BIP[ODU1Idx])
 			{
-				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
 			}
-			else if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK)
+			if (fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_PMBEI_MASK)
 			{
-				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
 			}
-			else if ((fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_OCI_MASK)
+			if (fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_PMBDI_MASK)
 			{
-				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
 			}
-			else if ((fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_LCK_MASK)
+			if (fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_SD_MASK)
 			{
-				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-			}
-			else
-			{
-				if (fpga_line.Iface[Idx].ODU1BIP[ODU1Idx])
-				{
-					ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
-				}
-				if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_PMBEI_MASK)
-				{
-					ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
-				}
-				if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_PMBDI_MASK)
-				{
-					ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
-				}
-				if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_SD_MASK)
-				{
-					ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
-				}
+				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
 			}
 		}
-		else if (Idx < 2)
+	}
+	else if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && (Idx < 2) &&
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		if ((BSP_DEV_GET_STATE(&fpga_client[Idx]) != BSP_DEV_STATE_OK) || \
+				(fpga_client[Idx].__ODU1Alarms[ODU1Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_LOM_MASK)))
 		{
-			if ((BSP_DEV_GET_STATE(&fpga_client[Idx]) == BSP_DEV_STATE_OK) && (fpga_client[Idx].Mode == BSP_FPGA_MODE_ATP_2x10_BS))
+			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if (fpga_client[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK)
+		{
+			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_client[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_OCI_MASK)
+		{
+			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_client[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_LCK_MASK)
+		{
+			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else
+		{
+			if (fpga_client[Idx].ODU1BIP[ODU1Idx])
 			{
-				if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_LOM_MASK))
-				{
-					ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-				}
-				else if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK)
-				{
-					ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-				}
-				else if ((fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_OCI_MASK)
-				{
-					ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-				}
-				else if ((fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU1_ALARMS_STAT_LCK_MASK)
-				{
-					ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-				}
-				else
-				{
-					if (fpga_client[Idx].ODU1BIP[ODU1Idx])
-					{
-						ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
-					}
-					if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_PMBEI_MASK)
-					{
-						ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
-					}
-					if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_PMBDI_MASK)
-					{
-						ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
-					}
-					if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_SD_MASK)
-					{
-						ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
-					}
-				}
+				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
+			}
+			if (fpga_client[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_PMBEI_MASK)
+			{
+				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
+			}
+			if (fpga_client[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_PMBDI_MASK)
+			{
+				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
+			}
+			if (fpga_client[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_SD_MASK)
+			{
+				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
 			}
 		}
 	}
@@ -1575,10 +1577,11 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU1Idx)
 {
 	uint32_t OPU1Alarms;
-	uint32_t State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
 
-	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+		return;	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
@@ -1588,35 +1591,43 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 
-	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && (OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1))
+	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY))
 	{
-		OPU1Alarms = 0;
+		if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
+			return;
+		if (PROFILE_ADM10_LINE_GetPGODU1(Profile, Idx, ODU1Idx, &PGPortType, &PGPortIdx, &PGPortODU1Idx))
+			return;
+		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU1Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU1Idx == 0xFF)))
+			State = PROFILE_STATE_OOS;
+	}
+	
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) &&
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		OPU1Alarms = 0;		
 		
-		if (OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY)
+		if (BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK)
 		{
-			if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
-				return;
-			if (PROFILE_ADM10_LINE_GetPGODU1(Profile, Idx, ODU1Idx, &PGPortType, &PGPortIdx, &PGPortODU1Idx))
-				return;
-			if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU1Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU1Idx == 0xFF)))
-				State = PROFILE_STATE_OOS;
-		}
-		
-		if ((BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK) && (fpga_line.Mode == BSP_FPGA_MODE_ADM10))
-		{
-			if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_OPUCSF_MASK)
+			if (fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_OPUCSF_MASK)
 			{
 				OPU1Alarms = PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;
 			}		
 		}
-		else if (Idx < 2)
+	}
+	else if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && (Idx < 2) &&
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		if (BSP_DEV_GET_STATE(&fpga_client[Idx]) == BSP_DEV_STATE_OK)
 		{
-			if ((BSP_DEV_GET_STATE(&fpga_client[Idx]) == BSP_DEV_STATE_OK) && (fpga_client[Idx].Mode == BSP_FPGA_MODE_ATP_2x10_BS))
+			if (fpga_client[Idx].__ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)
 			{
-				if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & BSP_FPGA_CLIENT_ODU1_ALARMS_OPUCSF_MASK)
-				{
-					OPU1Alarms = PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;
-				}
+				OPU1Alarms = PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;
 			}
 		}
 	}
@@ -1632,9 +1643,11 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU0Idx)
 {
 	uint32_t ODU0Alarms;
-	uint32_t State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
 	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+		return;	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
@@ -1642,98 +1655,105 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU0Idx / 2], &OPU1Payload))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
-		return;
+		return;	
 
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
 			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
 			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0))
 	{
-		ODU0Alarms = 0;
-		
 		if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &XCPortType, &XCPortIdx, &XCPortODU0Idx))
 			return;
 		if (PROFILE_ADM10_LINE_GetPGODU0(Profile, Idx, ODU0Idx, &PGPortType, &PGPortIdx, &PGPortODU0Idx))
 			return;
 		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU0Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU0Idx == 0xFF)))
 			State = PROFILE_STATE_OOS;
-		
-		if ((BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK) && (fpga_line.Mode == BSP_FPGA_MODE_ADM10))
+	}
+	
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) &&
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		ODU0Alarms = 0;
+
+		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
+				(fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK)))
 		{
-			if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK))
-			{
-				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-			}
-			else if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK)
-			{
-				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-			}
-			else if ((fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_OCI_MASK)
-			{
-				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-			}
-			else if ((fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_LCK_MASK)
-			{
-				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-			}
-			else
-			{
-				if (fpga_line.Iface[Idx].ODU0BIP[ODU0Idx])
-				{
-					ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
-				}
-				if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_PMBEI_MASK)
-				{
-					ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
-				}
-				if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_PMBDI_MASK)
-				{
-					ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
-				}
-				if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_SD_MASK)
-				{
-					ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
-				}
-			}				
+			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
-		else if (Idx < 2)
+		else if (fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK)
 		{
-			if ((BSP_DEV_GET_STATE(&fpga_client[Idx]) == BSP_DEV_STATE_OK) && (fpga_client[Idx].Mode == BSP_FPGA_MODE_ATP_2x10_BS))
+			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_OCI_MASK)
+		{
+			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_LCK_MASK)
+		{
+			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else
+		{
+			if (fpga_line.Iface[Idx].ODU0BIP[ODU0Idx])
 			{
-				if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & (BSP_FPGA_CLIENT_ODU0_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU0_ALARMS_LOM_MASK))
-				{
-					ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-				}
-				else if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_AIS_MASK)
-				{
-					ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-				}
-				else if ((fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_OCI_MASK)
-				{
-					ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-				}
-				else if ((fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_LCK_MASK)
-				{
-					ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-				}
-				else
-				{
-					if (fpga_client[Idx].ODU0BIP[ODU0Idx])
-					{
-						ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
-					}
-					if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_PMBEI_MASK)
-					{
-						ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
-					}
-					if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_PMBDI_MASK)
-					{
-						ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
-					}
-					if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_SD_MASK)
-					{
-						ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
-					}
-				}
+				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
+			}
+			if (fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_PMBEI_MASK)
+			{
+				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
+			}
+			if (fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_PMBDI_MASK)
+			{
+				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
+			}
+			if (fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_SD_MASK)
+			{
+				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
+			}
+		}				
+	}
+	else if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && (Idx < 2) &&
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		if ((BSP_DEV_GET_STATE(&fpga_client[Idx]) != BSP_DEV_STATE_OK) ||
+				(fpga_client[Idx].__ODU0Alarms[ODU0Idx] & (BSP_FPGA_CLIENT_ODU0_ALARMS_LOF_MASK | BSP_FPGA_CLIENT_ODU0_ALARMS_LOM_MASK)))
+		{
+			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if (fpga_client[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_AIS_MASK)
+		{
+			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_client[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_OCI_MASK)
+		{
+			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else if ((fpga_client[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_CLIENT_ODU0_ALARMS_STAT_LCK_MASK)
+		{
+			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
+		}
+		else
+		{
+			if (fpga_client[Idx].ODU0BIP[ODU0Idx])
+			{
+				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
+			}
+			if (fpga_client[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_PMBEI_MASK)
+			{
+				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
+			}
+			if (fpga_client[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_PMBDI_MASK)
+			{
+				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
+			}
+			if (fpga_client[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_SD_MASK)
+			{
+				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 			}
 		}
 	}
@@ -1749,10 +1769,11 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU0Idx)
 {
 	uint32_t OPU0Alarms;
-	uint32_t State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
 
-	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+		return;	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
@@ -1766,30 +1787,40 @@ static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_
 			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
 			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0))
 	{
-		OPU0Alarms = 0;
-		
 		if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &XCPortType, &XCPortIdx, &XCPortODU0Idx))
 			return;
 		if (PROFILE_ADM10_LINE_GetPGODU0(Profile, Idx, ODU0Idx, &PGPortType, &PGPortIdx, &PGPortODU0Idx))
 			return;
 		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU0Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU0Idx == 0xFF)))
 			State = PROFILE_STATE_OOS;
-		
-		if ((BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK) && (fpga_line.Mode == BSP_FPGA_MODE_ADM10))
+	}
+	
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) &&
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		OPU0Alarms = 0;		
+		if (BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK)
 		{
-			if (fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_OPUCSF_MASK)
+			if (fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_OPUCSF_MASK)
 			{
 				OPU0Alarms |= PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;
 			}		
 		}
-		else if (Idx < 2)
+	}
+	else if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && (Idx < 2) &&
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		if (BSP_DEV_GET_STATE(&fpga_client[Idx]) == BSP_DEV_STATE_OK)
 		{
-			if ((BSP_DEV_GET_STATE(&fpga_client[Idx]) == BSP_DEV_STATE_OK) && (fpga_client[Idx].Mode == BSP_FPGA_MODE_ATP_2x10_BS))
+			if (fpga_client[Idx].__ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_OPUCSF_MASK)
 			{
-				if (fpga_client[Idx].ODU0Alarms[ODU0Idx] & BSP_FPGA_CLIENT_ODU0_ALARMS_OPUCSF_MASK)
-				{
-					OPU0Alarms |= PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;
-				}
+				OPU0Alarms |= PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;
 			}
 		}
 	}
@@ -1864,8 +1895,8 @@ static void PROFILE_ADM10_LINE_UpdateOTU2PerfValues(PROFILE_T *Profile, uint32_t
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_LINE_IDX(Idx)].Pin.RxLos) || \
 			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
-			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
-			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK))
+			(fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
+			(fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK))
 		{
 			Defects = 1;
 			Errors = 0;
@@ -1917,11 +1948,11 @@ static void PROFILE_ADM10_LINE_UpdateODU2PerfValues(PROFILE_T *Profile, uint32_t
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_LINE_IDX(Idx)].Pin.RxLos) || \
 			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
-			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
-			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK))
+			(fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
+			(fpga_line.Iface[Idx].__OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK) || \
+			(fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK) || \
+			(fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK) || \
+			(fpga_line.Iface[Idx].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK))
 		{
 			Defects = 1;
 			Errors = 0;
@@ -1959,10 +1990,11 @@ static void PROFILE_ADM10_LINE_UpdateODU2PerfValues(PROFILE_T *Profile, uint32_t
 static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU1Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
 
-	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
@@ -1972,7 +2004,9 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 		
-	if (OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY)
+	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && 
+		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && 
+		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY))
 	{
 		if (PROFILE_ADM10_LINE_GetXCODU1(Profile, Idx, ODU1Idx, &XCPortType, &XCPortIdx, &XCPortODU1Idx))
 			return;
@@ -1982,63 +2016,59 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 			State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
 	}
 	
-	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
-			(State != PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) && \
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && \
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && \
+			(State != PROFILE_STATE_OOS))
 	{
+		Defects = 0;
+		Errors = 0;
+		
 		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_LINE_IDX(Idx)].Pin.RxLos) || \
 			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
-			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
-			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK))
+			(fpga_line.Iface[Idx].__OTU2Alarms & (BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK)) || \
+			(fpga_line.Iface[Idx].__ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK)) || \
+			(fpga_line.Iface[Idx].__ODU1Alarms[ODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK)))
 		{
 			Defects = 1;
 			Errors = 0;
 		}
-		else
+		else if (fpga_line.Iface[Idx].ODU1BIP[ODU1Idx] )
 		{
 			Defects = 0;
+			Errors = fpga_line.Iface[Idx].ODU1BIP[ODU1Idx];
+		}
+		PERF_Update(&LnODU1Perf[Idx][ODU1Idx], Defects, Errors, PERF_ODU1_SES_ERRORS_THR);
+	}
+	else if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && (Idx < 2) &&\
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && \
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && \
+			(State != PROFILE_STATE_OOS))
+	{
+		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
+			(BSP_DEV_GET_STATE(&fpga_client[Idx]) != BSP_DEV_STATE_OK) || \
+			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
+			(sfp[BSP_SFP_LINE_IDX(Idx)].Pin.RxLos) || \
+			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
+			(fpga_line.Iface[Idx].__OTU2Alarms & (BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK)) || \
+			(fpga_line.Iface[Idx].__ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK)) || \
+			(fpga_client[Idx].__ODU1Alarms[ODU1Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK)))
+		{
+			Defects = 1;
 			Errors = 0;
-			if (fpga_line.Mode == BSP_FPGA_MODE_ADM10)
-			{
-				if (fpga_line.Iface[Idx].ODU1Alarms[ODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK))
-				{
-					Defects = 1;
-					Errors = 0;
-				}
-				else if (fpga_line.Iface[Idx].ODU1BIP[ODU1Idx] )
-				{
-					Defects = 0;
-					Errors = fpga_line.Iface[Idx].ODU1BIP[ODU1Idx];
-				}
-			}
-			else if (Idx < 2)
-			{
-				if (fpga_client[Idx].Mode == BSP_FPGA_MODE_ATP_2x10_BS)
-				{
-					
-					if (fpga_client[Idx].ODU1Alarms[ODU1Idx] & (BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK))
-					{
-						Defects = 1;
-						Errors = 0;
-					}
-					else if (fpga_client[Idx].ODU1BIP[ODU1Idx] )
-					{
-						Defects = 0;
-						Errors = fpga_client[Idx].ODU1BIP[ODU1Idx];
-					}
-				}
-			}
+		}
+		else if (fpga_client[Idx].ODU1BIP[ODU1Idx] )
+		{
+			Defects = 0;
+			Errors = fpga_client[Idx].ODU1BIP[ODU1Idx];
 		}
 		PERF_Update(&LnODU1Perf[Idx][ODU1Idx], Defects, Errors, PERF_ODU1_SES_ERRORS_THR);
 	}
 	else
 	{
-		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
+		State = PROFILE_STATE_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&LnODU1Perf[Idx][ODU1Idx]);
@@ -2054,9 +2084,13 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU0Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
 	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+		return;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
@@ -2066,72 +2100,74 @@ static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU0Idx / 2], &OPU1Payload))
 		return;
 	
-	if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &XCPortType, &XCPortIdx, &XCPortODU0Idx))
-		return;
-	if (PROFILE_ADM10_LINE_GetPGODU0(Profile, Idx, ODU0Idx, &PGPortType, &PGPortIdx, &PGPortODU0Idx))
-		return;
-	if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU0Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU0Idx == 0xFF)))
-		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
-
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
-			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
-			(State != PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
+		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && 
+		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0))
 	{
+		if (PROFILE_ADM10_LINE_GetXCODU0(Profile, Idx, ODU0Idx, &XCPortType, &XCPortIdx, &XCPortODU0Idx))
+			return;
+		if (PROFILE_ADM10_LINE_GetPGODU0(Profile, Idx, ODU0Idx, &PGPortType, &PGPortIdx, &PGPortODU0Idx))
+			return;
+		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU0Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU0Idx == 0xFF)))
+			State = PROFILE_STATE_OOS;
+	}
+
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) && \
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && \
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && \
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) && \
+			(State != PROFILE_STATE_OOS))
+	{
+		Defects = 0;
+		Errors = 0;
 		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(sfp[BSP_SFP_LINE_IDX(Idx)].Pin.RxLos) || \
 			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
-			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK) || \
-			(fpga_line.Iface[Idx].OTU2Alarms & BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK) || \
-			(fpga_line.Iface[Idx].ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK))
+			(fpga_line.Iface[Idx].__OTU2Alarms & (BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK)) || \
+			(fpga_line.Iface[Idx].__ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK)) || \
+			(fpga_line.Iface[Idx].__ODU1Alarms[ODU0Idx / 2] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK)) || \
+			(fpga_line.Iface[Idx].__ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK)))
 		{
 			Defects = 1;
 			Errors = 0;
 		}
-		else
+		else if (fpga_line.Iface[Idx].ODU0BIP[ODU0Idx] )
 		{
 			Defects = 0;
+			Errors = fpga_line.Iface[Idx].ODU0BIP[ODU0Idx];
+		}
+		PERF_Update(&LnODU0Perf[Idx][ODU0Idx], Defects, Errors, PERF_ODU0_SES_ERRORS_THR);
+	}
+	else if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && (Idx < 2) &&\
+			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && \
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && \
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) && \
+			(State != PROFILE_STATE_OOS))
+	{
+		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
+			(BSP_DEV_GET_STATE(&fpga_client[Idx]) != BSP_DEV_STATE_OK) || \
+			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
+			(sfp[BSP_SFP_LINE_IDX(Idx)].Pin.RxLos) || \
+			(fpga_line.Iface[Idx].__PMAStatus & BSP_FPGA_LINE_IFACE_PMASTATUS_RX_LOS_MASK) || \
+			(fpga_line.Iface[Idx].__OTU2Alarms & (BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_OTU2_ALARMS_LOM_MASK)) || \
+			(fpga_line.Iface[Idx].__ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK)) || \
+			(fpga_client[Idx].__ODU1Alarms[ODU0Idx / 2] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK | BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK)) || \
+			(fpga_client[Idx].__ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK | BSP_FPGA_CLIENT_ODU0_ALARMS_AIS_MASK)))
+		{
+			Defects = 1;
 			Errors = 0;
-			if (fpga_line.Mode == BSP_FPGA_MODE_ADM10)
-			{
-				if ((fpga_line.Iface[Idx].ODU1Alarms[ODU0Idx / 2] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK)) || \
-					(fpga_line.Iface[Idx].ODU0Alarms[ODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK)))
-				{
-					Defects = 1;
-					Errors = 0;
-				}
-				else if (fpga_line.Iface[Idx].ODU0BIP[ODU0Idx] )
-				{
-					Defects = 0;
-					Errors = fpga_line.Iface[Idx].ODU0BIP[ODU0Idx];
-				}
-			}
-			else if (Idx < 2)
-			{
-				if (fpga_client[Idx].Mode == BSP_FPGA_MODE_ATP_2x10_BS)
-				{
-					if ((fpga_client[Idx].ODU1Alarms[ODU0Idx / 2] & (BSP_FPGA_CLIENT_ODU1_ALARMS_AIS_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK)) || \
-					(fpga_client[Idx].ODU0Alarms[ODU0Idx] & (BSP_FPGA_CLIENT_ODU0_ALARMS_AIS_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK)))
-					{
-						Defects = 1;
-						Errors = 0;
-					}
-					if (fpga_client[Idx].ODU0BIP[ODU0Idx] )
-					{
-						Defects = 0;
-						Errors = fpga_client[Idx].ODU0BIP[ODU0Idx];
-					}
-				}
-			}
+		}
+		else if (fpga_client[Idx].ODU0BIP[ODU0Idx] )
+		{
+			Defects = 0;
+			Errors = fpga_client[Idx].ODU0BIP[ODU0Idx];
 		}
 		PERF_Update(&LnODU0Perf[Idx][ODU0Idx], Defects, Errors, PERF_ODU0_SES_ERRORS_THR);
 	}
 	else
 	{
-		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
+		State = PROFILE_STATE_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&LnODU0Perf[Idx][ODU0Idx]);
