@@ -355,7 +355,7 @@ def send_req(req_type, payload):
         sock.sendall(payload)
 
 try:
-    for j in range(8, 10, 2):
+    for j in range(4, 20, 2):
         print "j=", j
         payload = ''
         print '-' * 80

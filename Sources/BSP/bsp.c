@@ -227,11 +227,7 @@ static void BSP_SFP_UpdateClientConfig(void)
 			{
 				dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__sfp__tx_port__laser_enable[i], &LaserEnable);
 				sfp[BSP_SFP_CLIENT_IDX(i)].Pin.TxDisable = (LaserEnable == ADM_10_2019_11_28__ADM__CLIENT__SFP__TX_PORT__LASER_ENABLE_ENUM_DISABLE) ? 1 : 0;
-			}
-			else
-			{
-				sfp[BSP_SFP_CLIENT_IDX(i)].Pin.TxDisable = 1;
-			}			
+			}	
 		}
 	}
 }
@@ -247,29 +243,27 @@ static void BSP_SFP_UpdateClientState(void)
 		dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__service_state[i], &AdminState);
 		if (AdminState == ADM_10_2019_11_28__ADM__CLIENT__ADMIN_STATE_ENUM_DSBLD)
 		{
-			dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__service_state[i], &ServiceState);
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(i)]) == BSP_DEV_STATE_OK) && (ServiceState != 1))
+			if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(i)]) == BSP_DEV_STATE_OK)
 			{
-				/* SFP appeared */
+				/* Update service state */
 				ServiceState = 1;
 				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__service_state[i], &ServiceState);
 			}
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(i)]) == BSP_DEV_STATE_OK) && (ServiceState != 2))
+			else
 			{
-				/* SFP disappeared */
+				/* Update service state */
 				ServiceState = 2;
 				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__service_state[i], &ServiceState);
 			}
 		}
 		else
 		{
-			dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__service_state[i], &ServiceState);
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(i)]) == BSP_DEV_STATE_OK) && (ServiceState != 4) && (ServiceState != 5))
+			if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(i)]) == BSP_DEV_STATE_OK)
 			{
 				dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__module_type[i], &ModuleType);
 				if (ModuleType == ADM_10_2019_11_28__ADM__CLIENT__MODULE_TYPE_ENUM_SFP)
 				{
-					/* SFP appeared */
+					/* Update service state */
 					if (AdminState == ADM_10_2019_11_28__ADM__CLIENT__ADMIN_STATE_ENUM_IS)
 						ServiceState = 5;
 					else
@@ -305,43 +299,16 @@ static void BSP_SFP_UpdateClientState(void)
 				}
 				else
 				{
+					/* Update service state */
 					ServiceState = 3;
 					dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__service_state[i], &ServiceState);
 				}
 			}
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(i)]) != BSP_DEV_STATE_OK) && (ServiceState != 2))
+			else
 			{
-				/* SFP disappeared */
+				/* Update service state */
 				ServiceState = 2;
 				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__service_state[i], &ServiceState);
-			}
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(i)]) == BSP_DEV_STATE_OK) && ((ServiceState == 4) || (ServiceState == 5)))
-			{
-				/* SFP present */
-				
-				/*Update SFP Temperature*/
-				SFPTempFault = 0;
-				if ((sfp[BSP_SFP_CLIENT_IDX(i)].Temp > sfp[BSP_SFP_CLIENT_IDX(i)].Thr.Temp[SFP_THR_CMAX]) || \
-					(sfp[BSP_SFP_CLIENT_IDX(i)].Temp < sfp[BSP_SFP_CLIENT_IDX(i)].Thr.Temp[SFP_THR_CMIN]))
-					SFPTempFault = 1;
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__sfp__temperature[i], &sfp[BSP_SFP_CLIENT_IDX(i)].Temp);
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__sfp__temperature_fault[i], &SFPTempFault);
-				
-				/*Update SFP Rx Optical Power*/
-				SFPRxPwrFault = 0;
-				if ((sfp[BSP_SFP_CLIENT_IDX(i)].RxPwr > sfp[BSP_SFP_CLIENT_IDX(i)].Thr.RxPwr[SFP_THR_CMAX]) || \
-					(sfp[BSP_SFP_CLIENT_IDX(i)].RxPwr < sfp[BSP_SFP_CLIENT_IDX(i)].Thr.RxPwr[SFP_THR_CMIN]))
-					SFPRxPwrFault = 1;
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__sfp__rx_port__channel__optical_power[i], &sfp[BSP_SFP_CLIENT_IDX(i)].RxPwr);
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__sfp__rx_port__channel__optical_power_fault[i], &SFPRxPwrFault);
-				
-				/*Update SFP Tx Optical Power*/
-				SFPTxPwrFault = 0;
-				if ((sfp[BSP_SFP_CLIENT_IDX(i)].TxPwr > sfp[BSP_SFP_CLIENT_IDX(i)].Thr.TxPwr[SFP_THR_CMAX]) || \
-					(sfp[BSP_SFP_CLIENT_IDX(i)].TxPwr < sfp[BSP_SFP_CLIENT_IDX(i)].Thr.TxPwr[SFP_THR_CMIN]))
-					SFPTxPwrFault = 1;						
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__sfp__tx_port__channel__optical_power[i], &sfp[BSP_SFP_CLIENT_IDX(i)].TxPwr);
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__client__sfp__tx_port__channel__optical_power_fault[i], &SFPTxPwrFault);
 			}
 		}
 	}
@@ -418,11 +385,7 @@ static void BSP_SFP_UpdateLineConfig(void)
 			{
 				dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__sfp__tx_port__laser_enable[i], &LaserEnable);
 				sfp[BSP_SFP_LINE_IDX(i)].Pin.TxDisable = (LaserEnable == ADM_10_2019_11_28__ADM__LINE__SFP__TX_PORT__LASER_ENABLE_ENUM_DISABLE) ? 1 : 0;
-			}
-			else
-			{
-				sfp[BSP_SFP_LINE_IDX(i)].Pin.TxDisable = 1;
-			}			
+			}	
 		}
 	}
 }
@@ -438,29 +401,27 @@ static void BSP_SFP_UpdateLineState(void)
 		dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__service_state[i], &AdminState);
 		if (AdminState == ADM_10_2019_11_28__ADM__LINE__ADMIN_STATE_ENUM_DSBLD)
 		{
-			dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__service_state[i], &ServiceState);
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(i)]) == BSP_DEV_STATE_OK) && (ServiceState != 1))
+			if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(i)]) == BSP_DEV_STATE_OK)
 			{
-				/* SFP appeared */
+				/* Update service state */
 				ServiceState = 1;
 				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__service_state[i], &ServiceState);
 			}
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(i)]) == BSP_DEV_STATE_OK) && (ServiceState != 2))
+			else
 			{
-				/* SFP disappeared */
+				/* Update service state */
 				ServiceState = 2;
 				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__service_state[i], &ServiceState);
 			}
 		}
 		else
 		{
-			dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__service_state[i], &ServiceState);
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(i)]) == BSP_DEV_STATE_OK) && (ServiceState != 4) && (ServiceState != 5))
+			if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(i)]) == BSP_DEV_STATE_OK)
 			{
 				dm_get_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__module_type[i], &ModuleType);
 				if (ModuleType == ADM_10_2019_11_28__ADM__LINE__MODULE_TYPE_ENUM_SFP)
 				{
-					/* SFP appeared */
+					/* Update service state */
 					if (AdminState == ADM_10_2019_11_28__ADM__LINE__ADMIN_STATE_ENUM_IS)
 						ServiceState = 5;
 					else
@@ -496,43 +457,16 @@ static void BSP_SFP_UpdateLineState(void)
 				}
 				else
 				{
+					/* Update service state */
 					ServiceState = 3;
 					dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__service_state[i], &ServiceState);
 				}
 			}
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(i)]) != BSP_DEV_STATE_OK) && (ServiceState != 2))
-			{
-				/* SFP disappeared */
+			else
+			{				
+				/* Update service state */
 				ServiceState = 2;
 				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__service_state[i], &ServiceState);
-			}
-			if ((BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(i)]) == BSP_DEV_STATE_OK) && ((ServiceState == 4) || (ServiceState == 5)))
-			{
-				/* SFP present */
-				
-				/*Update SFP Temperature*/
-				SFPTempFault = 0;
-				if ((sfp[BSP_SFP_LINE_IDX(i)].Temp > sfp[BSP_SFP_LINE_IDX(i)].Thr.Temp[SFP_THR_CMAX]) || \
-					(sfp[BSP_SFP_LINE_IDX(i)].Temp < sfp[BSP_SFP_LINE_IDX(i)].Thr.Temp[SFP_THR_CMIN]))
-					SFPTempFault = 1;
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__sfp__temperature[i], &sfp[BSP_SFP_LINE_IDX(i)].Temp);
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__sfp__temperature_fault[i], &SFPTempFault);
-				
-				/*Update SFP Rx Optical Power*/
-				SFPRxPwrFault = 0;
-				if ((sfp[BSP_SFP_LINE_IDX(i)].RxPwr > sfp[BSP_SFP_LINE_IDX(i)].Thr.RxPwr[SFP_THR_CMAX]) || \
-					(sfp[BSP_SFP_LINE_IDX(i)].RxPwr < sfp[BSP_SFP_LINE_IDX(i)].Thr.RxPwr[SFP_THR_CMIN]))
-					SFPRxPwrFault = 1;
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__sfp__rx_port__channel__optical_power[i], &sfp[BSP_SFP_LINE_IDX(i)].RxPwr);
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__sfp__rx_port__channel__optical_power_fault[i], &SFPRxPwrFault);
-				
-				/*Update SFP Tx Optical Power*/
-				SFPTxPwrFault = 0;
-				if ((sfp[BSP_SFP_LINE_IDX(i)].TxPwr > sfp[BSP_SFP_LINE_IDX(i)].Thr.TxPwr[SFP_THR_CMAX]) || \
-					(sfp[BSP_SFP_LINE_IDX(i)].TxPwr < sfp[BSP_SFP_LINE_IDX(i)].Thr.TxPwr[SFP_THR_CMIN]))
-					SFPTxPwrFault = 1;						
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__sfp__tx_port__channel__optical_power[i], &sfp[BSP_SFP_LINE_IDX(i)].TxPwr);
-				dm_set_param_value(&g_dm, sn_adm_10_2019_11_28__adm__line__sfp__tx_port__channel__optical_power_fault[i], &SFPTxPwrFault);
 			}
 		}
 	}
