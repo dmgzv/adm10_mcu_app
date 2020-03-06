@@ -278,7 +278,8 @@ static void PROFILE_ADM10_UpdateLedsValue(PROFILE_T *Profile)
 		PROFILE_SetValue(Profile, PROFILE_TABLE_5, PROFILE_ADM10_ALARMLED_IDX, &LedColor);
 	}
 	
-	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) ||
+		(BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (ucd90120a.__PowerGood != ((1 << UCD90120A_RAILS_CNT) - 1)))
 	{
 		BSP_LED_Set(BSP_LED_TYPE_POWER, BSP_LED_COLOR_NO);
 		LedColor = 0;
