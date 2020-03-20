@@ -11,26 +11,29 @@ module ipg-adm-10 {
         prefix "ipg-sys";
         revision-date "2019-08-10";
     }
-    import ipg-lcs { 
+    /*import ipg-lcs { 
         prefix "ipg-lcs";
-        revision-date "2019-11-27";
-    }
+        revision-date "2020-03-20";
+    }*/
     import ipg-sfp { 
         prefix "ipg-sfp";
-        revision-date "2019-11-27";
+        revision-date "2020-03-20";
     }
 
     organization "IPG";
     contact "IPG";
     description "YANG model for ADM-10 card";
-	revision 2019-11-28 {
+    revision 2020-03-20 {
+	    description "Abridged temperature in leaf names to temp";
+    }
+
+    revision 2019-11-28 {
         description "Initial revision of ADM-10 card schema";
     }
 
-
-    augment /ipg-sys:system/ipg-lcs:line-card-slot {
-        container adm-10-2019-11-28 {
-            when "(../ipg-lcs:card-module-name = 'adm-10-2019-11-28') and (../ipg-lcs:admin-state != 'DSBLD')";    
+    //augment /ipg-sys:system/ipg-lcs:line-card-slot {
+        container adm-10-2020-03-20 {
+            //when "(../ipg-lcs:schema-id = 'adm-10-2020-03-20') and (../ipg-lcs:admin-state != 'DSBLD')";    
             description "ADM-10";
             ipg-cmn:object "card";
 
@@ -69,7 +72,7 @@ module ipg-adm-10 {
         		default "2.0.0.0";
                 config false;
             }
-            leaf temperature {
+            leaf temp {
                 description "Temperature";
                 units "Centigrade";
                 ipg-cmn:category "gauge";
@@ -78,7 +81,7 @@ module ipg-adm-10 {
                 ipg-cmn:max-val "45.0";
                 config false;
             }
-            leaf temperature-fault {
+            leaf temp-fault {
                 description "Temperature fault";
                 ipg-cmn:category "fault";
                 type  boolean;
@@ -252,6 +255,6 @@ module ipg-adm-10 {
                 }
             }
         }
-    }
+    //}
 
 }

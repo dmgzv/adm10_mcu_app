@@ -11,6 +11,15 @@ module ipg-sfp {
 	organization "IPG";
 	contact "IPG";
 	description "YANG model for SFP module";
+	revision 2020-03-20 {
+		description 
+			"
+			        1. Abridged temperature in leaf names to temp
+		                2. Abridged frequency in leaf names to freq
+				3. Abridged wavelength in leaf names to wl
+				4. Abridged optical-power in leaf names to optical-pwr
+			";
+	}
 	revision 2019-11-27 {
 		description 
 			"
@@ -37,64 +46,64 @@ module ipg-sfp {
 			description "Optical channel";
 			ipg-cmn:object "channel";
 
-			leaf wavelength-min {
+			leaf wl-min {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-2;
 				config false;
 				ipg-cmn:def-val "1510.00";
 			}
-			leaf wavelength-max {
+			leaf wl-max {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-2;
 				config false;
 				ipg-cmn:def-val "1510.00";
 			}
-			leaf wavelength-default {
+			leaf wl-default {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-2;
 				config false;
 				ipg-cmn:def-val "1510.00";
 			}
-			leaf wavelength {
+
+			leaf wl {
 				description "Wavelength";
 				units "nm";
 				ipg-cmn:category "config";
 				type ipg-cmn:float-2;
-				ipg-cmn:min-ref "../wavelength-min";
-				ipg-cmn:max-ref "../wavelength-max";
-				ipg-cmn:def-ref "../wavelength-default";
+				ipg-cmn:min-ref "../wl-min";
+				ipg-cmn:max-ref "../wl-max";
+				ipg-cmn:def-ref "../wl-default";
 				config true;
 			}
-
-			leaf frequency-min {
+			
+			leaf freq-min {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-2;
 				config false;
 				ipg-cmn:def-val "198.54";
 			}
-			leaf frequency-max {
+			leaf freq-max {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-2;
 				config false;
 				ipg-cmn:def-val "198.54";
 			}
-			leaf frequency-default {
+			leaf freq-default {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-2;
 				config false;
 				ipg-cmn:def-val "198.54";
 			}
-			leaf frequency {
+			leaf freq {
 				description "Frequency";
 				units "THz";
 				ipg-cmn:category "config";
 				type ipg-cmn:float-2;
-				ipg-cmn:min-ref "../frequency-min";
-				ipg-cmn:max-ref "../frequency-max";
-				ipg-cmn:def-ref "../frequency-default";
+				ipg-cmn:min-ref "../freq-min";
+				ipg-cmn:max-ref "../freq-max";
+				ipg-cmn:def-ref "../freq-default";
 				config true;
 			}
-
 			leaf width {
 				description "Width";
 				ipg-cmn:category "config";
@@ -106,28 +115,28 @@ module ipg-sfp {
 				default 100.0;
 			}
 
-			leaf optical-power-min {
+			leaf optical-pwr-min {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-1;
 				config false;
 				ipg-cmn:def-val "-40.0";
 			}
-			leaf optical-power-max {
+			leaf optical-pwr-max {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-1;
 				config false;
 				ipg-cmn:def-val "5.0";
 			}
-			leaf optical-power {
+			leaf optical-pwr {
 				description "Optical power";
 				units "dBm";
 				ipg-cmn:category "gauge";
 				type ipg-cmn:float-1;
-				ipg-cmn:min-ref "../optical-power-min";
-				ipg-cmn:max-ref "../optical-power-max";
+				ipg-cmn:min-ref "../optical-pwr-min";
+				ipg-cmn:max-ref "../optical-pwr-max";
 				config false;
 			}
-			leaf optical-power-fault {
+			leaf optical-pwr-flt {
 				description "Optical power fault";
 				ipg-cmn:category "fault";
 				type  boolean;
@@ -165,35 +174,35 @@ module ipg-sfp {
 				default "dummy-vendor";
 			}
 
-			leaf temperature-min {
+			leaf temp-min {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-1;
 				config false;
 				ipg-cmn:def-val "5.0";
 			}
-			leaf temperature-max {
+			leaf temp-max {
 				ipg-cmn:category "attribute";
 				type ipg-cmn:float-1;
 				config false;
 				ipg-cmn:def-val "65.0";
 			}
-			leaf temperature {
+			leaf temp {
 				description "Temperature";
 				units "Centigrade";
 				ipg-cmn:category "gauge";
 				type ipg-cmn:float-1;
-				ipg-cmn:min-ref "../temperature-min";
-				ipg-cmn:max-ref "../temperature-max";
+				ipg-cmn:min-ref "../temp-min";
+				ipg-cmn:max-ref "../temp-max";
 				config false;
 			}
-			leaf temperature-fault {
+			leaf temp-fault {
 				description "Temperature fault";
 				ipg-cmn:category "fault";
 				type  boolean;
 				ipg-cmn:severity "critical";
 				config false;
 			}
-
+			
 			container rx-port {
 				description "Rx port";
 				ipg-cmn:object "port";
