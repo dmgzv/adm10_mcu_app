@@ -235,26 +235,20 @@ static void BSP_SFP_UpdateClientConfig(void)
 static void BSP_SFP_UpdateClientState(void)
 {
 	uint32_t i;
+	uint32_t DeviceServiceState;
 	uint32_t AdminState, ServiceState, ModuleType;
 	uint8_t SFPTempFault, SFPRxPwrFault, SFPTxPwrFault;
 	
+	dm_get_param_value(&g_dm, &sn_adm_10_2020_03_20__adm__service_state, &DeviceServiceState);
+	
 	for (i = 0; i < ADM_10_2020_03_20__ADM__CLIENT_CNT; i++)
 	{
-		dm_get_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__service_state[i], &AdminState);
-		if (AdminState == ADM_10_2020_03_20__ADM__CLIENT__ADMIN_STATE_ENUM_DSBLD)
+		dm_get_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__admin_state[i], &AdminState);
+		if ((AdminState == ADM_10_2020_03_20__ADM__CLIENT__ADMIN_STATE_ENUM_DSBLD) || (DeviceServiceState == 1))
 		{
-			if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(i)]) == BSP_DEV_STATE_OK)
-			{
-				/* Update service state */
-				ServiceState = 1;
-				dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__service_state[i], &ServiceState);
-			}
-			else
-			{
-				/* Update service state */
-				ServiceState = 2;
-				dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__service_state[i], &ServiceState);
-			}
+			/* Update service state */
+			ServiceState = 1;
+			dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__service_state[i], &ServiceState);
 		}
 		else
 		{
@@ -264,10 +258,17 @@ static void BSP_SFP_UpdateClientState(void)
 				if (ModuleType == ADM_10_2020_03_20__ADM__CLIENT__MODULE_TYPE_ENUM_SFP)
 				{
 					/* Update service state */
-					if (AdminState == ADM_10_2020_03_20__ADM__CLIENT__ADMIN_STATE_ENUM_IS)
-						ServiceState = 5;
-					else
+					if (DeviceServiceState == 4)
+					{
 						ServiceState = 4;
+					}
+					else
+					{
+						if (AdminState == ADM_10_2020_03_20__ADM__CLIENT__ADMIN_STATE_ENUM_IS)
+							ServiceState = 5;
+						else
+							ServiceState = 4;
+					}
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__service_state[i], &ServiceState);
 					
 					/*Update SFP Inventory*/
@@ -284,14 +285,14 @@ static void BSP_SFP_UpdateClientState(void)
 					
 					/*Update SFP Rx Optical Power*/
 					SFPRxPwrFault = 0;
-					if ((sfp[BSP_SFP_CLIENT_IDX(i)].RxPwr > sfp[BSP_SFP_CLIENT_IDX(i)].Thr.RxPwr[SFP_THR_CMAX]) || (sfp[BSP_SFP_CLIENT_IDX(i)].Temp < sfp[BSP_SFP_CLIENT_IDX(i)].Thr.RxPwr[SFP_THR_CMIN]))
+					if ((sfp[BSP_SFP_CLIENT_IDX(i)].RxPwr > sfp[BSP_SFP_CLIENT_IDX(i)].Thr.RxPwr[SFP_THR_CMAX]) || (sfp[BSP_SFP_CLIENT_IDX(i)].RxPwr < sfp[BSP_SFP_CLIENT_IDX(i)].Thr.RxPwr[SFP_THR_CMIN]))
 						SFPRxPwrFault = 1;
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__sfp__rx_port__channel__optical_pwr[i], &sfp[BSP_SFP_CLIENT_IDX(i)].RxPwr);
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__sfp__rx_port__channel__optical_pwr_flt[i], &SFPRxPwrFault);
 					
 					/*Update SFP Tx Optical Power*/
 					SFPTxPwrFault = 0;
-					if ((sfp[BSP_SFP_CLIENT_IDX(i)].TxPwr > sfp[BSP_SFP_CLIENT_IDX(i)].Thr.TxPwr[SFP_THR_CMAX]) || (sfp[BSP_SFP_CLIENT_IDX(i)].Temp < sfp[BSP_SFP_CLIENT_IDX(i)].Thr.TxPwr[SFP_THR_CMIN]))
+					if ((sfp[BSP_SFP_CLIENT_IDX(i)].TxPwr > sfp[BSP_SFP_CLIENT_IDX(i)].Thr.TxPwr[SFP_THR_CMAX]) || (sfp[BSP_SFP_CLIENT_IDX(i)].TxPwr < sfp[BSP_SFP_CLIENT_IDX(i)].Thr.TxPwr[SFP_THR_CMIN]))
 						SFPTxPwrFault = 1;						
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__sfp__tx_port__channel__optical_pwr[i], &sfp[BSP_SFP_CLIENT_IDX(i)].TxPwr);
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__client__sfp__tx_port__channel__optical_pwr_flt[i], &SFPTxPwrFault);
@@ -393,26 +394,20 @@ static void BSP_SFP_UpdateLineConfig(void)
 static void BSP_SFP_UpdateLineState(void)
 {
 	uint32_t i;
+	uint32_t DeviceServiceState;
 	uint32_t AdminState, ServiceState, ModuleType;
 	uint8_t SFPTempFault, SFPRxPwrFault, SFPTxPwrFault;
 	
+	dm_get_param_value(&g_dm, &sn_adm_10_2020_03_20__adm__service_state, &DeviceServiceState);
+	
 	for (i = 0; i < ADM_10_2020_03_20__ADM__LINE_CNT; i++)
 	{
-		dm_get_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__service_state[i], &AdminState);
-		if (AdminState == ADM_10_2020_03_20__ADM__LINE__ADMIN_STATE_ENUM_DSBLD)
+		dm_get_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__admin_state[i], &AdminState);
+		if ((AdminState == ADM_10_2020_03_20__ADM__LINE__ADMIN_STATE_ENUM_DSBLD) || (DeviceServiceState == 1))
 		{
-			if (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(i)]) == BSP_DEV_STATE_OK)
-			{
-				/* Update service state */
-				ServiceState = 1;
-				dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__service_state[i], &ServiceState);
-			}
-			else
-			{
-				/* Update service state */
-				ServiceState = 2;
-				dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__service_state[i], &ServiceState);
-			}
+			/* Update service state */
+			ServiceState = 1;
+			dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__service_state[i], &ServiceState);
 		}
 		else
 		{
@@ -422,10 +417,17 @@ static void BSP_SFP_UpdateLineState(void)
 				if (ModuleType == ADM_10_2020_03_20__ADM__LINE__MODULE_TYPE_ENUM_SFP)
 				{
 					/* Update service state */
-					if (AdminState == ADM_10_2020_03_20__ADM__LINE__ADMIN_STATE_ENUM_IS)
-						ServiceState = 5;
-					else
+					if (DeviceServiceState == 4)
+					{
 						ServiceState = 4;
+					}
+					else
+					{
+						if (AdminState == ADM_10_2020_03_20__ADM__LINE__ADMIN_STATE_ENUM_IS)
+							ServiceState = 5;
+						else
+							ServiceState = 4;
+					}
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__service_state[i], &ServiceState);
 					
 					/*Update SFP Inventory*/
@@ -442,14 +444,14 @@ static void BSP_SFP_UpdateLineState(void)
 					
 					/*Update SFP Rx Optical Power*/
 					SFPRxPwrFault = 0;
-					if ((sfp[BSP_SFP_LINE_IDX(i)].RxPwr > sfp[BSP_SFP_LINE_IDX(i)].Thr.RxPwr[SFP_THR_CMAX]) || (sfp[BSP_SFP_LINE_IDX(i)].Temp < sfp[BSP_SFP_LINE_IDX(i)].Thr.RxPwr[SFP_THR_CMIN]))
+					if ((sfp[BSP_SFP_LINE_IDX(i)].RxPwr > sfp[BSP_SFP_LINE_IDX(i)].Thr.RxPwr[SFP_THR_CMAX]) || (sfp[BSP_SFP_LINE_IDX(i)].RxPwr < sfp[BSP_SFP_LINE_IDX(i)].Thr.RxPwr[SFP_THR_CMIN]))
 						SFPRxPwrFault = 1;
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__sfp__rx_port__channel__optical_pwr[i], &sfp[BSP_SFP_LINE_IDX(i)].RxPwr);
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__sfp__rx_port__channel__optical_pwr_flt[i], &SFPRxPwrFault);
 					
 					/*Update SFP Tx Optical Power*/
 					SFPTxPwrFault = 0;
-					if ((sfp[BSP_SFP_LINE_IDX(i)].TxPwr > sfp[BSP_SFP_LINE_IDX(i)].Thr.TxPwr[SFP_THR_CMAX]) || (sfp[BSP_SFP_LINE_IDX(i)].Temp < sfp[BSP_SFP_LINE_IDX(i)].Thr.TxPwr[SFP_THR_CMIN]))
+					if ((sfp[BSP_SFP_LINE_IDX(i)].TxPwr > sfp[BSP_SFP_LINE_IDX(i)].Thr.TxPwr[SFP_THR_CMAX]) || (sfp[BSP_SFP_LINE_IDX(i)].TxPwr < sfp[BSP_SFP_LINE_IDX(i)].Thr.TxPwr[SFP_THR_CMIN]))
 						SFPTxPwrFault = 1;						
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__sfp__tx_port__channel__optical_pwr[i], &sfp[BSP_SFP_LINE_IDX(i)].TxPwr);
 					dm_set_param_value(&g_dm, sn_adm_10_2020_03_20__adm__line__sfp__tx_port__channel__optical_pwr_flt[i], &SFPTxPwrFault);
@@ -522,28 +524,41 @@ void BSP_UpdateCardState(void)
 {
 	float Temp;
 	uint8_t TempFault, PowerFault, HardwareFault;
-	uint32_t AdminState, ServiceState;
+	uint32_t SlotAdminState, SlotServiceState;
+	uint32_t DeviceAdminState, DeviceServiceState;
 	uint32_t i;
 	
 	/* Update Slot Service State*/
-	dm_get_param_value(&g_dm, &sn___HIDDEN____admin_state, &AdminState);
-	if (AdminState == __HIDDEN____ADMIN_STATE_ENUM_DSBLD)
-		ServiceState = 1;
-	else if (AdminState == __HIDDEN____ADMIN_STATE_ENUM_MT)
-		ServiceState = 4;
+	dm_get_param_value(&g_dm, &sn___HIDDEN____admin_state, &SlotAdminState);
+	if (SlotAdminState == __HIDDEN____ADMIN_STATE_ENUM_DSBLD)
+		SlotServiceState = 1;
+	else if (SlotAdminState == __HIDDEN____ADMIN_STATE_ENUM_MT)
+		SlotServiceState = 4;
 	else
-		ServiceState = 5;
-	dm_set_param_value(&g_dm, &sn___HIDDEN____service_state, &ServiceState);	
+		SlotServiceState = 5;
+	dm_set_param_value(&g_dm, &sn___HIDDEN____service_state, &SlotServiceState);	
 	
 	/* Update Device Service State*/
-	dm_get_param_value(&g_dm, &sn_adm_10_2020_03_20__adm__admin_state, &AdminState);
-	if (AdminState == ADM_10_2020_03_20__ADM__ADMIN_STATE_ENUM_DSBLD)
-		ServiceState = 1;
-	else if (AdminState == ADM_10_2020_03_20__ADM__ADMIN_STATE_ENUM_MT)
-		ServiceState = 4;
+	dm_get_param_value(&g_dm, &sn_adm_10_2020_03_20__adm__admin_state, &DeviceAdminState);
+	if ((DeviceAdminState == ADM_10_2020_03_20__ADM__ADMIN_STATE_ENUM_DSBLD) || (SlotServiceState == 1))
+	{
+		DeviceServiceState = 1;
+	}
 	else
-		ServiceState = 5;
-	dm_set_param_value(&g_dm, &sn_adm_10_2020_03_20__adm__service_state, &ServiceState);
+	{
+		if (SlotServiceState == 4)
+		{
+			DeviceServiceState = 4;
+		}
+		else
+		{
+			if (DeviceAdminState == ADM_10_2020_03_20__ADM__ADMIN_STATE_ENUM_MT)
+				DeviceServiceState = 4;
+			else
+				DeviceServiceState = 5;
+		}
+	}
+	dm_set_param_value(&g_dm, &sn_adm_10_2020_03_20__adm__service_state, &DeviceServiceState);
 	
 	/*Update Inventory Values*/
 	dm_set_param_value(&g_dm, &sn_adm_10_2020_03_20__vendor, "IPG Photonics");

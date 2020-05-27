@@ -6,7 +6,7 @@
 #include "dm_adm_10.h"
 #include "dm_adm_10_clbr.h"
 
-#define SCHEMA_ID "adm-10-2019-11-28"
+#define SCHEMA_ID "adm-10-2020-03-20"
 
 extern struct adm_10_attribute_values adm_10_attribute_values;
 extern struct adm_10_config_values adm_10_config_values;
