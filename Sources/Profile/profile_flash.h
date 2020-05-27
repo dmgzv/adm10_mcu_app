@@ -132,4 +132,7 @@ void PROFILE_FLASH_LangpackSave(PROFILE_FLASH_T *ProfileFlash, char *Block, uint
 void PROFILE_FLASH_LangpackLoad(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index);
 void PROFILE_FLASH_LangpackClear(PROFILE_FLASH_T *ProfileFlash);
 
+int32_t PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t DataSize);
+int32_t PROFILE_FLASH_SaveLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize);
+
 #endif /* __PROFILE_FLASH_H */

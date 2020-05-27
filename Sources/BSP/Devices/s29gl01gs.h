@@ -8,7 +8,7 @@
 #include "cmsis_os.h"
 #endif
 
-#define S29GL01GS_ID								"D86"
+#define S29G101GS_DEV_NAME					"S29G101GS"
 #define S29GL01GS_SECTOR_SIZE				(128 * 1024)
 #define S29GL01GS_SECTORS_COUNT			(1024)
 #define S29GL01GS_SIZE							(S29GL01GS_SECTOR_SIZE * S29GL01GS_SECTORS_COUNT)
@@ -19,7 +19,7 @@ typedef struct {
 	NOR_IDTypeDef Id;
 } S29GL01GS_T;
 
-int32_t S29GL01GS_Init(S29GL01GS_T *Dev, const char* DevId);
+int32_t S29GL01GS_Init(S29GL01GS_T *Dev);
 void S29GL01GS_Deinit(S29GL01GS_T *Dev);
 int32_t S29GL01GS_Read(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size);
 int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size);

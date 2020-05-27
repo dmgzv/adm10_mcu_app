@@ -9,6 +9,8 @@
 #include "cmsis_os.h"
 #endif
 
+#define MT48LC16M16A2_DEV_NAME "MT48LC16M16A2"
+
 /* Timings for Speed Grade "-6A"*/
 #define MT48LC16M16A2_ROWS_CNT	8192
 #define MT48LC16M16A2_tRFC	64	/*ms*/

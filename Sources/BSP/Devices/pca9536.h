@@ -4,6 +4,8 @@
 #include "bsp_dev.h"
 #include "i2c.h"
 
+#define PCA9536_DEV_NAME "PCA9536"
+
 #define PCA9536_I2C_ADDR (0x41 << 1)
 
 typedef struct {
@@ -27,7 +29,7 @@ int32_t PCA9536_SetBankOut(PCA9536_T *Dev, uint8_t Out);
 int32_t PCA9536_GetBankPol(PCA9536_T *Dev);
 int32_t PCA9536_SetBankPol(PCA9536_T *Dev, uint8_t Out);
 
-int32_t PCA9536_Init(PCA9536_T *Dev, const char *DevId, const I2C_TypeDef *I2C);
+int32_t PCA9536_Init(PCA9536_T *Dev);
 void PCA9536_Deinit(PCA9536_T *Dev);
 
 #endif /* __PCA9536_H */

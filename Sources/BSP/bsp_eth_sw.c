@@ -3,16 +3,24 @@
 #include "bsp_pwr_pin.h"
 #include "bsp_pwr_seq.h"
 
-KSZ8895_T ksz8895;
-
 static int32_t BSP_ETH_SW_InitPin(void *Priv, uint32_t Type);
 static int32_t BSP_ETH_SW_SetPinState(void *Priv, uint32_t Pin, uint32_t State);
 
-const BSP_PIN_CTRL_T ksz8895_ksz8895_pin_ctrl = {
+const BSP_PIN_CTRL_T ksz8895_pin_ctrl = {
 	BSP_ETH_SW_InitPin,
 	BSP_ETH_SW_SetPinState,
 	NULL,
 	NULL
+};
+
+KSZ8895_T ksz8895 = 
+{
+	.DevName = KSZ8895_DEV_NAME,
+	.DevId = BSP_ETH_SW_KSZ8895_ID,
+	.InitContErrThr = 3,
+	.UpdateContErrThr = 3,
+	.SPI = BSP_ETH_SW_KSZ8895_SPI,
+	.PinCtrl = &ksz8895_pin_ctrl,
 };
 
 static int32_t BSP_ETH_SW_InitPin(void *Priv, uint32_t Type)
@@ -79,10 +87,11 @@ void BSP_ETH_SW_Process(void)
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&ksz8895) != BSP_DEV_STATE_OK)
 		{
-			KSZ8895_Init(&ksz8895, BSP_ETH_SW_ID, BSP_ETH_SW_SPI, &ksz8895_ksz8895_pin_ctrl);
+			KSZ8895_Init(&ksz8895);
 		}
 		else
 		{
+			KSZ8895_ConfigPortMode(&ksz8895, 0, KSZ8895_PORT_MODE_100M_FULL_DUPLEX);
 			KSZ8895_Update(&ksz8895);
 		}		
 	}

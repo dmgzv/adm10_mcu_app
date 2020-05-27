@@ -8,21 +8,25 @@
 #include "cmsis_os.h"
 #endif
 
+#define KSZ8895_DEV_NAME "KSZ8895"
+
 #define KSZ8895_PORTS_CNT	5
 
 #define KSZ8895_PIN_SPI_CS		0	
 #define KSZ8895_PIN_RESET			1
 #define KSZ8895_PIN_PWR_DOWN	2
 
-#define KSZ8895_PORT_STATUS_CNT	3
+#define KSZ8895_PORT_CONTROL_CNT	6
+#define KSZ8895_PORT_STATUS_CNT	2
 
 typedef struct {
 	BSP_DEV;
 	const SPI_TypeDef *SPI;
-	SPI_CS_T CS;
 	const BSP_PIN_CTRL_T *PinCtrl;
+	SPI_CS_T CS;
 	uint8_t FamilyId;
 	uint8_t ChipId;
+	uint8_t PortControl[KSZ8895_PORTS_CNT][KSZ8895_PORT_CONTROL_CNT];
 	uint8_t PortStatus[KSZ8895_PORTS_CNT][KSZ8895_PORT_STATUS_CNT];
 } KSZ8895_T;
 
@@ -45,9 +49,17 @@ typedef struct {
 #define KSZ8895_PORT_LINK_IDX	1
 #define KSZ8895_PORT_LINK(Dev, Idx)	((Dev)->PortStatus[(Idx)][KSZ8895_PORT_LINK_IDX] & (1 << KSZ8895_PORT_LINK_BIT) ? 1 : 0)
 
-int32_t KSZ8895_Init(KSZ8895_T *Dev, const char *DevId, const SPI_TypeDef *SPI, const BSP_PIN_CTRL_T *PinCtrl);
+#define KSZ8895_PORT_MODE_AUTONEG	0
+#define KSZ8895_PORT_MODE_100M_FULL_DUPLEX	1
+#define KSZ8895_PORT_MODE_100M_HALF_DUPLEX	2
+#define KSZ8895_PORT_MODE_10M_FULL_DUPLEX	3
+#define KSZ8895_PORT_MODE_10M_HALF_DUPLEX	4
+
+int32_t KSZ8895_Init(KSZ8895_T *Dev);
 void KSZ8895_Deinit(KSZ8895_T *Dev);
 int32_t KSZ8895_Update(KSZ8895_T *Dev);
+
+int32_t KSZ8895_ConfigPortMode(KSZ8895_T *Dev, uint32_t Idx, uint32_t Mode);
 
 int32_t KSZ8895_ReadReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t *Data);
 int32_t KSZ8895_WriteReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t Data);

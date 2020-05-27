@@ -389,8 +389,7 @@ int32_t MT48LC16M16A2_Init(MT48LC16M16A2_T *Dev, const char *DevId)
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "MT48LC16M16A2", DevId);
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_INIT(Dev);
 	
   /** Perform the SDRAM1 memory initialization sequence
   */
@@ -421,14 +420,10 @@ int32_t MT48LC16M16A2_Init(MT48LC16M16A2_T *Dev, const char *DevId)
 	
 	MT48LC16M16A2_InitSequence(Dev);
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }

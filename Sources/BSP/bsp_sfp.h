@@ -5,27 +5,28 @@
 
 #define BSP_SFP_CNT	20
 
-#define BSP_SFP_1_I2C	I2C2
-#define BSP_SFP_2_I2C	I2C2
-#define BSP_SFP_3_I2C	I2C2
-#define BSP_SFP_4_I2C	I2C2
-#define BSP_SFP_5_I2C	I2C2
-#define BSP_SFP_6_I2C	I2C2
-#define BSP_SFP_7_I2C	I2C2
-#define BSP_SFP_8_I2C	I2C2
-#define BSP_SFP_9_I2C	I2C2
-#define BSP_SFP_10_I2C	I2C2
-#define BSP_SFP_11_I2C	I2C2
-#define BSP_SFP_12_I2C	I2C2
-#define BSP_SFP_13_I2C	I2C2
-#define BSP_SFP_14_I2C	I2C2
-#define BSP_SFP_15_I2C	I2C2
-#define BSP_SFP_16_I2C	I2C2
-#define BSP_SFP_17_I2C	I2C2
-#define BSP_SFP_18_I2C	I2C2
-#define BSP_SFP_19_I2C	I2C2
-#define BSP_SFP_20_I2C	I2C2
+#define BSP_SFP_1_ID	"CL1"
+#define BSP_SFP_2_ID	"CL2"
+#define BSP_SFP_3_ID	"CL3"
+#define BSP_SFP_4_ID	"CL4"
+#define BSP_SFP_5_ID	"CL5"
+#define BSP_SFP_6_ID	"CL6"
+#define BSP_SFP_7_ID	"CL7"
+#define BSP_SFP_8_ID	"CL8"
+#define BSP_SFP_9_ID	"CL9"
+#define BSP_SFP_10_ID	"CL10"
+#define BSP_SFP_11_ID	"CL11"
+#define BSP_SFP_12_ID	"CL12"
+#define BSP_SFP_13_ID	"CL13"
+#define BSP_SFP_14_ID	"CL14"
+#define BSP_SFP_15_ID	"CL15"
+#define BSP_SFP_16_ID	"CL16"
+#define BSP_SFP_17_ID	"LN1"
+#define BSP_SFP_18_ID	"LN2"
+#define BSP_SFP_19_ID	"LN3"
+#define BSP_SFP_20_ID	"LN4"
 
+#define BSP_SFP_I2C	I2C2
 #ifndef BSP_CONFIG_USE_I2C2
 	#error	Define BSP_CONFIG_USE_I2C2 in bsp_config.h for BSP_SFP
 #endif

@@ -232,7 +232,7 @@ void HAL_NOR_MspDeInit(NOR_HandleTypeDef *hnor)
 }
 
 /* FMC initialization function */
-int32_t S29GL01GS_Init(S29GL01GS_T *Dev, const char* DevId)
+int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 {
   FMC_NORSRAM_TimingTypeDef Timing;
   FMC_NORSRAM_TimingTypeDef ExtTiming;
@@ -240,8 +240,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev, const char* DevId)
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "S29GL01GS", DevId);
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_INIT(Dev);
 	
   /** Perform the NOR1 memory initialization sequence
   */
@@ -365,15 +364,11 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev, const char* DevId)
 	if (HAL_NOR_ReturnToReadMode(&Dev->hnor[1]) != HAL_NOR_STATUS_SUCCESS)
 		goto error;
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -381,8 +376,7 @@ void S29GL01GS_Deinit(S29GL01GS_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
+	BSP_DEV_DEINIT(Dev);
 }
 
 int32_t S29GL01GS_Read(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size)
@@ -394,7 +388,7 @@ int32_t S29GL01GS_Read(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t S
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	/* todo: Fix reading of data from several banks*/
 	if (Addr < S29GL01GS_NOR_BANK_SIZE)
@@ -424,11 +418,11 @@ int32_t S29GL01GS_Read(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t S
 		}
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -444,7 +438,7 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	/* todo: Fix programing of data to several banks*/
 	if (Addr < S29GL01GS_NOR_BANK_SIZE)
@@ -504,11 +498,11 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 		}
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -519,7 +513,7 @@ int32_t S29GL01GS_EraseSector(S29GL01GS_T *Dev, uint32_t Addr)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	
 	if (Addr < S29GL01GS_NOR_BANK_SIZE)
@@ -537,11 +531,11 @@ int32_t S29GL01GS_EraseSector(S29GL01GS_T *Dev, uint32_t Addr)
 			goto error;
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -554,7 +548,7 @@ int32_t S29GL01GS_WaitReady(S29GL01GS_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	while (1)
 	{
@@ -568,11 +562,11 @@ int32_t S29GL01GS_WaitReady(S29GL01GS_T *Dev)
 			S29GL01GS_msDelay(1);
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 

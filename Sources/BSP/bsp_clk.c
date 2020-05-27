@@ -18,9 +18,6 @@
 #include "bsp_pwr_seq.h"
 #include "bsp_sfp_i2c_switch.h"
 
-static const uint8_t bsp_clk_si5332_i2c_addr[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_I2C_ADDR, BSP_CLK_SI5332_2_I2C_ADDR};
-static const char* bsp_clk_si5332_id[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_ID, BSP_CLK_SI5332_2_ID};
-static const I2C_TypeDef* bsp_clk_si5332_i2c[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_I2C, BSP_CLK_SI5332_2_I2C};
 static const SI5332_CFG_T* bsp_clk_si5332_cfg[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332_CFG_CNT] = {
 	{
 		NULL,
@@ -86,7 +83,26 @@ static const uint32_t bsp_clk_si5332_cfg_size[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332
 	},
 };
 
-SI5332_T si5332[BSP_CLK_SI5332_CNT];
+SI5332_T si5332[BSP_CLK_SI5332_CNT] =
+{
+	{
+		.DevName = SI5332_DEV_NAME,
+		.DevId = BSP_CLK_SI5332_1_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.I2C = BSP_CLK_SI5332_1_I2C,
+		.Addr = BSP_CLK_SI5332_1_I2C_ADDR,
+	},
+	{
+		.DevName = SI5332_DEV_NAME,
+		.DevId = BSP_CLK_SI5332_2_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.I2C = BSP_CLK_SI5332_2_I2C,
+		.Addr = BSP_CLK_SI5332_2_I2C_ADDR,
+	},
+};
+
 uint32_t si5332_cfg[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_DEF_CFG, BSP_CLK_SI5332_2_DEF_CFG};
 static uint32_t __si5332_cfg[BSP_CLK_SI5332_CNT];
 
@@ -94,13 +110,13 @@ static int32_t BSP_CLK_CheckConditions(void)
 {
 	uint32_t i;
 	
-	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) || (!dim3r3400_load_timeout))
 		return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;
 	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 		return -1;
-	for (i = 0; i < BSP_PCA9548_CNT; i++)
+	for (i = 0; i < BSP_PCA9548A_CNT; i++)
 	{
 		if (BSP_DEV_GET_STATE(&pca9548a[i]) != BSP_DEV_STATE_OK)
 			return -1;
@@ -150,7 +166,7 @@ void BSP_CLK_Process(void)
 						cfg_size = bsp_clk_si5332_cfg_size[i][si5332_cfg[i]];
 						if (!BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_SI5332_CH(i)))
 						{
-							if (SI5332_Init(&si5332[i], bsp_clk_si5332_id[i], bsp_clk_si5332_i2c[i], bsp_clk_si5332_i2c_addr[i], cfg, cfg_size) == 0)
+							if (SI5332_Init(&si5332[i], cfg, cfg_size) == 0)
 								__si5332_cfg[i] = si5332_cfg[i];
 							BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
 						}

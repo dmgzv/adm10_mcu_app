@@ -85,12 +85,12 @@ int32_t PROFILE_FLASH_SaveHeader(PROFILE_FLASH_T *ProfileFlash)
 			goto error;
 	}
 	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Header %d: Header Idx %d, Profile Idx %d", Header.Idx % PROFILE_FLASH_HEADERS_CNT, Header.Idx, Header.ProfileIdx);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Header %d: Header Idx %d, Profile Idx %d", Header.Idx % PROFILE_FLASH_HEADERS_CNT, Header.Idx, Header.ProfileIdx);
 	ProfileFlash->HeaderIdx++;	
 	return 0;
 
 error:
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Header %d: Error", Header.Idx % PROFILE_FLASH_HEADERS_CNT);
+	LOG_Error("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Header %d: Error", Header.Idx % PROFILE_FLASH_HEADERS_CNT);
 	return -1;
 }
 
@@ -121,11 +121,11 @@ int32_t PROFILE_FLASH_LoadHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, ui
 	*ProfileIdx = Header.ProfileIdx;
 	*HeaderIdx = Header.Idx;
 
-	LOG_Add("PROFILE_FLASH", "", "Load Header %d: Header Idx %d, Profile Idx %d", Idx, *HeaderIdx, *ProfileIdx);
+	LOG_Info("PROFILE_FLASH", "", "", "Load Header %d: Header Idx %d, Profile Idx %d", Idx, *HeaderIdx, *ProfileIdx);
 	return 0;
 	
 error:
-	LOG_Add("PROFILE_FLASH", "", "Load Header %d: Error", Idx);
+	LOG_Warn("PROFILE_FLASH", "", "", "Load Header %d: Error", Idx);
 	return -1;
 }
 
@@ -162,13 +162,13 @@ int32_t PROFILE_FLASH_InitHeaders(PROFILE_FLASH_T *ProfileFlash)
 	{
 		ProfileFlash->HeaderIdx = HeaderIdxSave + 1;
 		ProfileFlash->Profile->Idx = HeaderProfileIdxSave;
-		LOG_Add("PROFILE_FLASH", "", "Init Profile Idx %d Class %s", ProfileFlash->Profile->Idx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass);
+		LOG_Info("PROFILE_FLASH", "", "", "Init Profile Idx %d Class %s", ProfileFlash->Profile->Idx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass);
 		return 0;
 	}
 	
 	ProfileFlash->HeaderIdx = 0;
 	ProfileFlash->Profile->Idx = 0;
-	LOG_Add("PROFILE_FLASH", "", "Init Profile Idx %d Class %s", ProfileFlash->Profile->Idx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass);
+	LOG_Info("PROFILE_FLASH", "", "", "Init Profile Idx %d Class %s", ProfileFlash->Profile->Idx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass);
 	return PROFILE_FLASH_SaveHeader(ProfileFlash);
 }
 
@@ -293,17 +293,17 @@ int32_t PROFILE_FLASH_CheckCalibsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *Re
 		goto mismatch;
 	
 	*RestoreValues = 0;
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Calibs Map Check: Ok");
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Calibs Map Check: Ok");
 	return 0;
 	
 error:
 	*RestoreValues = 0;
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Calibs Map Check: Invalid");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Calibs Map Check: Invalid");
 	return -1;
 	
 mismatch:
 	*RestoreValues = 1;
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Calibs Map Check: Mismatch");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Calibs Map Check: Mismatch");
 	return -1;
 }
 
@@ -469,11 +469,11 @@ int32_t PROFILE_FLASH_SaveCalibsMap(PROFILE_FLASH_T *ProfileFlash)
 	if (BSP_FLASH_ProgramPage(Addr, (char*)&Header, sizeof(Header)))
 		goto error;
 	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Calibs Map: %d bytes", Size);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Calibs Map: %d bytes", Size);
 	return -1;
 	
 error:
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Calibs Map: Error");
+	LOG_Error("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Calibs Map: Error");
 	return -1;	
 }
 
@@ -535,12 +535,12 @@ int32_t PROFILE_FLASH_GetCalibsValuesIdx(PROFILE_FLASH_T *ProfileFlash, uint32_t
 	if (CalibsValuesIdxFounded)
 	{
 		*CalibsValuesIdx = CalibsValuesIdxSave;
-		LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Get Calibs Values: %d", *CalibsValuesIdx);
+		LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Get Calibs Values: %d", *CalibsValuesIdx);
 		return 0;
 	}
 	
 error:	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Get Calibs Values: Error");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Get Calibs Values: Error");
 	return -1;
 }
 
@@ -730,7 +730,7 @@ void PROFILE_FLASH_RestoreCalibsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t C
 	}
 
 exit:
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Restore Calibs Values: %d params", RestoredParamsCnt);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Restore Calibs Values: %d params", RestoredParamsCnt);
 }
 
 static int32_t PROFILE_FLASH_LoadCalibsRecord(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t *RecordIdx)
@@ -767,13 +767,13 @@ static int32_t PROFILE_FLASH_LoadCalibsRecord(PROFILE_FLASH_T *ProfileFlash, uin
 	osMutexRelease( ProfileFlash->Profile->Values->Mutex );
 	
 	*RecordIdx = CalibRecordHeader.Idx;
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Load Calibs Values %d: Idx %d", Idx, *RecordIdx);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Load Calibs Values %d: Idx %d", Idx, *RecordIdx);
 	return 0;
 
 release_and_error:
 	osMutexRelease( ProfileFlash->Profile->Values->Mutex );
 error:	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Load Calibs Values %d: Error", Idx);
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Load Calibs Values %d: Error", Idx);
 	return -1;
 }
 
@@ -864,12 +864,12 @@ int32_t PROFILE_FLASH_SaveCalibsValues(PROFILE_FLASH_T *ProfileFlash)
 		}
 	}
 	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Calibs Values %d: %d bytes", ProfileFlash->CalibIdx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->CalibValuesSize);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Calibs Values %d: %d bytes", ProfileFlash->CalibIdx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->CalibValuesSize);
 	ProfileFlash->CalibIdx++;
 	return 0;
 	
 error:
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Calibs Values %d: Error", ProfileFlash->CalibIdx);
+	LOG_Error("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Calibs Values %d: Error", ProfileFlash->CalibIdx);
 	return -1;	
 }
 
@@ -896,14 +896,14 @@ int32_t PROFILE_FLASH_InitCalibsValues(PROFILE_FLASH_T *ProfileFlash)
 		ProfileFlash->CalibIdx = CalibsValuesIdxSave + 1;
 		if (PROFILE_FLASH_LoadCalibsRecord(ProfileFlash, CalibsValuesIdxSave % PROFILE_FLASH_CALIB_RECORDS_CNT, &CalibsValuesIdxSave))
 			goto error;
-		LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Init Calibs Values: Idx %d", ProfileFlash->CalibIdx);
+		LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Init Calibs Values: Idx %d", ProfileFlash->CalibIdx);
 		return 0;
 	}
 
 error:
 	ProfileFlash->CalibIdx = 0;
 	memcpy(ProfileFlash->Profile->Values->Calib, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->CalibDefaultValues, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->CalibValuesSize);
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Init Calibs Values: Idx %d", ProfileFlash->CalibIdx);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Init Calibs Values: Idx %d", ProfileFlash->CalibIdx);
 	return PROFILE_FLASH_SaveCalibsValues(ProfileFlash);
 }
 
@@ -1046,17 +1046,17 @@ int32_t PROFILE_FLASH_CheckConfigsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *R
 		goto mismatch;
 	
 	*RestoreValues = 0;
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Configs Map Check: Ok");
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Configs Map Check: Ok");
 	return 0;
 	
 error:
 	*RestoreValues = 0;
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Configs Map Check: Invalid");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Configs Map Check: Invalid");
 	return -1;
 	
 mismatch:
 	*RestoreValues = 1;
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Configs Map Check: Mismatch");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Configs Map Check: Mismatch");
 	return -1;
 }
 
@@ -1222,11 +1222,11 @@ int32_t PROFILE_FLASH_SaveConfigsMap(PROFILE_FLASH_T *ProfileFlash)
 	if (BSP_FLASH_ProgramPage(Addr, (char*)&Header, sizeof(Header)))
 		goto error;
 	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Configs Map: %d bytes", Size);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Configs Map: %d bytes", Size);
 	return -1;
 	
 error:
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Configs Map: Error");
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Configs Map: Error");
 	return -1;	
 }
 
@@ -1288,12 +1288,12 @@ int32_t PROFILE_FLASH_GetConfigsValuesIdx(PROFILE_FLASH_T *ProfileFlash, uint32_
 	if (ConfigsValuesIdxFounded)
 	{
 		*ConfigsValuesIdx = ConfigsValuesIdxSave;
-		LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Get Configs Values: %d", *ConfigsValuesIdx);
+		LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Get Configs Values: %d", *ConfigsValuesIdx);
 		return 0;
 	}
 	
 error:	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Get Configs Values: Error");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Get Configs Values: Error");
 	return -1;
 }
 
@@ -1482,7 +1482,7 @@ void PROFILE_FLASH_RestoreConfigsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t 
 	}
 
 exit:
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Restore Configs Values: %d params", RestoredParamsCnt);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Restore Configs Values: %d params", RestoredParamsCnt);
 }
 
 static int32_t PROFILE_FLASH_LoadConfigsRecord(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t *RecordIdx)
@@ -1519,13 +1519,13 @@ static int32_t PROFILE_FLASH_LoadConfigsRecord(PROFILE_FLASH_T *ProfileFlash, ui
 	osMutexRelease( ProfileFlash->Profile->Values->Mutex );
 	
 	*RecordIdx = ConfigRecordHeader.Idx;
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Load Configs Values %d: Idx %d", Idx, *RecordIdx);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Load Configs Values %d: Idx %d", Idx, *RecordIdx);
 	return 0;
 
 release_and_error:
 	osMutexRelease( ProfileFlash->Profile->Values->Mutex );
 error:	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Load Configs Values %d: Error", Idx);
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Load Configs Values %d: Error", Idx);
 	return -1;
 }
 
@@ -1616,12 +1616,12 @@ int32_t PROFILE_FLASH_SaveConfigsValues(PROFILE_FLASH_T *ProfileFlash)
 		}
 	}
 	
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Configs Values %d: %d bytes", ProfileFlash->ConfigIdx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->StaticValuesSize);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Configs Values %d: %d bytes", ProfileFlash->ConfigIdx, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->StaticValuesSize);
 	ProfileFlash->ConfigIdx++;
 	return 0;
 	
 error:
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Save Configs Values %d: Error", ProfileFlash->ConfigIdx);
+	LOG_Error("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Configs Values %d: Error", ProfileFlash->ConfigIdx);
 	return -1;	
 }
 
@@ -1648,14 +1648,14 @@ int32_t PROFILE_FLASH_InitConfigsValues(PROFILE_FLASH_T *ProfileFlash)
 		ProfileFlash->ConfigIdx = ConfigsValuesIdxSave + 1;
 		if (PROFILE_FLASH_LoadConfigsRecord(ProfileFlash, ConfigsValuesIdxSave % PROFILE_FLASH_CONFIG_RECORDS_CNT, &ConfigsValuesIdxSave))
 			goto error;
-		LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Init Configs Values: Idx %d", ProfileFlash->ConfigIdx);
+		LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Init Configs Values: Idx %d", ProfileFlash->ConfigIdx);
 		return 0;
 	}
 
 error:
 	ProfileFlash->ConfigIdx = 0;
 	memcpy(ProfileFlash->Profile->Values->Static, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->StaticDefaultValues, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->StaticValuesSize);
-	LOG_Add("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "Init Configs Values: Idx %d", ProfileFlash->ConfigIdx);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Init Configs Values: Idx %d", ProfileFlash->ConfigIdx);
 	return PROFILE_FLASH_SaveConfigsValues(ProfileFlash);
 }
 
@@ -1803,4 +1803,77 @@ void PROFILE_FLASH_LangpackClear(PROFILE_FLASH_T *ProfileFlash)
 	if (BSP_FLASH_WaitReady())
 		return;
 	BSP_FLASH_ErasePage(Addr);
+}
+
+int32_t PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t DataSize)
+{
+	char Buffer[BSP_FLASH_PAGE_SIZE];
+	uint32_t Idx;
+	uint32_t BlocksCnt;
+	
+	memset(Buffer, 0x03, BSP_FLASH_PAGE_SIZE);
+	BlocksCnt = (DataSize % BSP_FLASH_PAGE_SIZE) ? ((DataSize / BSP_FLASH_PAGE_SIZE) + 1) : (DataSize / BSP_FLASH_PAGE_SIZE);
+	Idx = sprintf(Buffer, "%d;1", BlocksCnt);
+	Buffer[Idx] = 0x03;
+	if (BSP_FLASH_WaitReady())
+		return -1;
+	if (BSP_FLASH_ProgramPage(PROFILE_FLASH_LANG_ADDR(ProfileFlash->Profile->Idx), Buffer, BSP_FLASH_PAGE_SIZE))
+		return -1;
+	return 0;
+}
+
+int32_t PROFILE_FLASH_SaveLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize)
+{
+	char Buffer[BSP_FLASH_PAGE_SIZE];
+	uint32_t Addr;
+	uint32_t DataIdx, DataBlockSize;
+	uint32_t PageAddr, PageIdx;
+	
+	DataIdx = 0;
+	
+	while (DataIdx != DataSize)
+	{
+		PageIdx = (DataAddr + DataIdx) / BSP_FLASH_PAGE_SIZE;
+		PageAddr = (DataAddr + DataIdx) % BSP_FLASH_PAGE_SIZE;
+		Addr = PROFILE_FLASH_LANG_ADDR(ProfileFlash->Profile->Idx) + (PageIdx + 1) * BSP_FLASH_PAGE_SIZE;
+		if (PageAddr)
+		{
+			if (BSP_FLASH_WaitReady())
+				return -1;
+			if (BSP_FLASH_Read(Addr, Buffer, PageAddr))
+				return -1;
+			DataBlockSize = DataSize > (BSP_FLASH_PAGE_SIZE - PageAddr) ? BSP_FLASH_PAGE_SIZE - PageAddr : DataSize;
+			memcpy(&Buffer[PageAddr], &Data[DataIdx], DataBlockSize);
+			if (DataBlockSize == DataSize)
+				memset(&Buffer[PageAddr + DataBlockSize], 0x03, BSP_FLASH_PAGE_SIZE - PageAddr - DataBlockSize);
+			if (BSP_FLASH_WaitReady())
+				return -1;
+			if (BSP_FLASH_ProgramPage(Addr, Buffer, BSP_FLASH_PAGE_SIZE))
+				return -1;
+			DataIdx += DataBlockSize;
+		}
+		else
+		{
+			if ((DataSize - DataIdx) >= BSP_FLASH_PAGE_SIZE)
+			{
+				if (BSP_FLASH_WaitReady())
+					return -1;
+				if (BSP_FLASH_ProgramPage(Addr, &Data[DataIdx], BSP_FLASH_PAGE_SIZE))
+					return -1;
+				DataIdx += BSP_FLASH_PAGE_SIZE;
+			}
+			else
+			{
+				DataBlockSize = DataSize - DataIdx;
+				memcpy(&Buffer, &Data[DataIdx], DataBlockSize);
+				memset(&Buffer[DataBlockSize], 0x03, BSP_FLASH_PAGE_SIZE - DataBlockSize);
+				if (BSP_FLASH_WaitReady())
+					return -1;
+				if (BSP_FLASH_ProgramPage(Addr, Buffer, BSP_FLASH_PAGE_SIZE))
+					return -1;
+				DataIdx += DataBlockSize;
+			}
+		}
+	}
+	return 0;
 }

@@ -567,7 +567,10 @@ int32_t I2C_Transmit(const I2C_TypeDef * Instance, uint16_t DevAddress, char *Bu
 		return -1;
 
 	if( osMutexWait( i2c->mutex_id, I2C_TIMEOUT ) != osOK )
+	{
+		i2c->timeout_errors++;
 		return -1;
+	}
 
 	if(HAL_I2C_Master_Transmit_IT(&i2c->handle, (uint16_t)DevAddress, (uint8_t*)Buffer, Size) != HAL_OK)
 		goto error;
@@ -624,7 +627,10 @@ int32_t I2C_Receive(const I2C_TypeDef * Instance, uint16_t DevAddress, char *Buf
 		return -1;
 	
 	if( osMutexWait( i2c->mutex_id, I2C_TIMEOUT ) != osOK )
+	{
+		i2c->timeout_errors++;
 		return -1;
+	}
 
 	if(HAL_I2C_Master_Receive_IT(&i2c->handle, DevAddress, (uint8_t*)Buffer, Size) != HAL_OK)
 		goto error;
@@ -683,7 +689,10 @@ int32_t I2C_Sequential_Transmit(const I2C_TypeDef * Instance, uint16_t DevAddres
 		return -1;
 	
 	if( osMutexWait( i2c->mutex_id, I2C_TIMEOUT ) != osOK )
+	{
+		i2c->timeout_errors++;
 		return -1;
+	}
 
 	if (HAL_I2C_Master_Sequential_Transmit_IT(&i2c->handle, DevAddress, Address, AddressSize, I2C_FIRST_FRAME) != HAL_OK)
 		goto error;
@@ -761,7 +770,10 @@ int32_t I2C_Sequential_Receive(const I2C_TypeDef * Instance, uint16_t DevAddress
 		return -1;
 	
 	if( osMutexWait( i2c->mutex_id, I2C_TIMEOUT ) != osOK )
+	{
+		i2c->timeout_errors++;
 		return -1;
+	}
 
 	if (HAL_I2C_Master_Sequential_Transmit_IT(&i2c->handle, DevAddress, Address, AddressSize, I2C_FIRST_FRAME) != HAL_OK)
 		goto error;

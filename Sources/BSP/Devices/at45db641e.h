@@ -8,6 +8,8 @@
 #include "cmsis_os.h"
 #endif
 
+#define AT45DB641E_DEV_NAME "AT45DB641E"
+
 #define AT45DB641E_PAGES_PER_BLOCK		8
 #define AT45DB641E_BLOCKS_PER_SECTOR	128
 #define AT45DB641E_PAGES_PER_SECTOR		(AT45DB641E_PAGES_PER_BLOCK * AT45DB641E_BLOCKS_PER_SECTOR)
@@ -21,7 +23,6 @@
 #define AT45DB641E_SECTOR_SIZE				(AT45DB641E_BLOCKS_PER_SECTOR * AT45DB641E_BLOCK_SIZE)
 #define AT45DB641E_SIZE								(AT45DB641E_SECTORS_COUNT * AT45DB641E_SECTOR_SIZE)
 
-
 #define AT45DB641E_PIN_SPI_CS 0
 #define AT45DB641E_PIN_WP			1
 #define AT45DB641E_PIN_RESET	2
@@ -29,8 +30,8 @@
 typedef struct {
 	BSP_DEV;	
 	const SPI_TypeDef *SPI;
-	SPI_CS_T CS;
 	const BSP_PIN_CTRL_T *PinCtrl;
+	SPI_CS_T CS;
 	uint16_t DeviceId;
 	uint8_t ManufId;
 	uint8_t Status;
@@ -45,8 +46,6 @@ int32_t AT45DB641E_Read(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t
 int32_t AT45DB641E_ProgramPage(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
 int32_t AT45DB641E_ModifyPage(AT45DB641E_T *dev, uint32_t Addr, char *Buffer, uint32_t Size);
 
-int32_t AT45DB641E_Init(AT45DB641E_T *Dev, const char *DevId, const SPI_TypeDef *SPI, const BSP_PIN_CTRL_T *PinCtrl);
-
-
+int32_t AT45DB641E_Init(AT45DB641E_T *Dev);
 
 #endif /* __AT45DB641E_H */

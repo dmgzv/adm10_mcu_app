@@ -43,12 +43,14 @@ static int32_t BOOTLOADER_CheckFw(BOOTLOADER_T *Bootloader)
 	return 0;
 }
 
-static int32_t BOOTLOADER_CheckNewFw(BOOTLOADER_T *Bootloader)
+int32_t BOOTLOADER_CheckNewFw(BOOTLOADER_T *Bootloader)
 {
 	BOOTLOADER_INFO_T FwInfo;
 	uint32_t Addr, i;
 	uint16_t CRC16;
 	
+	if (BSP_FLASH_WaitReady())
+		return -1;
 	/*Check FW Size*/
 	Addr = BSP_FLASH_FW_INFO;
 	if (BSP_FLASH_Read(BSP_FLASH_FW_INFO, (char*)&FwInfo, sizeof(FwInfo)))
@@ -205,6 +207,7 @@ int32_t BOOTLOADER_UpdateNewFwByte(BOOTLOADER_T *Bootloader, uint8_t FwByte)
 
 int32_t BOOTLOADER_UpdateNewFwBlock(BOOTLOADER_T *Bootloader, char *FwBlock, uint32_t FwBlockSize)
 {
+	BOOTLOADER_INFO_T *FwInfo;
 	uint32_t Size;
 	
 	while (FwBlockSize)
@@ -219,7 +222,16 @@ int32_t BOOTLOADER_UpdateNewFwBlock(BOOTLOADER_T *Bootloader, char *FwBlock, uin
 		Bootloader->BufferAddr += Size;
 		FwBlock += Size;
 		FwBlockSize -= Size;
-		if (Bootloader->BufferAddr == BSP_FLASH_PAGE_SIZE)
+		if (Bootloader->FlashAddr == BSP_FLASH_FW_INFO)
+		{
+			FwInfo = (BOOTLOADER_INFO_T*)Bootloader->Buffer;
+			FwInfo->CRC16 = Bootloader->FwCRC16;
+			if (BSP_FLASH_WaitReady())
+				return -1;
+			if (BSP_FLASH_ProgramPage(Bootloader->FlashAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
+				return -1;
+		}
+		else if (Bootloader->BufferAddr == BSP_FLASH_PAGE_SIZE)
 		{
 			Bootloader->FwCRC16 = Calc_CRC16((char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE, Bootloader->FwCRC16);
 			if (BSP_FLASH_WaitReady())
@@ -233,32 +245,8 @@ int32_t BOOTLOADER_UpdateNewFwBlock(BOOTLOADER_T *Bootloader, char *FwBlock, uin
 	return 0;
 }
 
-int32_t BOOTLOADER_UpdateNewFwComplete(BOOTLOADER_T *Bootloader)
+int32_t BOOTLOADER_UpdateNewFw(BOOTLOADER_T *Bootloader)
 {
-	BOOTLOADER_INFO_T *FwInfo;
-	
-	/* Check if fw image is too small*/
-	if (Bootloader->FlashAddr != BSP_FLASH_FW_INFO)
-		return -1;
-	/*Get fw info*/
-	FwInfo = (BOOTLOADER_INFO_T*)Bootloader->Buffer;
-	/*Check Project*/
-	if (memcmp(FwInfo->Project, BSP_PROJECT, sizeof(BSP_PROJECT)))
-		return -1;
-	/*Check HW Version*/
-	if (memcmp(FwInfo->HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION)))
-		return -1;
-	/*Write fw CRC16*/
-	FwInfo->CRC16 = Bootloader->FwCRC16;
-	/*Write fw info to flash*/
-	if (BSP_FLASH_WaitReady())
-		return -1;
-	if (BSP_FLASH_ProgramPage(Bootloader->FlashAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
-		return -1;
-	if (BSP_FLASH_WaitReady())
-		return -1;
-	if (BOOTLOADER_CheckNewFw(Bootloader))
-		return -1;
 	if( BOOTLOADER_ResetFw(Bootloader))
 		return -1;
 	return 0;

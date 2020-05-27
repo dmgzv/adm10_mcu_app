@@ -719,6 +719,7 @@ HAL_StatusTypeDef HAL_ETH_TransmitFrame(ETH_HandleTypeDef *heth, uint32_t FrameL
     heth->TxDesc->Status |=ETH_DMATXDESC_FS|ETH_DMATXDESC_LS;
     /* Set frame size */
     heth->TxDesc->ControlBufferSize = (FrameLength & ETH_DMATXDESC_TBS1);
+		
     /* Set Own bit of the Tx descriptor Status: gives the buffer back to ETHERNET DMA */
     heth->TxDesc->Status |= ETH_DMATXDESC_OWN;
     /* Point to next descriptor */

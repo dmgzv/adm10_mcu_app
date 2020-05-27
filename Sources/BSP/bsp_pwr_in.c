@@ -2,9 +2,17 @@
 #include "bsp_pwr_pin.h"
 #include "log.h"
 
-DIM3R3400_T dim3r3400;
+DIM3R3400_T dim3r3400 = {
+	.DevName = DIM3R3400_DEV_NAME,
+	.DevId = BSP_PWR_IN_DIM3R3400_ID,
+	.InitContErrThr = 3,
+	.UpdateContErrThr = 3,
+	.I2C = BSP_PWR_IN_DIM3R3400_I2C,
+	.Addr = BSP_PWR_IN_DIM3R3400_I2C_ADDR,
+};
 uint32_t dim3r3400_power_good;
 int32_t dim3r3400_power_12v_init;
+uint32_t dim3r3400_load_timeout = 60;
 
 static int32_t BSP_PWR_IN_CheckConditions(void)
 {
@@ -35,7 +43,7 @@ void BSP_PWR_IN_Process(void)
 		{
 			dim3r3400_power_good = 0;
 			dim3r3400_power_12v_init = -1;
-			DIM3R3400_Init(&dim3r3400, BSP_PWR_IN_DIM3R3400_ID, BSP_PWR_IN_DIM3R3400_I2C, BSP_PWR_IN_DIM3R3400_I2C_ADDR);
+			DIM3R3400_Init(&dim3r3400);
 		}
 		else
 		{
@@ -57,17 +65,29 @@ void BSP_PWR_IN_Process(void)
 								PowerGood |= 1 << i;
 							}
 						}
+						
+						if (dim3r3400_load_timeout)
+						{
+							dim3r3400_load_timeout--;
+						}
+						
+						if (!dim3r3400_load_timeout)
+						{
+							LOG_Warn("BSP", dim3r3400.DevName, dim3r3400.DevId, "Load Timeout");
+						}
+						
 						if (dim3r3400_power_good != PowerGood)
 						{
 							dim3r3400_power_good = PowerGood;
-							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "PowerGood: 0x%x", dim3r3400_power_good);
-							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
-							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
+							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "PowerGood: 0x%x", dim3r3400_power_good);
+							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
+							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
 						}
-						if (!dim3r3400_power_good)
+						if ((!dim3r3400_power_good) || (!dim3r3400_load_timeout))
 						{
 							BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 0);
 						}
+						
 					}
 					else
 					{
@@ -82,9 +102,13 @@ void BSP_PWR_IN_Process(void)
 						if (dim3r3400_power_good != PowerGood)
 						{
 							dim3r3400_power_good = PowerGood;
-							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "PowerGood: 0x%x", dim3r3400_power_good);
-							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
-							LOG_Add(dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
+							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "PowerGood: 0x%x", dim3r3400_power_good);
+							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
+							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
+						}
+						if (!dim3r3400_load_timeout)
+						{
+							dim3r3400_load_timeout = 60;
 						}
 						if (dim3r3400_power_good)
 						{
@@ -96,3 +120,4 @@ void BSP_PWR_IN_Process(void)
 		}
 	}
 }
+

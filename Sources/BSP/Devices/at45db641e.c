@@ -91,7 +91,7 @@ int32_t AT45DB641E_ErasePage(AT45DB641E_T *Dev, uint32_t Addr)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	data[3] = Addr;
 	data[2]	= Addr >> 8;
@@ -101,11 +101,12 @@ int32_t AT45DB641E_ErasePage(AT45DB641E_T *Dev, uint32_t Addr)
 	if (result)
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Erase page: Error");
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;	
 }
 
@@ -116,7 +117,7 @@ int32_t AT45DB641E_WaitReady(AT45DB641E_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	while (1)
 	{
@@ -127,11 +128,12 @@ int32_t AT45DB641E_WaitReady(AT45DB641E_T *Dev)
 		AT45DB641E_msDelay(1);
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Wait ready: Error");
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -145,7 +147,7 @@ int32_t AT45DB641E_EraseBlock(AT45DB641E_T *Dev, uint32_t Addr)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	data[3] = Addr;
 	data[2]	= Addr >> 8;
@@ -155,11 +157,12 @@ int32_t AT45DB641E_EraseBlock(AT45DB641E_T *Dev, uint32_t Addr)
 	if (result)
 		goto error;	
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Erase block: Error");
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;	
 }
 
@@ -173,7 +176,7 @@ int32_t AT45DB641E_EraseSector(AT45DB641E_T *Dev, uint32_t Addr)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	data[3] = Addr;
 	data[2]	= Addr >> 8;
@@ -183,11 +186,12 @@ int32_t AT45DB641E_EraseSector(AT45DB641E_T *Dev, uint32_t Addr)
 	if (result)
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Erase sector: Error");
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;	
 }
 
@@ -201,17 +205,18 @@ int32_t AT45DB641E_Erase(AT45DB641E_T *Dev, uint32_t Addr)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	result = SPI_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
 	if (result)
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Erase: Error");
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -225,7 +230,7 @@ int32_t AT45DB641E_Read(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, uint32_t
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	data[3] = Addr;
 	data[2]	= Addr >> 8;
@@ -235,11 +240,12 @@ int32_t AT45DB641E_Read(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, uint32_t
 	if (result)
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Read: Error");
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -250,16 +256,17 @@ int32_t AT45DB641E_ProgramPage(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, u
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 
 	if (__AT45DB641E_ProgramPage(Dev, Addr, Buffer, Size))
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Program page: Error");
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -273,7 +280,7 @@ int32_t AT45DB641E_ModifyPage(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, ui
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 		
 	data[3] = Addr;
 	data[2]	= Addr >> 8;
@@ -289,25 +296,22 @@ int32_t AT45DB641E_ModifyPage(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, ui
 	if (__AT45DB641E_ProgramPage(Dev, Addr, Buffer, Size))
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Modify page: Error");
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
 
-int32_t AT45DB641E_Init(AT45DB641E_T *Dev, const char *DevId, const SPI_TypeDef *SPI, const BSP_PIN_CTRL_T *PinCtrl)
+int32_t AT45DB641E_Init(AT45DB641E_T *Dev)
 {	
-	if ((!Dev) || (!SPI) || (!PinCtrl))
+	if ((!Dev) || (!Dev->SPI) || (!Dev->PinCtrl))
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "AT45DB641E", DevId);
-	BSP_DEV_LOCK(Dev);
-	
-	Dev->SPI = SPI;
-	Dev->PinCtrl = PinCtrl;
+	BSP_DEV_INIT(Dev);
 	
 	Dev->CS.SetState = &AT45DB641E_SetCS;
 	Dev->CS.Priv = Dev;
@@ -339,14 +343,10 @@ int32_t AT45DB641E_Init(AT45DB641E_T *Dev, const char *DevId, const SPI_TypeDef 
 	if ((Dev->Status & AT45DB641E_STATUS_PAGE_SIZE_MASK) == 0)
 		goto error;	
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }

@@ -1,5 +1,5 @@
-#ifndef __BSP_NETIF_H
-#define __BSP_NETIF_H
+#ifndef __BSP_ETH_H
+#define __BSP_ETH_H
 
 #include "eth.h"
 #include "lwip/netif.h"
@@ -33,4 +33,4 @@
 int32_t BSP_ETH_Init(void);
 void BSP_ETH_Process(uint8_t Addr);
 																						
-#endif /* __BSP_NETIF_H */
+#endif /* __BSP_ETH_H */

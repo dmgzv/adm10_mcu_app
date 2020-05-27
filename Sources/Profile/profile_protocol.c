@@ -3,8 +3,6 @@
 #include "string_fnc.h"
 #include "crc.h"
 
-#define PROFILE_PROTOCOL_LANG_PACKET_SIZE 256
-
 static uint32_t PROFILE_PROTOCOL_GetClass(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
 {
 	char *p = rsp;
@@ -509,7 +507,6 @@ int32_t PROFILE_PROTOCOL_SetColor(PROFILE_PROTOCOL_T *Protocol, char * cmd, char
 		strcpy( p, ";NA;" ); 
 		p += 4;
 	}
-	*p++ = ';';
 	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
 	*p++ = '\r';
 	*p = 0;
@@ -598,7 +595,7 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 	p = rsp;
 	memcpy(p , cmd, 2);
 	p += 2;
-	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_PACKET_SIZE)
+	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE)
 	{
 		PROFILE_FLASH_LangpackSave(Protocol->ProfileFlash, LangBlock, Item);
 		p = UintToStr( p, Item );
@@ -632,10 +629,10 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, 
 	p = UintToStr( p, Item );// начинаем формировать ответ
 	*p++ = ';';
 	
-	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_PACKET_SIZE )
+	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE )
 	{// читаем блок из флеш, если он доступен
 		PROFILE_FLASH_LangpackLoad(Protocol->ProfileFlash, p, Item);
-		for(i = 0; i < 256; i++)
+		for(i = 0; i < PROFILE_PROTOCOL_LANG_BLOCK_SIZE; i++)
 		{
 			if (*p == '\r')
 				*p = '\x03';
@@ -657,13 +654,6 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, 
 	*p = 0;
 	return p - rsp;
 }
-
-#define PROFILE_PROTOCOL_CONFIG_STARTREAD "STARTREAD"
-#define PROFILE_PROTOCOL_CONFIG_READBLOCK "READBLOCK"
-#define PROFILE_PROTOCOL_CONFIG_FINISHREAD "FINISHREAD"
-#define PROFILE_PROTOCOL_CONFIG_STARTWRITE "STARTWRITE"
-#define PROFILE_PROTOCOL_CONFIG_WRITEBLOCK "WRITEBLOCK"
-#define PROFILE_PROTOCOL_CONFIG_FINISHWRITE "FINISHWRITE"
 
 int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
@@ -1132,7 +1122,7 @@ uint32_t PROFILE_PROTOCOL_Command(PROFILE_PROTOCOL_T *Protocol, char *cmd, char 
 		case PROFILE_PROTOCOL_CMD_UPDATE_FW:
 			len = BOOTLOADER_PROTOCOL_UpdateFw(Protocol->Bootloader, cmd, rsp, complete);
 			break;
-		case 0x63://Расширенное чтение/запись конфигурации устройства
+		case PROFILE_PROTOCOL_CMD_CONFIG://Расширенное чтение/запись конфигурации устройства
 			len = PROFILE_PROTOCOL_ConfigExt(Protocol, cmd, rsp);
 			break;
 	}

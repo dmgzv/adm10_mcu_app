@@ -4,18 +4,6 @@
 		<title>IPG Horizon: ADM-10</title>
 		<link rel="stylesheet" href="css/style.css">
 		<link rel="stylesheet" href="css/bootstrap.min.css">
-		<!--
-		<script src="js/profile_adm200.js"></script>
-		<script src="js/colors_adm200.js"></script>
-		<script src="js/info_adm200.js"></script>
-		<script src="js/dynamic_adm200.js"></script>
-		<script src="js/config_adm200.js"></script>
-		<script src="js/thr_adm200.js"></script>
-		<script src="js/led_adm200.js"></script>
-		<script src="js/perf_adm200.js"></script>
-		<script src="js/port_adm200.js"></script>
-		<script src="js/log.js"></script>
-		-->
 		<script src="js/jquery-3.4.1.slim.min.js"></script>
 		<script src="js/popper.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
@@ -38,6 +26,7 @@
 		        <div class="dropdown-menu" aria-labelledby="nav-system">
 		          <a class="dropdown-item" id="nav-system-os" href="#">OS</a>
 		          <a class="dropdown-item" id="nav-system-hardware" href="#">Hardware</a>
+				  <a class="dropdown-item" id="nav-system-interfaces" href="#">Interfaces</a>
 		          <a class="dropdown-item" id="nav-system-update" href="#">Update</a>
 		        </div>
 		      </li>
@@ -120,21 +109,115 @@
 				<div class="col">
 					<div class="card">
 				    <div class="m-0 p-0 card-header">
-				      <span class="m-0 p-1">IC</span>
+				      <span class="m-0 p-1">Devices</span>
 				    </div>
 			      <div class="m-0 p-0 card-body">
-							<table class="m-0 p-1 table" id="system-hardware-ic-table">
+							<table class="m-0 p-1 table" id="system-hardware-devices-table">
 								<thead>
 									<tr>
 										<th scope="col">Name</th>
 										<th scope="col">ID</th>
 										<th scope="col">Status</th>
+										<th scope="col">Init</th>
+										<th scope="col">Init Errors</th>
+										<th scope="col">Update</th>
+										<th scope="col">Update Errors</th>
 									</tr>
 								</thead>
-								<tbody id="system-hardware-ic-tbody">
+								<tbody id="system-hardware-devices-tbody">
 								</tbody>
 							</table>
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid content" id="system-interfaces-content" style="display:none">
+			<div class="col">
+				<div class="m-1 card">
+				<div class="m-0 p-0 card-header">
+				  <span class="m-0 p-1">I2C</span>
+				</div>
+			  <div class="m-0 p-0 card-body">
+						<table class="m-0 p-1 table" id="system-interfaces-i2c-table">
+							<thead>
+								<tr>
+									<th scope="col">Name</th>
+									<th scope="col">Overrun</th>
+									<th scope="col">BERR</th>
+									<th scope="col">ARLO</th>
+									<th scope="col">AF</th>
+									<th scope="col">DMA</th>
+									<th scope="col">Timeout</th>
+									<th scope="col">Rx Timeout</th>
+									<th scope="col">Seq Rx Timeout</th>
+									<th scope="col">Tx Timeout</th>
+									<th scope="col">Seq Tx Timeout</th>
+									<th scope="col">Queue Overflow</th>
+								</tr>
+							</thead>
+							<tbody id="system-interfaces-i2c-tbody">
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col">
+				<div class="m-1 card">
+				<div class="m-0 p-0 card-header">
+				  <span class="m-0 p-1">SPI</span>
+				</div>
+			  <div class="m-0 p-0 card-body">
+						<table class="m-0 p-1 table" id="system-interfaces-spi-table">
+							<thead>
+								<tr>
+									<th scope="col">Name</th>
+									<th scope="col">Overrun</th>
+									<th scope="col">Mode Fault</th>
+									<th scope="col">CRC</th>
+									<th scope="col">Frame</th>
+									<th scope="col">DMA</th>
+									<th scope="col">Timeout</th>
+									<th scope="col">Rx Timeout</th>
+									<th scope="col">Seq Rx Timeout</th>
+									<th scope="col">Tx Timeout</th>
+									<th scope="col">Seq Tx Timeout</th>
+									<th scope="col">TxRx Timeout</th>
+									<th scope="col">Queue Overflow</th>
+								</tr>
+							</thead>
+							<tbody id="system-interfaces-spi-tbody">
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col">
+				<div class="m-1 card">
+				<div class="m-0 p-0 card-header">
+				  <span class="m-0 p-1">UART</span>
+				</div>
+			  <div class="m-0 p-0 card-body">
+						<table class="m-0 p-1 table" id="system-interfaces-uart-table">
+							<thead>
+								<tr>
+									<th scope="col">Name</th>
+									<th scope="col">Overrun</th>
+									<th scope="col">Parity</th>
+									<th scope="col">Noise</th>
+									<th scope="col">Frame</th>
+									<th scope="col">DMA</th>
+									<th scope="col">Timeout</th>
+									<th scope="col">Rx Timeout</th>
+									<th scope="col">Rx Cmd Timeout</th>
+									<th scope="col">Tx Timeout</th>
+									<th scope="col">Rx Queue Overflow</th>
+									<th scope="col">Tx Queue Overflow</th>
+								</tr>
+							</thead>
+							<tbody id="system-interfaces-uart-tbody">
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
@@ -146,12 +229,44 @@
 				</div>
 				<div class="m-1 p-1 card-body">
 					<div class="input-group">
-					  <div class="input-group-prepend">
-					    <span class="input-group-text" id="system-update-software-btn">Upload</span>
-					  </div>
 					  <div class="custom-file">
-					    <input type="file" class="custom-file-input" id="system-update-software-input">
-					    <label class="custom-file-label" for="system-update-software-input">Browse</label>
+					    <input type="file" class="custom-file-input" id="system-update-mcu-software-input">
+					    <label class="custom-file-label" for="system-update-mcu-software-input">Browse</label>
+					  </div>
+					  <div class="input-group-append">
+						<button class="btn btn-outline-secondary" id="system-update-mcu-software-btn" type="button">Update</button>
+					  </div>
+					</div>
+				</div>
+			</div>
+			<div class="card m-1 p-1">
+				<div class="m-0 p-0 card-header">
+					<span class="m-0 p-1">Web</span>
+				</div>
+				<div class="m-1 p-1 card-body">
+					<div class="input-group">
+					  <div class="custom-file">
+					    <input type="file" class="custom-file-input" id="system-update-mcu-web-input">
+					    <label class="custom-file-label" for="system-update-mcu-web-input">Browse</label>
+					  </div>
+					  <div class="input-group-append">
+						<button class="btn btn-outline-secondary" id="system-update-mcu-web-btn" type="button">Update</button>
+					  </div>
+					</div>
+				</div>
+			</div>
+			<div class="card m-1 p-1">
+				<div class="m-0 p-0 card-header">
+					<span class="m-0 p-1">Langpack</span>
+				</div>
+				<div class="m-1 p-1 card-body">
+					<div class="input-group">
+					  <div class="custom-file">
+					    <input type="file" class="custom-file-input" id="system-update-mcu-langpack-input">
+					    <label class="custom-file-label" for="system-update-mcu-langpack-input">Browse</label>
+					  </div>
+					  <div class="input-group-append">
+						<button class="btn btn-outline-secondary" id="system-update-mcu-langpack-btn" type="button">Update</button>
 					  </div>
 					</div>
 				</div>
@@ -163,9 +278,11 @@
 					<thead>
 						<tr>
 							<th scope="col">Time</th>
-							<th scope="col">Name</th>
-							<th scope="col">Id</th>
-							<th scope="col">Data</th>
+							<th scope="col">Severity</th>
+							<th scope="col">Category</th>
+							<th scope="col">Object</th>
+							<th scope="col">ObjectId</th>
+							<th scope="col">Description</th>
 						</tr>
 					</thead>
 					<tbody id="log-tbody">
@@ -173,7 +290,7 @@
 				</table>
 			</div>
 		</div>
-	  <div id="toast-content" style="position: absolute; top: 65px; right: 0;">
+	  <div id="toast-content" style="position: absolute; bottom: 5px; right: 0;">
 	  </div>
 	</body>
 </html>

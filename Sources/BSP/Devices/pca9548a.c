@@ -29,19 +29,14 @@ error:
 }
 
 
-int32_t PCA9548A_Init(PCA9548A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr, const BSP_PIN_CTRL_T *PinCtrl)
+int32_t PCA9548A_Init(PCA9548A_T *Dev)
 {
 	uint8_t Channel;
 	
-	if ((!Dev) || (!I2C) || (Addr < 0x70) || (Addr > 0x77))
+	if ((!Dev) || (!Dev->I2C) || (Dev->Addr < 0xE0) || (Dev->Addr > 0xEE))
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "PCA9548A", DevId);
-	BSP_DEV_LOCK(Dev);
-	
-	Dev->Addr = Addr << 1;
-	Dev->I2C = I2C;
-	Dev->PinCtrl = PinCtrl;
+	BSP_DEV_INIT(Dev);
 	
 	if (PCA9548A_InitPin(Dev, PCA9548A_PIN_RESET))
 		goto error;
@@ -54,15 +49,11 @@ int32_t PCA9548A_Init(PCA9548A_T *Dev, const char *DevId, const I2C_TypeDef *I2C
 		goto error;	
 	Dev->Channel = (PCA9548A_CH_T)Channel;
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -70,7 +61,6 @@ void PCA9548A_Deinit(PCA9548A_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 	if (Dev->Channel != PCA9548A_CH_NO)
 	{

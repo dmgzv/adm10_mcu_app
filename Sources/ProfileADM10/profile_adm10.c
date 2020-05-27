@@ -112,8 +112,7 @@ static void PROFILE_ADM10_UpdatePowerAlarmsValue(PROFILE_T *Profile)
 	{
 		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 		{
-			//if (!UCD90120A_RAIL_POWER_GOOD(&ucd90120a, i))
-			if (!(ucd90120a.__PowerGood & (1 << (i))))
+			if (!UCD90120A_RAIL_POWER_GOOD(&ucd90120a, i))
 			{
 				Value |= (1 << (2 + i));
 			}
@@ -219,19 +218,33 @@ static void PROFILE_ADM10_UpdateClient2FPGATemp(PROFILE_T *Profile)
 static void PROFILE_ADM10_UpdateBlockStateValue(PROFILE_T *Profile)
 {
 	uint32_t Value;
-	uint8_t HwAlarmsColor, PowerAlarmsColor;
+	uint32_t HwAlarms, PowerAlarms;
 	
-	Value = PROFILE_ADM10_BLOCK_STATE_ENUM_OK;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKSTATE_IDX, &Value))
+		return;
 	
-	PROFILE_GetColor(Profile, PROFILE_TABLE_2, PROFILE_ADM10_POWERALARMS_IDX, &HwAlarmsColor);
-	PROFILE_GetColor(Profile, PROFILE_TABLE_2, PROFILE_ADM10_HWALARMS_IDX, &PowerAlarmsColor);
-	
-	if (HwAlarmsColor != PROFILE_COLOR_NORMAL)
-		Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
-	if (PowerAlarmsColor != PROFILE_COLOR_NORMAL)
-		Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
+	if ((!Value) || ((Value == PROFILE_ADM10_BLOCK_STATE_ENUM_NOT_READY) && (osKernelSysTick() < (30 * osKernelSysTickFrequency))))
+	{
+		Value = PROFILE_ADM10_BLOCK_STATE_ENUM_NOT_READY;
+	}
+	else
+	{
+		Value = PROFILE_ADM10_BLOCK_STATE_ENUM_OK;
+		
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_2, PROFILE_ADM10_POWERALARMS_IDX, &PowerAlarms))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_2, PROFILE_ADM10_HWALARMS_IDX, &HwAlarms))
+			return;
+		
+		if (HwAlarms != 0)
+			Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
+		if ((PowerAlarms & (~(PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_A | PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B))) != 0)
+			Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKSTATE_IDX, &Value, PROFILE_STATE_IS);	
+		if (Value == PROFILE_ADM10_BLOCK_STATE_ENUM_OK)
+			 dim3r3400_load_timeout = 60;
+	}
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKSTATE_IDX, &Value, PROFILE_STATE_IS);		
 }
 
 static void PROFILE_ADM10_UpdateBlockColorValue(PROFILE_T *Profile)
@@ -278,8 +291,8 @@ static void PROFILE_ADM10_UpdateLedsValue(PROFILE_T *Profile)
 		PROFILE_SetValue(Profile, PROFILE_TABLE_5, PROFILE_ADM10_ALARMLED_IDX, &LedColor);
 	}
 	
-	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) ||
-		(BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (ucd90120a.__PowerGood != ((1 << UCD90120A_RAILS_CNT) - 1)))
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) || (!dim3r3400_load_timeout) ||
+		(BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 	{
 		BSP_LED_Set(BSP_LED_TYPE_POWER, BSP_LED_COLOR_NO);
 		LedColor = 0;

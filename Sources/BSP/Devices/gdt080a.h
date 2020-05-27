@@ -4,6 +4,8 @@
 #include "pmbus.h"
 #include "bsp_dev.h"
 
+#define GDT080A_DEV_NAME "GDT080A"
+
 #define GDT080A_STATUS_VOUT_OV 5
 #define GDT080A_STATUS_IOUT_OC 4
 #define GDT080A_STATUS_VIN_UV 3
@@ -41,14 +43,15 @@ typedef struct {
 typedef struct {
 	BSP_DEV;
 	const I2C_TypeDef *I2C;
-	uint8_t Addr;
+	const uint8_t Addr;
+	const float RTrim;
 	uint16_t Status;
 	GDT080A_INFO_T Info;
 	GDT080A_MON_T Mon;
 	GDT080A_CFG_T Cfg;
 }GDT080A_T;
 
-int32_t GDT080A_Init(GDT080A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr, float Vout);
+int32_t GDT080A_Init(GDT080A_T *Dev);
 void GDT080A_Deinit(GDT080A_T *Dev);
 int32_t GDT080A_Update(GDT080A_T *Dev);
 int32_t GDT080A_SetVout(GDT080A_T *Dev, float Vout);

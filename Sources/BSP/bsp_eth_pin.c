@@ -1,6 +1,10 @@
 #include "bsp_eth_pin.h"
+#include "log.h"
 
-BSP_ETH_PIN_T bsp_eth_pin;
+BSP_ETH_PIN_T bsp_eth_pin = {
+	.DevName = "ETH_PIN",
+	.DevId = "",
+};
 
 static int32_t BSP_ETH_PIN_Init(BSP_ETH_PIN_T *Dev)
 {
@@ -10,8 +14,7 @@ static int32_t BSP_ETH_PIN_Init(BSP_ETH_PIN_T *Dev)
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "ETH PIN", "");
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_INIT(Dev);
 	
 	State = 0;
 	
@@ -49,8 +52,7 @@ static int32_t BSP_ETH_PIN_Init(BSP_ETH_PIN_T *Dev)
 	
 	Dev->State = State;
 	
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);	
+	BSP_DEV_INIT_OK(Dev);	
 	return 0;
 }
 
@@ -70,22 +72,24 @@ static int32_t BSP_ETH_PIN_Update(BSP_ETH_PIN_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	State = 0;
 	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_SEL_GPIO_PORT, BSP_ETH_PIN_SEL_GPIO_PIN) == GPIO_PIN_RESET ? BSP_ETH_PIN_SEL_MASK : 0;
 	
 	if (State & BSP_ETH_PIN_SEL_MASK)
-		HAL_GPIO_WritePin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_SET);
 	else
-		HAL_GPIO_WritePin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_RESET);
+	
+	HAL_GPIO_WritePin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN, GPIO_PIN_RESET);
 	
 	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN) == GPIO_PIN_SET ? BSP_ETH_PIN_EN_MASK : 0;
 	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN) == GPIO_PIN_SET ? BSP_ETH_PIN_SW_MASK : 0;
 	
 	Dev->State = State;
 	
-	BSP_DEV_UNLOCK(Dev);	
+	BSP_DEV_UPDATE_OK(Dev);	
 	return 0;
 }
 
@@ -124,7 +128,7 @@ int32_t BSP_ETH_PIN_SetState(uint32_t Pin, uint32_t State)
 	if (BSP_DEV_GET_STATE(&bsp_eth_pin) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(&bsp_eth_pin);
+	BSP_DEV_UPDATE(&bsp_eth_pin);
 	
 	if (Pin == BSP_ETH_PIN_EN)
 	{
@@ -147,11 +151,11 @@ int32_t BSP_ETH_PIN_SetState(uint32_t Pin, uint32_t State)
 		goto error;
 	}
 	
-	BSP_DEV_UNLOCK(&bsp_eth_pin);	
+	BSP_DEV_UPDATE_OK(&bsp_eth_pin);	
 	return 0;
 
 error:
-	BSP_DEV_UNLOCK(&bsp_eth_pin);	
+	BSP_DEV_UPDATE_FAIL(&bsp_eth_pin);	
 	return -1;
 }
 
@@ -160,7 +164,7 @@ int32_t BSP_ETH_PIN_GetState(uint32_t Pin, uint32_t *State)
 	if (BSP_DEV_GET_STATE(&bsp_eth_pin) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(&bsp_eth_pin);
+	BSP_DEV_UPDATE(&bsp_eth_pin);
 	
 	if (Pin == BSP_ETH_PIN_EN)
 	{
@@ -179,10 +183,10 @@ int32_t BSP_ETH_PIN_GetState(uint32_t Pin, uint32_t *State)
 		goto error;
 	}
 	
-	BSP_DEV_UNLOCK(&bsp_eth_pin);	
+	BSP_DEV_UPDATE_OK(&bsp_eth_pin);	
 	return 0;
 
 error:
-	BSP_DEV_UNLOCK(&bsp_eth_pin);	
+	BSP_DEV_UPDATE_FAIL(&bsp_eth_pin);	
 	return -1;
 }

@@ -5,7 +5,7 @@
 	
 #define BSP_PWR_IN_DIM3R3400_ID				"A5"
 #define BSP_PWR_IN_DIM3R3400_I2C			I2C3
-#define BSP_PWR_IN_DIM3R3400_I2C_ADDR	0x2B
+#define BSP_PWR_IN_DIM3R3400_I2C_ADDR	(0x2B << 1)
 
 #define BSP_PWR_IN_MIN_OFF	36.0f
 #define BSP_PWR_IN_MAX_OFF	74.0f
@@ -19,6 +19,7 @@
 
 extern DIM3R3400_T dim3r3400;
 extern uint32_t dim3r3400_power_good;
+extern uint32_t dim3r3400_load_timeout;
 	
 void BSP_PWR_IN_Process(void);
 

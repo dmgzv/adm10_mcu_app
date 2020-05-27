@@ -2,15 +2,13 @@
 
 #if defined(BSP_FLASH_TYPE_AT45DB081D)
 
-BSP_FLASH_T at45db081d;
-
 static int32_t BSP_FLASH_AT45DB081D_InitPin(void *Priv, uint32_t Pin)
 {
 	GPIO_InitTypeDef  GPIO_InitStruct;
 	
 	switch (Pin)
 	{
-		case AT45DB081D_PIN_SPI_CS:
+		case AT45DB641E_PIN_SPI_CS:
 			BSP_FLASH_AT45DB081D_SPI_CS_GPIO_CLK_ENABLE();
 			/* SPI CS GPIO pin configuration  */
 			GPIO_InitStruct.Pin       = BSP_FLASH_AT45DB081D_SPI_CS_GPIO_PIN;
@@ -20,7 +18,7 @@ static int32_t BSP_FLASH_AT45DB081D_InitPin(void *Priv, uint32_t Pin)
 			HAL_GPIO_Init(BSP_FLASH_AT45DB081D_SPI_CS_GPIO_PORT, &GPIO_InitStruct);
 			HAL_GPIO_WritePin(BSP_FLASH_AT45DB081D_SPI_CS_GPIO_PORT, BSP_FLASH_AT45DB081D_SPI_CS_GPIO_PIN, GPIO_PIN_SET);
 			break;
-		case AT45DB081D_PIN_WP:
+		case AT45DB641E_PIN_WP:
 			BSP_FLASH_AT45DB081D_WP_GPIO_CLK_ENABLE();
 			/* WP GPIO pin configuration  */
 			GPIO_InitStruct.Pin       = BSP_FLASH_AT45DB081D_WP_GPIO_PIN;
@@ -30,7 +28,7 @@ static int32_t BSP_FLASH_AT45DB081D_InitPin(void *Priv, uint32_t Pin)
 			HAL_GPIO_Init(BSP_FLASH_AT45DB081D_WP_GPIO_PORT, &GPIO_InitStruct);
 			HAL_GPIO_WritePin(BSP_FLASH_AT45DB081D_WP_GPIO_PORT, BSP_FLASH_AT45DB081D_WP_GPIO_PIN, GPIO_PIN_SET);
 			break;
-		case AT45DB081D_PIN_RESET:
+		case AT45DB641E_PIN_RESET:
 			BSP_FLASH_AT45DB081D_RESET_GPIO_CLK_ENABLE();
 			/* RESET GPIO pin configuration  */
 			GPIO_InitStruct.Pin       = BSP_FLASH_AT45DB081D_RESET_GPIO_PIN;
@@ -69,9 +67,17 @@ const BSP_PIN_CTRL_T bsp_flash_at45db081d_pin_ctrl =
 	NULL
 };
 
-#elif defined(BSP_FLASH_TYPE_AT45DB161E)
+BSP_FLASH_T at45db081d = 
+{
+	.DevName = AT45DB081D_DEV_NAME,
+	.DevId = BSP_FLASH_AT45DB081D_ID,
+	.InitContErrThr = 3,
+	.UpdateContErrThr = 3,
+	.SPI = BSP_FLASH_AT45DB081D_SPI,
+	.PinCtrl = &bsp_flash_at45db081d_pin_ctrl,
+};
 
-BSP_FLASH_T at45db161e;
+#elif defined(BSP_FLASH_TYPE_AT45DB161E)
 
 static int32_t BSP_FLASH_AT45DB161E_InitPin(void *Priv, uint32_t Pin)
 {
@@ -79,7 +85,7 @@ static int32_t BSP_FLASH_AT45DB161E_InitPin(void *Priv, uint32_t Pin)
 	
 	switch (Pin)
 	{
-		case AT45DB161E_PIN_SPI_CS:
+		case AT45DB641E_PIN_SPI_CS:
 			BSP_FLASH_AT45DB161E_SPI_CS_GPIO_CLK_ENABLE();
 			/* SPI CS GPIO pin configuration  */
 			GPIO_InitStruct.Pin       = BSP_FLASH_AT45DB161E_SPI_CS_GPIO_PIN;
@@ -89,7 +95,7 @@ static int32_t BSP_FLASH_AT45DB161E_InitPin(void *Priv, uint32_t Pin)
 			HAL_GPIO_Init(BSP_FLASH_AT45DB161E_SPI_CS_GPIO_PORT, &GPIO_InitStruct);
 			HAL_GPIO_WritePin(BSP_FLASH_AT45DB161E_SPI_CS_GPIO_PORT, BSP_FLASH_AT45DB161E_SPI_CS_GPIO_PIN, GPIO_PIN_SET);
 			break;
-		case AT45DB161E_PIN_WP:
+		case AT45DB641E_PIN_WP:
 			BSP_FLASH_AT45DB161E_WP_GPIO_CLK_ENABLE();
 			/* WP GPIO pin configuration  */
 			GPIO_InitStruct.Pin       = BSP_FLASH_AT45DB161E_WP_GPIO_PIN;
@@ -99,7 +105,7 @@ static int32_t BSP_FLASH_AT45DB161E_InitPin(void *Priv, uint32_t Pin)
 			HAL_GPIO_Init(BSP_FLASH_AT45DB161E_WP_GPIO_PORT, &GPIO_InitStruct);
 			HAL_GPIO_WritePin(BSP_FLASH_AT45DB161E_WP_GPIO_PORT, BSP_FLASH_AT45DB161E_WP_GPIO_PIN, GPIO_PIN_SET);
 			break;
-		case AT45DB161E_PIN_RESET:
+		case AT45DB641E_PIN_RESET:
 			BSP_FLASH_AT45DB161E_RESET_GPIO_CLK_ENABLE();
 			/* RESET GPIO pin configuration  */
 			GPIO_InitStruct.Pin       = BSP_FLASH_AT45DB161E_RESET_GPIO_PIN;
@@ -138,9 +144,17 @@ const BSP_PIN_CTRL_T bsp_flash_at45db161e_pin_ctrl =
 	NULL
 };
 
-#elif defined(BSP_FLASH_TYPE_AT45DB641E)
+BSP_FLASH_T at45db161e = 
+{
+	.DevName = AT45DB161E_DEV_NAME,
+	.DevId = BSP_FLASH_AT45DB161E_ID,
+	.InitContErrThr = 3,
+	.UpdateContErrThr = 3,
+	.SPI = BSP_FLASH_AT45DB161E_SPI,
+	.PinCtrl = &bsp_flash_at45db161e_pin_ctrl,
+};
 
-BSP_FLASH_T at45db641e;
+#elif defined(BSP_FLASH_TYPE_AT45DB641E)
 
 static int32_t BSP_FLASH_AT45DB641E_InitPin(void *Priv, uint32_t Pin)
 {
@@ -205,6 +219,16 @@ const BSP_PIN_CTRL_T bsp_flash_at45db641e_pin_ctrl =
 	BSP_FLASH_AT45DB641E_SetState,
 	NULL,
 	NULL
+};
+
+BSP_FLASH_T at45db641e = 
+{
+	.DevName = AT45DB641E_DEV_NAME,
+	.DevId = BSP_FLASH_AT45DB641E_ID,
+	.InitContErrThr = 0,
+	.UpdateContErrThr = BSP_DEV_CONT_ERR_THR_INF,
+	.SPI = BSP_FLASH_AT45DB641E_SPI,
+	.PinCtrl = &bsp_flash_at45db641e_pin_ctrl,
 };
 
 #endif

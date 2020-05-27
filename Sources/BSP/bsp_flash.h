@@ -8,6 +8,7 @@
 #if defined(BSP_FLASH_TYPE_AT45DB081D)
 #include "at45db081d.h"
 
+#define BSP_FLASH_AT45DB081A_ID		"D94"
 #define BSP_FLASH_AT45DB081D_SPI	SPI5
 
 #ifndef BSP_CONFIG_USE_SPI5
@@ -27,20 +28,21 @@
 #define BSP_FLASH_AT45DB081D_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOE_CLK_ENABLE()
 
 typedef AT45DB081D_T BSP_FLASH_T;
-extern const BSP_PIN_CTRL_T bsp_flash_at45db081d_pin_ctrl;
 extern BSP_FLASH_T at45db081d;
+	
+#define BSP_FLASH_PAGE_SIZE												AT45DB081D_PAGE_SIZE
+#define BSP_FLASH_SIZE														AT45DB081D_SIZE
 
-#define BSP_FLASH_PAGE_SIZE															AT45DB081D_PAGE_SIZE
-#define BSP_FLASH_SIZE																	AT45DB081D_SIZE
-#define	BSP_FLASH_Init(Dev)															AT45DB081D_Init((Dev), BSP_FLASH_AT45DB081D_SPI, (BSP_PIN_CTRL_T*)&bsp_flash_at45db081d_pin_ctrl)
-#define BSP_FLASH_Read(Dev, Addr, Buffer, Size) 				AT45DB081D_Read((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ProgramPage(Dev, Addr, Buffer, Size) 	AT45DB081D_ProgramPage((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ErasePage(Dev, Addr) 									AT45DB081D_ErasePage((Dev), (Addr))
-#define BSP_FLASH_WaitReady(Dev) 												AT45DB081D_WaitReady((Dev))
+#define	BSP_FLASH_Init()													AT45DB081D_Init(&at45db081d)
+#define BSP_FLASH_Read(Addr, Buffer, Size) 				AT45DB081D_Read(&at45db081d, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ProgramPage(Addr, Buffer, Size) AT45DB081D_ProgramPage(&at45db081d, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ErasePage(Addr) 								AT45DB081D_ErasePage(&at45db081d, (Addr))
+#define BSP_FLASH_WaitReady() 										AT45DB081D_WaitReady(&at45db081d)
 
 #elif defined(BSP_FLASH_TYPE_AT45DB161E)
 #include "at45db161e.h"
 
+#define BSP_FLASH_AT45DB161E_ID		"D94"
 #define BSP_FLASH_AT45DB161E_SPI	SPI5
 
 #ifndef BSP_CONFIG_USE_SPI5
@@ -60,16 +62,16 @@ extern BSP_FLASH_T at45db081d;
 #define BSP_FLASH_AT45DB161E_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOE_CLK_ENABLE()
 
 typedef AT45DB161E_T BSP_FLASH_T;
-extern const BSP_PIN_CTRL_T bsp_flash_at45db161e_pin_ctrl;
 extern BSP_FLASH_T at45db161e;
+	
+#define BSP_FLASH_PAGE_SIZE												AT45DB161E_PAGE_SIZE
+#define BSP_FLASH_SIZE														AT45DB161E_SIZE
 
-#define BSP_FLASH_PAGE_SIZE															AT45DB161E_PAGE_SIZE
-#define BSP_FLASH_SIZE																	AT45DB161E_SIZE
-#define	BSP_FLASH_Init(Dev)															AT45DB161E_Init((Dev), BSP_FLASH_AT45DB161E_SPI, (BSP_PIN_CTRL_T*)&bsp_flash_at45db161e_pin_ctrl)
-#define BSP_FLASH_Read(Dev, Addr, Buffer, Size) 				AT45DB161E_Read((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ProgramPage(Dev, Addr, Buffer, Size) 	AT45DB161E_ProgramPage((Dev), (Addr), (Buffer), (Size))
-#define BSP_FLASH_ErasePage(Dev, Addr) 									AT45DB161E_ErasePage((Dev), (Addr))
-#define BSP_FLASH_WaitReady(Dev) 												AT45DB161E_WaitReady((Dev))
+#define	BSP_FLASH_Init()													AT45DB161E_Init(&at45db161e)
+#define BSP_FLASH_Read(Addr, Buffer, Size) 				AT45DB161E_Read(&at45db161e, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ProgramPage(Addr, Buffer, Size) AT45DB161E_ProgramPage(&at45db161e, (Addr), (Buffer), (Size))
+#define BSP_FLASH_ErasePage(Addr) 								AT45DB161E_ErasePage(&at45db161e, (Addr))
+#define BSP_FLASH_WaitReady() 										AT45DB161E_WaitReady(&at45db161e)
 
 #elif defined(BSP_FLASH_TYPE_AT45DB641E)
 #include "at45db641e.h"
@@ -94,13 +96,12 @@ extern BSP_FLASH_T at45db161e;
 #define BSP_FLASH_AT45DB641E_RESET_GPIO_CLK_ENABLE()    __HAL_RCC_GPIOF_CLK_ENABLE()
 
 typedef AT45DB641E_T BSP_FLASH_T;
-extern const BSP_PIN_CTRL_T bsp_flash_at45db641e_pin_ctrl; 
 extern BSP_FLASH_T at45db641e;
 	
 #define BSP_FLASH_PAGE_SIZE												AT45DB641E_PAGE_SIZE
 #define BSP_FLASH_SIZE														AT45DB641E_SIZE
 
-#define	BSP_FLASH_Init()													AT45DB641E_Init(&at45db641e, BSP_FLASH_AT45DB641E_ID, BSP_FLASH_AT45DB641E_SPI, (BSP_PIN_CTRL_T*)&bsp_flash_at45db641e_pin_ctrl)
+#define	BSP_FLASH_Init()													AT45DB641E_Init(&at45db641e)
 #define BSP_FLASH_Read(Addr, Buffer, Size) 				AT45DB641E_Read(&at45db641e, (Addr), (Buffer), (Size))
 #define BSP_FLASH_ProgramPage(Addr, Buffer, Size) AT45DB641E_ProgramPage(&at45db641e, (Addr), (Buffer), (Size))
 #define BSP_FLASH_ErasePage(Addr) 								AT45DB641E_ErasePage(&at45db641e, (Addr))
@@ -113,7 +114,7 @@ extern BSP_FLASH_T at45db641e;
 /* 0x00000000 - 0x00010000 - CONFIGS   */
 /* 0x00010000 - 0x00080000 - PROGRAMS  */
 /* 0x00080000 - 0x00100000 - LANGPACKS */
-/* 0x00100000 - 0x00200000 - WEB */
+/* 0x00100000 - 0x00300000 - WEB */
 
 #define BSP_FLASH_CFG_ADDR												0x00000000
 #define BSP_FLASH_CFG_SIZE												0x00010000
@@ -122,7 +123,7 @@ extern BSP_FLASH_T at45db641e;
 #define BSP_FLASH_LANG_ADDR												(BSP_FLASH_FW_ADDR + BSP_FLASH_FW_SIZE)
 #define BSP_FLASH_LANG_SIZE												0x00080000
 #define BSP_FLASH_WEB_ADDR												(BSP_FLASH_LANG_ADDR + BSP_FLASH_LANG_SIZE)
-#define BSP_FLASH_WEB_SIZE												0x00100000
+#define BSP_FLASH_WEB_SIZE												0x00200000
 
 #if ( BSP_FLASH_SIZE < (BSP_FLASH_WEB_ADDR + BSP_FLASH_WEB_SIZE))
 	#error	BSP_FLASH_SIZE is too small
@@ -134,7 +135,7 @@ extern BSP_FLASH_T at45db641e;
 /* 0x00000000 - 0x00010000 - CONFIGS   */
 /* 0x00010000 - 0x00100000 - PROGRAMS  */
 /* 0x00180000 - 0x00180000 - LANGPACKS */
-/* 0x00180000 - 0x00280000 - WEB */
+/* 0x00180000 - 0x00380000 - WEB */
 
 #define BSP_FLASH_CFG_ADDR												0x00000000
 #define BSP_FLASH_CFG_SIZE												0x00010000
@@ -143,7 +144,7 @@ extern BSP_FLASH_T at45db641e;
 #define BSP_FLASH_LANG_ADDR												(BSP_FLASH_FW_ADDR + BSP_FLASH_FW_SIZE)
 #define BSP_FLASH_LANG_SIZE												0x00080000
 #define BSP_FLASH_WEB_ADDR												(BSP_FLASH_LANG_ADDR + BSP_FLASH_LANG_SIZE)
-#define BSP_FLASH_WEB_SIZE												0x00100000
+#define BSP_FLASH_WEB_SIZE												0x00200000
 
 #if ( BSP_FLASH_SIZE < (BSP_FLASH_WEB_ADDR + BSP_FLASH_WEB_SIZE))
 	#error	BSP_FLASH_SIZE is too small
@@ -154,7 +155,7 @@ extern BSP_FLASH_T at45db641e;
 /* 0x00000000 - 0x00010000 - CONFIGS   */
 /* 0x00010000 - 0x00200000 - PROGRAMS  */
 /* 0x00200000 - 0x00280000 - LANGPACKS */
-/* 0x00280000 - 0x00380000 - WEB */
+/* 0x00280000 - 0x00480000 - WEB */
 
 #define BSP_FLASH_CFG_ADDR												0x00000000
 #define BSP_FLASH_CFG_SIZE												0x00010000
@@ -163,7 +164,7 @@ extern BSP_FLASH_T at45db641e;
 #define BSP_FLASH_LANG_ADDR												(BSP_FLASH_FW_ADDR + BSP_FLASH_FW_SIZE)
 #define BSP_FLASH_LANG_SIZE												0x00080000
 #define BSP_FLASH_WEB_ADDR												(BSP_FLASH_LANG_ADDR + BSP_FLASH_LANG_SIZE)
-#define BSP_FLASH_WEB_SIZE												0x00100000
+#define BSP_FLASH_WEB_SIZE												0x00200000
 
 #if ( BSP_FLASH_SIZE < (BSP_FLASH_WEB_ADDR + BSP_FLASH_WEB_SIZE))
 	#error	BSP_FLASH_SIZE is too small

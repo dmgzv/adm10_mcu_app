@@ -123,14 +123,36 @@ static int32_t UCD90120A_ReadThr(UCD90120A_T *Dev)
 
 static int32_t UCD90120A_UpdateRailMon(UCD90120A_T *Dev, uint8_t Num)
 {
+	uint32_t i;
+	float Min, Max, Avr, Val;
 	uint8_t Data[4];
 	
 	if(PMBUS_WriteByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_PAGE, &Num))
 		return -1;
 	
-	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_READ_VOUT, Data))
-		return -1;
-	Dev->Mon.Rail[Num].Vout = (Data[0] + (Data[1] << 8)) * pow(2, Dev->Cfg.Rail[Num].VoutExp);
+	/* This is filter for read Vout value. Sometimes UCD provides incorrect value.*/
+	for (i = 0; i < 3; i++)
+	{
+		if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_READ_VOUT, Data))
+			return -1;
+		Val = (Data[0] + (Data[1] << 8)) * pow(2, Dev->Cfg.Rail[Num].VoutExp);
+		if (i == 0)
+		{
+			Max = Val;
+			Min = Val;
+			Avr = Val;
+		}
+		else
+		{
+			if (Val > Max)
+				Max = Val;
+			else if (Val < Min)
+				Min = Val;
+			else
+				Avr = Val;
+		}
+	}
+	Dev->Mon.Rail[Num].Vout = Avr;
 	
 	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_READ_IOUT, Data))
 		return -1;
@@ -232,17 +254,12 @@ static int32_t UCD90120A_WriteConfig(UCD90120A_T *Dev, const UCD90120A_CFG_CMD_T
 	return 0;
 }
 
-int32_t UCD90120A_Init(UCD90120A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr, const BSP_PIN_CTRL_T *PinCtrl, const UCD90120A_CFG_CMD_T *Config, const uint32_t ConfigSize)
+int32_t UCD90120A_Init(UCD90120A_T *Dev, const UCD90120A_CFG_CMD_T *Config, const uint32_t ConfigSize)
 {	
-	if ((!Dev) || (!I2C))
+	if ((!Dev) || (!Dev->I2C) || (!Dev->PinCtrl))
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "UCD90120A", DevId);
-	BSP_DEV_LOCK(Dev);
-	
-	Dev->Addr = Addr << 1;
-	Dev->I2C = I2C;
-	Dev->PinCtrl = PinCtrl;
+	BSP_DEV_INIT(Dev);
 	
 	if (UCD90120A_InitPin(Dev, UCD90120A_PIN_RESET))
 		goto error;
@@ -266,15 +283,11 @@ int32_t UCD90120A_Init(UCD90120A_T *Dev, const char *DevId, const I2C_TypeDef *I
 			goto error;
 	}
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -282,7 +295,6 @@ void UCD90120A_Deinit(UCD90120A_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 
@@ -295,7 +307,7 @@ int32_t UCD90120A_Update(UCD90120A_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if( UCD90120A_UpdateStatus(Dev))
 		goto error;
@@ -319,27 +331,23 @@ int32_t UCD90120A_Update(UCD90120A_T *Dev)
 		if (Dev->Mon.Rail[i].Vout < Dev->Thr.Rail[i].Vout[UCD90120A_THR_CMIN])
 			PowerGood &= ~(1 << i);
 	}
-	if (Dev->__PowerGood != PowerGood)
+	if (Dev->PowerGood != PowerGood)
 	{
-		LOG_Add(Dev->DevName, Dev->DevId, "PowerGood: 0x%04x", PowerGood);
+		LOG_Info("BSP", Dev->DevName, Dev->DevId, "PowerGood: 0x%04x", PowerGood);
 		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 		{
 			if (Dev->Cfg.Rail[i].VoutScale == 0)
 				continue;
-			LOG_Add(Dev->DevName, Dev->DevId, "Rail %d: %.2f", i, Dev->Mon.Rail[i].Vout);
+			LOG_Info("BSP", Dev->DevName, Dev->DevId, "Rail %d: %.2f", i, Dev->Mon.Rail[i].Vout);
 		}
-		Dev->__PowerGood = PowerGood;
-	}
-	for (i = 0; i < UCD90120A_RAILS_CNT; i++)
-	{
-		Dev->PowerGood |= 1 << i;
+		Dev->PowerGood = PowerGood;
 	}
 
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -356,18 +364,18 @@ int32_t UCD90120A_ReadFaultLogSize(UCD90120A_T *Dev, uint32_t *Size)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT_DETAIL_INDEX, Data))
 		goto error;
 	
 	*Size = Data[1];
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -380,18 +388,18 @@ int32_t UCD90120A_ClearFaultLog(UCD90120A_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	memset(Data, 0, sizeof(Data));
 	
 	if(PMBUS_WriteBlock(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT, Data, sizeof(Data)))
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -404,18 +412,18 @@ int32_t UCD90120A_ReadFaultLog(UCD90120A_T *Dev, uint8_t *FaultLog)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if(PMBUS_ReadBlock(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT, Data, sizeof(Data)))
 		goto error;
 	
 	memcpy(FaultLog, Data, sizeof(Data));
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -428,7 +436,7 @@ int32_t UCD90120A_ReadFaultLogRecord(UCD90120A_T *Dev, uint32_t RecordIdx, UCD90
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	Data[0] = RecordIdx;
 	if(PMBUS_WriteByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_LOGGED_FAULT_DETAIL_INDEX, Data))
@@ -459,10 +467,10 @@ int32_t UCD90120A_ReadFaultLogRecord(UCD90120A_T *Dev, uint32_t RecordIdx, UCD90
 			Record->Value.u = (Data[0] + (Data[1] << 8));
 			break;
 	}	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }

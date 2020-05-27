@@ -6,6 +6,8 @@
 #include "bsp_pin_ctrl.h"
 #include "bsp_i2c_ctrl.h"
 
+#define SFP_DEV_NAME "SFP"
+
 #define SFP_THR_CMAX	0
 #define SFP_THR_WMAX	1
 #define SFP_THR_WMIN	2
@@ -70,31 +72,20 @@ typedef struct {
 	float RDT;
 } SFP_T;
 
-int32_t SFP_GetInfo(SFP_T *Dev, SFP_INFO_T *Info);
-int32_t SFP_GetThr(SFP_T *Dev, SFP_THR_T *Thr);
-int32_t SFP_GetRxPwr(SFP_T *Dev, float *RxPwr);
-int32_t SFP_GetTxPwr(SFP_T *Dev, float *TxPwr);
-int32_t SFP_GetTemp(SFP_T *Dev, float *Temp);
-int32_t SFP_GetModAbs(SFP_T *Dev, uint32_t *ModAbs);
-int32_t SFP_GetRxLos(SFP_T *Dev, uint32_t *RxLos);
-int32_t SFP_GetTxFault(SFP_T *Dev, uint32_t *TxFault);
-
-int32_t SFP_GetRateSel(SFP_T *Dev, uint32_t *RateSel);
 int32_t SFP_SetRateSel(SFP_T *Dev, uint32_t RateSel);
 int32_t SFP_ConfigRateSel(SFP_T *Dev, uint32_t RateSel);
 
-int32_t SFP_GetTxDisable(SFP_T *Dev, uint32_t *TxDisable);
 int32_t SFP_SetTxDisable(SFP_T *Dev, uint32_t TxDisable);
 int32_t SFP_ConfigTxDisable(SFP_T *Dev, uint32_t TxDisable);
 
-int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq);
+int32_t SFP_SetFreq(SFP_T *Dev, uint32_t Freq);
 int32_t SFP_ConfigFreq(SFP_T *Dev, uint32_t Freq);
 
-int32_t SFP_WriteRDT(SFP_T *Dev, float RDT);
+int32_t SFP_SetRDT(SFP_T *Dev, float RDT);
 int32_t SFP_ConfigRDT(SFP_T *Dev, float RDT);
 
 int32_t SFP_Update(SFP_T *Dev);
-int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, const BSP_PIN_CTRL_T *PinCtrl);
+int32_t SFP_Init(SFP_T *Dev);
 void SFP_Deinit(SFP_T *Dev);
 
 

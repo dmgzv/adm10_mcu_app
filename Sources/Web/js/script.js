@@ -312,7 +312,7 @@ function parseProfileText(profileText) {
 	let profileSectionName;
 	let profileThrSection;
 
-	profile.lines = profileText.split('\0');
+	profile.lines = profileText.split('\r\n');
 	for (let i = 0; i < profile.lines.length - 1; i++)	{
 		if (profile.lines[i][0] == '[')	{
 			let sectionMapItem;
@@ -995,7 +995,7 @@ function getProfile(callback) {
 			}
 		}
 	}	else	{
-		parseProfileText(profileText.join('\0'));
+		parseProfileText(profileText.join('\r\n'));
 		if (callback != undefined)
 			callback();
 	}
@@ -1083,30 +1083,22 @@ function updateSystemHardware(systemHardware) {
 			);
 		}
 	}
-	if (systemHardware.ic != undefined) {
-    let ic_tbody = $('#system-hardware-ic-tbody');
-    ic_tbody.empty();
-    for (let property in systemHardware.ic) {
-    	if ($.isArray(systemHardware.ic[property])) {
-    		for (let i = 0; i < systemHardware.ic[property].length; i++) {
-    			ic_tbody.append(
+	if (systemHardware.devices != undefined) {
+		let devices_tbody = $('#system-hardware-devices-tbody');
+		devices_tbody.empty();
+		for (let i = 0; i < systemHardware.devices.length; i++) {
+			devices_tbody.append(
 				'<tr>' +
-					'<td>'+ property + '</td>' +
-					'<td>'+ systemHardware.ic[property][i].id + '</td>' +
-					'<td>'+ systemHardware.ic[property][i].status  + '</td>' +
+					'<td>'+ systemHardware.devices[i].name + '</td>' +
+					'<td>'+ systemHardware.devices[i].id + '</td>' +
+					'<td>'+ systemHardware.devices[i].status  + '</td>' +
+					'<td>'+ systemHardware.devices[i].init_cnt + '</td>' +
+					'<td>'+ systemHardware.devices[i].init_err  + '</td>' +
+					'<td>'+ systemHardware.devices[i].update_cnt + '</td>' +
+					'<td>'+ systemHardware.devices[i].update_err  + '</td>' +
 				'</tr>'
-	        );
-    		}
-    	}	else {
-    		ic_tbody.append(
-					'<tr>' +
-						'<td>'+ property + '</td>' +
-						'<td>'+ systemHardware.ic[property].id + '</td>' +
-						'<td>'+ systemHardware.ic[property].status  + '</td>' +
-					'</tr>'
-				);
-    	}
-    }
+			);
+		}
 	}
 }
 
@@ -1136,16 +1128,126 @@ function getSystemHardware() {
 	}
 }
 
+function updateSystemInterfaces(systemInterfaces) {
+	if (systemInterfaces.i2c != undefined )	{
+		let i2c_tbody = $('#system-interfaces-i2c-tbody');
+		i2c_tbody.empty();
+		for (let i = 0; i < systemInterfaces.i2c.length; i++) {
+			i2c_tbody.append(
+				'<tr>' +
+					'<td>'+ systemInterfaces.i2c[i].name + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].overrun + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].berr + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].arlo + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].af + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].dma + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].timeout + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].rx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].seq_rx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].tx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].seq_tx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.i2c[i].queue_overflow + '</td>' +
+				'</tr>'
+			);
+		}
+	}
+	if (systemInterfaces.spi != undefined )	{
+		let spi_tbody = $('#system-interfaces-spi-tbody');
+		spi_tbody.empty();
+		for (let i = 0; i < systemInterfaces.spi.length; i++) {
+			spi_tbody.append(
+				'<tr>' +
+					'<td>'+ systemInterfaces.spi[i].name + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].overrun + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].mode_fault + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].crc + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].frame + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].dma + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].timeout + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].rx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].seq_rx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].tx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].seq_tx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].tx_rx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.spi[i].queue_overflow + '</td>' +
+				'</tr>'
+			);
+		}
+	}
+	if (systemInterfaces.uart != undefined )	{
+		let uart_tbody = $('#system-interfaces-uart-tbody');
+		uart_tbody.empty();
+		for (let i = 0; i < systemInterfaces.uart.length; i++) {
+			uart_tbody.append(
+				'<tr>' +
+					'<td>'+ systemInterfaces.uart[i].name + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].overrun + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].parity + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].noise + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].frame + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].dma + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].timeout + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].rx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].rx_cmd_timeout + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].tx_timeout + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].rx_queue_overflow + '</td>' +
+					'<td>'+ systemInterfaces.uart[i].tx_queue_overflow + '</td>' +
+				'</tr>'
+			);
+		}
+	}
+}
+
+function getSystemInterfaces() {
+	console.log('getSystemInterfaces');
+	clearTimeout(timerId);
+	if (!debug)	{
+		let xhr = new XMLHttpRequest();
+		xhr.open('GET', 'api/v1/system/interfaces', true);
+		xhr.send();
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4)
+				return;
+			if (xhr.status != 200) {
+				console.log('[Error] getSystemInterfaces() Status: ' + xhr.status);
+				showToast('alarm', 'System', 'Get interfaces: failed');
+			} else {
+				let systemInterfaces = JSON.parse(xhr.responseText);
+				updateSystemInterfaces(systemInterfaces);
+				timerId = setTimeout(() => getSystemInterfaces(), 1000);
+			}
+		}
+	}	else	{
+		let systemInterfaces = JSON.parse(system_hardware_json);
+		updateSystemInterfaces(systemInterfaces);
+		timerId = setTimeout(() => getSystemInterfaces(), 1000);
+	}
+}
+
 function updateLog(log) {
 	let log_tbody = $('#log-tbody');
 	log_tbody.empty();
 	for (let i = 0; i < log.records.length; i++) {
+		let background_color = 'transparent';
+		if (log.records[i].severity == '0') {
+			log.records[i].severity = 'INFO';
+		}
+		else if (log.records[i].severity == '1') {
+			log.records[i].severity = 'WARN';
+			background_color = '#f7e49c';
+		}
+		else if (log.records[i].severity == '2') {
+			log.records[i].severity = 'ERROR';
+			background_color = '#e7a8ad';
+		}
 		log_tbody.append(
-			'<tr>' +
+			'<tr style="background-color:' + background_color + '">' +
 				'<td>'+ log.records[i].time + '</td>' +
-				'<td>'+ log.records[i].name + '</td>' +
-				'<td>'+ log.records[i].id + '</td>' +
-				'<td>'+ log.records[i].data + '</td>' +
+				'<td>'+ log.records[i].severity + '</td>' +
+				'<td>'+ log.records[i].category + '</td>' +
+				'<td>'+ log.records[i].object + '</td>' +
+				'<td>'+ log.records[i].object_id + '</td>' +
+				'<td>'+ log.records[i].description + '</td>' +
 			'</tr>'
 		);
 	}
@@ -1204,6 +1306,12 @@ function registerNavbarCallbacks() {
 		clearTimeout(timerId);
 		getSystemHardware();
 	});
+	$('#nav-system-interfaces').on('click', function(){
+		$('.content').hide();
+		$('#system-interfaces-content').show();
+		clearTimeout(timerId);
+		getSystemInterfaces();
+	});
 	$('#nav-log').on('click', function(){
 		$('.content').hide();
 		$('#log-content').show();
@@ -1212,20 +1320,82 @@ function registerNavbarCallbacks() {
 	});
 }
 
-function registerUploadCallbacks() {
-	$("#system-update-software-btn").on('click', function() {
-		let file_data = $('#system-update-software-input').prop('files')[0];
+function registerUpdateMCUSoftwareCallbacks() {
+	$('#system-update-mcu-software-input').on('change',function(){
+		let fileName = $(this).prop('files')[0].name;
+		$(this).next('.custom-file-label').html(fileName);
+	})
+	
+	$("#system-update-mcu-software-btn").on('click', function() {
+		let file_data = $('#system-update-mcu-software-input').prop('files')[0];
 		//let form_data = new FormData();
 		//form_data.append('file', file_data);
 		let xhr = new XMLHttpRequest();
-		xhr.open('POST', '/api/v1/system/update/software', true);
+		xhr.open('POST', '/api/v1/system/update/mcu/software', true);
 		xhr.upload.onprogress = function(event) {
 		  console.log( 'Отправлено ' + event.loaded + ' байт из ' + event.total );
 		}
 		xhr.onload = function() {
+		  showToast('normal', 'System', 'MCU software update: ok');
 		  console.log( 'Данные полностью загружены' );
 		}
 		xhr.onerror = function() {
+		  showToast('alarm', 'System', 'MCU software update: failed');
+		  console.log( 'Произошла ошибка при загрузке данных' );
+		}
+		xhr.send(file_data);
+	});
+}
+
+function registerUpdateMCUWebCallbacks() {
+	$('#system-update-mcu-web-input').on('change',function(){
+		let fileName = $(this).prop('files')[0].name;
+		$(this).next('.custom-file-label').html(fileName);
+	})
+	
+	$("#system-update-mcu-web-btn").on('click', function() {
+		let file_data = $('#system-update-mcu-web-input').prop('files')[0];
+		//let form_data = new FormData();
+		//form_data.append('file', file_data);
+		let xhr = new XMLHttpRequest();
+		xhr.open('POST', '/api/v1/system/update/mcu/web', true);
+		xhr.upload.onprogress = function(event) {
+		  console.log( 'Отправлено ' + event.loaded + ' байт из ' + event.total );
+		}
+		xhr.onload = function() {
+		  showToast('normal', 'System', 'MCU web update: ok');
+		  console.log( 'Данные полностью загружены' );
+		}
+		xhr.onerror = function() {
+		  showToast('alarm', 'System', 'MCU web update: failed');
+		  console.log( 'Произошла ошибка при загрузке данных' );
+		}
+		xhr.send(file_data);
+	});
+}
+
+function registerUpdateMCULangpackCallbacks() {
+	$('#system-update-mcu-langpack-input').on('change',function(){
+		let fileName = $(this).prop('files')[0].name;
+		$(this).next('.custom-file-label').html(fileName);
+	})
+	
+	
+	$("#system-update-mcu-langpack-btn").on('click', function() {
+		let file_data = $('#system-update-mcu-langpack-input').prop('files')[0];
+		//let form_data = new FormData();
+		//form_data.append('file', file_data);
+		let xhr = new XMLHttpRequest();
+		xhr.open('PUT', '/api/v1/profile/langpack', true);
+		xhr.upload.onprogress = function(event) {
+		  console.log( 'Отправлено ' + event.loaded + ' байт из ' + event.total );
+		}
+		xhr.onload = function() {
+		  showToast('normal', 'System', 'Profile langpack update: ok');
+		  console.log( 'Данные полностью загружены' );
+		}
+		xhr.onerror = function() {
+		  showToast('alarm', 'System', 'Profile langpack update: failed');
 		  console.log( 'Произошла ошибка при загрузке данных' );
 		}
 		xhr.send(file_data);
@@ -1234,7 +1404,9 @@ function registerUploadCallbacks() {
 
 function DOMContentLoadedEvent () {
 	registerNavbarCallbacks();
-	registerUploadCallbacks();
+	registerUpdateMCUSoftwareCallbacks();
+	registerUpdateMCUWebCallbacks();
+	registerUpdateMCULangpackCallbacks();
 	getProfile( () => {
 		getProfileColors( () => {
 			let profileDiv = $('#profile');

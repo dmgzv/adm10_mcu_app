@@ -16,41 +16,16 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Stack size of the interface thread */
-#define BSP_NETIF_INPUT_THREAD_STACK_SIZE            ( 350 )
+#define BSP_NETIF_INPUT_THREAD_STACK_SIZE            ( 256 )
 
 /* Define those to better describe your network interface. */
 #define IFNAME0 's'
 #define IFNAME1 't'
 
-static void __BSP_NETIF_Input( void const * argument );
-osThreadDef(netif_input, __BSP_NETIF_Input, osPriorityRealtime, 0, BSP_NETIF_INPUT_THREAD_STACK_SIZE);
+osThreadDef(netif_input, ETH_NETIF_Input, osPriorityRealtime, 0, BSP_NETIF_INPUT_THREAD_STACK_SIZE);
 osThreadId netif_input_thread_id;
-
 struct netif bsp_netif;
 uint8_t tcpip_init_done;
-
-static void __BSP_NETIF_Input( void const * argument )
-{
-  struct pbuf *p;
-  struct netif *netif = (struct netif *) argument;
-  
-  for( ;; )
-  {
-		p = ETH_Receive();
-		if (p != NULL)
-		{
-			if (netif->input( p, netif) != ERR_OK )
-			{
-				pbuf_free(p);
-			}
-		}
-  }
-}
-
-static err_t __BSP_NETIF_Output(struct netif *netif, struct pbuf *p)
-{
-	return ETH_Transmit(p);
-}
 
 static err_t __BSP_NETIF_Init(struct netif *netif)
 {
@@ -65,7 +40,7 @@ static err_t __BSP_NETIF_Init(struct netif *netif)
   netif->name[1] = IFNAME1;
 
   netif->output = etharp_output;
-  netif->linkoutput = __BSP_NETIF_Output;
+  netif->linkoutput = ETH_NETIF_Output;
 
 	/* Set netif link flag */
 	netif->flags |= NETIF_FLAG_LINK_UP;
@@ -101,6 +76,11 @@ int32_t BSP_ETH_Init(void)
 	return 0;
 }
 
+u32_t sys_jiffies(void)
+{
+  return HAL_GetTick();
+}
+
 u32_t sys_now(void)
 {
   return HAL_GetTick();
@@ -129,8 +109,8 @@ static int32_t BSP_NETIF_Init(struct netif *netif, uint8_t Addr)
   IP_ADDR4(&netmask,NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
   IP_ADDR4(&gw,GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
     
-  netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &ethernet_input);
-	//netif_add(netif, &ipaddr, &netmask, &gw, NULL, &BSP_NETIF_Init, &tcpip_input);
+  //netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &ethernet_input);
+	netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &tcpip_input);
   
   /*  Registers the default network interface. */
   netif_set_default(netif);
@@ -156,12 +136,6 @@ static void BSP_NETIF_Deinit(struct netif *netif)
 
 int32_t BSP_ETH_CheckConditions(void)
 {	
-	//if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
-	//	return -1;
-	//if (BSP_DEV_GET_STATE(&pca9536) != BSP_DEV_STATE_OK)
-	//	return -1;
-	//if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
-	//	return -1;
 	if (BSP_DEV_GET_STATE(&ksz8895) != BSP_DEV_STATE_OK)
 		return -1;
 	return 0;

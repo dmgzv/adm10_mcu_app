@@ -200,30 +200,26 @@ int32_t GDT080A_SetVout(GDT080A_T *Dev, float Vout)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	Trim = Vout * Dev->Cfg.Vout.Scale - GDT080A_VREF;
 	if (GDT080A_SetVoutTrim(Dev, Trim))
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
-int32_t GDT080A_Init(GDT080A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr, float Vout)
+int32_t GDT080A_Init(GDT080A_T *Dev)
 {	
-	if ((!Dev) || (!I2C))
+	if ((!Dev) || (!Dev->I2C))
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "GDT080A", DevId);
-	BSP_DEV_LOCK(Dev);
-	
-	Dev->I2C = I2C;
-	Dev->Addr = Addr << 1;
+	BSP_DEV_INIT(Dev);
 
 	if (GDT080A_GetInfo(Dev))
 		goto error;
@@ -231,7 +227,7 @@ int32_t GDT080A_Init(GDT080A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, 
 		goto error;
 	if (GDT080A_GetVoutScale(Dev))
 		goto error;
-	if (GDT080A_SetVoutScale(Dev, Vout))
+	if (GDT080A_SetVoutScale(Dev, GDT080A_RTRIM_TO_VOUT(Dev->RTrim)))
 		goto error;
 	if (GDT080A_GetVoutTrim(Dev))
 		goto error;
@@ -240,15 +236,11 @@ int32_t GDT080A_Init(GDT080A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, 
 	if (GDT080A_GetVoutMargins(Dev))
 		goto error;
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -256,7 +248,6 @@ void GDT080A_Deinit(GDT080A_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 
@@ -267,7 +258,7 @@ int32_t GDT080A_Update(GDT080A_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if (GDT080A_GetStatus(Dev))
 		goto error;
@@ -280,11 +271,11 @@ int32_t GDT080A_Update(GDT080A_T *Dev)
 	if (GDT080A_GetTemp(Dev))
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 

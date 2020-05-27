@@ -8,10 +8,42 @@
 
 const char* fpga_client_id[2] = {"1", "2"};
 
-BSP_FPGA_IFACE_T fpga_iface;
-BSP_FPGA_MAXV_T fpga_maxv;
-BSP_FPGA_CLIENT_T fpga_client[2];
-BSP_FPGA_LINE_T fpga_line;
+BSP_FPGA_IFACE_T fpga_iface =
+{
+	.DevName = "FPGA_IFACE",
+	.DevId = "",
+	.InitContErrThr = 10,
+	.UpdateContErrThr = 10,
+};
+BSP_FPGA_MAXV_T fpga_maxv =
+{
+	.DevName = "FPGA_MAXV",
+	.DevId = "",
+	.InitContErrThr = 10,
+	.UpdateContErrThr = 10,
+};
+BSP_FPGA_CLIENT_T fpga_client[2] =
+{
+	{
+		.DevName = "FPGA_CLIENT_1",
+		.DevId = "",
+		.InitContErrThr = 10,
+		.UpdateContErrThr = 10,
+	},
+	{
+		.DevName = "FPGA_CLIENT_2",
+		.DevId = "",
+		.InitContErrThr = 10,
+		.UpdateContErrThr = 10,
+	},
+};
+BSP_FPGA_LINE_T fpga_line  =
+{
+	.DevName = "FPGA_LINE",
+	.DevId = "",
+	.InitContErrThr = 10,
+	.UpdateContErrThr = 10,
+};
 
 void HAL_SRAM_MspInit(SRAM_HandleTypeDef* hsram)
 {
@@ -235,8 +267,7 @@ int32_t BSP_FPGA_IFACE_Init(BSP_FPGA_IFACE_T *Dev)
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "FPGA IFACE", "");
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_INIT(Dev);
 	
 	/** Perform the SRAM3 memory initialization sequence
   */
@@ -271,15 +302,11 @@ int32_t BSP_FPGA_IFACE_Init(BSP_FPGA_IFACE_T *Dev)
   if (HAL_SRAM_Init(&Dev->hsram, &Timing, NULL) != HAL_OK)
 		goto error;
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -287,13 +314,12 @@ void BSP_FPGA_IFACE_Deinit(BSP_FPGA_IFACE_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
+	BSP_DEV_DEINIT(Dev);
 }
 
 static void BSP_FPGA_MAXV_WriteByte(BSP_FPGA_MAXV_T *Dev, uint32_t Addr, uint8_t Data)
 {
-	LOG_Add(Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
+	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
 	*((uint8_t*)(Addr)) = Data;
 }
 
@@ -305,8 +331,7 @@ int32_t BSP_FPGA_MAXV_Init(BSP_FPGA_MAXV_T *Dev)
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "FPGA MAXV", "");
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_INIT(Dev);
 	
 	PowerUpMarker = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x03));
 	if (PowerUpMarker != 0xA5)
@@ -317,15 +342,11 @@ int32_t BSP_FPGA_MAXV_Init(BSP_FPGA_MAXV_T *Dev)
 	Dev->Status = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x01));
 	Dev->Mode = ((*((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x02))) >> 7) & 0x01;
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");	
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -337,7 +358,7 @@ int32_t BSP_FPGA_MAXV_Update(BSP_FPGA_MAXV_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	Dev->Status = *((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x01));
 	Mode = ((*((uint8_t*)(BSP_FPGA_MAXV_ADDR + 0x02))) >> 7) & 0x01;
@@ -347,7 +368,7 @@ int32_t BSP_FPGA_MAXV_Update(BSP_FPGA_MAXV_T *Dev)
 		Dev->Status = 0;
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 }
 
@@ -355,19 +376,18 @@ void BSP_FPGA_MAXV_Deinit(BSP_FPGA_MAXV_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
+	BSP_DEV_DEINIT(Dev);
 }
 
 static void BSP_FPGA_LINE_WriteByte(BSP_FPGA_LINE_T *Dev, uint32_t Addr, uint8_t Data)
 {
-	LOG_Add(Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
+	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
 	*((uint8_t*)(Addr)) = Data;
 }
 
 static void BSP_FPGA_LINE_WriteCmd(BSP_FPGA_LINE_T *Dev, uint32_t Cmd, uint8_t Opt1, uint8_t Opt2, uint8_t Opt3)
 {
-	LOG_Add(Dev->DevName, Dev->DevId, "WriteCmd: 0x%02x 0x%02x 0x%02x 0x%02x", Cmd, Opt1, Opt2, Opt3);
+	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteCmd: 0x%02x 0x%02x 0x%02x 0x%02x", Cmd, Opt1, Opt2, Opt3);
 	*((uint8_t*)BSP_FPGA_LINE_CMD_OPT1_ADDR) = Opt1;
 	*((uint8_t*)BSP_FPGA_LINE_CMD_OPT2_ADDR) = Opt2;
 	*((uint8_t*)BSP_FPGA_LINE_CMD_OPT3_ADDR) = Opt3;
@@ -382,8 +402,7 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev, uint32_t Mode)
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "FPGA LINE", "");
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_INIT(Dev);
 	
 	Status = *((uint8_t*)BSP_FPGA_LINE_STATUS_ADDR);
 	if (Status == 0)
@@ -501,15 +520,12 @@ int32_t BSP_FPGA_LINE_Init(BSP_FPGA_LINE_T *Dev, uint32_t Mode)
 		}
 	}
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Init: Ok");
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return 0;
 }
 
@@ -525,7 +541,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	Temp = *((uint16_t*)(BSP_FPGA_LINE_ADDR + 0x06));
 	Dev->Temp = (((Temp & 0x3FF) * 693.0f) / 1024.0f) - 265.0f;
@@ -806,7 +822,7 @@ int32_t BSP_FPGA_LINE_Update(BSP_FPGA_LINE_T *Dev)
 		}
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 }
 
@@ -814,19 +830,18 @@ void BSP_FPGA_LINE_Deinit(BSP_FPGA_LINE_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
+	BSP_DEV_DEINIT(Dev);
 }
 
 static void BSP_FPGA_CLIENT_WriteByte(BSP_FPGA_CLIENT_T *Dev, uint32_t Addr, uint8_t Data)
 {
-	LOG_Add(Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
+	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
 	*((uint8_t*)(Addr)) = Data;
 }
 
 static void BSP_FPGA_CLIENT_WriteCmd(BSP_FPGA_CLIENT_T *Dev, uint32_t Cmd, uint8_t Opt1, uint8_t Opt2, uint8_t Opt3)
 {
-	LOG_Add(Dev->DevName, Dev->DevId, "WriteCmd: 0x%02x 0x%02x 0x%02x 0x%02x", Cmd, Opt1, Opt2, Opt3);
+	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteCmd: 0x%02x 0x%02x 0x%02x 0x%02x", Cmd, Opt1, Opt2, Opt3);
 	*((uint8_t*)BSP_FPGA_CLIENT_CMD_OPT1_ADDR(Dev->Idx)) = Opt1;
 	*((uint8_t*)BSP_FPGA_CLIENT_CMD_OPT2_ADDR(Dev->Idx)) = Opt2;
 	*((uint8_t*)BSP_FPGA_CLIENT_CMD_OPT3_ADDR(Dev->Idx)) = Opt3;
@@ -842,8 +857,7 @@ int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx, uint32_t Mode
 	if (!Dev)
 		return -1;
 	
-	BSP_DEV_INIT(Dev,"FPGA CLIENT", fpga_client_id[Idx]);
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_INIT(Dev);
 	
 	Dev->Idx = Idx;
 	Dev->Mode = Mode;
@@ -913,15 +927,11 @@ int32_t BSP_FPGA_CLIENT_Init(BSP_FPGA_CLIENT_T *Dev, uint32_t Idx, uint32_t Mode
 		Dev->Iface[i].EthRxErrs = 0;
 	}
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return 0;
 }
 
@@ -938,7 +948,7 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	Temp = *((uint16_t*)(BSP_FPGA_CLIENT_ADDR(Dev->Idx) + 0x06));
 	Dev->Temp = (((Temp & 0x3FF) * 693.0f) / 1024.0f) - 265.0f;
@@ -1094,7 +1104,7 @@ int32_t BSP_FPGA_CLIENT_Update(BSP_FPGA_CLIENT_T *Dev)
 		}
 	}
 
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 }
 
@@ -1102,7 +1112,7 @@ void BSP_FPGA_CLIENT_Deinit(BSP_FPGA_CLIENT_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
+	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
 }
 
@@ -1110,7 +1120,7 @@ static int32_t BSP_FPGA_CheckConditions(void)
 {
 	uint32_t i;
 	
-	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) || (!dim3r3400_load_timeout))
 		return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;

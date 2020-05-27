@@ -675,7 +675,10 @@ int32_t SPI_SequentialTransmit(const SPI_TypeDef *Instance, SPI_CS_T *CS, char *
 		return -1;
 
 	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
 		return -1;
+	}
 
 	if (CS)
 		CS->SetState(CS->Priv, 0);
@@ -762,7 +765,10 @@ int32_t SPI_SequentialReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *
 		return -1;
 
 	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
 		return -1;
+	}
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
@@ -848,7 +854,10 @@ int32_t SPI_TransmitReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Tx
 		return -1;
 
 	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
 		return -1;
+	}
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);
@@ -920,7 +929,10 @@ int32_t SPI_Transmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, u
 		return -1;
 
 	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
 		return -1;
+	}
 
 	if (CS)
 		CS->SetState(CS->Priv, 0);
@@ -991,7 +1003,10 @@ int32_t SPI_Receive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, ui
 		return -1;
 
 	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
 		return -1;
+	}
 	
 	if (CS)
 		CS->SetState(CS->Priv, 0);

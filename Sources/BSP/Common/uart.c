@@ -784,7 +784,10 @@ int32_t UART_Transmit(USART_TypeDef * Instance, char *Buffer, uint32_t  Size)
 		return -1;
 	
 	if( osMutexWait( uart->tx_mutex_id, UART_TIMEOUT ) != osOK )
+	{
+		uart->timeout_errors++;
 		return -1;
+	}
 	
 	if(HAL_UART_Transmit_IT(&uart->handle, (uint8_t*)Buffer, Size) != HAL_OK)
 		goto error;
@@ -835,7 +838,10 @@ int32_t UART_Receive(USART_TypeDef * Instance, char *Buffer, uint32_t  Size)
 		return -1;
 	
 	if( osMutexWait( uart->rx_mutex_id, UART_TIMEOUT ) != osOK )
+	{
+		uart->timeout_errors++;
 		return -1;
+	}
 	
 	uart->rx_buffer = (uint8_t*)Buffer;
 	uart->rx_buffer_size = Size;
@@ -891,7 +897,10 @@ int32_t UART_ReceiveCommand(USART_TypeDef *Instance, char *Buffer, uint32_t Size
 		return -1;
 	
 	if( osMutexWait( uart->rx_mutex_id, Timeout) != osOK )
-		return -1;		
+	{
+		uart->timeout_errors++;
+		return -1;
+	}		
 	
 	uart->rx_buffer = (uint8_t*)Buffer;
 	uart->rx_buffer_size = Size;

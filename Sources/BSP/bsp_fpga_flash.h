@@ -3,6 +3,8 @@
 
 #include "s29gl01gs.h"
 
+#define BSP_FLASH_S29GL01GS_ID					"D86"
+
 /* 0x00000000 - 0x02000000 - FPGA 1 Firmaware */
 /* 0x02000000 - 0x03000000 - FPGA 2 Firmaware */
 /* 0x03000000 - 0x04000000 - FPGA 3 Firmaware */

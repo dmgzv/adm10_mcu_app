@@ -3,8 +3,8 @@
 
 #include "ksz8895.h"
 
-#define BSP_ETH_SW_ID		"D99"
-#define BSP_ETH_SW_SPI	SPI5
+#define BSP_ETH_SW_KSZ8895_ID		"D99"
+#define BSP_ETH_SW_KSZ8895_SPI	SPI5
 #ifndef BSP_CONFIG_USE_SPI5
 	#error	Define BSP_CONFIG_USE_SPI5 in bsp_config.h for BSP_ETH_SW
 #endif

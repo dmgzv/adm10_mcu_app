@@ -1,8 +1,5 @@
 #include "bsp_pwr_seq.h"
 #include "bsp_pwr_pin.h"
-#include "bsp_pwr_in.h"
-
-UCD90120A_T ucd90120a;
 
 static int32_t BSP_PWR_SEQ_InitPin(void *Priv, uint32_t Pin);
 static int32_t BSP_PWR_SEQ_SetPinState(void *Priv, uint32_t Pin, uint32_t State);
@@ -12,6 +9,16 @@ const BSP_PIN_CTRL_T ucd90120a_pin_ctrl = {
 	BSP_PWR_SEQ_SetPinState,
 	NULL,
 	NULL
+};
+
+UCD90120A_T ucd90120a = {
+	.DevName = UCD90120A_DEV_NAME,
+	.DevId = BSP_PWR_SEQ_UCD90120A_ID,
+	.InitContErrThr = 3,
+	.UpdateContErrThr = 3,
+	.I2C = BSP_PWR_SEQ_UCD90120A_I2C,
+	.Addr = BSP_PWR_SEQ_UCD90120A_I2C_ADDR,
+	.PinCtrl = &ucd90120a_pin_ctrl,
 };
 
 static int32_t BSP_PWR_SEQ_InitPin(void *Priv, uint32_t Pin)
@@ -52,8 +59,6 @@ static int32_t BSP_PWR_SEQ_SetPinState(void *Priv, uint32_t Pin, uint32_t State)
 
 static int32_t BSP_PWR_SEQ_CheckConditions(void)
 {
-	//if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
-	//	return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;
 	return 0;
@@ -74,7 +79,7 @@ void BSP_PWR_SEQ_Process(void)
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK)
 		{
-			UCD90120A_Init(&ucd90120a, BSP_PWR_SEQ_UCD90120A_ID, BSP_PWR_SEQ_UCD90120A_I2C, BSP_PWR_SEQ_UCD90120A_I2C_ADDR, (BSP_PIN_CTRL_T*) &ucd90120a_pin_ctrl, BSP_UCD90120A_CFG_Table, BSP_UCD90120A_CFG_TableSize);
+			UCD90120A_Init(&ucd90120a, BSP_UCD90120A_CFG_Table, BSP_UCD90120A_CFG_TableSize);
 		}
 		else
 		{

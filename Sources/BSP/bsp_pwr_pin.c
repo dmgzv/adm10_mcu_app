@@ -1,6 +1,13 @@
 #include "bsp_pwr_pin.h"
 
-PCA9536_T pwr_pca9536;
+PCA9536_T pwr_pca9536 =
+{
+	.DevName = PCA9536_DEV_NAME,
+	.DevId = BSP_PWR_PIN_PCA9536_ID,
+	.InitContErrThr = 3,
+	.UpdateContErrThr = 3,
+	.I2C = BSP_PWR_PIN_PCA9536_I2C,
+};
 
 int32_t BSP_PWR_PIN_SetState(uint32_t Pin, uint32_t State)
 {
@@ -44,7 +51,7 @@ void BSP_PWR_PIN_Process(void)
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		{
-			PCA9536_Init(&pwr_pca9536, BSP_PWR_PIN_PCA9536_ID, BSP_PWR_PIN_PCA9536_I2C);
+			PCA9536_Init(&pwr_pca9536);
 		}
 	}
 }

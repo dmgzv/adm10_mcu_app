@@ -7,11 +7,11 @@
 
 #define BSP_CLK_SI5332_1_ID				"D63"
 #define BSP_CLK_SI5332_1_I2C			I2C2
-#define BSP_CLK_SI5332_1_I2C_ADDR	0x6A
+#define BSP_CLK_SI5332_1_I2C_ADDR	(0x6A << 1)
 
 #define BSP_CLK_SI5332_2_ID				"D64"
 #define BSP_CLK_SI5332_2_I2C			I2C2
-#define BSP_CLK_SI5332_2_I2C_ADDR	0x6A
+#define BSP_CLK_SI5332_2_I2C_ADDR	(0x6A << 1)
 
 #ifndef BSP_CONFIG_USE_I2C2
 	#error	Define BSP_CONFIG_USE_I2C2 in bsp_config.h for BSP_CLK

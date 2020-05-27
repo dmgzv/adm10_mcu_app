@@ -2,6 +2,82 @@
 #include "mt48lc16m16a2.h"
 
 uint8_t SlotAddress;
+const BSP_DEV_T *Devices[] = {
+	(BSP_DEV_T*)&at45db641e,
+	(BSP_DEV_T*)&mt48lc16m16a2,
+	(BSP_DEV_T*)&dim3r3400,
+	(BSP_DEV_T*)&pwr_pca9536,
+	(BSP_DEV_T*)&ucd90120a,
+	(BSP_DEV_T*)&ksz8895,
+	(BSP_DEV_T*)&gdt080a[0],
+	(BSP_DEV_T*)&gdt080a[1],
+	(BSP_DEV_T*)&si5332[0],
+	(BSP_DEV_T*)&si5332[1],
+	(BSP_DEV_T*)&s29gl01gs,
+	(BSP_DEV_T*)&fpga_maxv,
+	(BSP_DEV_T*)&fpga_line,
+	(BSP_DEV_T*)&fpga_client[0],
+	(BSP_DEV_T*)&fpga_client[1],
+	(BSP_DEV_T*)&pca9548a[0],
+	(BSP_DEV_T*)&pca9548a[1],
+	(BSP_DEV_T*)&pca9548a[2],
+	(BSP_DEV_T*)&pcal6524[0],
+	(BSP_DEV_T*)&pcal6524[1],
+	(BSP_DEV_T*)&pcal6524[2],
+	(BSP_DEV_T*)&pca9536[0],
+	(BSP_DEV_T*)&pca9536[1],
+	(BSP_DEV_T*)&pca9536[2],
+	(BSP_DEV_T*)&pca9536[3],
+	(BSP_DEV_T*)&pca9536[4],
+	(BSP_DEV_T*)&pca9536[5],
+	(BSP_DEV_T*)&pca9536[6],
+	(BSP_DEV_T*)&pca9536[7],
+	(BSP_DEV_T*)&pca9536[8],
+	(BSP_DEV_T*)&pca9536[9],
+	(BSP_DEV_T*)&pca9536[10],
+	(BSP_DEV_T*)&pca9536[11],
+	(BSP_DEV_T*)&pca9536[12],
+	(BSP_DEV_T*)&pca9536[13],
+	(BSP_DEV_T*)&pca9536[14],
+	(BSP_DEV_T*)&pca9536[15],
+	(BSP_DEV_T*)&pca9536[16],
+	(BSP_DEV_T*)&pca9536[17],
+	(BSP_DEV_T*)&pca9536[18],
+	(BSP_DEV_T*)&pca9536[19],
+	(BSP_DEV_T*)&sfp[0],
+	(BSP_DEV_T*)&sfp[1],
+	(BSP_DEV_T*)&sfp[2],
+	(BSP_DEV_T*)&sfp[3],
+	(BSP_DEV_T*)&sfp[4],
+	(BSP_DEV_T*)&sfp[5],
+	(BSP_DEV_T*)&sfp[6],
+	(BSP_DEV_T*)&sfp[7],
+	(BSP_DEV_T*)&sfp[8],
+	(BSP_DEV_T*)&sfp[9],
+	(BSP_DEV_T*)&sfp[10],
+	(BSP_DEV_T*)&sfp[11],
+	(BSP_DEV_T*)&sfp[12],
+	(BSP_DEV_T*)&sfp[13],
+	(BSP_DEV_T*)&sfp[14],
+	(BSP_DEV_T*)&sfp[15],
+	(BSP_DEV_T*)&sfp[16],
+	(BSP_DEV_T*)&sfp[17],
+	(BSP_DEV_T*)&sfp[18],
+	(BSP_DEV_T*)&sfp[19],
+};
+const uint32_t DevicesCnt = sizeof(Devices) / sizeof(Devices[0]);
+
+void assert_failed(uint8_t* file, uint32_t line)
+{
+	BSP_Reset();
+	while(1);
+}
+
+void lwip_assert_failed(void)
+{
+	BSP_Reset();
+	while(1);
+}
 
 void BSP_Init(void)
 {

@@ -2,6 +2,12 @@
 #include "log.h"
 #include <string.h>
 
+#define KSZ8895_REG_PORT_CONTROL_0(Idx)	(0x10 + (0x10 * (Idx)))
+#define KSZ8895_REG_PORT_CONTROL_1(Idx)	(0x11 + (0x10 * (Idx)))
+#define KSZ8895_REG_PORT_CONTROL_2(Idx)	(0x12 + (0x10 * (Idx)))
+#define KSZ8895_REG_PORT_CONTROL_3(Idx)	(0x13 + (0x10 * (Idx)))
+#define KSZ8895_REG_PORT_CONTROL_4(Idx)	(0x14 + (0x10 * (Idx)))
+#define KSZ8895_REG_PORT_CONTROL_5(Idx)	(0x1C + (0x10 * (Idx)))
 #define KSZ8895_REG_PORT_STATUS_0(Idx)	(0x19 + (0x10 * (Idx)))
 #define KSZ8895_REG_PORT_STATUS_1(Idx)	(0x1E + (0x10 * (Idx)))
 #define KSZ8895_REG_INDIRECT_ACCESS_CONTROL_0	0x6E
@@ -51,16 +57,14 @@ static int32_t __KSZ8895_WriteReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t Data)
 	return 0;
 }
 
-int32_t KSZ8895_Init(KSZ8895_T *Dev, const char *DevId, const SPI_TypeDef *SPI, const BSP_PIN_CTRL_T *PinCtrl)
+int32_t KSZ8895_Init(KSZ8895_T *Dev)
 {
-	if ((!Dev) || (!SPI) || (!PinCtrl))
+	uint8_t i, Data;
+
+	if ((!Dev) || (!Dev->SPI) || (!Dev->PinCtrl))
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "KSZ8895", DevId);
-	BSP_DEV_LOCK(Dev);
-	
-	Dev->SPI = SPI;
-	Dev->PinCtrl = PinCtrl;
+	BSP_DEV_INIT(Dev);
 
 	Dev->CS.SetState = &__KSZ8895_SetCSState;
 	Dev->CS.Priv = Dev;
@@ -94,15 +98,39 @@ int32_t KSZ8895_Init(KSZ8895_T *Dev, const char *DevId, const SPI_TypeDef *SPI, 
 	if (__KSZ8895_ReadReg(Dev, 0x01, &Dev->ChipId))
 		goto error;
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);	
+	for (i = 0; i < KSZ8895_PORTS_CNT; i++)
+	{
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_0(i), &Data))
+			goto error;
+		Dev->PortControl[i][0] = Data;		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_1(i), &Data))
+			goto error;
+		Dev->PortControl[i][1] = Data;
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_2(i), &Data))
+			goto error;
+		Dev->PortControl[i][2] = Data;		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_3(i), &Data))
+			goto error;
+		Dev->PortControl[i][3] = Data;
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_4(i), &Data))
+			goto error;
+		Dev->PortControl[i][4] = Data;
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_5(i), &Data))
+			goto error;
+		Dev->PortControl[i][5] = Data;
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_0(i), &Data))
+			goto error;
+		Dev->PortStatus[i][0] = Data;		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_1(i), &Data))
+			goto error;
+		Dev->PortStatus[i][1] = Data;
+	}
+	
+	BSP_DEV_INIT_OK(Dev);	
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -110,7 +138,6 @@ void KSZ8895_Deinit(KSZ8895_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 
@@ -124,11 +151,58 @@ int32_t KSZ8895_Update(KSZ8895_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < KSZ8895_PORTS_CNT; i++)
 	{
-	
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_0(i), &Data))
+			goto error;	
+		if (Data != Dev->PortControl[i][0])
+		{
+			if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_PORT_CONTROL_0(i), Dev->PortControl[i][0]))
+				goto error;
+		}
+		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_1(i), &Data))
+			goto error;	
+		if (Data != Dev->PortControl[i][1])
+		{
+			if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_PORT_CONTROL_1(i), Dev->PortControl[i][1]))
+				goto error;
+		}
+		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_2(i), &Data))
+			goto error;	
+		if (Data != Dev->PortControl[i][2])
+		{
+			if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_PORT_CONTROL_2(i), Dev->PortControl[i][2]))
+				goto error;
+		}
+		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_3(i), &Data))
+			goto error;	
+		if (Data != Dev->PortControl[i][3])
+		{
+			if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_PORT_CONTROL_3(i), Dev->PortControl[i][3]))
+				goto error;
+		}
+		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_4(i), &Data))
+			goto error;	
+		if (Data != Dev->PortControl[i][4])
+		{
+			if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_PORT_CONTROL_4(i), Dev->PortControl[i][4]))
+				goto error;
+		}
+		
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_5(i), &Data))
+			goto error;	
+		if (Data != Dev->PortControl[i][5])
+		{
+			if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_PORT_CONTROL_5(i), Dev->PortControl[i][5]))
+				goto error;
+		}
+		
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_0(i), &Data))
 			goto error;	
 		Dev->PortStatus[i][0] = Data;
@@ -136,6 +210,44 @@ int32_t KSZ8895_Update(KSZ8895_T *Dev)
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_1(i), &Data))
 			goto error;		
 		Dev->PortStatus[i][1] = Data;
+	}
+	
+	BSP_DEV_UPDATE_OK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UPDATE_FAIL(Dev);
+	return -1;
+}
+
+int32_t KSZ8895_ConfigPortMode(KSZ8895_T *Dev, uint32_t Idx, uint32_t Mode)
+{
+	if ((!Dev) || (Idx > 4))
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	switch (Mode)
+	{
+		case KSZ8895_PORT_MODE_AUTONEG:
+			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 7));
+			break;
+		case KSZ8895_PORT_MODE_100M_FULL_DUPLEX:
+			Dev->PortControl[Idx][5] = 0xFF;
+			break;
+		case KSZ8895_PORT_MODE_100M_HALF_DUPLEX:
+			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 5));
+			break;
+		case KSZ8895_PORT_MODE_10M_FULL_DUPLEX:
+			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 6));
+			break;
+		case KSZ8895_PORT_MODE_10M_HALF_DUPLEX:
+			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 6)) & (~(1 << 5));
+			break;
+		default:
+			goto error;
 	}
 	
 	BSP_DEV_UNLOCK(Dev);
@@ -153,16 +265,16 @@ int32_t KSZ8895_ReadReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t *Data)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if (__KSZ8895_ReadReg(Dev, Addr, Data))
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -173,16 +285,16 @@ int32_t KSZ8895_WriteReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t Data)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if (__KSZ8895_WriteReg(Dev, Addr, Data))
 		goto error;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -195,7 +307,7 @@ int32_t KSZ8895_UpdatePortStatus(KSZ8895_T *Dev, uint32_t Idx)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_0(Idx), &Data))
 		goto error;	
@@ -207,11 +319,11 @@ int32_t KSZ8895_UpdatePortStatus(KSZ8895_T *Dev, uint32_t Idx)
 	
 	Dev->PortStatus[Idx][1] = Data;
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -224,7 +336,8 @@ int32_t KSZ8895_ReadMACTable(KSZ8895_T *Dev, KSZ8895_MAC_TABLE_T *Table, uint32_
 		return -1;
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
-	BSP_DEV_LOCK(Dev);
+	
+	BSP_DEV_UPDATE(Dev);
 	
 	Idx = 0;
 	TableSize = 0;
@@ -258,10 +371,10 @@ int32_t KSZ8895_ReadMACTable(KSZ8895_T *Dev, KSZ8895_MAC_TABLE_T *Table, uint32_
 		}
 	}
 	*Size = TableSize;
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }

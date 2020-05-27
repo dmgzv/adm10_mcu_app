@@ -4,14 +4,18 @@
 #include "cmsis_os.h"
 #include "stdio.h"
 #include "bsp.h"
-#include "tftp_client.h"
 #include "log.h"
+#include "profile_iface.h"
+#include "profile_flash.h"
+#include "tftp_client.h"
 #include "bootloader.h"
 
 extern BOOTLOADER_T Bootloader;
+extern PROFILE_FLASH_T ProfileFlash;
 
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 #ifdef BSP_CONFIG_USE_LOG
 static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 #endif
@@ -27,7 +31,7 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
-static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_PCA9548ACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 
@@ -35,6 +39,7 @@ const SHELL_CMD_T ShellCmdList[] =
 {
 	{ "system", 	"System information", &SHELL_CMD_SystemCallback},
 	{ "info", 		"Project information", &SHELL_CMD_InfoCallback},
+	{ "iface", 		"Profile iface information", &SHELL_CMD_IfaceCallback},
 #ifdef BSP_CONFIG_USE_LOG
 	{ "log", 			"Log control", &SHELL_CMD_LOGCallback},
 #endif
@@ -50,7 +55,7 @@ const SHELL_CMD_T ShellCmdList[] =
 	{ "fpga", 		"FPGA control", &SHELL_CMD_FPGACallback},
 	{ "pca9536", 	"PCA9536 control", &SHELL_CMD_PCA9536Callback},
 	{ "pcal6524", "PCAL6524 control", &SHELL_CMD_PCAL6524Callback},
-	{ "pca9548", 	"PCA9548 control", &SHELL_CMD_PCA9548Callback},
+	{ "pca9548a", "PCA9548A control", &SHELL_CMD_PCA9548ACallback},
 	{ "ksz", 			"KSZ8895 control", &SHELL_CMD_KSZCallback},
 	{ "sdram", 		"SDRAM control", &SHELL_CMD_SDRAMCallback},
 };
@@ -84,31 +89,68 @@ static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t
 
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
-	SHELL_Transmit(Shell, "Project: %s \r", BSP_PROJECT);
-	SHELL_Transmit(Shell,  "HW Version: %s \r", BSP_HW_VERSION);
-	SHELL_Transmit(Shell,  "SW Version: %s \r", BSP_SW_VERSION);
-	SHELL_Transmit(Shell,  "SW Date: %s \r", BSP_SW_DATE);
-	SHELL_Transmit(Shell,  "SW Time: %s \r", BSP_SW_TIME);
+	uint32_t i;
+	SHELL_Transmit(Shell, "Project: %s\r", BSP_PROJECT);
+	SHELL_Transmit(Shell, "HW Version: %s\r", BSP_HW_VERSION);
+	SHELL_Transmit(Shell, "SW Version: %s\r", BSP_SW_VERSION);
+	SHELL_Transmit(Shell, "SW Date: %s\r", BSP_SW_DATE);
+	SHELL_Transmit(Shell, "SW Time: %s\r", BSP_SW_TIME);
+	SHELL_Transmit(Shell, "MCU SW Version: %s\r", BSP_MCU_SW_VERSION);
+	if (BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK)
+		SHELL_Transmit(Shell, "FPGA MAXV SW Version: %s\r", fpga_maxv.SwVersion );
+	else
+		SHELL_Transmit(Shell, "FPGA MAXV SW Version: -\r");
+	if (BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK)
+		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r", fpga_line.SwVersion );
+	else
+		SHELL_Transmit(Shell, "FPGA LINE Version: -\r");
+	for (i = 0; i < BSP_FPGA_CLIENT_CNT; i++)
+	{
+		if (BSP_DEV_GET_STATE(&fpga_client[i]) == BSP_DEV_STATE_OK)
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r", i, fpga_client[i].SwVersion );
+		else
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: -\r", i);
+	}
+	SHELL_Transmit(Shell, "Time: %d s\r", osKernelSysTick() / 1000);
+}
+
+extern PROFILE_IFACE_T ProfileIfaceUart4;
+extern PROFILE_IFACE_T ProfileIfaceUart5;
+
+static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{
+	SHELL_Transmit(Shell, "Iface: UART 1\r");
+	SHELL_Transmit(Shell, "Max Parse Time: %d ms\r", ProfileIfaceUart4.MaxParseTime);
+	SHELL_Transmit(Shell, "Max Parse Time Cmd: 0x%02x\r", ProfileIfaceUart4.MaxParseTimeCommand);
+	SHELL_Transmit(Shell, "Max Responce Len: %d\r", ProfileIfaceUart4.MaxResponceLen);
+	SHELL_Transmit(Shell, "Max Responce Len Cmd: 0x%02x\r", ProfileIfaceUart4.MaxResponceLenCommand);
+	SHELL_Transmit(Shell, "Max Transmit Time: %d ms\r", ProfileIfaceUart4.MaxTransmitTime);
+	SHELL_Transmit(Shell, "Max Transmit Time Cmd: 0x%02x\r", ProfileIfaceUart4.MaxTransmitTimeCommand);
+	SHELL_Transmit(Shell, "Iface: UART 6\r");
+	SHELL_Transmit(Shell, "Max Parse Time: %d ms\r", ProfileIfaceUart5.MaxParseTime);
+	SHELL_Transmit(Shell, "Max Parse Time Cmd: 0x%02x\r", ProfileIfaceUart5.MaxParseTimeCommand);
+	SHELL_Transmit(Shell, "Max Responce Len: %d\r", ProfileIfaceUart5.MaxResponceLen);
+	SHELL_Transmit(Shell, "Max Responce Len Cmd: 0x%02x\r", ProfileIfaceUart5.MaxResponceLenCommand);
+	SHELL_Transmit(Shell, "Max Transmit Time: %d ms\r", ProfileIfaceUart5.MaxTransmitTime);
+	SHELL_Transmit(Shell, "Max Transmit Time Cmd: 0x%02x\r", ProfileIfaceUart5.MaxTransmitTimeCommand);
 }
 
 #ifdef BSP_CONFIG_USE_LOG
 static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
-	uint32_t i, LinesCnt, LineTime;
+	uint32_t i, LinesCnt;
 	float Time;
-	const char *Line;
-	const char *Name;
-	const char *Id;
+	LOG_LINE_T LogLine;
 	
 	LinesCnt = LOG_GetLinesCnt();
 	SHELL_Transmit(Shell, "Size: %d\r", LOG_LINES_CNT);
 	SHELL_Transmit(Shell, "Records Count: %d\r", LOG_GetLinesCnt());
 	for (i = 0; i < LinesCnt; i++)
 	{
-		LOG_GetLine(i, &LineTime, &Name, &Id, &Line);
-		Time = (float)LineTime / osKernelSysTickFrequency;
-		SHELL_Transmit(Shell, "[%4.4f] %s %s %s\r", Time, Name, Id, Line);
-	}
+		LOG_GetLine(i, &LogLine);
+		Time = (float)LogLine.Time / osKernelSysTickFrequency;
+		SHELL_Transmit(Shell, "[%4.4f] %s %s %s\r", Time, LogLine.Object, LogLine.ObjectId, LogLine.Description);
+	}	
 }
 #endif
 
@@ -316,29 +358,10 @@ static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t
 	uint32_t i;
 	
 	SHELL_Transmit(Shell,  "Device       Id   State\r");
-	SHELL_Transmit(Shell,   ".12s %.5s %s\r", at45db641e.DevName, at45db641e.DevId, BSP_DEV_GET_STATE_STR(&at45db641e));
-	SHELL_Transmit(Shell,   ".12s %.5s %s\r", pwr_pca9536.DevName, pwr_pca9536.DevId, BSP_DEV_GET_STATE_STR(&pwr_pca9536));
-	SHELL_Transmit(Shell,   ".12s %.5s %s\r", dim3r3400.DevName, dim3r3400.DevId, BSP_DEV_GET_STATE_STR(&dim3r3400));
-	SHELL_Transmit(Shell,   ".12s %.5s %s\r", ucd90120a.DevName, ucd90120a.DevId, BSP_DEV_GET_STATE_STR(&ucd90120a));
-	SHELL_Transmit(Shell,   ".12s %.5s %s\r", ksz8895.DevName, ksz8895.DevId, BSP_DEV_GET_STATE_STR(&ksz8895));
-	for (i = 0; i < BSP_FPGA_PWR_GDT080A_CNT; i++)
-		SHELL_Transmit(Shell,   ".12s %.5s %s\r", gdt080a[i].DevName, gdt080a[i].DevId, BSP_DEV_GET_STATE_STR(&gdt080a[i]));
-	for (i = 0; i < BSP_CLK_SI5332_CNT; i++)
-		SHELL_Transmit(Shell,   ".12s %.5s %s\r", si5332[i].DevName, si5332[i].DevId, BSP_DEV_GET_STATE_STR(&si5332[i]));
-	SHELL_Transmit(Shell,   ".12s %.5s %s\r", fpga_maxv.DevName, fpga_maxv.DevId, BSP_DEV_GET_STATE_STR(&fpga_maxv));
-	SHELL_Transmit(Shell,   ".12s %.5s %s\r", fpga_line.DevName, fpga_line.DevId, BSP_DEV_GET_STATE_STR(&fpga_line));
-	for (i = 0; i < BSP_FPGA_CLIENT_CNT; i++)
-		SHELL_Transmit(Shell,   ".12s %.5s %s\r", fpga_client[i].DevName, fpga_client[i].DevId, BSP_DEV_GET_STATE_STR(&fpga_client[i]));
-	for (i = 0; i < BSP_PCA9548_CNT; i++)
-		SHELL_Transmit(Shell,   ".12s %.5s %s\r", pca9548a[i].DevName, pca9548a[i].DevId, BSP_DEV_GET_STATE_STR(&pca9548a[i]));
-	for (i = 0; i < BSP_SFP_PIN_PCAL6524_CNT; i++)
-		SHELL_Transmit(Shell,   ".12s %.5s %s\r", pcal6524[i].DevName, pcal6524[i].DevId, BSP_DEV_GET_STATE_STR(&pcal6524[i]));
-	for (i = 0; i < BSP_SFP_PIN_PCA9536_CNT; i++)
-		SHELL_Transmit(Shell,   ".12s %.5s %s\r", pca9536[i].DevName, pca9536[i].DevId, BSP_DEV_GET_STATE_STR(&pca9536[i]));
-	for (i = 0; i < BSP_SFP_CNT; i++)
-		SHELL_Transmit(Shell,   ".12s %.5s %s\r", sfp[i].DevName, sfp[i].DevId, BSP_DEV_GET_STATE_STR(&sfp[i]));
-	
-	
+	for (i = 0; i < DevicesCnt; i++)
+	{
+		SHELL_Transmit(Shell,   ".12s %.5s %s\r", Devices[i]->DevName, Devices[i]->DevId, BSP_DEV_GET_STATE_STR(Devices[i]));
+	}
 }
 
 #define SHELL_CMD_DIM3R_HELP \
@@ -353,8 +376,8 @@ static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t 
 {	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&dim3r3400));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", dim3r3400.Addr >> 1);
+		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&dim3r3400));
+		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r", dim3r3400.Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -364,7 +387,7 @@ static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t 
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			if (DIM3R3400_Init(&dim3r3400, BSP_PWR_IN_DIM3R3400_ID, BSP_PWR_IN_DIM3R3400_I2C, BSP_PWR_IN_DIM3R3400_I2C_ADDR))
+			if (DIM3R3400_Init(&dim3r3400))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
@@ -402,6 +425,7 @@ cmd_err:
 "    pca9536 <cmd> [<data1> <data2> ...]\r"\
 "Commands:\r"\
 "    help - Display this help.\r"\
+"    init - Init device.\r"\
 "    pin - Display device pin states.\r"\
 "    out <pin> <data> - Set device pin output.\r"\
 "    dir <pin> <data> - Set device pin direction.\r"\
@@ -430,6 +454,11 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 		if (!strcmp(CmdParamsList[1], "help"))
 		{
 			SHELL_Transmit(Shell, SHELL_CMD_PCA9536_HELP);
+		}
+		else if (!strcmp(CmdParamsList[1], "init"))
+		{
+			if (PCA9536_Init(&pwr_pca9536))
+					goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "pin"))
 		{
@@ -535,6 +564,7 @@ cmd_err:
 "    pcal6524 <cmd> [<data1> <data2> ...]\r"\
 "Commands:\r"\
 "    help - Display this help.\r"\
+"    init - Init device.\r"\
 "    pin - Display device pin states.\r"\
 "    out <pin> <data> - Set device pin output.\r"\
 "    dir <pin> <data> - Set device pin direction.\r"\
@@ -638,6 +668,11 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 		if (!strcmp(CmdParamsList[1], "help"))
 		{
 			SHELL_Transmit(Shell, SHELL_CMD_PCAL6524_HELP);
+		}
+		else if (!strcmp(CmdParamsList[1], "init"))
+		{
+			if (PCAL6524_Init(&pcal6524[Idx]))
+					goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "pin"))
 		{
@@ -760,7 +795,7 @@ cmd_err:
 	return;
 }
 
-#define SHELL_CMD_PCA9548_HELP \
+#define SHELL_CMD_PCA9548A_HELP \
 "Usage:\r"\
 "    pca9548 <cmd> [<data1> <data2> ...]\r"\
 "Commands:\r"\
@@ -768,7 +803,7 @@ cmd_err:
 "    init - Init device.\r"\
 "    select <idx> - Select device. <idx>: 0, 1\r"\
 
-static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+static void SHELL_CMD_PCA9548ACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	static uint32_t Idx = 0;
 	uint32_t Data;
@@ -783,11 +818,11 @@ static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_
 	{
 		if (!strcmp(CmdParamsList[1], "help"))
 		{
-			SHELL_Transmit(Shell, SHELL_CMD_PCA9548_HELP);
+			SHELL_Transmit(Shell, SHELL_CMD_PCA9548A_HELP);
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			if (PCA9548A_Init(&pca9548a[Idx], pca9548a_id[Idx], pca9548a_i2c[Idx], pca9548a_addr[Idx], NULL))
+			if (PCA9548A_Init(&pca9548a[Idx]))
 				goto cmd_err;
 		}
 		else
@@ -802,7 +837,7 @@ static void SHELL_CMD_PCA9548Callback(void *Shell, char **CmdParamsList, uint32_
 			Data = strtoul(CmdParamsList[2], &p, 10);
 			if ((*p != 0) || (p == CmdParamsList[2]))
 				goto invalid_cmd;
-			if (Data >= BSP_PCA9548_CNT)
+			if (Data >= BSP_PCA9548A_CNT)
 				goto invalid_idx;
 			Idx = Data;
 		}
@@ -834,11 +869,12 @@ cmd_err:
 "Commands:\r"\
 "    help - Display this help.\r"\
 "    select <idx> - Select device. <idx>: 0, ... ,19.\r"\
-"    tx <state> - Set device tx enable. <state>: 0 - Disable, 1 - Enable.\r"\
 "    init - Init device.\r"\
-"    pin - Display device pin states.\r"\
 "    info - Display device info values.\r"\
+"    update - Update device.\r"\
 "    mntr - Display device monitor values.\r"\
+"    pin - Display device pin states.\r"\
+"    tx <state> - Set device tx enable. <state>: 0 - Disable, 1 - Enable.\r"
 
 static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
@@ -847,11 +883,10 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	char *p;
 	
 	if (CmdParamsCnt == 1)
-	{		
-		SHELL_Transmit(Shell,   "Index: %d\r", Idx);
-		SHELL_Transmit(Shell,   "Presence: %d (%s)\r", sfp[Idx].Pin.ModAbs, sfp[Idx].Pin.ModAbs ? "Absent" : "Present");
-		SHELL_Transmit(Shell,   "Init state: %d (%s)\r", BSP_DEV_GET_STATE(&sfp[Idx]), BSP_DEV_GET_STATE_STR(&sfp[Idx]));
-		SHELL_Transmit(Shell,   "Tx Disable: %d (%s)\r", sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxDisable ? "Disable" : "Enable");
+	{
+		SHELL_Transmit(Shell, "Index: %d\r", Idx);
+		SHELL_Transmit(Shell, "Init state: %d (%s)\r", BSP_DEV_GET_STATE(&sfp[Idx]), BSP_DEV_GET_STATE_STR(&sfp[Idx]));
+		SHELL_Transmit(Shell, "Tx Disable: %d (%s)\r", sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxDisable ? "Disable" : "Enable");
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -861,44 +896,37 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		}
 		else if (!strcmp(CmdParamsList[1], "info"))
 		{
-			/*Check module precence*/
-			if (sfp[Idx].Pin.ModAbs)
-				goto mod_abs;
-			/*Check module init state*/
 			if (BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
-				goto invalid_init_state;
-			SHELL_Transmit(Shell,   "Vendor: %s\r", sfp[Idx].Info.Vendor);
-			SHELL_Transmit(Shell,   "Part Number: %s\r", sfp[Idx].Info.PartNumber);
-			SHELL_Transmit(Shell,   "Serial Number: %s\r", sfp[Idx].Info.SerialNumber);
-		}
-		else if (!strcmp(CmdParamsList[1], "pin"))
-		{
-			SHELL_Transmit(Shell, "MOD_ABS  RX_LOS  TX_DIS  TX_FAULT\r");
-			SHELL_Transmit(Shell,   "   %d       %d       %d     %d\r",
-				sfp[Idx].Pin.ModAbs, sfp[Idx].Pin.RxLos, sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxFault);
+				goto invalid_state;
+			SHELL_Transmit(Shell, "Vendor: %s\r", sfp[Idx].Info.Vendor);
+			SHELL_Transmit(Shell, "Part Number: %s\r", sfp[Idx].Info.PartNumber);
+			SHELL_Transmit(Shell, "Serial Number: %s\r", sfp[Idx].Info.SerialNumber);
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			/*Check module precence*/
-			if (sfp[Idx].Pin.ModAbs)
-				goto mod_abs;			
-			if (SFP_Init(&sfp[Idx], bsp_sfp_id[Idx], &bsp_sfp_i2c_ctrl[Idx], &bsp_sfp_pin_ctrl[Idx]))
+			if (SFP_Init(&sfp[Idx]))
 				goto cmd_err;
+		}
+		else if (!strcmp(CmdParamsList[1], "update"))
+		{
+			if (SFP_Update(&sfp[Idx]))
+				goto cmd_err;
+		}
+		else if (!strcmp(CmdParamsList[1], "pin"))
+		{
+			if (BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
+				goto invalid_state;
+			SHELL_Transmit(Shell, "MOD_ABS  RX_LOS  TX_DIS  TX_FAULT\r");
+			SHELL_Transmit(Shell, "   %d       %d       %d     %d\r",
+				sfp[Idx].Pin.ModAbs, sfp[Idx].Pin.RxLos, sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxFault);
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
 		{
-			/*Check module precence*/
-			if (sfp[Idx].Pin.ModAbs)
-				goto mod_abs;
-			/*Check module init state*/
 			if (BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
-				goto invalid_init_state;
-			
-			if (SFP_Update(&sfp[Idx]))
-				goto cmd_err;
-			SHELL_Transmit(Shell,   "Rx Power: %.2f\r", sfp[Idx].RxPwr);
-			SHELL_Transmit(Shell,   "Tx Power: %.2f\r", sfp[Idx].TxPwr);
-			SHELL_Transmit(Shell,   "Temperature: %.2f\r", sfp[Idx].Temp);		
+				goto invalid_state;		
+			SHELL_Transmit(Shell, "Rx Power: %.2f\r", sfp[Idx].RxPwr);	
+			SHELL_Transmit(Shell, "Tx Power: %.2f\r", sfp[Idx].TxPwr);
+			SHELL_Transmit(Shell, "Temperature: %.2f\r", sfp[Idx].Temp);		
 		}
 		else
 		{
@@ -923,7 +951,8 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 				goto invalid_cmd;
 			if ((Data != 0) && (Data != 1))
 				goto invalid_cmd;			
-			SFP_SetTxDisable(&sfp[Idx], Data ? 0 : 1);			
+			if (SFP_SetTxDisable(&sfp[Idx], Data ? 0 : 1))
+				goto cmd_err;
 		}
 		else
 		{
@@ -945,11 +974,8 @@ invalid_idx:
 cmd_err:
 	SHELL_Transmit(Shell, "Error: command error\r");
 	return;
-mod_abs:
-	SHELL_Transmit(Shell, "Error: module is absent\r");
-	return;
-invalid_init_state:
-	SHELL_Transmit(Shell, "Error: invalid module init state\r");
+invalid_state:
+	SHELL_Transmit(Shell, "Error: invalid module state\r");
 	return;
 }
 
@@ -967,10 +993,10 @@ invalid_init_state:
 "        Example: fpga w 0x01 0x10\r"\
 "    update <file> <ip> - Update FPGA firmware via TFTP.\r"\
 
-static void TFTP_CLIENT_ProgramFPGA(void *Priv, uint16_t Block, char *Source, uint32_t Size)
+static int32_t TFTP_CLIENT_ProgramFPGA(void *Priv, uint16_t Block, char *Source, uint32_t Size)
 {
-	uint32_t Addr = ((uint32_t)Priv) + ((Block - 1) * TFTP_BLOCK_SIZE);
-	BSP_FPGA_FLASH_ProgramSector(Addr, Source, Size);
+	uint32_t Addr = ((uint32_t)Priv) + ((Block - 1) * TFTP_DATA_LEN_MAX);
+	return BSP_FPGA_FLASH_ProgramSector(Addr, Source, Size);
 }
 
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
@@ -1113,17 +1139,17 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			if (Dev == 0)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(0);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_1_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, (void*)BSP_FLASH_FPGA_1_FW_ADDR_START);
 			}
 			else if (Dev == 1)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(1);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_2_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, (void*)BSP_FLASH_FPGA_2_FW_ADDR_START);
 			}
 			else if (Dev == 2)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(2);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_3_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, (void*)BSP_FLASH_FPGA_3_FW_ADDR_START);
 			}
 			else
 			{
@@ -1232,7 +1258,7 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
-			if (UCD90120A_Init(&ucd90120a, BSP_PWR_SEQ_UCD90120A_ID, BSP_PWR_SEQ_UCD90120A_I2C, BSP_PWR_SEQ_UCD90120A_I2C_ADDR, &ucd90120a_pin_ctrl, BSP_UCD90120A_CFG_Table, BSP_UCD90120A_CFG_TableSize))
+			if (UCD90120A_Init(&ucd90120a, BSP_UCD90120A_CFG_Table, BSP_UCD90120A_CFG_TableSize))
 				goto cmd_err;
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
@@ -1352,9 +1378,9 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	if (CmdParamsCnt == 1)
 	{	
-		SHELL_Transmit(Shell,   "Index: %d\r", Idx);
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[Idx]));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", gdt080a[Idx].Addr >> 1);
+		SHELL_Transmit(Shell, "Index: %d\r", Idx);
+		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[Idx]));
+		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r", gdt080a[Idx].Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1362,13 +1388,18 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		{
 			SHELL_Transmit(Shell, SHELL_CMD_GDT_HELP);
 		}
+		else if (!strcmp(CmdParamsList[1], "init"))
+		{
+			if (GDT080A_Init(&gdt080a[(Idx)]))
+				goto cmd_err;
+		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
 		{
 			if (GDT080A_Update(&gdt080a[(Idx)]))
 				goto cmd_err;
-			SHELL_Transmit(Shell,   "Set Vout: %2.2f\r", gdt080a[Idx].Cfg.Vout.Value);
-			SHELL_Transmit(Shell,   "Vin    Vout    Iout    Temp1    Temp2\r");
-			SHELL_Transmit(Shell,   "%2.2f   %2.2f   %2.2f   %2.2f   %2.2f\r",
+			SHELL_Transmit(Shell, "Set Vout: %2.2f\r", gdt080a[Idx].Cfg.Vout.Value);
+			SHELL_Transmit(Shell, "Vin    Vout    Iout    Temp1    Temp2\r");
+			SHELL_Transmit(Shell, "%2.2f   %2.2f   %2.2f   %2.2f   %2.2f\r",
 				gdt080a[Idx].Mon.Vin, gdt080a[Idx].Mon.Vout, gdt080a[Idx].Mon.Iout,
 				gdt080a[Idx].Mon.Temp1, gdt080a[Idx].Mon.Temp2);
 		}
@@ -1444,7 +1475,7 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&ksz8895));
+		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&ksz8895));
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1564,10 +1595,11 @@ invalid_data:
 "    cmp <dev> - Compare SDRAM data and FPGA flash data. <dev>: 0 - FPGA Line, 1 - FPGA Client 1, 2 - FPGA Client 2\r"\
 "    load <file> <ip> - Load file to SDRAM via TFTP.\r"\
 
-static void TFTP_CLIENT_ProgramSDRAM(void *Priv, uint16_t Block, char *Source, uint32_t Size)
+static int32_t TFTP_CLIENT_ProgramSDRAM(void *Priv, uint16_t Block, char *Source, uint32_t Size)
 {
-	uint32_t Addr = ((uint32_t)Priv) + ((Block - 1) * TFTP_BLOCK_SIZE);
+	uint32_t Addr = ((uint32_t)Priv) + ((Block - 1) * TFTP_DATA_LEN_MAX);
 	memcpy((char*)Addr, Source, Size);
+	return 0;
 }
 
 static char Buffer[2048];
@@ -1672,7 +1704,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);
 			
 			memset((char*)BSP_SDRAM_ADDR, 0xFF, BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START);
-			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramSDRAM, (void*)BSP_SDRAM_ADDR);
+			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramSDRAM, NULL, (void*)BSP_SDRAM_ADDR);
 		}
 	}
 	else
@@ -1702,42 +1734,71 @@ invalid_ip_addr:
 "    load	<file-type> <file-name> <ip> - Load file via TFTP.\r"\
 "      <file-type>: lng - langpack file, web - web file.\r"\
 
-static void SHELL_CMD_FLASH_LOAD_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
+static int32_t SHELL_CMD_FLASH_LOAD_WEB_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
-	uint32_t BaseAddr = (uint32_t)Priv;
 	uint32_t Addr;
 	uint32_t Size;
 	
-	Addr = BaseAddr + ((Block - 1) * TFTP_BLOCK_SIZE);
-	
-	while (DataSize)
+	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_WEB_SIZE)
 	{
-		if (DataSize > BSP_FLASH_PAGE_SIZE)
-			Size = BSP_FLASH_PAGE_SIZE;
-		else
-			Size = DataSize;
-		BSP_FLASH_WaitReady();
-		BSP_FLASH_ProgramPage(Addr, Data, Size);
-		Addr += Size;
-		Data += Size;
-		DataSize -= Size;
+		Addr = BSP_FLASH_WEB_ADDR + ((Block - 1) * TFTP_DATA_LEN_MAX);
+		while (DataSize)
+		{
+			if (DataSize > BSP_FLASH_PAGE_SIZE)
+				Size = BSP_FLASH_PAGE_SIZE;
+			else
+				Size = DataSize;
+			BSP_FLASH_WaitReady();
+			BSP_FLASH_ProgramPage(Addr, Data, Size);
+			Addr += Size;
+			Data += Size;
+			DataSize -= Size;
+		}
+		return 0;
 	}
+	return -1;
 }
 
-static void SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
-{	
-	BOOTLOADER_UpdateNewFwBlock(&Bootloader, Data, DataSize);
-	if (DataSize != TFTP_BLOCK_SIZE)
+static int32_t SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
+{
+	uint32_t DataAddr;
+	uint32_t TotalDataSize;
+	
+	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_LANG_SIZE)
 	{
-		if (!BOOTLOADER_UpdateNewFwComplete(&Bootloader))
-			BSP_Reset();
+		DataAddr = (Block - 1) * TFTP_DATA_LEN_MAX;	
+		if (PROFILE_FLASH_SaveLangpackData(&ProfileFlash, DataAddr, Data, DataSize))
+			return -1;
+		
+		if (DataSize != TFTP_DATA_LEN_MAX)
+		{
+			TotalDataSize = DataSize + ((Block - 1) * TFTP_DATA_LEN_MAX);
+			if (PROFILE_FLASH_SaveLangpackHeader(&ProfileFlash, TotalDataSize))
+				return -1;
+		}
+		return 0;
 	}
+	return -1;
+}
+
+static int32_t SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
+{	
+	if (BOOTLOADER_UpdateNewFwBlock(&Bootloader, Data, DataSize))
+		return -1;
+	if (DataSize != TFTP_DATA_LEN_MAX)
+	{
+		if (BOOTLOADER_CheckNewFw(&Bootloader))
+			return -1;
+		if (BOOTLOADER_UpdateNewFw(&Bootloader))
+			return -1;
+		BSP_Reset();
+	}
+	return 0;
 }
 
 static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	char *c;
-	uint32_t addr;
 	uint32_t ip[4];
 	ip_addr_t ip_addr;
 		
@@ -1781,7 +1842,7 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 			
 			BOOTLOADER_UpdateNewFwStart(&Bootloader);
 			
-			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback, (void*)BSP_FLASH_FW_ADDR);
+			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback, NULL, (void*)BSP_FLASH_FW_ADDR);
 		}
 		else 
 		{
@@ -1792,13 +1853,6 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 	{
 		if (!strcmp(CmdParamsList[1], "load"))
 		{
-			if (!strcmp(CmdParamsList[2], "lng"))
-				addr = BSP_FLASH_LANG_ADDR;
-			else if (!strcmp(CmdParamsList[2], "web"))
-				addr = BSP_FLASH_WEB_ADDR;
-			else
-				goto invalid_file_type;
-			
 			c = CmdParamsList[4];
 			ip[0] = strtoul(c, &c, 10);
 			if ((ip[0] == 0) || (ip[0] > 255) || (*c != '.'))
@@ -1818,7 +1872,12 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 			
 			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);	
 			
-			TFTP_CLIENT_DownloadFile(CmdParamsList[3], &ip_addr, SHELL_CMD_FLASH_LOAD_TFTP_ReceiveCallback, (void*)addr);
+			if (!strcmp(CmdParamsList[2], "lng"))
+				TFTP_CLIENT_DownloadFile(CmdParamsList[3], &ip_addr, SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback, NULL, NULL);
+			else if (!strcmp(CmdParamsList[2], "web"))
+				TFTP_CLIENT_DownloadFile(CmdParamsList[3], &ip_addr, SHELL_CMD_FLASH_LOAD_WEB_TFTP_ReceiveCallback, NULL, NULL);
+			else
+				goto invalid_file_type;
 		}
 		else 
 		{

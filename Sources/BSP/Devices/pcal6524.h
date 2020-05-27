@@ -4,6 +4,8 @@
 #include "bsp_dev.h"
 #include "i2c.h"
 
+#define PCAL6524_DEV_NAME "PCAL6524"
+
 #define PCAL6524_BANKS_CNT	3
 
 #define PCAL6524_PIN_CONFIG_OUT	0
@@ -12,7 +14,7 @@
 typedef struct {
 	BSP_DEV;
 	const I2C_TypeDef *I2C;
-	uint8_t Addr;
+	const uint8_t Addr;
 	uint8_t Ins[PCAL6524_BANKS_CNT];
 	uint8_t Outs[PCAL6524_BANKS_CNT];
 	uint8_t Cfgs[PCAL6524_BANKS_CNT];
@@ -31,7 +33,7 @@ int32_t PCAL6524_SetBankOut(PCAL6524_T *Dev, uint8_t Bank, uint8_t Out);
 int32_t PCAL6524_GetBankPol(PCAL6524_T *Dev, uint8_t Bank);
 int32_t PCAL6524_SetBankPol(PCAL6524_T *Dev, uint8_t Bank, uint8_t Out);
 
-int32_t PCAL6524_Init(PCAL6524_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr);
+int32_t PCAL6524_Init(PCAL6524_T *Dev);
 void PCAL6524_Deinit(PCAL6524_T *Dev);
 
 #endif /* __PCAL6524_H */

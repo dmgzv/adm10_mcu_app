@@ -16,7 +16,7 @@ int32_t PCAL6524_SetPinCfg(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t C
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;	
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	cmd = pcal6524_reg_config[Bank];
 	if (Cfg)
@@ -25,17 +25,17 @@ int32_t PCAL6524_SetPinCfg(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t C
 		Cfg = Dev->Cfgs[Bank] & ~(1 << Pin);
 	if (Dev->Cfgs[Bank] != Cfg)
 	{
-		LOG_Add(Dev->DevName, Dev->DevId, "Write Cfg: 0x%02x 0x%02x", cmd, Cfg);
+		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Cfg: 0x%02x 0x%02x", cmd, Cfg);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Cfg, sizeof(Cfg)))
 			goto error;
 		Dev->Cfgs[Bank] = Cfg;
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -48,7 +48,7 @@ int32_t PCAL6524_SetPinOut(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t O
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;	
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	cmd = pcal6524_reg_output[Bank];
 	if (Out)
@@ -57,17 +57,17 @@ int32_t PCAL6524_SetPinOut(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t O
 		Out = Dev->Outs[Bank] & ~(1 << Pin);
 	if (Dev->Outs[Bank] != Out)
 	{
-		LOG_Add(Dev->DevName, Dev->DevId, "Write Out: 0x%02x 0x%02x", cmd, Out);
+		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Out: 0x%02x 0x%02x", cmd, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Out, sizeof(Out)))
 			goto error;
 		Dev->Outs[Bank] = Out;
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -80,7 +80,7 @@ int32_t PCAL6524_SetPinPol(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t P
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;	
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	cmd = pcal6524_reg_polarity[Bank];
 	if (Pol)
@@ -89,17 +89,17 @@ int32_t PCAL6524_SetPinPol(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pin, uint8_t P
 		Pol = Dev->Pols[Bank] & ~(1 << Pin);
 	if (Dev->Pols[Bank] != Pol)
 	{
-		LOG_Add(Dev->DevName, Dev->DevId, "Write Pol: 0x%02x 0x%02x", cmd, Pol);
+		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Pol: 0x%02x 0x%02x", cmd, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Pol, sizeof(Pol)))
 			goto error;
 		Dev->Pols[Bank] = Pol;
 	}
 		
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -113,18 +113,18 @@ int32_t PCAL6524_GetBankIn(PCAL6524_T *Dev, uint8_t Bank)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;	
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	cmd = pcal6524_reg_input[Bank];
 	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&in, sizeof(in)))
 		goto error;	
 	Dev->Ins[Bank] = in;	
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -138,18 +138,18 @@ int32_t PCAL6524_GetBankCfg(PCAL6524_T *Dev, uint8_t Bank)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;	
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	cmd = pcal6524_reg_config[Bank];
 	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&cfg, sizeof(cfg)))
 		goto error;	
 	Dev->Cfgs[Bank] = cfg;	
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -162,22 +162,22 @@ int32_t PCAL6524_SetBankCfg(PCAL6524_T *Dev, uint8_t Bank, uint8_t Cfg)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;	
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if (Dev->Cfgs[Bank] != Cfg)
 	{
 		cmd = pcal6524_reg_config[Bank];
-		LOG_Add(Dev->DevName, Dev->DevId, "Write Cfg: 0x%02x 0x%02x", cmd, Cfg);
+		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Cfg: 0x%02x 0x%02x", cmd, Cfg);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Cfg, sizeof(Cfg)))
 			goto error;
 		Dev->Cfgs[Bank] = Cfg;
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -191,18 +191,18 @@ int32_t PCAL6524_GetBankOut(PCAL6524_T *Dev, uint8_t Bank)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;	
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	cmd = pcal6524_reg_output[Bank];
 	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&out, sizeof(out)))
 		goto error;	
 	Dev->Outs[Bank] = out;	
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -215,22 +215,22 @@ int32_t PCAL6524_SetBankOut(PCAL6524_T *Dev, uint8_t Bank, uint8_t Out)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if (Dev->Outs[Bank] != Out)
 	{
 		cmd = pcal6524_reg_output[Bank];
-		LOG_Add(Dev->DevName, Dev->DevId, "Write Out: 0x%02x 0x%02x", cmd, Out);
+		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Out: 0x%02x 0x%02x", cmd, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Out, sizeof(Out)))
 			goto error;
 		Dev->Outs[Bank] = Out;
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -244,18 +244,18 @@ int32_t PCAL6524_GetBankPol(PCAL6524_T *Dev, uint8_t Bank)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;	
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	cmd = pcal6524_reg_polarity[Bank];
 	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&pol, sizeof(pol)))
 		goto error;	
 	Dev->Pols[Bank] = pol;	
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -268,26 +268,26 @@ int32_t PCAL6524_SetBankPol(PCAL6524_T *Dev, uint8_t Bank, uint8_t Pol)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if (Dev->Pols[Bank] != Pol)
 	{
 		cmd = pcal6524_reg_polarity[Bank];
-		LOG_Add(Dev->DevName, Dev->DevId, "Write Pol: 0x%02x 0x%02x", cmd, Pol);
+		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Pol: 0x%02x 0x%02x", cmd, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &cmd, sizeof(cmd), (char*)&Pol, sizeof(Pol)))
 			goto error;
 		Dev->Pols[Bank] = Pol;
 	}
 	
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
-int32_t PCAL6524_Init(PCAL6524_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr)
+int32_t PCAL6524_Init(PCAL6524_T *Dev)
 {
 	uint8_t Ins[PCAL6524_BANKS_CNT];
 	uint8_t	Outs[PCAL6524_BANKS_CNT];
@@ -295,14 +295,10 @@ int32_t PCAL6524_Init(PCAL6524_T *Dev, const char *DevId, const I2C_TypeDef *I2C
 	uint8_t Cfgs[PCAL6524_BANKS_CNT];
 	uint32_t i;
 	
-	if ((!Dev) || (!I2C) || (Addr < 0x20) || (Addr > 0x23))
+	if ((!Dev) || (Dev->Addr < (0x20 << 1)) || (Dev->Addr > (0x23 << 1)))
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "PCAL6524", DevId);
-	BSP_DEV_LOCK(Dev);
-	
-	Dev->Addr = Addr << 1;
-	Dev->I2C = I2C;
+	BSP_DEV_INIT(Dev);
 	
 	for (i = 0; i < PCAL6524_BANKS_CNT; i++)
 	{
@@ -323,16 +319,12 @@ int32_t PCAL6524_Init(PCAL6524_T *Dev, const char *DevId, const I2C_TypeDef *I2C
 		Dev->Cfgs[i] = Cfgs[i];
 		Dev->Pols[i] = Pols[i];
 	}
-	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -340,6 +332,5 @@ void PCAL6524_Deinit(PCAL6524_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
+	BSP_DEV_DEINIT(Dev);
 }

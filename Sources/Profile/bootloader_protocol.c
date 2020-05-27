@@ -109,13 +109,14 @@ uint32_t BOOTLOADER_PROTOCOL_UpdateFw(BOOTLOADER_T *Bootloader, char *cmd, char 
 	else if( FwUpdateStarted && !strcmp( cmd + 2, "FINISH" ) )//запрос завершения загрузки
 	{//---------- Окончание загрузки --------------
 		FwUpdateStarted = 0;//очищаем флаг загрузки 
-		if( BOOTLOADER_UpdateNewFwComplete(Bootloader) )
+		if( BOOTLOADER_CheckNewFw(Bootloader) )
 		{
 			rsp_len = BOOTLOADER_PROTOCOL_FwStr( cmd, rsp, "EFINISH" );// печатаем ответ об аварии
 		}
 		else
 		{
 			//успешное завершение: посылаем сообщение, выжидаем пока оно будет отправлено и затем перезагрузка
+			BOOTLOADER_UpdateNewFw(Bootloader);
 			rsp_len = BOOTLOADER_PROTOCOL_FwStr( cmd, rsp, "COMPLETE" );// печатаем ответ об аварии
 			*complete = 1;
 		}

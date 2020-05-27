@@ -172,7 +172,8 @@ typedef struct {
 	osMutexId tx_mutex_id;
 	osMessageQId tx_message_queue_id;
 	uint32_t tx_message_queue_overflow_errors;
-
+	
+	uint32_t timeout_errors;
 	uint32_t rx_timeout_errors;
 	uint32_t rx_cmd_timeout_errors;
 	uint32_t tx_timeout_errors;

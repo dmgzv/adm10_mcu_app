@@ -14,10 +14,6 @@ static int32_t __BSP_SFP_InitPin(void *Priv, uint32_t Pin);
 static int32_t __BSP_SFP_SetPinState(void *Priv, uint32_t Pin, uint32_t State);
 static int32_t __BSP_SFP_GetPinState(void *Priv, uint32_t Pin, uint32_t *State);
 
-const char* bsp_sfp_id[BSP_SFP_CNT] = {
-	"CL1", "CL2", "CL3", "CL4", "CL5", "CL6", "CL7", "CL8", "CL9", "CL10",
-	"CL11", "CL12", "CL13", "CL14", "CL15", "CL16", "LN1", "LN2", "LN3", "LN4"
-};
 
 const BSP_PIN_CTRL_T bsp_sfp_pin_ctrl[BSP_SFP_CNT] = {
 	{	__BSP_SFP_InitPin,	__BSP_SFP_SetPinState,	__BSP_SFP_GetPinState, (void*)0	},
@@ -43,29 +39,191 @@ const BSP_PIN_CTRL_T bsp_sfp_pin_ctrl[BSP_SFP_CNT] = {
 };
 
 const BSP_I2C_CTRL_T bsp_sfp_i2c_ctrl[BSP_SFP_CNT] = {
-	{	BSP_SFP_1_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)0	},
-	{	BSP_SFP_2_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)1	},
-	{	BSP_SFP_3_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)2	},
-	{	BSP_SFP_4_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)3	},
-	{	BSP_SFP_5_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)4	},
-	{	BSP_SFP_6_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)5	},
-	{	BSP_SFP_7_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)6	},
-	{	BSP_SFP_8_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)7	},
-	{	BSP_SFP_9_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)8	},
-	{	BSP_SFP_10_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)9	},
-	{	BSP_SFP_11_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)10	},
-	{	BSP_SFP_12_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)11	},
-	{	BSP_SFP_13_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)12	},
-	{	BSP_SFP_14_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)13	},
-	{	BSP_SFP_15_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)14	},
-	{	BSP_SFP_16_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)15	},
-	{	BSP_SFP_17_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)16	},
-	{	BSP_SFP_18_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)17	},
-	{	BSP_SFP_19_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)18	},
-	{	BSP_SFP_20_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)19	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)0	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)1	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)2	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)3	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)4	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)5	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)6	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)7	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)8	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)9	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)10	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)11	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)12	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)13	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)14	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)15	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)16	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)17	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)18	},
+	{	BSP_SFP_I2C,	__BSP_SFP_ConfigSwitch,	__BSP_SFP_ResetSwitch,	(void*)19	},
 };
 
-SFP_T sfp[BSP_SFP_CNT];
+SFP_T sfp[BSP_SFP_CNT] =
+{
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_1_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[0],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[0],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_2_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[1],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[1],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_3_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[2],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[2],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_4_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[3],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[3],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_5_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[4],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[4],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_6_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[5],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[5],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_7_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[6],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[6],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_8_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[7],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[7],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_9_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[8],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[8],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_10_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[9],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[9],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_11_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[10],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[10],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_12_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[11],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[11],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_13_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[12],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[12],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_14_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[13],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[13],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_15_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[14],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[14],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_16_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[15],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[15],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_17_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[16],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[16],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_18_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[17],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[17],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_19_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[18],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[18],
+	},
+	{
+		.DevName = SFP_DEV_NAME,
+		.DevId = BSP_SFP_20_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.PinCtrl = &bsp_sfp_pin_ctrl[19],
+		.I2CCtrl = &bsp_sfp_i2c_ctrl[19],
+	},
+};
 
 static int32_t __BSP_SFP_ConfigSwitch(void *Priv)
 {
@@ -165,7 +323,7 @@ static int32_t BSP_SFP_CheckConditions(uint32_t Idx)
 {
 	uint32_t i;
 	
-	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) || (!dim3r3400_load_timeout))
 		return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;
@@ -173,7 +331,7 @@ static int32_t BSP_SFP_CheckConditions(uint32_t Idx)
 		return -1;
 	//if (BSP_DEV_GET_STATE(&fpga) != BSP_DEV_STATE_OK)
 	//	return -1;
-	for (i = 0; i < BSP_PCA9548_CNT; i++)
+	for (i = 0; i < BSP_PCA9548A_CNT; i++)
 	{
 		if (BSP_DEV_GET_STATE(&pca9548a[i]) != BSP_DEV_STATE_OK)
 			return -1;
@@ -202,7 +360,7 @@ void BSP_SFP_Process(uint32_t Idx)
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
 		{
-			SFP_Init(&sfp[Idx], bsp_sfp_id[Idx], &bsp_sfp_i2c_ctrl[Idx], &bsp_sfp_pin_ctrl[Idx]);
+			SFP_Init(&sfp[Idx]);
 		}
 		else
 		{

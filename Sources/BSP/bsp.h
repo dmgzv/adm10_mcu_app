@@ -57,6 +57,8 @@
 #define BSP_SLOT_ADDR_3_GPIO_CLK_ENABLE()     __HAL_RCC_GPIOA_CLK_ENABLE()
 
 extern uint8_t SlotAddress;
+extern const BSP_DEV_T *Devices[];
+extern const uint32_t DevicesCnt;
 
 #define BSP_Reset HAL_NVIC_SystemReset
 void BSP_Init(void);

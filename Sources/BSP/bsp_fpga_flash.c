@@ -5,7 +5,13 @@
 #include "bsp_fpga.h"
 #include <stdlib.h>
 
-S29GL01GS_T s29gl01gs;
+S29GL01GS_T s29gl01gs =
+{
+	.DevName = S29G101GS_DEV_NAME,
+	.DevId = BSP_FLASH_S29GL01GS_ID,
+	.InitContErrThr = 0,
+	.UpdateContErrThr = BSP_DEV_CONT_ERR_THR_INF,
+};
 
 int32_t BSP_FPGA_FLASH_EraseFPGA(uint32_t Idx)
 {
@@ -164,7 +170,7 @@ static int32_t BSP_FPGA_FLASH_CheckConditions(void)
 {
 	uint32_t i;
 	
-	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) || (!dim3r3400_load_timeout))
 		return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;
@@ -197,7 +203,7 @@ void BSP_FPGA_FLASH_Process(void)
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&s29gl01gs) != BSP_DEV_STATE_OK)
 		{
-			S29GL01GS_Init(&s29gl01gs, S29GL01GS_ID);
+			S29GL01GS_Init(&s29gl01gs);
 		}	
 	}
 }

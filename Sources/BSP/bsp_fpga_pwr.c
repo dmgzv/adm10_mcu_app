@@ -4,24 +4,39 @@
 #include "bsp_pwr_seq.h"
 #include "bsp_sfp_i2c_switch.h"
 
-const char *bsp_fpga_pwr_gdt080a_id[BSP_FPGA_PWR_GDT080A_CNT] = {BSP_FPGA_PWR_GDT080A_0V9_ID, BSP_FPGA_PWR_GDT080A_0V95_ID};
-const I2C_TypeDef *bsp_fpga_pwr_gdt080a_i2c[BSP_FPGA_PWR_GDT080A_CNT] = {BSP_FPGA_PWR_GDT080A_0V9_I2C, BSP_FPGA_PWR_GDT080A_0V95_I2C};
-const uint8_t bsp_fpga_pwr_gdt080a_i2c_addr[BSP_FPGA_PWR_GDT080A_CNT] = {BSP_FPGA_PWR_GDT080A_0V9_I2C_ADDR, BSP_FPGA_PWR_GDT080A_0V95_I2C_ADDR};
-const float bsp_fpga_pwr_gdt080a_vout[BSP_FPGA_PWR_GDT080A_CNT] = {GDT080A_RTRIM_TO_VOUT(BSP_FPGA_PWR_GDT080A_0V9_RTIM), GDT080A_RTRIM_TO_VOUT(BSP_FPGA_PWR_GDT080A_0V95_RTIM)};
-
-GDT080A_T gdt080a[BSP_FPGA_PWR_GDT080A_CNT];
+GDT080A_T gdt080a[BSP_FPGA_PWR_GDT080A_CNT] =
+{
+	{
+		.DevName = GDT080A_DEV_NAME,
+		.DevId = BSP_FPGA_PWR_GDT080A_0V9_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.I2C = BSP_FPGA_PWR_GDT080A_0V9_I2C,
+		.Addr = BSP_FPGA_PWR_GDT080A_0V9_I2C_ADDR,
+		.RTrim = BSP_FPGA_PWR_GDT080A_0V9_RTIM,
+	},
+	{
+		.DevName = GDT080A_DEV_NAME,
+		.DevId = BSP_FPGA_PWR_GDT080A_0V95_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
+		.I2C = BSP_FPGA_PWR_GDT080A_0V95_I2C,
+		.Addr = BSP_FPGA_PWR_GDT080A_0V95_I2C_ADDR,
+		.RTrim = BSP_FPGA_PWR_GDT080A_0V95_RTIM,
+	},
+};
 
 static int32_t BSP_FPGA_PWR_CheckConditions(void)
 {
 	uint32_t i;
 	
-	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) || (!dim3r3400_load_timeout))
 		return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;
 	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 		return -1;
-	for (i = 0; i < BSP_PCA9548_CNT; i++)
+	for (i = 0; i < BSP_PCA9548A_CNT; i++)
 	{
 		if (BSP_DEV_GET_STATE(&pca9548a[i]) != BSP_DEV_STATE_OK)
 			return -1;
@@ -52,7 +67,7 @@ void BSP_FPGA_PWR_Process(void)
 			{
 				if (!BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_GDT_CH(i)))
 				{
-					GDT080A_Init(&gdt080a[i], bsp_fpga_pwr_gdt080a_id[i], bsp_fpga_pwr_gdt080a_i2c[i], bsp_fpga_pwr_gdt080a_i2c_addr[i], bsp_fpga_pwr_gdt080a_vout[i]);
+					GDT080A_Init(&gdt080a[i]);
 					BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
 				}
 			}

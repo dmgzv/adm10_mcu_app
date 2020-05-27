@@ -8,6 +8,8 @@
 #include "cmsis_os.h"
 #endif
 
+#define PCA9548A_DEV_NAME "PCA9548A"
+
 #define PCA9548A_PIN_RESET			0
 
 typedef enum {
@@ -25,13 +27,18 @@ typedef enum {
 typedef struct {
 	BSP_DEV;
 	const I2C_TypeDef *I2C;
-	uint8_t Addr;
+	const uint8_t Addr;
 	const BSP_PIN_CTRL_T *PinCtrl;
 	PCA9548A_CH_T Channel;
 } PCA9548A_T;
 
+/* 
+	Device is locked when any channel is selected.
+	Devices is unlocked when no channels are selected.
+*/
+
 int32_t PCA9548A_SelectChannel(PCA9548A_T *dev, PCA9548A_CH_T Channel);
-int32_t PCA9548A_Init(PCA9548A_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr, const BSP_PIN_CTRL_T *PinCtrl);
+int32_t PCA9548A_Init(PCA9548A_T *Dev);
 void PCA9548A_Deinit(PCA9548A_T *Dev);
 
 #endif /* __PCA9548A_H */

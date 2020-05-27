@@ -11,12 +11,13 @@
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F427ZITx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.11.0</PackID>
-          <PackURL>http://www.keil.com/pack</PackURL>
+          <PackID>Keil.STM32F4xx_DFP.2.14.0</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x30000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x200000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -323,6 +324,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
+            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -565,9 +567,19 @@
           <GroupName>BSP/Devices</GroupName>
           <Files>
             <File>
-              <FileName>pca9548a.c</FileName>
+              <FileName>at45db641e.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\pca9548a.c</FilePath>
+              <FilePath>.\Sources\BSP\Devices\at45db641e.c</FilePath>
+            </File>
+            <File>
+              <FileName>s29gl01gs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\s29gl01gs.c</FilePath>
+            </File>
+            <File>
+              <FileName>mt48lc16m16a2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\mt48lc16m16a2.c</FilePath>
             </File>
             <File>
               <FileName>dim3r3400.c</FileName>
@@ -575,24 +587,29 @@
               <FilePath>.\Sources\BSP\Devices\dim3r3400.c</FilePath>
             </File>
             <File>
-              <FileName>gdt080a.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\gdt080a.c</FilePath>
-            </File>
-            <File>
               <FileName>ucd90120a.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ucd90120a.c</FilePath>
             </File>
             <File>
-              <FileName>pmbus.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\pmbus.c</FilePath>
-            </File>
-            <File>
               <FileName>pca9536.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\pca9536.c</FilePath>
+            </File>
+            <File>
+              <FileName>gdt080a.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\gdt080a.c</FilePath>
+            </File>
+            <File>
+              <FileName>pca9548a.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\pca9548a.c</FilePath>
+            </File>
+            <File>
+              <FileName>pmbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\pmbus.c</FilePath>
             </File>
             <File>
               <FileName>pcal6524.c</FileName>
@@ -613,21 +630,6 @@
               <FileName>ksz8895.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ksz8895.c</FilePath>
-            </File>
-            <File>
-              <FileName>s29gl01gs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\s29gl01gs.c</FilePath>
-            </File>
-            <File>
-              <FileName>mt48lc16m16a2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\mt48lc16m16a2.c</FilePath>
-            </File>
-            <File>
-              <FileName>at45db641e.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\at45db641e.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -783,11 +785,6 @@
               <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\stm32f4xx_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>tftp_client.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\tftp_client.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_msp.c</FileName>
@@ -1131,19 +1128,40 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>TFTP</GroupName>
+          <Files>
+            <File>
+              <FileName>tftp_bootloader.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_bootloader.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_bootloader_mcu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_bootloader_mcu.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_client.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
     <Target>
       <TargetName>Release</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F427ZITx</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.11.0</PackID>
-          <PackURL>http://www.keil.com/pack</PackURL>
+          <PackID>Keil.STM32F4xx_DFP.2.14.0</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x30000) IRAM2(0x10000000,0x10000) IROM(0x08000000,0x200000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -1450,6 +1468,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
+            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -1462,7 +1481,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web;.\Sources\TFTP</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1692,9 +1711,19 @@
           <GroupName>BSP/Devices</GroupName>
           <Files>
             <File>
-              <FileName>pca9548a.c</FileName>
+              <FileName>at45db641e.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\pca9548a.c</FilePath>
+              <FilePath>.\Sources\BSP\Devices\at45db641e.c</FilePath>
+            </File>
+            <File>
+              <FileName>s29gl01gs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\s29gl01gs.c</FilePath>
+            </File>
+            <File>
+              <FileName>mt48lc16m16a2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\mt48lc16m16a2.c</FilePath>
             </File>
             <File>
               <FileName>dim3r3400.c</FileName>
@@ -1702,24 +1731,29 @@
               <FilePath>.\Sources\BSP\Devices\dim3r3400.c</FilePath>
             </File>
             <File>
-              <FileName>gdt080a.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\gdt080a.c</FilePath>
-            </File>
-            <File>
               <FileName>ucd90120a.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ucd90120a.c</FilePath>
             </File>
             <File>
-              <FileName>pmbus.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\pmbus.c</FilePath>
-            </File>
-            <File>
               <FileName>pca9536.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\pca9536.c</FilePath>
+            </File>
+            <File>
+              <FileName>gdt080a.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\gdt080a.c</FilePath>
+            </File>
+            <File>
+              <FileName>pca9548a.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\pca9548a.c</FilePath>
+            </File>
+            <File>
+              <FileName>pmbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\pmbus.c</FilePath>
             </File>
             <File>
               <FileName>pcal6524.c</FileName>
@@ -1740,21 +1774,6 @@
               <FileName>ksz8895.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ksz8895.c</FilePath>
-            </File>
-            <File>
-              <FileName>s29gl01gs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\s29gl01gs.c</FilePath>
-            </File>
-            <File>
-              <FileName>mt48lc16m16a2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\mt48lc16m16a2.c</FilePath>
-            </File>
-            <File>
-              <FileName>at45db641e.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\Devices\at45db641e.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1910,11 +1929,6 @@
               <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\stm32f4xx_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>tftp_client.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\tftp_client.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_msp.c</FileName>
@@ -2255,6 +2269,26 @@
               <FileName>http_server.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>TFTP</GroupName>
+          <Files>
+            <File>
+              <FileName>tftp_bootloader.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_bootloader.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_bootloader_mcu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_bootloader_mcu.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_client.c</FilePath>
             </File>
           </Files>
         </Group>

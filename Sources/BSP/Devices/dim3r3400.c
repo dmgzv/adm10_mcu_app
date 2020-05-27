@@ -46,29 +46,21 @@ static int32_t __DIM3R3400_Update(DIM3R3400_T *Dev)
 	return 0;
 }
 
-int32_t DIM3R3400_Init(DIM3R3400_T *Dev, const char *DevId, const I2C_TypeDef *I2C, uint8_t Addr)
+int32_t DIM3R3400_Init(DIM3R3400_T *Dev)
 {
-	if ((!Dev) || (!I2C) || (Addr < 0x28) || (Addr > 0x2F))
+	if ((!Dev) || (!Dev->I2C) || (Dev->Addr < (0x28 << 1)) || (Dev->Addr > (0x2F << 1)))
 		return -1;
 	
-	BSP_DEV_INIT(Dev, "DIM3R3400", DevId);
-	BSP_DEV_LOCK(Dev);
-	
-	Dev->I2C = I2C;
-	Dev->Addr = Addr << 1;
+	BSP_DEV_INIT(Dev);
 	
 	if (__DIM3R3400_Update(Dev))
 		goto error;	
 	
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_OK);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
-	LOG_Add(Dev->DevName, Dev->DevId, "Init: Fail");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
 }
 
@@ -76,7 +68,6 @@ void DIM3R3400_Deinit(DIM3R3400_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Add(Dev->DevName, Dev->DevId, "Deinit");
 	BSP_DEV_DEINIT(Dev);
 }
 
@@ -87,15 +78,15 @@ int32_t DIM3R3400_Update(DIM3R3400_T *Dev)
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
-	BSP_DEV_LOCK(Dev);
+	BSP_DEV_UPDATE(Dev);
 	
 	if (__DIM3R3400_Update(Dev))
 		goto error;	
 
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
