@@ -1963,6 +1963,8 @@ write_data:
 	if (error)
 		goto error;
 	
+	if(BOOTLOADER_UpdateNewFwFinish(&Bootloader))
+		goto error;
 	if(BOOTLOADER_CheckNewFw(&Bootloader))
 		goto error;
 	if(BOOTLOADER_UpdateNewFw(&Bootloader))
