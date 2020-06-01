@@ -1,5 +1,6 @@
 #include "bsp_clk.h"
-#include "bsp_clk_1_10p0_cfg.h"
+//#include "bsp_clk_1_10p0_cfg.h"
+#include "bsp_clk_1_10p0_efec_cfg.h"
 #include "bsp_clk_2_6p0_cfg.h"
 #include "bsp_clk_2_6p5_cfg.h"
 #include "bsp_clk_2_7p0_cfg.h"
@@ -28,7 +29,7 @@ static const SI5332_CFG_T* bsp_clk_si5332_cfg[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332
 		NULL,
 		NULL,
 		NULL,
-		bsp_clk_1_10p0_cfg,
+		bsp_clk_1_10p0_efec_cfg,
 		NULL,
 		NULL,
 		NULL,
@@ -60,7 +61,7 @@ static const uint32_t bsp_clk_si5332_cfg_size[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332
 		0,
 		0,
 		0,
-		sizeof(bsp_clk_1_10p0_cfg) / sizeof(bsp_clk_1_10p0_cfg[0]),
+		sizeof(bsp_clk_1_10p0_efec_cfg) / sizeof(bsp_clk_1_10p0_efec_cfg[0]),
 		0,
 		0,
 		0,
