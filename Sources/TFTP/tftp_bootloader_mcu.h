@@ -5,12 +5,9 @@
 
 #define TFTP_BOOTLOADER_MCU_MSG(Msg)								(0x1000 + (Msg))
 /* This events are sent to component for internal processing*/
-#define TFTP_BOOTLOADER_MCU_MSG_INFO				 				TFTP_BOOTLOADER_MCU_MSG(0x000)
 #define TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD			 			TFTP_BOOTLOADER_MCU_MSG(0x100)
 #define TFTP_BOOTLOADER_MCU_MSG_UPDATE							TFTP_BOOTLOADER_MCU_MSG(0x200)
 /* This events are sent by component for external processing*/
-#define TFTP_BOOTLOADER_MCU_MSG_INFO_COMPLETE				TFTP_BOOTLOADER_MCU_MSG(0x0FE)
-#define TFTP_BOOTLOADER_MCU_MSG_INFO_ERROR					TFTP_BOOTLOADER_MCU_MSG(0x0FF)
 #define TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_COMPLETE		TFTP_BOOTLOADER_MCU_MSG(0x1FE)
 #define TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR			TFTP_BOOTLOADER_MCU_MSG(0x1FF)
 /* This events are sent by component for internal processing*/

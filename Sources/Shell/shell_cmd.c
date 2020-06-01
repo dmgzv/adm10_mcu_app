@@ -1787,6 +1787,8 @@ static int32_t SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback(void *Priv, uint16_t 
 		return -1;
 	if (DataSize != TFTP_DATA_LEN_MAX)
 	{
+		if (BOOTLOADER_UpdateNewFwFinish(&Bootloader))
+			return -1;
 		if (BOOTLOADER_CheckNewFw(&Bootloader))
 			return -1;
 		if (BOOTLOADER_UpdateNewFw(&Bootloader))

@@ -10,6 +10,7 @@
 #define TFTP_BOOTLOADER_MSG_ERROR					1
 #define TFTP_BOOTLOADER_MSG_INFO_DOWNLOAD	2
 #define TFTP_BOOTLOADER_MSG_INFO_VERIFY		3
+#define TFTP_BOOTLOADER_MSG_INFO_COMPLETE	4
 
 #define TFTP_BOOTLOADER_QUEUE_SIZE 3
 
@@ -84,6 +85,7 @@ static void TFTP_BOOTLOADER_DownloadInfo(uint32_t NextEvent)
 
 static void TFTP_BOOTLOADER_VerifyInfo(uint32_t NextEvent)
 {
+	uint32_t i;
 	char *p;
 	
 	LOG_Info("TFTP_BOOTLOADER", "", "", "Verify Info");
@@ -114,6 +116,12 @@ static void TFTP_BOOTLOADER_VerifyInfo(uint32_t NextEvent)
 		goto error;
 	}
 
+	for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
+	{
+		if (TFTP_BOOTLOADER.Components[i]->VerifyInfo())
+			goto error;
+	}
+	
 	osMessagePut(TFTP_BOOTLOADER.MessageQId, NextEvent, 0);	
 	return;
 
@@ -125,11 +133,12 @@ error:
 
 static void TFTP_BOOTLOADER_Thread(void const *argument)
 {
-	uint32_t i;
+	uint32_t i, j;
 	osEvent Event;
 	
 	while(1)
   {
+event_wait:
 		Event = osMessageGet(TFTP_BOOTLOADER.MessageQId, osWaitForever);
 		if (Event.status != osEventMessage)
 			continue;
@@ -138,23 +147,18 @@ static void TFTP_BOOTLOADER_Thread(void const *argument)
 		{
 			LOG_Error("TFTP_BOOTLOADER", "", "", "Update Terminated");
 			TFTP_BOOTLOADER.Status = TFTP_BOOTLOADER_STATUS_ERROR;
-		}
-		else if (Event.value.v == TFTP_BOOTLOADER_MSG_INFO_DOWNLOAD)
+		}		
+		if (Event.value.v == TFTP_BOOTLOADER_MSG_INFO_DOWNLOAD)
 		{
 			TFTP_BOOTLOADER_DownloadInfo(TFTP_BOOTLOADER_MSG_INFO_VERIFY);
 		}
 		else if (Event.value.v == TFTP_BOOTLOADER_MSG_INFO_VERIFY)
 		{
-			TFTP_BOOTLOADER_VerifyInfo(TFTP_BOOTLOADER_MCU_MSG_INFO);
+			TFTP_BOOTLOADER_VerifyInfo(TFTP_BOOTLOADER_MSG_INFO_COMPLETE);
 		}
-		else if (Event.value.v == TFTP_BOOTLOADER_MCU_MSG_INFO_ERROR)
+		else if (Event.value.v == TFTP_BOOTLOADER_MSG_INFO_COMPLETE)
 		{
-			TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY_ERROR;
-			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
-		}
-		else if (Event.value.v == TFTP_BOOTLOADER_MCU_MSG_INFO_COMPLETE)
-		{
-			TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
+			/*Trigger all componets to download and verify their files*/
 			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD, 0);
 		}
 		else if (Event.value.v == TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR)
@@ -163,6 +167,15 @@ static void TFTP_BOOTLOADER_Thread(void const *argument)
 		}
 		else if (Event.value.v == TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_COMPLETE)
 		{
+			/*Make sure that all files for all componets are downloaded and verified*/
+			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
+			{
+				for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
+				{
+					if (TFTP_BOOTLOADER.Components[i]->Files[j].Status != TFTP_BOOTLOADER_FILE_STATUS_COMPLETE)
+						goto event_wait;
+				}
+			}
 			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MCU_MSG_UPDATE, 0);
 		}
 		else

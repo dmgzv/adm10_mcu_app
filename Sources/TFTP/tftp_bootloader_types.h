@@ -7,6 +7,7 @@
 #define TFTP_BOOTLOADER_STATUS_IDLE					0
 #define TFTP_BOOTLOADER_STATUS_IN_PROGRESS	1
 #define TFTP_BOOTLOADER_STATUS_ERROR				2
+#define TFTP_BOOTLOADER_STATUS_COMPLETE			3
 
 #define TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD								0
 #define TFTP_BOOTLOADER_FILE_STATUS_VERIFY									1
@@ -26,17 +27,20 @@ typedef struct {
 typedef struct {
 	char *Addr;
 	char *Dir;
+	char Version[64];
 	osMessageQId MessageQId;
 	TFTP_BOOTLOADER_FILE_T *Info;
 	TFTP_BOOTLOADER_FILE_T *Files;
 	uint32_t FilesCnt;
 	void (*ProcessEvent)(uint32_t Event);
+	int32_t (*VerifyInfo)(void);
 } TFTP_BOOTLOADER_COMPONENT_T;
 
 typedef struct {
 	uint32_t Status;
 	char Dir[64];
 	char Addr[4];
+	char Version[64];
 	osMessageQId MessageQId;
 	osThreadId ThreadId;
 	osMutexId MutexId;
