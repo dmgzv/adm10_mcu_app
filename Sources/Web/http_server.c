@@ -214,12 +214,14 @@ static int32_t http_server_write_header(struct netconn *conn, HTTP_RESPONCE_HEAD
 static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {	
 	uint32_t addr;
-	char *name;
+	char *name, *name_end;
 	char *fname, *fname_end, *ftype, *fsize, *fdata;
-	uint32_t fname_size, size;
+	uint32_t fname_size, name_size, size;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	name = ReqHeader->Url + 1;
+	name_end = strchr(name, ' ');
+	name_size = name_end - name;
 	
 	addr = BSP_FLASH_WEB_ADDR;
 	while(1) {
@@ -250,7 +252,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 		
 		size = strtoul(fsize, NULL, 10);
 		
-		if (!memcmp(name, fname, fname_size))
+		if ((fname_size == name_size) && (!memcmp(name, fname, fname_size)))
 		{
 			if (strncmp(ReqHeader->Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)) != 0)
 				goto error_405;
