@@ -67,12 +67,12 @@ PROFILE_VALUES_T __attribute__((section ("CCM_DATA"))) ProfileValues = {
 	.Static = &ProfileValuesStatic,
 	.Calib = &ProfileValuesCalib,
 };
-PROFILE_FLASH_T __attribute__((section ("CCM_DATA"))) ProfileFlash;
-PROFILE_PROTOCOL_T __attribute__((section ("CCM_DATA"))) ProfileProtocol;
-PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart5;
-PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart4;
+PROFILE_FLASH_T /*__attribute__((section ("CCM_DATA")))*/ ProfileFlash;
+PROFILE_PROTOCOL_T /*__attribute__((section ("CCM_DATA")))*/ ProfileProtocol;
+PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart5;
+PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart4;
 
-BOOTLOADER_T __attribute__((section ("CCM_DATA"))) Bootloader;
+BOOTLOADER_T /*__attribute__((section ("CCM_DATA")))*/ Bootloader;
 const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= {
 	BSP_PROJECT,
 	BSP_HW_VERSION,

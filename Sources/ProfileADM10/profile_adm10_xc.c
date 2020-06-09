@@ -47,13 +47,16 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8
 				/*Always allow to set XC source to None*/
 				return 0;
 			}
-			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_LINE_ODU1(0, 0)) && (*(uint32_t*)Value <= PROFILE_ADM10_XC_LINE_ODU1(1, 3)))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_LINE_ODU1(0, 0)) &&
+				(*(uint32_t*)Value <= PROFILE_ADM10_XC_LINE_ODU1(1, 3)))
 			{
 				/*Allow to set XC source to Line 1 nad 2 ODU1 containers only*/
 			}
-			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_CLIENT_ODU1(0)) && (*(uint32_t*)Value <= PROFILE_ADM10_XC_CLIENT_ODU1(15)) && (((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU1(0)) % 2) == 0))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_CLIENT_ODU1(0)) &&
+				(*(uint32_t*)Value <= PROFILE_ADM10_XC_CLIENT_ODU1(15)) &&
+				(((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU1(0)) % 2) == 0))
 			{
-				/*Allow to set XC destination to Client even ODU0 containers only*/
+				/*Allow to set XC destination to Client even ODU1 containers only*/
 			}
 			else
 			{
@@ -76,6 +79,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8
 					return -1;	
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
 				return -1;
@@ -105,7 +109,8 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8
 				/*Always allow to set XC source to None*/
 				return 0;
 			}
-			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_LINE_ODU1(0, 0)) && (*(uint32_t*)Value <= PROFILE_ADM10_XC_LINE_ODU1(1, 3)))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_LINE_ODU1(0, 0)) &&
+				(*(uint32_t*)Value <= PROFILE_ADM10_XC_LINE_ODU1(1, 3)))
 			{
 				/*Allow to set XC source to Line 1 nad 2 ODU0 containers only*/
 			}
@@ -130,6 +135,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8
 				}					
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
 				return -1;
@@ -152,17 +158,54 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8
 	
 	switch (Mode)
 	{
+		case PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5:
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_NONE)
+			{
+				/*Always allow to set XC source to None*/
+				return 0;
+			}
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) &&
+					(*(uint32_t*)Value <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
+			{
+				if (((((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) / 2) % 2) != 0) &&
+					(((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) % 2) != 0))
+					return -1;
+			}
+			else
+			{
+				return -1;
+			}
+			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+			{
+				/*Check that there is no XC with same ODU container as source*/
+				if (i != ODU0XCIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], &Src))
+						return -1;
+					if (Src == *(uint32_t*)Value)
+						return -1;
+				}
+				/*Check that there is no XC with same ODU container as desctination*/
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], &Dst))
+					return -1;
+				if (Dst == *(uint32_t*)Value)
+					return -1;	
+			}
+			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
 			if (*(uint32_t*)Value == PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_NONE)
 			{
 				/*Always allow to set XC source to None*/
 				return 0;
 			}
-			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_LINE_ODU0(0, 0)) && (*(uint32_t*)Value <= PROFILE_ADM10_XC_LINE_ODU0(1, 7)))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_LINE_ODU0(0, 0)) &&
+				(*(uint32_t*)Value <= PROFILE_ADM10_XC_LINE_ODU0(1, 7)))
 			{
-				/*Allow to set XC source to Line 1 nad 2 ODU0 containers only*/
+				/*Allow to set XC source to Line 1 and 2 ODU0 containers only*/
 			}
-			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_CLIENT_ODU0(0)) && (*(uint32_t*)Value <= PROFILE_ADM10_XC_CLIENT_ODU0(15)))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) &&
+				(*(uint32_t*)Value <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)) &&
+				(((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) % 2) == 0))
 			{
 				/*Allow to set XC destination to Client even ODU0 containers only*/
 			}
@@ -210,13 +253,47 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetDstValue(PROFILE_T *Profile, uint8
 	
 	switch (Mode)
 	{
+		case PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5:
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_NONE)
+			{
+				/*Always allow to set XC source to None*/
+				return 0;
+			}
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) &&
+				(*(uint32_t*)Value <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)) &&
+				((((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) / 2) % 2) == 0))
+			{
+				/*Allow to set XC source to odd client ODU0 containers only*/
+			}
+			else
+			{
+				return -1;
+			}
+			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+			{
+				/*Check that there is no XC with same ODU container as source*/
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], &Src))
+					return -1;
+				if (Src == *(uint32_t*)Value)
+					return -1;
+				/*Check that there is no XC with same ODU container as desctination*/
+				if (i != ODU0XCIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], &Dst))
+						return -1;
+					if (Dst == *(uint32_t*)Value)
+						return -1;
+				}					
+			}
+			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
 			if (*(uint32_t*)Value == PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_NONE)
 			{
 				/*Always allow to set XC source to None*/
 				return 0;
 			}
-			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_LINE_ODU0(0, 0)) && (*(uint32_t*)Value <= PROFILE_ADM10_XC_LINE_ODU0(1, 7)))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_LINE_ODU0(0, 0)) &&
+				(*(uint32_t*)Value <= PROFILE_ADM10_XC_LINE_ODU0(1, 7)))
 			{
 				/*Allow to set XC source to Line 1 nad 2 ODU0 containers only*/
 			}
@@ -302,10 +379,10 @@ static const uint32_t ODU1XCDstFactory[PROFILE_ADM10_ODU1_XCS] = {
 };
 
 static const uint32_t ODU0XCSrcFactory[PROFILE_ADM10_ODU0_XCS] = {
-	PROFILE_ADM10_XC_CLIENT_ODU0(0), PROFILE_ADM10_XC_CLIENT_ODU0(1), PROFILE_ADM10_XC_CLIENT_ODU0(2), PROFILE_ADM10_XC_CLIENT_ODU0(3),
-	PROFILE_ADM10_XC_CLIENT_ODU0(4), PROFILE_ADM10_XC_CLIENT_ODU0(5), PROFILE_ADM10_XC_CLIENT_ODU0(6), PROFILE_ADM10_XC_CLIENT_ODU0(7),
-	PROFILE_ADM10_XC_CLIENT_ODU0(8), PROFILE_ADM10_XC_CLIENT_ODU0(9), PROFILE_ADM10_XC_CLIENT_ODU0(10), PROFILE_ADM10_XC_CLIENT_ODU0(11),
-	PROFILE_ADM10_XC_CLIENT_ODU0(12), PROFILE_ADM10_XC_CLIENT_ODU0(13), PROFILE_ADM10_XC_CLIENT_ODU0(14), PROFILE_ADM10_XC_CLIENT_ODU0(15), 
+	PROFILE_ADM10_XC_CLIENT_ODU0(0, 0), PROFILE_ADM10_XC_CLIENT_ODU0(1, 0), PROFILE_ADM10_XC_CLIENT_ODU0(2, 0), PROFILE_ADM10_XC_CLIENT_ODU0(3, 0),
+	PROFILE_ADM10_XC_CLIENT_ODU0(4, 0), PROFILE_ADM10_XC_CLIENT_ODU0(5, 0), PROFILE_ADM10_XC_CLIENT_ODU0(6, 0), PROFILE_ADM10_XC_CLIENT_ODU0(7, 0),
+	PROFILE_ADM10_XC_CLIENT_ODU0(8, 0), PROFILE_ADM10_XC_CLIENT_ODU0(9, 0), PROFILE_ADM10_XC_CLIENT_ODU0(10, 0), PROFILE_ADM10_XC_CLIENT_ODU0(11, 0),
+	PROFILE_ADM10_XC_CLIENT_ODU0(12, 0), PROFILE_ADM10_XC_CLIENT_ODU0(13, 0), PROFILE_ADM10_XC_CLIENT_ODU0(14, 0), PROFILE_ADM10_XC_CLIENT_ODU0(15, 0), 
 };
 
 static const uint32_t ODU0XCDstFactory[PROFILE_ADM10_ODU0_XCS] = {
@@ -321,8 +398,8 @@ static int32_t PROFILE_ADM10_XC_SetModeValueDependencies(PROFILE_T *Profile, uin
 	
 	switch (*(uint32_t*)Value)
 	{
+		case PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5:
 		case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
-			/*
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i]);
@@ -333,7 +410,6 @@ static int32_t PROFILE_ADM10_XC_SetModeValueDependencies(PROFILE_T *Profile, uin
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i]);
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i]);
 			}
-			*/
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
@@ -362,6 +438,7 @@ static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profi
 	
 	switch (Mode)
 	{
+		case PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5:
 		case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
@@ -391,6 +468,7 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 	
 	switch (Mode)
 	{
+		case PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5:
 		case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
 			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
 			{
@@ -600,10 +678,10 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 							}
 						}
 						
-						if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15)))
+						if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
 						{
 							/*Target is client ODU0 container*/
-							TargetClient = Target - 1025;
+							TargetClient = (Target - 1025) / 2;
 							ODU0Mux = TargetClient;
 							for (i = 0; i < 16; i++)
 							{
@@ -694,12 +772,12 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 				Target = 0;
 				for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
 				{
-					if (XCODU0Src[i] == PROFILE_ADM10_XC_CLIENT_ODU0(Client))
+					if (XCODU0Src[i] == PROFILE_ADM10_XC_CLIENT_ODU0(Client, 0))
 					{
 						Target = XCODU0Dst[i];
 						break;
 					}
-					if (XCODU0Dst[i] == PROFILE_ADM10_XC_CLIENT_ODU0(Client))
+					if (XCODU0Dst[i] == PROFILE_ADM10_XC_CLIENT_ODU0(Client, 0))
 					{
 						Target = XCODU0Src[i];
 						break;
@@ -719,7 +797,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 			}
 		}
 	}
-	else
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
 	{
 		/* Cross-connect is autoconfigured in FPGA */
 		for (Client = 0; Client < 16; Client++)

@@ -545,7 +545,7 @@ static int32_t PROFILE_ADM10_LINE_GetXCODU0(PROFILE_T *Profile, uint32_t LineIdx
 			}
 			for (j = 0; j < 16; j++)
 			{
-				if (Src == (PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_CL_1_ODU0 + j))
+				if (Src == (PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_CL_1_ODU0_1 + (j * 2)))
 				{
 					*PortType = 1;
 					*PortIdx = j;
@@ -624,7 +624,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSetStateValue(PROFILE_T *Profile, uint8
 	if ((SetState == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) && (*(uint32_t*)Value == PROFILE_ADM10_LN_SET_STATE_ENUM_IS))
 		return -1;
 	
-	/* In ADM10 mode Line 3 and Line 4 are always OOS*/
+	/* In ADM-10 mode Line 3 and Line 4 are always OOS*/
 	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 	{
 		if ((Idx == 2) || (Idx == 3))
@@ -632,6 +632,12 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSetStateValue(PROFILE_T *Profile, uint8
 			if (*(uint32_t*)Value != PROFILE_ADM10_LN_SET_STATE_ENUM_OOS)
 				return -1;
 		}
+	}
+	/*In ADM-2.5 mode all Lines are always OOS*/
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5)
+	{
+		if (*(uint32_t*)Value != PROFILE_ADM10_LN_SET_STATE_ENUM_OOS)
+			return -1;
 	}
 	
 	return 0;
@@ -777,6 +783,7 @@ static int32_t PROFILE_ADM10_LINE_SetModeValueDependencies(PROFILE_T *Profile, u
 	
 	switch (*(uint32_t*)Value)
 	{
+		case PROFILE_ADM10_SET_MODE_ENUM_ADM_2_5:
 		case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
 			for (i = 2; i < PROFILE_ADM10_LINE_PORTS; i++)
 			{

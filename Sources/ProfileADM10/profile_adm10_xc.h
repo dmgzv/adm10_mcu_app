@@ -8,8 +8,8 @@
 
 #define PROFILE_ADM10_XC_LINE_ODU1(Line, ODU1Idx) (1 + ((Line) * 4) + ODU1Idx)
 #define PROFILE_ADM10_XC_CLIENT_ODU1(Client) 			(1025 + (Client))
-#define PROFILE_ADM10_XC_LINE_ODU0(Line, ODU1Idx) (1 + ((Line) * 8) + ODU1Idx)
-#define PROFILE_ADM10_XC_CLIENT_ODU0(Client) 			(1025 + (Client))
+#define PROFILE_ADM10_XC_LINE_ODU0(Line, ODU0Idx) (1 + ((Line) * 8) + ODU0Idx)
+#define PROFILE_ADM10_XC_CLIENT_ODU0(Client, ODU0Idx) 			(1025 + (Client * 2) + ODU0Idx)
 
 int32_t PROFILE_ADM10_XC_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
 int32_t PROFILE_ADM10_XC_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
