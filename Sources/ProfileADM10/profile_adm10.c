@@ -36,38 +36,79 @@ static void PROFILE_ADM10_UpdateMaxVFPGASwNumber(PROFILE_T *Profile)
 
 static void PROFILE_ADM10_UpdateLineFPGASwNumber(PROFILE_T *Profile)
 {
-	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+		goto error;
+	
+	if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
+		if (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, fpga_line_agg_2x10_bs.SwVersion, PROFILE_STATE_IS);
+	}
+	else if (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10)
+	{
+		if (BSP_DEV_GET_STATE(&fpga_line_adm_10) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, fpga_line_adm_10.SwVersion, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, fpga_line.SwVersion, PROFILE_STATE_IS);
+		goto error;
 	}
+	
+	return;
+error:
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_LINEFPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateClient1FPGASwNumber(PROFILE_T *Profile)
 {
-	if (BSP_DEV_GET_STATE(&fpga_client[0]) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+		goto error;
+	
+	if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
+		if (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[0]) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, fpga_client_agg_2x10_bs[0].SwVersion, PROFILE_STATE_IS);
+	}
+	else if (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10)
+	{
+		if (BSP_DEV_GET_STATE(&fpga_client_adm_10[0]) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, fpga_client_adm_10[0].SwVersion, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, fpga_client[0].SwVersion, PROFILE_STATE_IS);
+		goto error;
 	}
+error:
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT1FPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateClient2FPGASwNumber(PROFILE_T *Profile)
 {
-	if (BSP_DEV_GET_STATE(&fpga_client[1]) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+		goto error;
+	
+	if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
+		if (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[1]) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, fpga_client_agg_2x10_bs[1].SwVersion, PROFILE_STATE_IS);
+	}
+	else if (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10)
+	{
+		if (BSP_DEV_GET_STATE(&fpga_client_adm_10[1]) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, fpga_client_adm_10[1].SwVersion, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, fpga_client[1].SwVersion, PROFILE_STATE_IS);
+		goto error;
 	}
+error:
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateHwNumber(PROFILE_T *Profile)
@@ -145,13 +186,39 @@ static void PROFILE_ADM10_UpdateHwAlarmsValue(PROFILE_T *Profile)
 	if (BSP_DEV_GET_STATE(&si5332[1]) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_SI5332_D84;
 	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+	{
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_MAXV_D85;
-	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_LN_D92;
-	if (BSP_DEV_GET_STATE(&fpga_client[0]) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_1_D88;
-	if (BSP_DEV_GET_STATE(&fpga_client[1]) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_2_D90;
+	}
+	else
+	{
+		if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
+		{
+			if (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) != BSP_DEV_STATE_OK)
+				Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_LN_D92;
+			if (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[0]) != BSP_DEV_STATE_OK)
+				Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_1_D88;
+			if (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[1]) != BSP_DEV_STATE_OK)
+				Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_2_D90;
+		}
+		else if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
+		{
+			if (BSP_DEV_GET_STATE(&fpga_line_adm_10) != BSP_DEV_STATE_OK)
+				Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_LN_D92;
+			if (BSP_DEV_GET_STATE(&fpga_client_adm_10[0]) != BSP_DEV_STATE_OK)
+				Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_1_D88;
+			if (BSP_DEV_GET_STATE(&fpga_client_adm_10[1]) != BSP_DEV_STATE_OK)
+				Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_2_D90;
+		}
+		else
+		{
+			Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_LN_D92;
+			Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_1_D88;
+			Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_2_D90;
+		}
+	}
 	if (BSP_DEV_GET_STATE(&pca9548a[0]) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9548_D72;
 	if (BSP_DEV_GET_STATE(&pca9548a[1]) != BSP_DEV_STATE_OK)
@@ -174,45 +241,90 @@ static void PROFILE_ADM10_UpdateLineFPGATemp(PROFILE_T *Profile)
 {
 	float Temp;
 	
-	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+		goto error;
+	
+	if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 	{
-		Temp = 0;
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
+		if (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &fpga_line_agg_2x10_bs.Temp, PROFILE_STATE_IS);
+	}
+	else if (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10)
+	{
+		if (BSP_DEV_GET_STATE(&fpga_line_adm_10) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &fpga_line_adm_10.Temp, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &fpga_line.Temp, PROFILE_STATE_IS);
+		goto error;
 	}
+	
+	return;
+error:
+	Temp = 0;
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_LINEFPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateClient1FPGATemp(PROFILE_T *Profile)
 {
 	float Temp;
 	
-	if (BSP_DEV_GET_STATE(&fpga_client[0]) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+		goto error;
+	
+	if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 	{
-		Temp = 0;
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
+		if (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[0]) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &fpga_client_agg_2x10_bs[0].Temp, PROFILE_STATE_IS);
+	}
+	else if (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10)
+	{
+		if (BSP_DEV_GET_STATE(&fpga_client_adm_10[0]) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &fpga_client_adm_10[0].Temp, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &fpga_client[0].Temp, PROFILE_STATE_IS);
+		goto error;
 	}
+	
+	return;
+error:
+	Temp = 0;
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT1FPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateClient2FPGATemp(PROFILE_T *Profile)
 {
-	float Temp;
+float Temp;
 	
-	if (BSP_DEV_GET_STATE(&fpga_client[1]) != BSP_DEV_STATE_OK)
+	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+		goto error;
+	
+	if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 	{
-		Temp = 0;
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
+		if (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[1]) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &fpga_client_agg_2x10_bs[1].Temp, PROFILE_STATE_IS);
+	}
+	else if (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10)
+	{
+		if (BSP_DEV_GET_STATE(&fpga_client_adm_10[1]) != BSP_DEV_STATE_OK)
+			goto error;
+		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &fpga_client_adm_10[1].Temp, PROFILE_STATE_IS);
 	}
 	else
 	{
-		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &fpga_client[1].Temp, PROFILE_STATE_IS);
+		goto error;
 	}
+	
+	return;
+error:
+	Temp = 0;
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_CLIENT2FPGATEMP_IDX, &Temp, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateBlockStateValue(PROFILE_T *Profile)
@@ -395,10 +507,7 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 	if (PROFILE_ADM10_XC_SetConfigValueDependencies(Profile, Table, Idx, Value))
 		return -1;
 	if (PROFILE_ADM10_PG_SetConfigValueDependencies(Profile, Table, Idx, Value))
-		return -1;
-	
-	
-	
+		return -1;	
 	return 0;
 }
 
@@ -411,11 +520,11 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	
 	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 	{
-		BSP_FPGA_MODE_SET(BSP_FPGA_MODE_ADM10);
+		FPGA_MAXV_MODE_SET(&fpga_maxv, FPGA_MAXV_MODE_ADM_10);
 	}
 	else
 	{
-		BSP_FPGA_MODE_SET(BSP_FPGA_MODE_ATP_2x10_BS);
+		FPGA_MAXV_MODE_SET(&fpga_maxv, FPGA_MAXV_MODE_AGG_2X10_BS);
 	}
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))

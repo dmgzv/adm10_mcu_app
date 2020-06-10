@@ -1106,32 +1106,32 @@ static void PROFILE_ADM10_ODU2PG_UpdateConfigs(PROFILE_T *Profile)
 				if (ODU2PGMode[i] == PROFILE_ADM10_ODU2_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 				{
 					if (ODU2PGRevMode[i] == PROFILE_ADM10_ODU2_PG_SET_REV_MODE_ENUM_REVERTIVE) /*Revertive*/
-						BSP_FPGA_LINE_AGG_MODE_SET(i, BSP_FPGA_LINE_AGG_MODE_AUTO_REVERTIVE);
+						FPGA_LINE_AGG_2X10_BS_AGG_MODE_SET(&fpga_line_agg_2x10_bs, i, FPGA_LINE_AGG_2X10_BS_AGG_MODE_AUTO_REVERTIVE);
 					else
-						BSP_FPGA_LINE_AGG_MODE_SET(i, BSP_FPGA_LINE_AGG_MODE_AUTO_NON_REVERTIVE);
+						FPGA_LINE_AGG_2X10_BS_AGG_MODE_SET(&fpga_line_agg_2x10_bs, i, FPGA_LINE_AGG_2X10_BS_AGG_MODE_AUTO_NON_REVERTIVE);
 				}
 				else if (ODU2PGMode[i] == PROFILE_ADM10_ODU2_PG_SET_MODE_ENUM_LOCKOUT) /*Lockout*/
 				{
-					BSP_FPGA_LINE_AGG_MODE_SET(i, BSP_FPGA_LINE_AGG_MODE_MANUAL_LINE_0);
+					FPGA_LINE_AGG_2X10_BS_AGG_MODE_SET(&fpga_line_agg_2x10_bs, i, FPGA_LINE_AGG_2X10_BS_AGG_MODE_MANUAL_LINE_0);
 				}
 				else if (ODU2PGMode[i] == PROFILE_ADM10_ODU2_PG_SET_MODE_ENUM_FORCED) /*Forced*/
 				{
-					BSP_FPGA_LINE_AGG_MODE_SET(i, BSP_FPGA_LINE_AGG_MODE_MANUAL_LINE_1);
+					FPGA_LINE_AGG_2X10_BS_AGG_MODE_SET(&fpga_line_agg_2x10_bs, i, FPGA_LINE_AGG_2X10_BS_AGG_MODE_MANUAL_LINE_1);
 				}
 				else if (ODU2PGMode[i] == PROFILE_ADM10_ODU2_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
 				{
-					if ((!((fpga_line.Iface[i + 2].__ODU2Alarms & (BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU2_ALARMS_LOM_MASK)) || \
-						(fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_AIS_MASK) || \
-						((fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_OCI_MASK) || \
-						((fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU2_ALARMS_STAT_LCK_MASK))) && \
-						(!(fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_SD_MASK)) && \
-						(!(fpga_line.Iface[i + 2].__ODU2Alarms & BSP_FPGA_LINE_IFACE_ODU2_ALARMS_OPUCSF_MASK)))
+					if ((!((fpga_line_agg_2x10_bs.Iface[i + 2].__ODU2Alarms & (FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_LOF_MASK | FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_LOM_MASK)) || \
+						(fpga_line_agg_2x10_bs.Iface[i + 2].__ODU2Alarms & FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_AIS_MASK) || \
+						((fpga_line_agg_2x10_bs.Iface[i + 2].__ODU2Alarms & FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_STAT_MASK) == FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_STAT_OCI_MASK) || \
+						((fpga_line_agg_2x10_bs.Iface[i + 2].__ODU2Alarms & FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_STAT_MASK) == FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_STAT_LCK_MASK))) && \
+						(!(fpga_line_agg_2x10_bs.Iface[i + 2].__ODU2Alarms & FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_SD_MASK)) && \
+						(!(fpga_line_agg_2x10_bs.Iface[i + 2].__ODU2Alarms & FPGA_LINE_AGG_2X10_BS_IFACE_ODU2_ALARMS_OPUCSF_MASK)))
 					{
-						BSP_FPGA_LINE_AGG_MODE_SET(i, BSP_FPGA_LINE_AGG_MODE_MANUAL_LINE_1);
+						FPGA_LINE_AGG_2X10_BS_AGG_MODE_SET(&fpga_line_agg_2x10_bs, i, FPGA_LINE_AGG_2X10_BS_AGG_MODE_MANUAL_LINE_1);
 					}
 				}
-				BSP_FPGA_LINE_AGG_WTR_SET(i, ODU2PGWTRTmr[i]);
-				BSP_FPGA_LINE_AGG_HO_SET(i, ODU2PGHOTmr[i] / 100);
+				FPGA_LINE_AGG_2X10_BS_AGG_WTR_SET(&fpga_line_agg_2x10_bs, i, ODU2PGWTRTmr[i]);
+				FPGA_LINE_AGG_2X10_BS_AGG_HO_SET(&fpga_line_agg_2x10_bs, i, ODU2PGHOTmr[i] / 100);
 				break;
 		}
 	}
@@ -1219,9 +1219,16 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 		}
 	}
 	
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_CNT; i++)
 	{
-		BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(i, 0x00);
+		switch (Mode)
+		{
+			case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
+				FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_MANUAL_PRIMARY);
+				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+				break;
+		}
 	}
 	
 	for (i = 0; i < PROFILE_ADM10_ODU1_PGS; i++)
@@ -1239,8 +1246,8 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 					ProtectLineIdx = (ODU1PGProtectODUk[i] - 1) / 4;
 					ProtectODU1Idx = (ODU1PGProtectODUk[i] - 1) % 4;
 					
-					PrimaryODU1Mux = BSP_FPGA_LINE_MUX_ODU12_GET((PrimaryLineIdx * 4) + PrimaryODU1Idx);
-					BSP_FPGA_LINE_MUX_ODU12_SET((ProtectLineIdx * 4) + ProtectODU1Idx, PrimaryODU1Mux);
+					PrimaryODU1Mux = FPGA_LINE_ADM_10_MUX_ODU12_GET(&fpga_line_adm_10, (PrimaryLineIdx * 4) + PrimaryODU1Idx);
+					FPGA_LINE_ADM_10_MUX_ODU12_SET(&fpga_line_adm_10, (ProtectLineIdx * 4) + ProtectODU1Idx, PrimaryODU1Mux);
 					
 					Target = 0xFFFFFFFF;
 					
@@ -1265,37 +1272,37 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU1(0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU1(15)))
 					{
 						Client = Target - 1025;
-						BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_SET(Client, ProtectLineIdx, ProtectODU1Idx);
+						FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_SET(&fpga_line_adm_10, Client, ProtectLineIdx, ProtectODU1Idx);
 						
 						if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 						{
 							if (ODU1PGRevMode[i] == PROFILE_ADM10_ODU1_PG_SET_REV_MODE_ENUM_REVERTIVE) /*Revertive*/
-								BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(Client, 0x06);
+								FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_AUTO_REVERTIVE);
 							else
-								BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(Client, 0x04);
+								FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_AUTO_NON_REVERTIVE);
 						}
 						else if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_LOCKOUT) /*Lockout*/
 						{
-							BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(Client, 0x00);
+							FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_MANUAL_PRIMARY);
 						}
 						else if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_FORCED) /*Forced*/
 						{
-							BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(Client, 0x01);
+							FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_MANUAL_PROTECT);
 						}
 						else if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
 						{
-							if ((!((fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & (BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU1_ALARMS_LOM_MASK)) || \
-								(fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_AIS_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_OCI_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU1_ALARMS_STAT_LCK_MASK))) && \
-								(!(fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_SD_MASK)) && \
-								(!(fpga_line.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & BSP_FPGA_LINE_IFACE_ODU1_ALARMS_OPUCSF_MASK)))
+							if ((!((fpga_line_adm_10.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & (FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_LOF_MASK | FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_LOM_MASK)) || \
+								(fpga_line_adm_10.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_AIS_MASK) || \
+								((fpga_line_adm_10.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_STAT_MASK) == FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_STAT_OCI_MASK) || \
+								((fpga_line_adm_10.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_STAT_MASK) == FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_STAT_LCK_MASK))) && \
+								(!(fpga_line_adm_10.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_SD_MASK)) && \
+								(!(fpga_line_adm_10.Iface[ProtectLineIdx].__ODU1Alarms[ProtectODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_OPUCSF_MASK)))
 							{
-								BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_MODE_SET(Client, 0x01);
+								FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_MANUAL_PROTECT);
 							}
 						}
-						BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_WTR_SET(Client, ODU1PGWTRTmr[i]);
-						BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_HO_SET(Client, ODU1PGHOTmr[i] / 100);
+						FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_WTR_SET(&fpga_line_adm_10, Client, ODU1PGWTRTmr[i]);
+						FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_HO_SET(&fpga_line_adm_10, Client, ODU1PGHOTmr[i] / 100);
 					}
 				}
 				break;
@@ -1387,9 +1394,9 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 		}
 	}
 	
-	for (i = 0; i < BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_CNT; i++)
+	for (i = 0; i < FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_CNT; i++)
 	{
-		BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(i, 0x00);
+		FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_MANUAL_PRIMARY);
 	}
 	
 	for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
@@ -1409,11 +1416,11 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 					ProtectODU1Idx = ((ODU0PGProtectODUk[i] - 1) % 8) / 2;
 					ProtectODU0Idx = ((ODU0PGProtectODUk[i] - 1) % 8) % 2;
 					
-					PrimaryODU1Mux = BSP_FPGA_LINE_MUX_ODU12_GET((PrimaryLineIdx * 4) + PrimaryODU1Idx);
-					ProtectODU1Mux = BSP_FPGA_LINE_MUX_ODU12_GET((ProtectLineIdx * 4) + ProtectODU1Idx);
+					PrimaryODU1Mux =FPGA_LINE_ADM_10_MUX_ODU12_GET(&fpga_line_adm_10, (PrimaryLineIdx * 4) + PrimaryODU1Idx);
+					ProtectODU1Mux =FPGA_LINE_ADM_10_MUX_ODU12_GET(&fpga_line_adm_10, (ProtectLineIdx * 4) + ProtectODU1Idx);
 					
-					PrimaryODU0Mux = BSP_FPGA_LINE_MUX_ODU01_GET(((PrimaryODU1Mux - 8) * 2) + PrimaryODU0Idx);					
-					BSP_FPGA_LINE_MUX_ODU01_SET(((ProtectODU1Mux - 8) * 2) + ProtectODU0Idx, PrimaryODU0Mux);
+					PrimaryODU0Mux =FPGA_LINE_ADM_10_MUX_ODU01_GET(&fpga_line_adm_10, ((PrimaryODU1Mux - 8) * 2) + PrimaryODU0Idx);					
+					FPGA_LINE_ADM_10_MUX_ODU01_SET(&fpga_line_adm_10, ((ProtectODU1Mux - 8) * 2) + ProtectODU0Idx, PrimaryODU0Mux);
 					
 					Target = 0xFFFFFFFF;
 					
@@ -1437,38 +1444,38 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 					
 					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15)))
 					{
-						Client = Target - 1025;
-						BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_SET(Client, ProtectLineIdx, (ProtectODU1Idx*2) + ProtectODU0Idx);
+						Client = (Target - 1025) / 2;
+						FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_SET(&fpga_line_adm_10, Client, ProtectLineIdx, (ProtectODU1Idx*2) + ProtectODU0Idx);
 						
 						if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 						{
 							if (ODU0PGRevMode[i] == PROFILE_ADM10_ODU0_PG_SET_REV_MODE_ENUM_REVERTIVE) /*Revertive*/
-								BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(Client, 0x06);
+								FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_AUTO_REVERTIVE);
 							else
-								BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(Client, 0x04);
+								FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_AUTO_NON_REVERTIVE);
 						}
 						else if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_LOCKOUT) /*Lockout*/
 						{
-							BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(Client, 0x00);
+							FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_MANUAL_PRIMARY);
 						}
 						else if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_FORCED) /*Forced*/
 						{
-							BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(Client, 0x01);
+							FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_MANUAL_PROTECT);
 						}
 						else if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
 						{
-							if ((!((fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & (BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOF_MASK | BSP_FPGA_LINE_IFACE_ODU0_ALARMS_LOM_MASK)) || \
-								(fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_AIS_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_OCI_MASK) || \
-								((fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_MASK) == BSP_FPGA_LINE_IFACE_ODU0_ALARMS_STAT_LCK_MASK))) && \
-								(!(fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_SD_MASK)) && \
-								(!(fpga_line.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & BSP_FPGA_LINE_IFACE_ODU0_ALARMS_OPUCSF_MASK)))
+							if ((!((fpga_line_adm_10.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] & (FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_LOF_MASK |FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_LOM_MASK)) || \
+								(fpga_line_adm_10.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] &FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_AIS_MASK) || \
+								((fpga_line_adm_10.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] &FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_STAT_MASK) ==FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_STAT_OCI_MASK) || \
+								((fpga_line_adm_10.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] &FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_STAT_MASK) ==FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_STAT_LCK_MASK))) && \
+								(!(fpga_line_adm_10.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] &FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_SD_MASK)) && \
+								(!(fpga_line_adm_10.Iface[ProtectLineIdx].__ODU0Alarms[(ProtectODU1Idx * 2) + ProtectODU0Idx] &FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_OPUCSF_MASK)))
 							{
-								BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_MODE_SET(Client, 0x01);
+								FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_SET(&fpga_line_adm_10, Client, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_MANUAL_PROTECT);
 							}
 						}
-						BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_WTR_SET(Client, ODU0PGWTRTmr[i]);
-						BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_HO_SET(Client, ODU0PGHOTmr[i] / 100);
+						FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_WTR_SET(&fpga_line_adm_10, Client, ODU0PGWTRTmr[i]);
+						FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_HO_SET(&fpga_line_adm_10, Client, ODU0PGHOTmr[i] / 100);
 					}
 				}
 				break;
@@ -1527,7 +1534,7 @@ static void PROFILE_ADM10_ODU2PG_UpdateValues(PROFILE_T *Profile)
 					PGState = PROFILE_ADM10_ODU2_PG_STATE_ENUM_NORMAL;
 					PGActiveODUk = PROFILE_ADM10_ODU2_PG_ACTIVE_ODUK_ENUM_NONE;
 					
-					FPGAPGStatus = fpga_line.AGG[i].__Status;						
+					FPGAPGStatus = fpga_line_agg_2x10_bs.AGG[i].__Status;						
 					if (PGMode == PROFILE_ADM10_ODU2_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 					{
 						if (FPGAPGStatus & (0x03 << 1)) /*SF*/
@@ -1637,7 +1644,7 @@ static void PROFILE_ADM10_ODU1PG_UpdateValues(PROFILE_T *Profile)
 					{
 						Client = Target - 1025;
 						
-						FPGAPGStatus = BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_STATUS_GET(Client);						
+						FPGAPGStatus = FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_STATUS_GET(&fpga_line_adm_10, Client);						
 						if (PGMode == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 						{
 							if (FPGAPGStatus & (0x03 << 1)) /*SF*/
@@ -1749,7 +1756,7 @@ static void PROFILE_ADM10_ODU0PG_UpdateValues(PROFILE_T *Profile)
 					{
 						Client = Target - 1025;
 						
-						FPGAPGStatus = BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_STATUS_GET(Client);						
+						FPGAPGStatus = FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_STATUS_GET(&fpga_line_adm_10, Client);						
 						if (PGMode == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 						{
 							if (FPGAPGStatus & (0x03 << 1)) /*SF*/

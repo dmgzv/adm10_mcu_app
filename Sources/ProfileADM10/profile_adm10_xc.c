@@ -482,14 +482,14 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 	{
 		for (i = 0; i < 8; i++)
 		{
-			BSP_FPGA_LINE_MUX_ODU12_SET(i, BSP_FPGA_LINE_MUX_ODU12_ODU1(i));
-			BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(i, BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_NULL);
+			FPGA_LINE_ADM_10_MUX_ODU12_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_MUX_ODU12_ODU1(i));
+			FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_NULL);
 		}
 		
 		for (i = 0; i < 16; i++)
 		{
-			BSP_FPGA_LINE_MUX_ODU01_SET(i, BSP_FPGA_LINE_MUX_ODU01_ODU0(i));
-			BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(i, BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_NULL);
+			FPGA_LINE_ADM_10_MUX_ODU01_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_MUX_ODU01_ODU0(i));
+			FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_NULL);
 		}
 		
 		for(Line = 0; Line < 2; Line++)
@@ -521,21 +521,21 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 						
 						for (i = 0; i < 8; i++)
 						{
-							__ODU1Mux = BSP_FPGA_LINE_MUX_ODU12_GET(i) - 8;
-							__OPU1PayloadType = BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_GET(i);
+							__ODU1Mux = FPGA_LINE_ADM_10_MUX_ODU12_GET(&fpga_line_adm_10, i) - 8;
+							__OPU1PayloadType = FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_GET(&fpga_line_adm_10, i);
 							if (__ODU1Mux == ODU1Mux)
 								break;
 						}
 						if (i != ((Line * 4) + ODU1Idx))
 						{
-							__ODU1Mux = BSP_FPGA_LINE_MUX_ODU12_GET(((Line * 4) + ODU1Idx)) - 8;
-							__OPU1PayloadType = BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_GET(ODU1Mux);
-							BSP_FPGA_LINE_MUX_ODU12_SET(i, BSP_FPGA_LINE_MUX_ODU12_ODU1(__ODU1Mux));
-							BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(__ODU1Mux, __OPU1PayloadType);
+							__ODU1Mux = FPGA_LINE_ADM_10_MUX_ODU12_GET(&fpga_line_adm_10, ((Line * 4) + ODU1Idx)) - 8;
+							__OPU1PayloadType = FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_GET(&fpga_line_adm_10, ODU1Mux);
+							FPGA_LINE_ADM_10_MUX_ODU12_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_MUX_ODU12_ODU1(__ODU1Mux));
+							FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_SET(&fpga_line_adm_10, __ODU1Mux, __OPU1PayloadType);
 						}
-						BSP_FPGA_LINE_MUX_ODU12_SET((Line * 4) + ODU1Idx, BSP_FPGA_LINE_MUX_ODU12_ODU1(ODU1Mux));
-						if (ClDataType[TargetClient] == 130)
-							BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(ODU1Mux, BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_STM16);
+						FPGA_LINE_ADM_10_MUX_ODU12_SET(&fpga_line_adm_10, (Line * 4) + ODU1Idx, FPGA_LINE_ADM_10_MUX_ODU12_ODU1(ODU1Mux));
+						if (ClDataType[TargetClient] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
+							FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_SET(&fpga_line_adm_10, ODU1Mux, FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_STM16);
 					}
 				}
 			}
@@ -567,7 +567,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 						/*Target is line ODU1 container*/
 						TargetLine = ((Target - 1) / 4);
 						TargetODU1Idx = ((Target - 1) % 4);
-						BSP_FPGA_LINE_MUX_ODU12_SET((Line * 4) + ODU1Idx, BSP_FPGA_LINE_MUX_ODU12_LINE(TargetLine, TargetODU1Idx));
+						FPGA_LINE_ADM_10_MUX_ODU12_SET(&fpga_line_adm_10, (Line * 4) + ODU1Idx, FPGA_LINE_ADM_10_MUX_ODU12_LINE(TargetLine, TargetODU1Idx));
 					}
 				}
 			}
@@ -579,9 +579,9 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 			{
 				if (LnOPU1Payload[Line][ODU1Idx] == 1 /*2xODU0*/)
 				{
-					ODU1Mux = BSP_FPGA_LINE_MUX_ODU12_GET((Line * 4) + ODU1Idx) - 8;
-					BSP_FPGA_LINE_MUX_ODU12_SET((Line * 4) + ODU1Idx, BSP_FPGA_LINE_MUX_ODU12_ODU1(ODU1Mux));
-					BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_SET(ODU1Mux, BSP_FPGA_LINE_MUX_OPU1_PAYLOAD_TYPE_2xODU0);
+					ODU1Mux = FPGA_LINE_ADM_10_MUX_ODU12_GET(&fpga_line_adm_10, (Line * 4) + ODU1Idx) - 8;
+					FPGA_LINE_ADM_10_MUX_ODU12_SET(&fpga_line_adm_10, (Line * 4) + ODU1Idx, FPGA_LINE_ADM_10_MUX_ODU12_ODU1(ODU1Mux));
+					FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_SET(&fpga_line_adm_10, ODU1Mux, FPGA_LINE_ADM_10_MUX_OPU1_PAYLOAD_TYPE_2xODU0);
 					
 					for (ODU0Idx = 0; ODU0Idx < 2; ODU0Idx++)
 					{
@@ -607,24 +607,24 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 							ODU0Mux = TargetClient;
 							for (i = 0; i < 16; i++)
 							{
-								__ODU0Mux = BSP_FPGA_LINE_MUX_ODU01_GET(i) - 0x10;
+								__ODU0Mux = FPGA_LINE_ADM_10_MUX_ODU01_GET(&fpga_line_adm_10, i) - 0x10;
 								if (__ODU0Mux == ODU0Mux)
 									break;
 							}
 							if (i != ((ODU1Mux*2) + ODU0Idx))
 							{
-								__ODU0Mux = BSP_FPGA_LINE_MUX_ODU01_GET((ODU1Mux*2) + ODU0Idx) - 0x10;
-								__OPU0PayloadType = BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_GET(ODU0Mux);
-								BSP_FPGA_LINE_MUX_ODU01_SET(i, BSP_FPGA_LINE_MUX_ODU01_ODU0(__ODU0Mux));
-								BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(__ODU0Mux, __OPU0PayloadType);
+								__ODU0Mux = FPGA_LINE_ADM_10_MUX_ODU01_GET(&fpga_line_adm_10, (ODU1Mux*2) + ODU0Idx) - 0x10;
+								__OPU0PayloadType = FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_GET(&fpga_line_adm_10, ODU0Mux);
+								FPGA_LINE_ADM_10_MUX_ODU01_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_MUX_ODU01_ODU0(__ODU0Mux));
+								FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_SET(&fpga_line_adm_10, __ODU0Mux, __OPU0PayloadType);
 							}
-							BSP_FPGA_LINE_MUX_ODU01_SET((ODU1Mux*2) + ODU0Idx, BSP_FPGA_LINE_MUX_ODU01_ODU0(ODU0Mux));
-							if (ClDataType[TargetClient] == 257)
-								BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(ODU0Mux, BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_1GE);
-							else if (ClDataType[TargetClient] == 128)
-								BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(ODU0Mux, BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_STM1);
-							else if (ClDataType[TargetClient] == 129)
-								BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_SET(ODU0Mux, BSP_FPGA_LINE_MUX_OPU0_PAYLOAD_TYPE_STM4);
+							FPGA_LINE_ADM_10_MUX_ODU01_SET(&fpga_line_adm_10, (ODU1Mux*2) + ODU0Idx, FPGA_LINE_ADM_10_MUX_ODU01_ODU0(ODU0Mux));
+							if (ClDataType[TargetClient] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE)
+								FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_SET(&fpga_line_adm_10, ODU0Mux, FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_1GE);
+							else if (ClDataType[TargetClient] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1)
+								FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_SET(&fpga_line_adm_10, ODU0Mux, FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_STM1);
+							else if (ClDataType[TargetClient] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4)
+								FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_SET(&fpga_line_adm_10, ODU0Mux, FPGA_LINE_ADM_10_MUX_OPU0_PAYLOAD_TYPE_STM4);
 						}
 					}
 					
@@ -650,7 +650,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 							/*Target is line ODU0 container*/
 							TargetLine = ((Target - 1) / 8);
 							TargetODU0Idx = ((Target - 1) % 8);
-							BSP_FPGA_LINE_MUX_ODU01_SET((ODU1Mux*2) + ODU0Idx, BSP_FPGA_LINE_MUX_ODU01_LINE(TargetLine, TargetODU0Idx));
+							FPGA_LINE_ADM_10_MUX_ODU01_SET(&fpga_line_adm_10, (ODU1Mux*2) + ODU0Idx, FPGA_LINE_ADM_10_MUX_ODU01_LINE(TargetLine, TargetODU0Idx));
 						}
 					}
 				}
@@ -660,7 +660,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 		
 		for (Client = 0; Client < PROFILE_ADM10_CLIENT_PORTS; Client++)
 		{
-			if (ClDataType[Client] == 130)
+			if (ClDataType[Client] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
 			{
 				Target = 0;
 				for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
@@ -681,15 +681,17 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 				{
 					TargetLine = ((Target - 1) / 4);
 					TargetODU1Idx = ((Target - 1) % 4);
-					BSP_FPGA_LINE_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(Client, TargetLine, TargetODU1Idx);
-					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
+					FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(&fpga_line_adm_10, Client, TargetLine, TargetODU1Idx);
+					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK);
 				}
 				else
 				{
-					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK | BSP_FPGA_CLIENT_IFACE_CTRL_AIS_MASK);
+					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK | FPGA_CLIENT_ADM_10_IFACE_CTRL_AIS_MASK);
 				}
 			}
-			else if ((ClDataType[Client] == 128) || (ClDataType[Client] == 129) || (ClDataType[Client] == 257))
+			else if ((ClDataType[Client] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1) || \
+				(ClDataType[Client] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4) || \
+				(ClDataType[Client] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE))
 			{
 				Target = 0;
 				for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
@@ -709,12 +711,12 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 				{
 					TargetLine = ((Target - 1) / 8);
 					TargetODU0Idx = ((Target - 1) % 8);
-					BSP_FPGA_LINE_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(Client, TargetLine, TargetODU0Idx);						
-					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
+					FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(&fpga_line_adm_10, Client, TargetLine, TargetODU0Idx);						
+					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK);
 				}
 				else
 				{
-					BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK | BSP_FPGA_CLIENT_IFACE_CTRL_AIS_MASK);
+					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK | FPGA_CLIENT_ADM_10_IFACE_CTRL_AIS_MASK);
 				}
 			}
 		}
@@ -724,7 +726,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 		/* Cross-connect is autoconfigured in FPGA */
 		for (Client = 0; Client < 16; Client++)
 		{
-			BSP_FPGA_CLIENT_IFACE_CTRL_SET(Client, BSP_FPGA_CLIENT_IFACE_CTRL_CNTR_EN_MASK);
+			FPGA_CLIENT_AGG_2X10_BS_IFACE_CTRL_SET(&fpga_line_agg_2x10_bs, Client, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK);
 		}
 	}
 }

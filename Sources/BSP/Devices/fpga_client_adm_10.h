@@ -1,0 +1,101 @@
+#ifndef __FPGA_CLIENT_ADM_10_H
+#define __FPGA_CLIENT_ADM_10_H
+
+#include "stm32f4xx_hal.h"
+#include "bsp_config.h"
+#include "bsp_dev.h"
+#ifdef BSP_CONFIG_USE_FREERTOS
+#include "cmsis_os.h"
+#endif
+
+#define FPGA_CLIENT_ADM_10_IFACE_CNT	8
+
+#define FPGA_CLIENT_ADM_10_IFACE_MODE_1GE		0x01
+#define FPGA_CLIENT_ADM_10_IFACE_MODE_STM1	0x03
+#define FPGA_CLIENT_ADM_10_IFACE_MODE_STM4	0x02
+#define FPGA_CLIENT_ADM_10_IFACE_MODE_STM16	0x04
+#define FPGA_CLIENT_ADM_10_IFACE_MODE_SET(Dev, IfaceIdx, __Mode)		\
+	((IfaceIdx) >= FPGA_CLIENT_ADM_10_IFACE_CNT) ? \
+	-1 : \
+	((Dev)->Iface[(IfaceIdx)].Mode = (__Mode), 0)
+
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_TX_PLL_LOCK_MASK 			(1 << 0)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_RX_PLL_LOCK_MASK 			(1 << 1)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_TX_CLB_DONE_MASK 			(1 << 2)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_RX_LOS_MASK 						(1 << 3)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_SERIAL_MASK 	(1 << 4)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_POST_CDR_MASK (1 << 5)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_PRE_CDR_MASK 	(1 << 6)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_MASK 					(FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_SERIAL_MASK | FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_POST_CDR_MASK | FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_PRE_CDR_MASK)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_PWR_DOWM_MASK 					(1 << 7)
+#define FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_SET(Dev, IfaceIdx, __Loopback) \
+	((IfaceIdx) >= FPGA_CLIENT_ADM_10_IFACE_CNT) ? \
+	-1 : \
+	((Dev)->Iface[(IfaceIdx)].PMAStatus = ((Dev)->Iface[(IfaceIdx)].PMAStatus & (~(FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_MASK))) | (__Loopback), 0)
+
+
+#define FPGA_CLIENT_ADM_10_IFACE_PCSSTATUS_LOCK_MASK	(1 << 0)
+
+#define FPGA_CLIENT_ADM_10_IFACE_CDRSTATUS_LOCK_MASK	(1 << 0)
+
+#define FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK		(1 << 0)
+#define FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_RST_MASK		(1 << 1)
+#define FPGA_CLIENT_ADM_10_IFACE_CTRL_AIS_MASK				(1 << 7)
+#define FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(Dev, IfaceIdx, __Ctrl)		\
+	((IfaceIdx) >= FPGA_CLIENT_ADM_10_IFACE_CNT) ? \
+	-1 : \
+	((Dev)->Iface[(IfaceIdx)].Ctrl = (__Ctrl), 0)
+
+#define FPGA_CLIENT_ADM_10_IFACE_STATUS_CNTR_OVERFLOW_MASK		(1 << 0)
+
+#define FPGA_CLIENT_ADM_10_IFACE_SDH_RX_STATUS_LOF_MASK 		(1 << 0)
+#define FPGA_CLIENT_ADM_10_IFACE_SDH_RX_STATUS_AIS_MASK 		(1 << 3)
+#define FPGA_CLIENT_ADM_10_IFACE_SDH_RX_STATUS_MSRDI_MASK 	(1 << 4)
+#define FPGA_CLIENT_ADM_10_IFACE_SDH_RX_STATUS_MSREI_MASK 	(1 << 5)
+#define FPGA_CLIENT_ADM_10_IFACE_SDH_RX_STATUS_BIP8_MASK 		(1 << 6)
+#define FPGA_CLIENT_ADM_10_IFACE_SDH_RX_STATUS_BIP24_MASK 	(1 << 7)
+
+typedef struct {
+	uint8_t Mode;
+	uint8_t __Mode;
+	uint8_t PMAStatus;
+	uint8_t __PMAStatus;
+	uint8_t __PCSStatus;
+	uint8_t __CDRStatus;
+	
+	uint8_t Ctrl;
+	uint8_t __Ctrl;
+	
+	uint16_t __SDHRxStatus;
+	uint16_t SDHBIP8;
+	uint16_t __SDHBIP8;
+	uint16_t SDHBIP24;
+	uint16_t __SDHBIP24;
+	
+	uint32_t EthRxPkts;
+	uint32_t EthRxOcts;
+	uint16_t EthRxErrs;
+	uint32_t EthTxPkts;
+	uint32_t EthTxOcts;
+	uint16_t EthTxErrs;
+	uint32_t __EthRxPkts;
+	uint32_t __EthRxOcts;
+	uint16_t __EthRxErrs;
+	uint32_t __EthTxPkts;
+	uint32_t __EthTxOcts;
+	uint16_t __EthTxErrs;	
+} FPGA_CLIENT_ADM_10_IFACE_T;
+
+typedef struct {
+	BSP_DEV;
+	const uint32_t BaseAddr;
+	char SwVersion[16];
+	float Temp;
+	FPGA_CLIENT_ADM_10_IFACE_T Iface[FPGA_CLIENT_ADM_10_IFACE_CNT];
+} FPGA_CLIENT_ADM_10_T;
+
+int32_t FPGA_CLIENT_ADM_10_Init(FPGA_CLIENT_ADM_10_T *Dev);
+int32_t FPGA_CLIENT_ADM_10_Update(FPGA_CLIENT_ADM_10_T *Dev);
+void FPGA_CLIENT_ADM_10_Deinit(FPGA_CLIENT_ADM_10_T *Dev);
+
+#endif /* __FPGA_CLIENT_ADM_10_H */
