@@ -631,6 +631,36 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ksz8895.c</FilePath>
             </File>
+            <File>
+              <FileName>fpga_client_adm_10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_adm_10.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_client_agg_2x10_bs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_agg_2x10_bs.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_line_adm_10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_line_adm_10.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_line_agg_2x10_bs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_line_agg_2x10_bs.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_maxv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_maxv.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_iface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_iface.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1774,6 +1804,36 @@
               <FileName>ksz8895.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ksz8895.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_client_adm_10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_adm_10.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_client_agg_2x10_bs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_agg_2x10_bs.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_line_adm_10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_line_adm_10.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_line_agg_2x10_bs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_line_agg_2x10_bs.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_maxv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_maxv.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_iface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_iface.c</FilePath>
             </File>
           </Files>
         </Group>

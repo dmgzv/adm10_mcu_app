@@ -168,7 +168,7 @@ int32_t BSP_FPGA_FLASH_RandomTest(void)
 
 static int32_t BSP_FPGA_FLASH_CheckConditions(void)
 {
-	uint32_t i;
+	//uint32_t i;
 	
 	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) || (!dim3r3400_load_timeout))
 		return -1;
@@ -178,6 +178,7 @@ static int32_t BSP_FPGA_FLASH_CheckConditions(void)
 		return -1;
 	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
 		return -1;
+	/*
 	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
 		return -1;
 	for (i = 0 ; i < BSP_FPGA_CLIENT_CNT; i++)
@@ -185,6 +186,7 @@ static int32_t BSP_FPGA_FLASH_CheckConditions(void)
 		if (BSP_DEV_GET_STATE(&fpga_client[i]) != BSP_DEV_STATE_OK)
 			return -1;
 	}
+	*/
 	return 0;
 }
 
