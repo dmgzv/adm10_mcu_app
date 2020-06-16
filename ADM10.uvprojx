@@ -661,6 +661,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\fpga_iface.c</FilePath>
             </File>
+            <File>
+              <FileName>fpga_client_adm_2_5.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_adm_2_5.h</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_client_adm_2_5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_adm_2_5.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1834,6 +1844,16 @@
               <FileName>fpga_iface.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\fpga_iface.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_client_adm_2_5.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_adm_2_5.h</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_client_adm_2_5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_adm_2_5.c</FilePath>
             </File>
           </Files>
         </Group>

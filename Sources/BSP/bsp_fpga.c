@@ -74,6 +74,24 @@ FPGA_CLIENT_AGG_2X10_BS_T fpga_client_agg_2x10_bs[BSP_FPGA_CLIENT_CNT] =
 	},
 };
 
+FPGA_CLIENT_ADM_2_5_T fpga_client_adm_2_5[BSP_FPGA_CLIENT_CNT] =
+{
+	{
+		.DevName = "FPGA_CLIENT_1",
+		.DevId = "",
+		.InitContErrThr = 10,
+		.UpdateContErrThr = 10,
+		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
+	},
+	{
+		.DevName = "FPGA_CLIENT_2",
+		.DevId = "",
+		.InitContErrThr = 10,
+		.UpdateContErrThr = 10,
+		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(1),
+	},
+};
+
 static int32_t BSP_FPGA_CheckConditions(void)
 {
 	uint32_t i;

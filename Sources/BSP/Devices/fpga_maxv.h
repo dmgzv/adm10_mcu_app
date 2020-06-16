@@ -10,6 +10,7 @@
 
 #define FPGA_MAXV_MODE_AGG_2X10_BS	0
 #define FPGA_MAXV_MODE_ADM_10				1
+#define FPGA_MAXV_MODE_ADM_2_5			2
 #define FPGA_MAXV_MODE_SET(Dev, __Mode) (Dev)->Mode = __Mode;
 
 #define FPGA_MAXV_STATUS_LINE_MASK				(1 << 1)
