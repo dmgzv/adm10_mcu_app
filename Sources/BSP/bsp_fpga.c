@@ -22,7 +22,7 @@ FPGA_MAXV_T fpga_maxv =
 };
 FPGA_LINE_ADM_10_T fpga_line_adm_10  =
 {
-	.DevName = "FPGA_LINE",
+	.DevName = "FPGA_LINE_ADM_10",
 	.DevId = "",
 	.InitContErrThr = 10,
 	.UpdateContErrThr = 10,
@@ -31,7 +31,16 @@ FPGA_LINE_ADM_10_T fpga_line_adm_10  =
 
 FPGA_LINE_AGG_2X10_BS_T fpga_line_agg_2x10_bs  =
 {
-	.DevName = "FPGA_LINE",
+	.DevName = "FPGA_LINE_AGG_2X10_BS",
+	.DevId = "",
+	.InitContErrThr = 10,
+	.UpdateContErrThr = 10,
+	.BaseAddr = BSP_FPGA_LINE_BASE_ADDR,
+};
+
+FPGA_LINE_AGG_2X10_EFEC_T fpga_line_agg_2x10_efec  =
+{
+	.DevName = "FPGA_LINE_AGG_2X10_EFEC",
 	.DevId = "",
 	.InitContErrThr = 10,
 	.UpdateContErrThr = 10,
@@ -41,14 +50,14 @@ FPGA_LINE_AGG_2X10_BS_T fpga_line_agg_2x10_bs  =
 FPGA_CLIENT_ADM_10_T fpga_client_adm_10[BSP_FPGA_CLIENT_CNT] =
 {
 	{
-		.DevName = "FPGA_CLIENT_1",
+		.DevName = "FPGA_CLIENT_1_ADM_10",
 		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
 	},
 	{
-		.DevName = "FPGA_CLIENT_2",
+		.DevName = "FPGA_CLIENT_2_ADM_10",
 		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
@@ -59,14 +68,32 @@ FPGA_CLIENT_ADM_10_T fpga_client_adm_10[BSP_FPGA_CLIENT_CNT] =
 FPGA_CLIENT_AGG_2X10_BS_T fpga_client_agg_2x10_bs[BSP_FPGA_CLIENT_CNT] =
 {
 	{
-		.DevName = "FPGA_CLIENT_1",
+		.DevName = "FPGA_CLIENT_1_AGG_2X10_BS",
 		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
 	},
 	{
-		.DevName = "FPGA_CLIENT_2",
+		.DevName = "FPGA_CLIENT_2_AGG_2X10_BS",
+		.DevId = "",
+		.InitContErrThr = 10,
+		.UpdateContErrThr = 10,
+		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(1),
+	},
+};
+
+FPGA_CLIENT_AGG_2X10_EFEC_T fpga_client_agg_2x10_efec[BSP_FPGA_CLIENT_CNT] =
+{
+	{
+		.DevName = "FPGA_CLIENT_1_AGG_2X10_EFEC",
+		.DevId = "",
+		.InitContErrThr = 10,
+		.UpdateContErrThr = 10,
+		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
+	},
+	{
+		.DevName = "FPGA_CLIENT_1_AGG_2X10_EFEC",
 		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
@@ -143,7 +170,7 @@ void BSP_FPGA_Process(void)
 					}
 					else if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 					{
-						if (BSP_DEV_GET_STATE(&fpga_line_adm_10)  != BSP_DEV_STATE_OK)
+						if (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs)  != BSP_DEV_STATE_OK)
 						{
 							FPGA_LINE_AGG_2X10_BS_Init(&fpga_line_agg_2x10_bs);
 						}
@@ -152,11 +179,23 @@ void BSP_FPGA_Process(void)
 							FPGA_LINE_AGG_2X10_BS_Update(&fpga_line_agg_2x10_bs);
 						}
 					}
+					else if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC)
+					{
+						if (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec)  != BSP_DEV_STATE_OK)
+						{
+							FPGA_LINE_AGG_2X10_EFEC_Init(&fpga_line_agg_2x10_efec);
+						}
+						else
+						{
+							FPGA_LINE_AGG_2X10_EFEC_Update(&fpga_line_agg_2x10_efec);
+						}
+					}
 				}
 				else
 				{
 					FPGA_LINE_ADM_10_Deinit(&fpga_line_adm_10);
 					FPGA_LINE_AGG_2X10_BS_Deinit(&fpga_line_agg_2x10_bs);
+					FPGA_LINE_AGG_2X10_EFEC_Deinit(&fpga_line_agg_2x10_efec);
 				}
 				for (i = 0; i < BSP_FPGA_CLIENT_CNT; i++)
 				{
@@ -184,11 +223,23 @@ void BSP_FPGA_Process(void)
 								FPGA_CLIENT_AGG_2X10_BS_Update(&fpga_client_agg_2x10_bs[i]);
 							}
 						}
+						else if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC)
+						{
+							if (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[i]) != BSP_DEV_STATE_OK)
+							{
+								FPGA_CLIENT_AGG_2X10_EFEC_Init(&fpga_client_agg_2x10_efec[i]);
+							}
+							else
+							{
+								FPGA_CLIENT_AGG_2X10_EFEC_Update(&fpga_client_agg_2x10_efec[i]);
+							}
+						}
 					}
 					else
 					{
 						FPGA_CLIENT_ADM_10_Deinit(&fpga_client_adm_10[i]);
 						FPGA_CLIENT_AGG_2X10_BS_Deinit(&fpga_client_agg_2x10_bs[i]);
+						FPGA_CLIENT_AGG_2X10_EFEC_Deinit(&fpga_client_agg_2x10_efec[i]);
 					}
 				}
 			}
