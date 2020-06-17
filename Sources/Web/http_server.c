@@ -1985,7 +1985,7 @@ write_data:
 	http_server_write_header(conn, &RspHeader);
 	netconn_close(conn);
 	netconn_delete(conn);
-	osDelay(100);
+	osDelay(1000);
 	BSP_Reset();
 	
 	return;
