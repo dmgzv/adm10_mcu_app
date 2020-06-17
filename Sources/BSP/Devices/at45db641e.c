@@ -31,7 +31,7 @@ static int32_t AT45DB641E_ReadId(AT45DB641E_T *Dev)
 	char data[] = {0x9F, 0xFF, 0xFF, 0xFF};
 	int32_t result;
 	
-	result = SPI_TransmitReceive(Dev->SPI, &Dev->CS, data, data, sizeof(data));
+	result = SPI_DMA_TransmitReceive(Dev->SPI, &Dev->CS, data, data, sizeof(data));
 	if (result)
 		return -1;
 	Dev->ManufId = data[1];
@@ -48,7 +48,7 @@ static int32_t AT45DB641E_ReadStatus(AT45DB641E_T *Dev)
 	char data[] = {0xD7, 0xFF};
 	int32_t result;
 	
-	result = SPI_TransmitReceive(Dev->SPI, &Dev->CS, data, data, sizeof(data));
+	result = SPI_DMA_TransmitReceive(Dev->SPI, &Dev->CS, data, data, sizeof(data));
 	if (result)
 		return -1;
 	Dev->Status = data[1];
@@ -60,7 +60,7 @@ static int32_t AT45DB641E_SetBinaryPageSize(AT45DB641E_T *Dev)
 	char data[] = {0x3D, 0x2A, 0x80, 0xA6};
 	int32_t result;
 	
-	result = SPI_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
+	result = SPI_DMA_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
 	if (result)
 		return -1;
 	return 0;
@@ -75,7 +75,7 @@ static int32_t __AT45DB641E_ProgramPage(AT45DB641E_T *Dev, uint32_t Addr, char *
 	data[2]	= Addr >> 8;
 	data[1] = Addr >> 16;
 	
-	result = SPI_SequentialTransmit(Dev->SPI, &Dev->CS, data, sizeof(data), Buffer, Size);
+	result = SPI_DMA_SequentialTransmit(Dev->SPI, &Dev->CS, data, sizeof(data), Buffer, Size);
 	if (result)
 		return -1;
 	return 0;
@@ -97,7 +97,7 @@ int32_t AT45DB641E_ErasePage(AT45DB641E_T *Dev, uint32_t Addr)
 	data[2]	= Addr >> 8;
 	data[1] = Addr >> 16;
 	
-	result = SPI_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
+	result = SPI_DMA_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
 	if (result)
 		goto error;
 	
@@ -153,7 +153,7 @@ int32_t AT45DB641E_EraseBlock(AT45DB641E_T *Dev, uint32_t Addr)
 	data[2]	= Addr >> 8;
 	data[1] = Addr >> 16;
 	
-	result = SPI_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
+	result = SPI_DMA_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
 	if (result)
 		goto error;	
 	
@@ -182,7 +182,7 @@ int32_t AT45DB641E_EraseSector(AT45DB641E_T *Dev, uint32_t Addr)
 	data[2]	= Addr >> 8;
 	data[1] = Addr >> 16;
 	
-	result = SPI_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
+	result = SPI_DMA_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
 	if (result)
 		goto error;
 	
@@ -207,7 +207,7 @@ int32_t AT45DB641E_Erase(AT45DB641E_T *Dev, uint32_t Addr)
 	
 	BSP_DEV_UPDATE(Dev);
 	
-	result = SPI_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
+	result = SPI_DMA_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
 	if (result)
 		goto error;
 	
@@ -236,7 +236,7 @@ int32_t AT45DB641E_Read(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, uint32_t
 	data[2]	= Addr >> 8;
 	data[1] = Addr >> 16;
 	
-	result = SPI_SequentialReceive(Dev->SPI, &Dev->CS, data, sizeof(data), Buffer, Size);
+	result = SPI_DMA_SequentialReceive(Dev->SPI, &Dev->CS, data, sizeof(data), Buffer, Size);
 	if (result)
 		goto error;
 	
@@ -286,7 +286,7 @@ int32_t AT45DB641E_ModifyPage(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, ui
 	data[2]	= Addr >> 8;
 	data[1] = Addr >> 16;
 	
-	result = SPI_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
+	result = SPI_DMA_Transmit(Dev->SPI, &Dev->CS, data, sizeof(data));
 	if (result)
 		goto error;
 	AT45DB641E_msDelay(1);

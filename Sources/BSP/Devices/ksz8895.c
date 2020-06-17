@@ -36,7 +36,7 @@ static int32_t __KSZ8895_ReadReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t *Data)
 	
 	Buffer[0] = 0x03;
 	Buffer[1] = Addr;
-	result = SPI_TransmitReceive(Dev->SPI, &Dev->CS, (char*)Buffer, (char*)Buffer, sizeof(Buffer));
+	result = SPI_DMA_TransmitReceive(Dev->SPI, &Dev->CS, (char*)Buffer, (char*)Buffer, sizeof(Buffer));
 	if (result)
 		return -1;
 	*Data = Buffer[2];
@@ -51,7 +51,7 @@ static int32_t __KSZ8895_WriteReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t Data)
 	Buffer[0] = 0x02;
 	Buffer[1] = Addr;
 	Buffer[2] = Data;
-	result = SPI_Transmit(Dev->SPI, &Dev->CS, (char*)Buffer, sizeof(Buffer));
+	result = SPI_DMA_Transmit(Dev->SPI, &Dev->CS, (char*)Buffer, sizeof(Buffer));
 	if (result)
 		return -1;
 	return 0;

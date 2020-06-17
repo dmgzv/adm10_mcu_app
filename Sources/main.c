@@ -59,9 +59,9 @@ extern PROFILE_DESCR_T ProfileADM10Descr;
 PROFILE_DESCR_T __attribute__((section ("CCM_DATA"))) *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADM10Descr};
 
 PROFILE_T __attribute__((section ("CCM_DATA"))) Profile;
-PROFILE_VALUES_STATIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesStatic;
+PROFILE_VALUES_STATIC_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValuesStatic;
 PROFILE_VALUES_DYNAMIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesDynamic;
-PROFILE_VALUES_CALIB_T __attribute__((section ("CCM_DATA"))) ProfileValuesCalib;
+PROFILE_VALUES_CALIB_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValuesCalib;
 PROFILE_VALUES_T __attribute__((section ("CCM_DATA"))) ProfileValues = {
 	.Dynamic = &ProfileValuesDynamic,
 	.Static = &ProfileValuesStatic,
@@ -72,7 +72,7 @@ PROFILE_PROTOCOL_T __attribute__((section ("CCM_DATA"))) ProfileProtocol;
 PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart5;
 PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart4;
 
-BOOTLOADER_T __attribute__((section ("CCM_DATA"))) Bootloader;
+BOOTLOADER_T /*__attribute__((section ("CCM_DATA")))*/ Bootloader;
 const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= {
 	BSP_PROJECT,
 	BSP_HW_VERSION,

@@ -154,11 +154,16 @@
 #define SPI5_SCK_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOF_CLK_ENABLE()
 #define SPI5_MISO_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOF_CLK_ENABLE() 
 #define SPI5_MOSI_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOF_CLK_ENABLE()
+#define SPI5_DMA_CLK_ENABLE()            __HAL_RCC_DMA2_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define SPI5_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
+#define SPI5_DMA_TX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
+#define SPI5_DMA_RX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
 #else
 #define SPI5_IRQ_PRIORITY               0
+#define SPI5_DMA_TX_IRQ_PRIORITY        0
+#define SPI5_DMA_RX_IRQ_PRIORITY        0
 #endif
 
 #define SPI5_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_128
@@ -173,6 +178,18 @@
 #define SPI5_TIMODE											SPI_TIMODE_DISABLE
 #define	SPI5_MODE												SPI_MODE_MASTER
 
+/* Definition for SPI5's DMA */
+#define SPI5_TX_DMA_CHANNEL              DMA_CHANNEL_2
+#define SPI5_TX_DMA_STREAM               DMA2_Stream4
+#define SPI5_RX_DMA_CHANNEL              DMA_CHANNEL_2
+#define SPI5_RX_DMA_STREAM               DMA2_Stream3
+
+/* Definition for SPI5's NVIC */
+#define SPI5_DMA_TX_IRQn                 DMA2_Stream4_IRQn
+#define SPI5_DMA_RX_IRQn                 DMA2_Stream3_IRQn
+#define SPI5_DMA_TX_IRQHandler           DMA2_Stream4_IRQHandler
+#define SPI5_DMA_RX_IRQHandler           DMA2_Stream3_IRQHandler
+
 typedef struct {
 	void (*SetState)(void *Priv, uint32_t State);
 	void *Priv;
@@ -180,6 +197,8 @@ typedef struct {
 
 typedef struct {
 	SPI_HandleTypeDef handle;
+	DMA_HandleTypeDef hdmatx;
+  DMA_HandleTypeDef hdmarx;
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexId mutex_id;
 	osMessageQId message_queue_id;
@@ -226,5 +245,11 @@ int32_t SPI_SequentialReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *
 int32_t SPI_TransmitReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, char * RxBuffer, uint32_t  Size);
 int32_t SPI_Transmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size);
 int32_t SPI_Receive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size);
+
+int32_t SPI_DMA_SequentialTransmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer1, uint32_t  Size1, char *TxBuffer2, uint32_t  TxSize2);
+int32_t SPI_DMA_SequentialReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, uint32_t  TxSize, char *RxBuffer, uint32_t  RxSize);
+int32_t SPI_DMA_TransmitReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, char * RxBuffer, uint32_t  Size);
+int32_t SPI_DMA_Transmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size);
+int32_t SPI_DMA_Receive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size);
 
 #endif /* __SPI_H */

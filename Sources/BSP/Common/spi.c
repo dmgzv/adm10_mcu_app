@@ -130,6 +130,25 @@ void SPI4_IRQHandler(void)
 
 #ifdef BSP_CONFIG_USE_SPI5
 /**
+  * @brief  This function handles DMA Rx interrupt request.  
+  * @param  None
+  * @retval None    
+  */
+void SPI5_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi5.handle.hdmarx);
+}
+
+/**
+  * @brief  This function handles DMA Tx interrupt request.
+  * @param  None
+  * @retval None  
+  */
+void SPI5_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi5.handle.hdmatx);
+}
+/**
   * @brief  SPI5 interrupt Handler.  
   * @param  None
   * @retval None  
@@ -277,7 +296,9 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		SPI5_MISO_GPIO_CLK_ENABLE();
 		SPI5_MOSI_GPIO_CLK_ENABLE();
 		/* Enable SPI clock */
-		__HAL_RCC_SPI5_CLK_ENABLE(); 		
+		__HAL_RCC_SPI5_CLK_ENABLE();
+		/* Enable SPI DMA clock */
+		SPI5_DMA_CLK_ENABLE();
 		/* SPI SCK GPIO pin configuration  */
 		GPIO_InitStruct.Pin       = SPI5_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
@@ -293,9 +314,57 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin = SPI5_MOSI_PIN;
 		GPIO_InitStruct.Alternate = SPI5_MOSI_AF;			
 		HAL_GPIO_Init(SPI5_MOSI_GPIO_PORT, &GPIO_InitStruct);				
+		
+		/* Configure the DMA handler for Transmission process */
+		spi5.hdmatx.Instance = SPI5_TX_DMA_STREAM;
+		spi5.hdmatx.Init.Channel = SPI5_TX_DMA_CHANNEL;
+		spi5.hdmatx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+		spi5.hdmatx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi5.hdmatx.Init.MemInc = DMA_MINC_ENABLE;
+		spi5.hdmatx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi5.hdmatx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi5.hdmatx.Init.Mode = DMA_NORMAL;
+		spi5.hdmatx.Init.Priority = DMA_PRIORITY_LOW;
+		spi5.hdmatx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi5.hdmatx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi5.hdmatx.Init.MemBurst = DMA_MBURST_INC4;
+		spi5.hdmatx.Init.PeriphBurst = DMA_PBURST_INC4;
+		
+		HAL_DMA_Init(&spi5.hdmatx);   
+		
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmatx, spi5.hdmatx);
+			
+		/* Configure the DMA handler for Transmission process */
+		spi5.hdmarx.Instance = SPI5_RX_DMA_STREAM;		
+		spi5.hdmarx.Init.Channel = SPI5_RX_DMA_CHANNEL;
+		spi5.hdmarx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+		spi5.hdmarx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi5.hdmarx.Init.MemInc = DMA_MINC_ENABLE;
+		spi5.hdmarx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi5.hdmarx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi5.hdmarx.Init.Mode = DMA_NORMAL;
+		spi5.hdmarx.Init.Priority = DMA_PRIORITY_HIGH;
+		spi5.hdmarx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi5.hdmarx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi5.hdmarx.Init.MemBurst = DMA_MBURST_INC4;
+		spi5.hdmarx.Init.PeriphBurst = DMA_PBURST_INC4; 
+
+		HAL_DMA_Init(&spi5.hdmarx);
+			
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmarx, spi5.hdmarx);
+		
+		/* NVIC configuration for DMA transfer complete interrupt (SPI3_TX) */
+		HAL_NVIC_SetPriority(SPI5_DMA_TX_IRQn, SPI5_DMA_TX_IRQ_PRIORITY, 1);
+		HAL_NVIC_EnableIRQ(SPI5_DMA_TX_IRQn);			
+		/* NVIC configuration for DMA transfer complete interrupt (SPI3_RX) */
+		HAL_NVIC_SetPriority(SPI5_DMA_RX_IRQn, SPI5_DMA_RX_IRQ_PRIORITY, 0);   
+		HAL_NVIC_EnableIRQ(SPI5_DMA_RX_IRQn);
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI5_IRQn, SPI5_IRQ_PRIORITY, 0);
+		HAL_NVIC_SetPriority(SPI5_IRQn, SPI5_IRQ_PRIORITY, 2);
 		HAL_NVIC_EnableIRQ(SPI5_IRQn);
+	
 	}
 	else
 #endif /*BSP_CONFIG_USE_SPI5*/
@@ -712,7 +781,7 @@ int32_t SPI_SequentialTransmit(const SPI_TypeDef *Instance, SPI_CS_T *CS, char *
 timeout:
 	spi->seq_tx_timeout_errors++;
 error:
-	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_Abort(&spi->handle);
 	HAL_SPI_DeInit(&spi->handle);
 	HAL_SPI_Init(&spi->handle);
 	if (CS)
@@ -802,7 +871,7 @@ int32_t SPI_SequentialReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *
 timeout:
 	spi->seq_rx_timeout_errors++;
 error:
-	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_Abort(&spi->handle);
 	HAL_SPI_DeInit(&spi->handle);
 	HAL_SPI_Init(&spi->handle);
 	if (CS)
@@ -881,7 +950,7 @@ int32_t SPI_TransmitReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Tx
 timeout:
 	spi->tx_rx_timeout_errors++;
 error:
-	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_Abort(&spi->handle);
 	HAL_SPI_DeInit(&spi->handle);
 	HAL_SPI_Init(&spi->handle);
 	if (CS)
@@ -955,7 +1024,7 @@ int32_t SPI_Transmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, u
 timeout:
 	spi->tx_timeout_errors++;
 error:
-	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_Abort(&spi->handle);
 	HAL_SPI_DeInit(&spi->handle);
 	HAL_SPI_Init(&spi->handle);
 	if (CS)
@@ -1030,7 +1099,370 @@ int32_t SPI_Receive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, ui
 timeout:
 	spi->rx_timeout_errors++;
 error:
-	HAL_SPI_Abort_IT(&spi->handle);
+	HAL_SPI_Abort(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	osMutexRelease( spi->mutex_id );
+	return -1;
+#else /*BSP_CONFIG_USE_FREERTOS*/
+	SPI_T *spi;
+	
+	if (SPI_GetHandle(Instance, &spi))
+		return -1;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 0);
+	
+	if(HAL_SPI_Receive(&spi->handle, (uint8_t *)Buffer, Size, SPI_TIMEOUT) != HAL_OK)
+		goto error;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	return 0;	
+	
+error:
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	return -1;
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+}
+
+/**
+  * @brief  Sequential transmit an amount of data in blocking mode with Interrupt.
+  * @param  Instance: SPI instance
+  * @param  CS: CS pin management instance
+  * @param  TxBuffer1: pointer to buffer with data to transmit first
+  * @param  TxSize1: size of data to transmit first
+  * @param  TxBuffer2: pointer to buffer with data to transmit last
+  * @param  TxSize2: size of data to transmit last
+  * @retval 0 on succes, otherwise -1;
+  */
+int32_t SPI_DMA_SequentialTransmit(const SPI_TypeDef *Instance, SPI_CS_T *CS, char *TxBuffer1, uint32_t  TxSize1, char *TxBuffer2, uint32_t  TxSize2)
+{
+#ifdef BSP_CONFIG_USE_FREERTOS
+	SPI_T *spi;
+	osEvent evt;	
+	
+	if (SPI_GetHandle(Instance, &spi))
+		return -1;
+
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
+		return -1;
+	}
+
+	if (CS)
+		CS->SetState(CS->Priv, 0);
+	
+	if(HAL_SPI_Transmit_DMA(&spi->handle, (uint8_t*)TxBuffer1, TxSize1) != HAL_OK)
+		goto error;
+
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
+	if (evt.status != osEventMessage) 
+		goto timeout;
+	
+	if (evt.value.v != SPI_EVENT_COMPLETE)
+		goto error;
+	
+	if(HAL_SPI_Transmit_DMA(&spi->handle, (uint8_t*)TxBuffer2, TxSize2) != HAL_OK)
+		goto error;
+
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
+	if (evt.status != osEventMessage) 
+		goto timeout;
+	
+	if (evt.value.v != SPI_EVENT_COMPLETE)
+		goto error;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+
+	osMutexRelease( spi->mutex_id );	
+	return 0;
+
+timeout:
+	spi->seq_tx_timeout_errors++;
+error:
+	HAL_SPI_Abort(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	osMutexRelease( spi->mutex_id );
+	return -1;	
+#else /*BSP_CONFIG_USE_FREERTOS*/
+
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+}
+
+/**
+  * @brief  Sequential transmit and then receive an amount of data in blocking mode with Interrupt.
+  * @param  Instance: SPI instance
+  * @param  CS: CS pin management instance
+  * @param  TxBuffer: pointer to buffer with data to transmit
+  * @param  RxBuffer: pointer to buffer for received data
+  * @param  TxSize: size of data to transmit
+  * @param  RxSize: size of data to receive
+  * @retval 0 on succes, otherwise -1;
+  */
+int32_t SPI_DMA_SequentialReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, uint32_t  TxSize, char * RxBuffer, uint32_t  RxSize)
+{
+#ifdef BSP_CONFIG_USE_FREERTOS
+	SPI_T *spi;
+	osEvent evt;
+	
+	if (SPI_GetHandle(Instance, &spi))
+		return -1;
+
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
+		return -1;
+	}
+	
+	if (CS)
+		CS->SetState(CS->Priv, 0);
+	
+	if(HAL_SPI_Transmit_DMA(&spi->handle, (uint8_t*)TxBuffer, TxSize) != HAL_OK)
+		goto error;
+
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
+	if (evt.status != osEventMessage) 
+		goto timeout;
+	
+	if (evt.value.v != SPI_EVENT_COMPLETE)
+		goto error;
+	
+	if(HAL_SPI_Receive_DMA(&spi->handle, (uint8_t *)RxBuffer, RxSize) != HAL_OK)
+		goto error;
+
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
+	if (evt.status != osEventMessage)
+		goto timeout;
+	
+	if (evt.value.v != SPI_EVENT_COMPLETE)
+		goto error;
+
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	
+	osMutexRelease( spi->mutex_id );	
+	return 0;
+
+timeout:
+	spi->seq_rx_timeout_errors++;
+error:
+	HAL_SPI_Abort(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	osMutexRelease( spi->mutex_id );
+	return -1;	
+#else /*BSP_CONFIG_USE_FREERTOS*/
+
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+}
+
+/**
+  * @brief  Transmit and receive an amount of data in blocking mode with Interrupt.
+  * @param  Instance: SPI instance
+  * @param  CS: CS pin management instance
+  * @param  TxBuffer: pointer to buffer with data to transmit
+  * @param  RxBuffer: pointer to buffer for received data
+  * @param  Size: size of data to transmit and receive
+  * @retval 0 on succes, otherwise -1;
+  */
+int32_t SPI_DMA_TransmitReceive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *TxBuffer, char * RxBuffer, uint32_t  Size)
+{
+#ifdef BSP_CONFIG_USE_FREERTOS
+	SPI_T *spi;
+	osEvent evt;	
+	
+	if (SPI_GetHandle(Instance, &spi))
+		return -1;
+
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
+		return -1;
+	}
+	
+	if (CS)
+		CS->SetState(CS->Priv, 0);
+	
+	if(HAL_SPI_TransmitReceive_DMA(&spi->handle, (uint8_t*)TxBuffer, (uint8_t *)RxBuffer, Size) != HAL_OK)
+		goto error;
+
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
+	if (evt.status != osEventMessage)
+		goto timeout;
+	
+	if (evt.value.v != SPI_EVENT_COMPLETE)
+		goto error;
+
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	
+	osMutexRelease( spi->mutex_id );	
+	return 0;
+
+timeout:
+	spi->tx_rx_timeout_errors++;
+error:
+	HAL_SPI_Abort(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	osMutexRelease( spi->mutex_id );
+	return -1;	
+#else /*BSP_CONFIG_USE_FREERTOS*/
+	SPI_T *spi;
+	
+	if (SPI_GetHandle(Instance, &spi))
+		return -1;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 0);
+	
+	if(HAL_SPI_TransmitReceive(&spi->handle, (uint8_t*)TxBuffer, (uint8_t *)RxBuffer, Size, SPI_TIMEOUT) != HAL_OK)
+		goto error;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	return 0;	
+	
+error:
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	return -1;
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+}
+
+/**
+  * @brief  Transmit an amount of data in blocking mode with Interrupt.
+  * @param  Instance: SPI instance
+  * @param  CS: CS pin management instance
+  * @param  Buffer: pointer to buffer with data to transmit
+  * @param  Size: size of data to transmit
+  * @retval 0 on succes, otherwise -1;
+  */
+int32_t SPI_DMA_Transmit(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size)
+{
+#ifdef BSP_CONFIG_USE_FREERTOS
+	SPI_T *spi;
+	osEvent evt;	
+	
+	if (SPI_GetHandle(Instance, &spi))
+		return -1;
+
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
+		return -1;
+	}
+
+	if (CS)
+		CS->SetState(CS->Priv, 0);
+	
+	if(HAL_SPI_Transmit_DMA(&spi->handle, (uint8_t*)Buffer, Size) != HAL_OK)
+		goto error;
+
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
+	if (evt.status != osEventMessage) 
+		goto timeout;
+	if (evt.value.v != SPI_EVENT_COMPLETE)
+		goto error;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+
+	osMutexRelease( spi->mutex_id );	
+	return 0;
+
+timeout:
+	spi->tx_timeout_errors++;
+error:
+	HAL_SPI_Abort(&spi->handle);
+	HAL_SPI_DeInit(&spi->handle);
+	HAL_SPI_Init(&spi->handle);
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	osMutexRelease( spi->mutex_id );
+	return -1;	
+#else /*BSP_CONFIG_USE_FREERTOS*/
+	SPI_T *spi;
+	
+	if (SPI_GetHandle(Instance, &spi))
+		return -1;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 0);
+	
+	if(HAL_SPI_Transmit(&spi->handle, (uint8_t *)Buffer, Size, SPI_TIMEOUT) != HAL_OK)
+		goto error;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	return 0;	
+	
+error:
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	return -1;
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+}
+
+/**
+  * @brief  Receive an amount of data in blocking mode with Interrupt.
+  * @param  Instance: SPI instance
+  * @param  CS: CS pin management instance
+  * @param  Buffer: pointer to buffer for received data
+  * @param  Size: size of data to receive
+  * @retval 0 on succes, otherwise -1;
+  */
+int32_t SPI_DMA_Receive(const SPI_TypeDef * Instance, SPI_CS_T *CS, char *Buffer, uint32_t  Size)
+{
+#ifdef BSP_CONFIG_USE_FREERTOS
+	SPI_T *spi;
+	osEvent evt;	
+	
+	if (SPI_GetHandle(Instance, &spi))
+		return -1;
+
+	if( osMutexWait( spi->mutex_id, SPI_TIMEOUT ) != osOK )
+	{
+		spi->timeout_errors++;
+		return -1;
+	}
+	
+	if (CS)
+		CS->SetState(CS->Priv, 0);
+
+	if(HAL_SPI_Receive_DMA(&spi->handle, (uint8_t *)Buffer, Size) != HAL_OK)
+		goto error;
+
+	evt = osMessageGet(spi->message_queue_id, SPI_TIMEOUT);
+	if (evt.status != osEventMessage) 
+		goto timeout;
+	
+	if (evt.value.v != SPI_EVENT_COMPLETE)
+		goto error;
+	
+	if (CS)
+		CS->SetState(CS->Priv, 1);
+	
+	osMutexRelease( spi->mutex_id );	
+	return 0;
+
+timeout:
+	spi->rx_timeout_errors++;
+error:
+	HAL_SPI_Abort(&spi->handle);
 	HAL_SPI_DeInit(&spi->handle);
 	HAL_SPI_Init(&spi->handle);
 	if (CS)
