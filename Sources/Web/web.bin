@@ -1,11 +1,11 @@
 name: index.html
 type: html
-size: 10439
+size: 10437
 
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>IPG Horizon: ADM-200</title>
+		<title>IPG Horizon: ADM-10</title>
 		<link rel="stylesheet" href="css/style.css">
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<script src="js/jquery-3.4.1.slim.min.js"></script>
@@ -14,7 +14,7 @@ size: 10439
 		<script src="js/script.js"></script>
 	</head>
 		<nav class="navbar navbar-expand navbar-light bg-light fixed-top">
-		  <a class="navbar-brand" href="#">ADM-200</a>
+		  <a class="navbar-brand" href="#">ADM-10</a>
 		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 		    <span class="navbar-toggler-icon"></span>
 		  </button>
