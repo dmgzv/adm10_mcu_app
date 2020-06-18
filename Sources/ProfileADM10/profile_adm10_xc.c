@@ -82,6 +82,12 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8
 			if (Src != *(uint32_t*)Value)
 				return -1;
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
+				return -1;
+			if (Src != *(uint32_t*)Value)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -135,6 +141,13 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8
 				return -1;
 			if (Dst != *(uint32_t*)Value)
 				return -1;
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
+				return -1;
+			if (Dst != *(uint32_t*)Value)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -193,6 +206,12 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8
 			if (Src != *(uint32_t*)Value)
 				return -1;
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
+				return -1;
+			if (Src != *(uint32_t*)Value)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -246,6 +265,13 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetDstValue(PROFILE_T *Profile, uint8
 				return -1;
 			if (Dst != *(uint32_t*)Value)
 				return -1;
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
+				return -1;
+			if (Dst != *(uint32_t*)Value)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -347,6 +373,18 @@ static int32_t PROFILE_ADM10_XC_SetModeValueDependencies(PROFILE_T *Profile, uin
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], (uint32_t*)&ODU0XCDstFactory[i]);
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
+			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+			{
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], (uint32_t*)&ODU1XCSrcFactory[i]);
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], (uint32_t*)&ODU1XCDstFactory[i]);
+			}
+			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+			{
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], (uint32_t*)&ODU0XCSrcFactory[i]);
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], (uint32_t*)&ODU0XCDstFactory[i]);
+			}
+			break;
 		default:
 			return -1;
 	}
@@ -376,6 +414,13 @@ static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profi
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], (uint32_t*)&ODU1XCDstFactory[i]);
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
+			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+			{
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], (uint32_t*)&ODU1XCSrcFactory[i]);
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], (uint32_t*)&ODU1XCDstFactory[i]);
+			}
+			break;
 		default:
 			return -1;
 	}
@@ -399,6 +444,13 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+			{
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], (uint32_t*)&ODU0XCSrcFactory[i]);
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], (uint32_t*)&ODU0XCDstFactory[i]);
+			}
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
 			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], (uint32_t*)&ODU0XCSrcFactory[i]);
@@ -682,11 +734,11 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 					TargetLine = ((Target - 1) / 4);
 					TargetODU1Idx = ((Target - 1) % 4);
 					FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(&fpga_line_adm_10, Client, TargetLine, TargetODU1Idx);
-					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK);
+					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_EN_MASK);
 				}
 				else
 				{
-					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK | FPGA_CLIENT_ADM_10_IFACE_CTRL_AIS_MASK);
+					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_EN_MASK | FPGA_CLIENT_ADM_10_IFACE_CTRL_AIS_MASK);
 				}
 			}
 			else if ((ClDataType[Client] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1) || \
@@ -712,21 +764,29 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 					TargetLine = ((Target - 1) / 8);
 					TargetODU0Idx = ((Target - 1) % 8);
 					FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(&fpga_line_adm_10, Client, TargetLine, TargetODU0Idx);						
-					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK);
+					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_EN_MASK);
 				}
 				else
 				{
-					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK | FPGA_CLIENT_ADM_10_IFACE_CTRL_AIS_MASK);
+					FPGA_CLIENT_ADM_10_IFACE_CTRL_SET(&fpga_client_adm_10[Client / 8], Client % 8, FPGA_CLIENT_ADM_10_IFACE_CTRL_EN_MASK | FPGA_CLIENT_ADM_10_IFACE_CTRL_AIS_MASK);
 				}
 			}
 		}
 	}
-	else
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
 	{
 		/* Cross-connect is autoconfigured in FPGA */
 		for (Client = 0; Client < 16; Client++)
 		{
-			FPGA_CLIENT_AGG_2X10_BS_IFACE_CTRL_SET(&fpga_line_agg_2x10_bs, Client, FPGA_CLIENT_ADM_10_IFACE_CTRL_CNTR_EN_MASK);
+			FPGA_CLIENT_AGG_2X10_BS_IFACE_CTRL_SET(&fpga_client_agg_2x10_bs[Client / 8], Client % 8, FPGA_CLIENT_AGG_2X10_BS_IFACE_CTRL_EN_MASK);
+		}
+	}
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
+	{
+		/* Cross-connect is autoconfigured in FPGA */
+		for (Client = 0; Client < 16; Client++)
+		{
+			FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CTRL_SET(&fpga_client_agg_2x10_efec[Client / 8], Client % 8, FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CTRL_EN_MASK);
 		}
 	}
 }
