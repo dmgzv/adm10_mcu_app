@@ -68,7 +68,7 @@ void BSP_PWR_IN_Process(void)
 						
 						if (dim3r3400_load_timeout)
 						{
-							dim3r3400_load_timeout--;
+							//dim3r3400_load_timeout--;
 						}
 						
 						if (!dim3r3400_load_timeout)
