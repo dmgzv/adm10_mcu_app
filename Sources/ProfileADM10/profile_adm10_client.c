@@ -569,7 +569,11 @@ static int32_t PROFILE_ADM10_CLIENT_SetModeValueDependencies(PROFILE_T *Profile,
 
 static int32_t PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
 {
-	uint32_t Loopback;	
+	uint32_t Mode, OPU1Payload, Loopback;
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+		return -1;
+	
 	if (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS)
 	{
 		/* Reset port to defaults when state is OOS*/
@@ -579,6 +583,11 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(PROFILE_T *Pr
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetALSModeIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetFactoryIdx[Idx]);
+		if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC))
+		{
+			OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+		}
 	}
 	else if (*(uint32_t*)Value == PROFILE_STATE_IS)
 	{
@@ -1297,10 +1306,12 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint3
 			}
 			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].SDHBIP8))
 			{
+				Defects = 0;
 				Errors = fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].SDHBIP8;
 			}
 			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (fpga_client_agg_2x10_efec[Idx / 8].Client[Idx % 8].SDHBIP8))
 			{
+				Defects = 0;
 				Errors = fpga_client_agg_2x10_efec[Idx / 8].Client[Idx % 8].SDHBIP8;
 			}
 			else

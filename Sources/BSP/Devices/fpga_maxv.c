@@ -5,13 +5,88 @@
 #define FPGA_MAXV_BASE_ADDR(Dev) 				((Dev)->BaseAddr)
 #define FPGA_MAXV_SW_VERSION_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x00)
 #define FPGA_MAXV_STATUS_ADDR(Dev)			(FPGA_MAXV_BASE_ADDR(Dev) + 0x01)
-#define FPGA_MAXV_MODE_ADDR(Dev)				(FPGA_MAXV_BASE_ADDR(Dev) + 0x02)
+#define FPGA_MAXV_CONTROL_ADDR(Dev)			(FPGA_MAXV_BASE_ADDR(Dev) + 0x02)
 #define FPGA_MAXV_POWER_UP_ADDR(Dev)		(FPGA_MAXV_BASE_ADDR(Dev) + 0x03)
+#define FPGA_MAXV_PAGE_SELECT_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x04)
+#define FPGA_MAXV_FPGA_SELECT_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x05)
 
 static void FPGA_MAXV_WriteByte(FPGA_MAXV_T *Dev, uint32_t Addr, uint8_t Data)
 {
 	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
 	*((uint8_t*)(Addr)) = Data;
+}
+
+static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
+{
+	uint8_t LinePageSelect, ClientPageSelect;
+	uint32_t Timeout;
+	
+	if (Dev->Mode != Dev->__Mode)
+	{
+		if (Dev->Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
+		{
+			LinePageSelect = 0;
+			ClientPageSelect = 1;
+		}
+		else if (Dev->Mode == FPGA_MAXV_MODE_ADM_10)
+		{
+			LinePageSelect = 2;
+			ClientPageSelect = 3;
+		}
+		else if (Dev->Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC)
+		{
+			LinePageSelect = 4;
+			ClientPageSelect = 5;
+		}
+		else
+		{
+			return;
+		}
+
+		/*Upload Line FPGA*/
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), LinePageSelect);
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), (1 << 0));
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_CONTROL_ADDR(Dev), (1 << 0));
+		Timeout = 100;
+		do {
+			osDelay(10);
+			Dev->Status = *((uint8_t*)FPGA_MAXV_STATUS_ADDR(Dev));
+			Timeout--;
+			if (!Timeout)
+				return;
+		} while(!(Dev->Status & (1 << 1)));
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), 0);
+		
+		/*Upload Clien 1 FPGA*/
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), ClientPageSelect);
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), (1 << 1));
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_CONTROL_ADDR(Dev), (1 << 0));
+		Timeout = 100;
+		do {
+			osDelay(10);
+			Dev->Status = *((uint8_t*)FPGA_MAXV_STATUS_ADDR(Dev));
+			Timeout--;
+			if (!Timeout)
+				return;
+		} while(!(Dev->Status & (1 << 2)));
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), 0);
+		
+		/*Upload Clien 2 FPGA*/
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), ClientPageSelect);
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), (1 << 2));
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_CONTROL_ADDR(Dev), (1 << 0));
+		Timeout = 100;
+		do {
+			osDelay(10);
+			Dev->Status = *((uint8_t*)FPGA_MAXV_STATUS_ADDR(Dev));
+			Timeout--;
+			if (!Timeout)
+				return;
+		} while(!(Dev->Status & (1 << 3)));
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), 0);
+		
+		Dev->__Mode = Dev->Mode; 
+	}
 }
 
 int32_t FPGA_MAXV_Init(FPGA_MAXV_T *Dev)
@@ -31,7 +106,7 @@ int32_t FPGA_MAXV_Init(FPGA_MAXV_T *Dev)
 	SwVersion = *((uint8_t*)FPGA_MAXV_SW_VERSION_ADDR(Dev));
 	snprintf(Dev->SwVersion, sizeof(Dev->SwVersion), "%d", SwVersion);
 	Dev->Status = *((uint8_t*)FPGA_MAXV_STATUS_ADDR(Dev));
-	Dev->Mode = ((*((uint8_t*)FPGA_MAXV_MODE_ADDR(Dev))) >> 7) & 0x01;
+	Dev->Mode = Dev->__Mode = FPGA_MAXV_MODE_NONE;
 	
 	BSP_DEV_INIT_OK(Dev);
 	return 0;
@@ -52,12 +127,7 @@ int32_t FPGA_MAXV_Update(FPGA_MAXV_T *Dev)
 	BSP_DEV_UPDATE(Dev);
 	
 	Dev->Status = *((uint8_t*)FPGA_MAXV_STATUS_ADDR(Dev));
-	Mode = ((*((uint8_t*)FPGA_MAXV_MODE_ADDR(Dev))) >> 7) & 0x01;
-	if (Dev->Mode != Mode)
-	{
-		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_STATUS_ADDR(Dev), ((Dev->Mode & 0x01) << 7) | (1 << 0));
-		Dev->Status = 0;
-	}
+	FPGA_MAXV_UpdateMode(Dev);
 	
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;

@@ -215,7 +215,7 @@ void BSP_UpdateCard(void)
 	
 	BSP_FPGA_Process();
 	
-	//BSP_FPGA_FLASH_Process();
+	BSP_FPGA_FLASH_Process();
 	
 	for (i = 0; i < BSP_SFP_CNT; i++)
 	{

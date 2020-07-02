@@ -206,6 +206,6 @@ void BSP_FPGA_FLASH_Process(void)
 		if(BSP_DEV_GET_STATE(&s29gl01gs) != BSP_DEV_STATE_OK)
 		{
 			S29GL01GS_Init(&s29gl01gs);
-		}	
+		}
 	}
 }

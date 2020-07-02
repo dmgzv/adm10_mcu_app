@@ -2271,6 +2271,11 @@ static void PROFILE_ADM10_LINE_UpdateOTU2PerfValues(PROFILE_T *Profile, uint32_t
 				Defects = 0;
 				Errors = fpga_line_agg_2x10_bs.Iface[Idx].OTU2BIP;
 			}
+			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.OTU2BIP))
+			{
+				Defects = 0;
+				Errors = fpga_client_agg_2x10_efec[Idx].Line.OTU2BIP;
+			}
 			else
 			{
 				Defects = 0;
