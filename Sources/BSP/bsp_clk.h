@@ -17,6 +17,9 @@
 	#error	Define BSP_CONFIG_USE_I2C2 in bsp_config.h for BSP_CLK
 #endif
 
+#define BSP_CLK_SI5332_MODE_RSFEC			0
+#define BSP_CLK_SI5332_MODE_EFEC_I_4	1
+
 #define BSP_CLK_SI5332_6P0_CFG 0
 #define BSP_CLK_SI5332_6P5_CFG 1
 #define BSP_CLK_SI5332_7P0_CFG 2
@@ -36,6 +39,7 @@
 #define BSP_CLK_SI5332_2_DEF_CFG BSP_CLK_SI5332_11P5_CFG
 	
 extern SI5332_T si5332[BSP_CLK_SI5332_CNT];
+extern uint32_t si5332_mode[BSP_CLK_SI5332_CNT];
 extern uint32_t si5332_cfg[BSP_CLK_SI5332_CNT];
 
 void BSP_CLK_Process(void);

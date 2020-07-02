@@ -100,14 +100,18 @@ static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t C
 		SHELL_Transmit(Shell, "FPGA MAXV SW Version: %s\r", fpga_maxv.SwVersion );
 	else
 		SHELL_Transmit(Shell, "FPGA MAXV SW Version: -\r");
-	if (BSP_DEV_GET_STATE(&fpga_line) == BSP_DEV_STATE_OK)
-		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r", fpga_line.SwVersion );
+	if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
+		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r", fpga_line_agg_2x10_bs.SwVersion );
+	else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (BSP_DEV_GET_STATE(&fpga_line_adm_10) == BSP_DEV_STATE_OK))
+		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r", fpga_line_adm_10.SwVersion );
 	else
 		SHELL_Transmit(Shell, "FPGA LINE Version: -\r");
 	for (i = 0; i < BSP_FPGA_CLIENT_CNT; i++)
 	{
-		if (BSP_DEV_GET_STATE(&fpga_client[i]) == BSP_DEV_STATE_OK)
-			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r", i, fpga_client[i].SwVersion );
+		if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[i]) == BSP_DEV_STATE_OK))
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r", i, fpga_client_agg_2x10_bs[i].SwVersion );
+		else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (BSP_DEV_GET_STATE(&fpga_client_adm_10[i]) == BSP_DEV_STATE_OK))
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r", i, fpga_client_adm_10[i].SwVersion );
 		else
 			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: -\r", i);
 	}
@@ -1022,15 +1026,15 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 		{
 			if (Dev == 0)
 			{
-				Addr = BSP_FPGA_LINE_ADDR + 0xF0;
+				Addr = BSP_FPGA_LINE_BASE_ADDR + 0xF0;
 			}
 			else if (Dev == 1)
 			{
-				Addr = BSP_FPGA_CLIENT_ADDR(0) + 0xF0;
+				Addr = BSP_FPGA_CLIENT_BASE_ADDR(0) + 0xF0;
 			}
 			else if (Dev == 2)
 			{
-				Addr = BSP_FPGA_CLIENT_ADDR(1) + 0xF0;
+				Addr = BSP_FPGA_CLIENT_BASE_ADDR(1) + 0xF0;
 			}
 			else
 			{
@@ -1076,19 +1080,19 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			
 			if (Dev == 0)
 			{
-				Data = *(uint8_t*)(BSP_FPGA_LINE_ADDR + Addr);
+				Data = *(uint8_t*)(BSP_FPGA_LINE_BASE_ADDR + Addr);
 			}
 			else if (Dev == 1)
 			{
-				Data = *(uint8_t*)(BSP_FPGA_CLIENT_ADDR(0) + Addr);
+				Data = *(uint8_t*)(BSP_FPGA_CLIENT_BASE_ADDR(0) + Addr);
 			}
 			else if (Dev == 2)
 			{
-				Data = *(uint8_t*)(BSP_FPGA_CLIENT_ADDR(1) + Addr);
+				Data = *(uint8_t*)(BSP_FPGA_CLIENT_BASE_ADDR(1) + Addr);
 			}
 			else if (Dev == 3)
 			{
-				Data = *(uint8_t*)(BSP_FPGA_MAXV_ADDR + Addr);
+				Data = *(uint8_t*)(BSP_FPGA_MAXV_BASE_ADDR + Addr);
 			}
 			else
 			{
@@ -1181,19 +1185,19 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			
 			if (Dev == 0)
 			{
-				*(uint8_t*)(BSP_FPGA_LINE_ADDR + Addr) = Data;
+				*(uint8_t*)(BSP_FPGA_LINE_BASE_ADDR + Addr) = Data;
 			}
 			else if (Dev == 1)
 			{
-				*(uint8_t*)(BSP_FPGA_CLIENT_ADDR(0) + Addr) = Data;
+				*(uint8_t*)(BSP_FPGA_CLIENT_BASE_ADDR(0) + Addr) = Data;
 			}
 			else if (Dev == 2)
 			{
-				*(uint8_t*)(BSP_FPGA_CLIENT_ADDR(1) + Addr) = Data;
+				*(uint8_t*)(BSP_FPGA_CLIENT_BASE_ADDR(1) + Addr) = Data;
 			}
 			else if (Dev == 3)
 			{
-				*(uint8_t*)(BSP_FPGA_MAXV_ADDR + Addr) = Data;
+				*(uint8_t*)(BSP_FPGA_MAXV_BASE_ADDR + Addr) = Data;
 			}
 			else
 			{

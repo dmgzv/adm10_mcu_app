@@ -7,7 +7,7 @@
 #define	S29GL01GS_msDelay(ms) 		HAL_Delay(ms)
 #endif
 
-#define S29GL01GS_MANUFACTURER_CODE   ((uint16_t)0x0089)
+#define S29GL01GS_MANUFACTURER_CODE   ((uint16_t)0x0001)/*((uint16_t)0x0089)*/
 #define S29GL01GS_DEVICE_CODE1        ((uint16_t)0x227E)
 #define S29GL01GS_DEVICE_CODE2        ((uint16_t)0x2228)
 #define S29GL01GS_DEVICE_CODE3        ((uint16_t)0x2201)
