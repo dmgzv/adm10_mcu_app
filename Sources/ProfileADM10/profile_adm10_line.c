@@ -1255,6 +1255,7 @@ static void PROFILE_ADM10_LINE_UpdateInfoAndStaticValues(PROFILE_T *Profile, uin
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoLnSFPVendorIdx[Idx], State);
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoLnSFPSrNumberIdx[Idx], State);
 			PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoLnSFPPtNumberIdx[Idx], State);
+			break;
 		case BSP_DEV_STATE_RESET:
 		case BSP_DEV_STATE_INIT:
 		case BSP_DEV_STATE_FAIL:
