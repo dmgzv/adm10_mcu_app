@@ -15,7 +15,7 @@
 #define FPGA_CLIENT_ADM_2_5_LINE_OTU1_BIP_ADDR(Dev, LineIdx)   			(FPGA_CLIENT_ADM_2_5_LINE_OTU1_ADDR(Dev, LineIdx) + 0x02)
 #define FPGA_CLIENT_ADM_2_5_LINE_OTU1_FEC_CORR_ADDR(Dev, LineIdx)  	(FPGA_CLIENT_ADM_2_5_LINE_OTU1_ADDR(Dev, LineIdx) + 0x04)
 #define FPGA_CLIENT_ADM_2_5_LINE_OTU1_FEC_UNCORR_ADDR(Dev, LineIdx)	(FPGA_CLIENT_ADM_2_5_LINE_OTU1_ADDR(Dev, LineIdx) + 0x08)
-#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_CTRL_ADDR(Dev, LineIdx)   			(FPGA_CLIENT_ADM_2_5_LINE_OTU1_ADDR(Dev, LineIdx) + 0x0C)
+#define FPGA_CLIENT_ADM_2_5_LINE_CTRL_ADDR(Dev, LineIdx)   			(FPGA_CLIENT_ADM_2_5_LINE_OTU1_ADDR(Dev, LineIdx) + 0x0C)
 
 #define FPGA_CLIENT_ADM_2_5_LINE_TRANS_ADDR(Dev, LineIdx)  					(FPGA_CLIENT_ADM_2_5_ADDR(Dev) + ((LineIdx) * 0x40) + 0x10E)
 
@@ -72,9 +72,9 @@
 
 #define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_ADDR(Dev, ODU1FramerIdx)	(FPGA_CLIENT_ADM_2_5_ADDR(Dev) + 0x200 + (ODU1FramerIdx))
 #define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_ADDR(Dev, ODU1FramerIdx)						(FPGA_CLIENT_ADM_2_5_ADDR(Dev) + 0x204 + (ODU1FramerIdx))
-#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ADDR(Dev, ODU1FramerIdx, ODU0Idx)	(FPGA_CLIENT_ADM_2_5_ADDR(Dev) + (ODU0Idx))
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ADDR(Dev, ODU1FramerIdx, ODU0Idx)	(FPGA_CLIENT_ADM_2_5_ADDR(Dev) + 0x208 + ((ODU1FramerIdx) * 2)+ (ODU0Idx))
 
-#define FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_ADDR(Dev, ODU0FramerIdx)	(FPGA_CLIENT_ADM_2_5_ADDR(Dev) + (ODU0FramerIdx))
+#define FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_ADDR(Dev, ODU0FramerIdx)	(FPGA_CLIENT_ADM_2_5_ADDR(Dev) + 0x210 + (ODU0FramerIdx))
 
 static void FPGA_CLIENT_ADM_2_5_WriteByte(FPGA_CLIENT_ADM_2_5_T *Dev, uint32_t Addr, uint8_t Data)
 {
@@ -160,7 +160,7 @@ int32_t FPGA_CLIENT_ADM_2_5_Init(FPGA_CLIENT_ADM_2_5_T *Dev)
 	for (i = 0; i < FPGA_CLIENT_ADM_2_5_LINE_CNT; i++)
 	{		
 		Dev->Line[i].PMAStatus = Dev->Line[i].__PMAStatus = *((uint8_t*)(FPGA_CLIENT_ADM_2_5_LINE_TRANS_PMASTATUS_ADDR(Dev, i)));
-		Dev->Line[i].Ctrl = Dev->Line[i].__Ctrl = *((uint8_t*)(FPGA_CLIENT_ADM_2_5_LINE_OTU1_CTRL_ADDR(Dev, i)));
+		Dev->Line[i].Ctrl = Dev->Line[i].__Ctrl = *((uint8_t*)(FPGA_CLIENT_ADM_2_5_LINE_CTRL_ADDR(Dev, i)));
 		
 		Dev->Line[i].__OTU1Alarms = *((uint16_t*)FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_ADDR(Dev, i));
 		
@@ -215,7 +215,9 @@ int32_t FPGA_CLIENT_ADM_2_5_Update(FPGA_CLIENT_ADM_2_5_T *Dev)
 	uint32_t i, j;
 	uint8_t Status;
 	uint16_t Temp, SDHBIP8, SDHBIP24, EthRxErrs, EthTxErrs;
+	uint16_t OTU1BIP, ODU1BIP, ODU0BIP, OTU1FECUncorr;
 	uint32_t EthRxPkts, EthRxOcts, EthTxPkts, EthTxOcts;
+	uint32_t OTU1FECCorr;
 	
 	if (!Dev)
 		return -1;	
@@ -226,6 +228,121 @@ int32_t FPGA_CLIENT_ADM_2_5_Update(FPGA_CLIENT_ADM_2_5_T *Dev)
 	
 	Temp = *((uint16_t*)(FPGA_CLIENT_ADM_2_5_ADDR(Dev) + 0x06));
 	Dev->Temp = (((Temp & 0x3FF) * 693.0f) / 1024.0f) - 265.0f;
+	
+	for (i = 0 ; i < FPGA_CLIENT_ADM_2_5_LINE_CNT; i++)
+	{
+		Dev->Line[i].__PMAStatus = *((uint8_t*)(FPGA_CLIENT_ADM_2_5_LINE_TRANS_PMASTATUS_ADDR(Dev, i)));
+		Dev->Line[i].__Ctrl = *((uint8_t*)(FPGA_CLIENT_ADM_2_5_LINE_CTRL_ADDR(Dev, i)));
+		
+		Dev->Line[i].__OTU1Alarms = *((uint16_t*)FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_ADDR(Dev, i));
+		
+		OTU1BIP = *((uint16_t*)(FPGA_CLIENT_ADM_2_5_LINE_OTU1_BIP_ADDR(Dev, i)));
+		Dev->Line[i].OTU1BIP = OTU1BIP - Dev->Line[i].__OTU1BIP;
+		Dev->Line[i].__OTU1BIP = OTU1BIP;
+		
+		OTU1FECCorr = *((uint32_t*)(FPGA_CLIENT_ADM_2_5_LINE_OTU1_FEC_CORR_ADDR(Dev, i)));
+		Dev->Line[i].OTU1FECCorr = OTU1FECCorr - Dev->Line[i].__OTU1FECCorr;
+		Dev->Line[i].__OTU1FECCorr = OTU1FECCorr;
+		
+		OTU1FECUncorr = *((uint16_t*)(FPGA_CLIENT_ADM_2_5_LINE_OTU1_FEC_UNCORR_ADDR(Dev, i)));
+		Dev->Line[i].OTU1FECUncorr = OTU1FECUncorr - Dev->Line[i].__OTU1FECUncorr;
+		Dev->Line[i].__OTU1FECUncorr = OTU1FECUncorr;
+		
+		Dev->Line[i].__ODU1Alarms = *((uint16_t*)(FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_ADDR(Dev, i)));	
+			
+		ODU1BIP = *((uint16_t*)(FPGA_CLIENT_ADM_2_5_LINE_ODU1_BIP_ADDR(Dev, i)));
+		Dev->Line[i].ODU1BIP = ODU1BIP - Dev->Line[i].__ODU1BIP;
+		Dev->Line[i].__ODU1BIP = ODU1BIP;
+		
+		for (j = 0; j < FPGA_CLIENT_ADM_2_5_LINE_ODU0_CNT; j++)
+		{
+			Dev->Line[i].__ODU0Alarms[j] = *((uint16_t*)(FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_ADDR(Dev, i, j)));
+			
+			ODU0BIP = *((uint16_t*)(FPGA_CLIENT_ADM_2_5_LINE_ODU0_BIP_ADDR(Dev, i, j)));
+			Dev->Line[i].ODU0BIP[j] = ODU0BIP - Dev->Line[i].__ODU0BIP[j];
+			Dev->Line[i].__ODU0BIP[j] = ODU0BIP;
+		}
+		
+		if (Dev->Line[i].__Ctrl !=  Dev->Line[i].Ctrl)
+		{
+			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_LINE_CTRL_ADDR(Dev, i), Dev->Line[i].Ctrl);
+		}
+		
+		if ((Dev->Line[i].PMAStatus & FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_MASK) != (Dev->Line[i].__PMAStatus & FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_MASK))
+		{
+			if (Dev->Line[i].PMAStatus & FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_SERIAL_MASK)
+			{
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x02, 0x00, i + 4, 0x00);
+				osDelay(5);
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x02, 0x01, i + 4, 0x00);
+				osDelay(5);
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x03, 0x00, i + 4, 0x01);
+				osDelay(5);
+			}
+			else if (Dev->Line[i].PMAStatus & FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_POST_CDR_MASK)
+			{
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x02, 0x00, i + 4, 0x00);
+				osDelay(5);
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x03, 0x00, i + 4, 0x00);
+				osDelay(5);
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x02, 0x01, i + 4, 0x01);
+				osDelay(5);
+			}
+			else if (Dev->Line[i].PMAStatus & FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_PRE_CDR_MASK)
+			{
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x02, 0x01, i + 4, 0x00);
+				osDelay(5);
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x03, 0x00, i + 4, 0x00);
+				osDelay(5);
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x02, 0x00, i + 4, 0x01);
+				osDelay(5);
+			}
+			else
+			{
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x02, 0x00, i + 4, 0x00);
+				osDelay(5);
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x02, 0x01, i + 4, 0x00);
+				osDelay(5);
+				Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_STATUS_ADDR(Dev));
+				if (Status == 0)
+					continue;
+				FPGA_CLIENT_ADM_2_5_WriteCmd(Dev, 0x03, 0x00, i + 4, 0x00);
+				osDelay(5);
+			}
+		}
+	}
 	
 	for (i = 0; i < FPGA_CLIENT_ADM_2_5_CLIENT_CNT; i++)
 	{
@@ -376,8 +493,26 @@ int32_t FPGA_CLIENT_ADM_2_5_Update(FPGA_CLIENT_ADM_2_5_T *Dev)
 		if (Dev->Client[i].ODU1PG.HOTmr != Dev->Client[i].ODU1PG.__HOTmr)
 			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_HO_ADDR(Dev, i), Dev->Client[i].ODU1PG.HOTmr);
 		
+		Dev->Client[i].ODU0PG.__Mode = *((uint8_t*)FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_ADDR(Dev, i));
+		Dev->Client[i].ODU0PG.__Status = *((uint8_t*)FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_STATUS_ADDR(Dev, i));
+		Dev->Client[i].ODU0PG.__PrimaryODUk = *((uint8_t*)FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PRIMARY_ODUk_ADDR(Dev, i));
+		Dev->Client[i].ODU0PG.__ProtectODUk = *((uint8_t*)FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PROTECT_ODUk_ADDR(Dev, i));
+		Dev->Client[i].ODU0PG.__WTRTmr = *((uint8_t*)FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_WTR_ADDR(Dev, i));
+		Dev->Client[i].ODU0PG.__HOTmr = *((uint8_t*)FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_HO_ADDR(Dev, i));
+		
+		if (Dev->Client[i].ODU0PG.Mode != Dev->Client[i].ODU0PG.__Mode)
+			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_ADDR(Dev, i), Dev->Client[i].ODU0PG.Mode);		
+		if (Dev->Client[i].ODU0PG.PrimaryODUk != Dev->Client[i].ODU0PG.__PrimaryODUk)
+			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PRIMARY_ODUk_ADDR(Dev, i), Dev->Client[i].ODU0PG.PrimaryODUk);
+		if (Dev->Client[i].ODU0PG.ProtectODUk != Dev->Client[i].ODU0PG.__ProtectODUk)
+			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PROTECT_ODUk_ADDR(Dev, i), Dev->Client[i].ODU0PG.ProtectODUk);
+		if (Dev->Client[i].ODU0PG.WTRTmr != Dev->Client[i].ODU0PG.__WTRTmr)
+			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_WTR_ADDR(Dev, i), Dev->Client[i].ODU0PG.WTRTmr);
+		if (Dev->Client[i].ODU0PG.HOTmr != Dev->Client[i].ODU0PG.__HOTmr)
+			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_HO_ADDR(Dev, i), Dev->Client[i].ODU0PG.HOTmr);
+		
 	}
-
+	
 	for (i = 0; i < FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_CNT; i++)
 	{
 		Dev->ODU0Framer[i].__OPU0PayloadType = *((uint8_t*)(FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_ADDR(Dev, i)));
@@ -393,7 +528,7 @@ int32_t FPGA_CLIENT_ADM_2_5_Update(FPGA_CLIENT_ADM_2_5_T *Dev)
 		if (Dev->ODU1Framer[i].OPU1PayloadType != Dev->ODU1Framer[i].__OPU1PayloadType)
 			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_ADDR(Dev, i), Dev->ODU1Framer[i].OPU1PayloadType);
 		if (Dev->ODU1Framer[i].OPU1Mux != Dev->ODU1Framer[i].__OPU1Mux)
-			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_ADDR(Dev, i), Dev->ODU1Framer[i].OPU1PayloadType);
+			FPGA_CLIENT_ADM_2_5_WriteByte(Dev, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_ADDR(Dev, i), Dev->ODU1Framer[i].OPU1Mux);
 		for (j = 0; j < 2; j++)
 		{
 			Dev->ODU1Framer[i].__ODU0Mux[j] = *((uint8_t*)(FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ADDR(Dev, i, j)));

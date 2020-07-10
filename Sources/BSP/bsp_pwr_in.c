@@ -12,7 +12,9 @@ DIM3R3400_T dim3r3400 = {
 };
 uint32_t dim3r3400_power_good;
 int32_t dim3r3400_power_12v_init;
-uint32_t dim3r3400_load_timeout = 60;
+#ifdef BSP_PWR_IN_POWER_RESET_TIMEOUT
+uint32_t dim3r3400_power_reset_timeout = BSP_PWR_IN_POWER_RESET_TIMEOUT;
+#endif
 
 static int32_t BSP_PWR_IN_CheckConditions(void)
 {
@@ -65,17 +67,16 @@ void BSP_PWR_IN_Process(void)
 								PowerGood |= 1 << i;
 							}
 						}
-						
-						if (dim3r3400_load_timeout)
+#ifdef BSP_PWR_IN_POWER_RESET_TIMEOUT
+						if (dim3r3400_power_reset_timeout)
 						{
-							dim3r3400_load_timeout--;
+							dim3r3400_power_reset_timeout--;
 						}
-						
-						if (!dim3r3400_load_timeout)
+						if (!dim3r3400_power_reset_timeout)
 						{
 							LOG_Warn("BSP", dim3r3400.DevName, dim3r3400.DevId, "Load Timeout");
 						}
-						
+#endif
 						if (dim3r3400_power_good != PowerGood)
 						{
 							dim3r3400_power_good = PowerGood;
@@ -83,11 +84,16 @@ void BSP_PWR_IN_Process(void)
 							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
 							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
 						}
-						if ((!dim3r3400_power_good) || (!dim3r3400_load_timeout))
+						if (!dim3r3400_power_good)
 						{
 							BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 0);
 						}
-						
+#ifdef BSP_PWR_IN_POWER_RESET_TIMEOUT							
+						if (!dim3r3400_power_reset_timeout)
+						{
+							BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 0);
+						}
+#endif
 					}
 					else
 					{
@@ -106,10 +112,12 @@ void BSP_PWR_IN_Process(void)
 							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
 							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
 						}
-						if (!dim3r3400_load_timeout)
+#ifdef BSP_PWR_IN_POWER_RESET_TIMEOUT	
+						if (!dim3r3400_power_reset_timeout)
 						{
-							dim3r3400_load_timeout = 60;
+							dim3r3400_power_reset_timeout = BSP_PWR_IN_POWER_RESET_TIMEOUT;
 						}
+#endif
 						if (dim3r3400_power_good)
 						{
 							BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 1);

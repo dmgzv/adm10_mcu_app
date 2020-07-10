@@ -8,9 +8,10 @@
 #include "cmsis_os.h"
 #endif
 
-#define FPGA_MAXV_MODE_AGG_2X10_BS	0
-#define FPGA_MAXV_MODE_ADM_10				1
-#define FPGA_MAXV_MODE_ADM_2_5			2
+#define FPGA_MAXV_MODE_NONE								0
+#define FPGA_MAXV_MODE_AGG_2X10_BS				1
+#define FPGA_MAXV_MODE_ADM_10							2
+#define FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5	4
 #define FPGA_MAXV_MODE_SET(Dev, __Mode) (Dev)->Mode = __Mode;
 
 #define FPGA_MAXV_STATUS_LINE_MASK				(1 << 1)
@@ -22,6 +23,7 @@ typedef struct {
 	char SwVersion[9];
 	uint8_t Status;
 	uint32_t Mode;
+	uint32_t __Mode;
 } FPGA_MAXV_T;
 
 int32_t FPGA_MAXV_Init(FPGA_MAXV_T *Dev);
