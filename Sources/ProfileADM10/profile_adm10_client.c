@@ -3,6 +3,7 @@
 #include "profile_adm10_enums.h"
 #include "profile_adm10_bitmsks.h"
 #include "profile_adm10_xc.h"
+#include "profile_adm10_pg.h"
 #include "als.h"
 #include "perf.h"
 #include <string.h>
@@ -227,7 +228,7 @@ static const uint32_t ProfileADM10StaticClSFPTempIdx[PROFILE_ADM10_CLIENT_PORTS]
 	{PROFILE_ADM10_CL_16_SFP_TEMPCMIN_IDX, PROFILE_ADM10_CL_16_SFP_TEMPWMIN_IDX, PROFILE_ADM10_CL_16_SFP_TEMPWMAX_IDX, PROFILE_ADM10_CL_16_SFP_TEMPCMAX_IDX}
 };
 
-static const uint32_t ProfileADM10ConfigClSetStateIdx[PROFILE_ADM10_CLIENT_PORTS] = 
+const uint32_t ProfileADM10ConfigClSetStateIdx[PROFILE_ADM10_CLIENT_PORTS] = 
 {
 	PROFILE_ADM10_CL_1_SETSTATE_IDX, PROFILE_ADM10_CL_2_SETSTATE_IDX, PROFILE_ADM10_CL_3_SETSTATE_IDX, PROFILE_ADM10_CL_4_SETSTATE_IDX,
 	PROFILE_ADM10_CL_5_SETSTATE_IDX, PROFILE_ADM10_CL_6_SETSTATE_IDX, PROFILE_ADM10_CL_7_SETSTATE_IDX, PROFILE_ADM10_CL_8_SETSTATE_IDX,
@@ -618,6 +619,94 @@ static uint64_t ClEthTxOcts[PROFILE_ADM10_CLIENT_PORTS];
 static uint64_t ClEthTxErrs[PROFILE_ADM10_CLIENT_PORTS];
 
 static ALS_T ClALS[PROFILE_ADM10_CLIENT_PORTS];
+
+extern const uint32_t ProfileADM10ConfigLnSetStateIdx[PROFILE_ADM10_LINE_PORTS];
+
+static void PROFILE_ADM10_CLIENT_GetODU0State(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU0Idx, uint32_t *State)
+{
+	uint32_t i, Src, Dst;
+	uint32_t State1, State2;
+	uint32_t PrimaryODUk, __PrimaryODUk, __ProtectODUk;
+	
+	*State = PROFILE_STATE_OOS;
+	PrimaryODUk = (1 + ODU0Idx + (Idx * PROFILE_ADM10_CLIENT_PORT_ODU0S));
+	for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
+	{
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[i], &__PrimaryODUk))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetProtectODUkIdx[i], &__ProtectODUk))
+			return;
+		if (__ProtectODUk == (1 + ODU0Idx + (Idx * PROFILE_ADM10_CLIENT_PORT_ODU0S)))
+		{
+			PrimaryODUk = __PrimaryODUk;
+			break;
+		}		
+	}
+	
+	for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+	{
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], &Src))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], &Dst))
+			return;
+		if (Src == PrimaryODUk)
+		{
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State1))
+				return;
+			if ((Dst >= PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_CL_1_ODU0_1) && (Dst <= PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_CL_16_ODU0_2))
+			{
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[(Dst - PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_CL_1_ODU0_1) / PROFILE_ADM10_CLIENT_PORT_ODU0S], &State2))
+					return;
+				if ((State1 == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) || (State2 == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS))
+					*State = PROFILE_STATE_OOS;
+				else if ((State1 == PROFILE_ADM10_LN_SET_STATE_ENUM_MT) || (State2 == PROFILE_ADM10_CL_SET_STATE_ENUM_MT))
+					*State = PROFILE_STATE_MT;
+				else
+					*State = PROFILE_STATE_IS;				
+			}
+			else if ((Dst >= PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_LN_1_ODU0_1) && (Dst <= PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_LN_4_ODU0_8))
+			{
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[(Dst - PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_LN_1_ODU0_1) / PROFILE_ADM10_CLIENT_PORT_ODU0S], &State2))
+					return;
+				if ((State1 == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) || (State2 == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
+					*State = PROFILE_STATE_OOS;
+				else if ((State1 == PROFILE_ADM10_LN_SET_STATE_ENUM_MT) || (State2 == PROFILE_ADM10_LN_SET_STATE_ENUM_MT))
+					*State = PROFILE_STATE_MT;
+				else
+					*State = PROFILE_STATE_IS;				
+			}
+			break;
+		}
+		else if (Dst == PrimaryODUk)
+		{
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State1))
+				return;
+			if ((Src >= PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_CL_1_ODU0_1) && (Src <= PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_CL_16_ODU0_2))
+			{
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[(Src - PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_CL_1_ODU0_1) / PROFILE_ADM10_CLIENT_PORT_ODU0S], &State2))
+					return;
+				if ((State1 == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) || (State2 == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS))
+					*State = PROFILE_STATE_OOS;
+				else if ((State1 == PROFILE_ADM10_LN_SET_STATE_ENUM_MT) || (State2 == PROFILE_ADM10_CL_SET_STATE_ENUM_MT))
+					*State = PROFILE_STATE_MT;
+				else
+					*State = PROFILE_STATE_IS;				
+			}
+			else if ((Src >= PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_LN_1_ODU0_1) && (Src <= PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_LN_4_ODU0_8))
+			{
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[(Src - PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_LN_1_ODU0_1) / PROFILE_ADM10_CLIENT_PORT_ODU0S], &State2))
+					return;
+				if ((State1 == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) || (State2 == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
+					*State = PROFILE_STATE_OOS;
+				else if ((State1 == PROFILE_ADM10_LN_SET_STATE_ENUM_MT) || (State2 == PROFILE_ADM10_LN_SET_STATE_ENUM_MT))
+					*State = PROFILE_STATE_MT;
+				else
+					*State = PROFILE_STATE_IS;				
+			}
+			break;
+		}
+	}
+}
 
 static int32_t PROFILE_ADM10_CLIENT_GetXCLineODU1(PROFILE_T *Profile, uint32_t Idx, uint32_t *LineIdx, uint32_t *LineODU1Idx)
 {
@@ -2093,6 +2182,13 @@ static void PROFILE_ADM10_CLIENT_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint3
 		(OPU1Payload == PROFILE_ADM10_CL_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
 		(State != PROFILE_STATE_OOS) && (Idx >= 8) && (Idx < 16) && ((Idx % 2) == 0))
 	{
+		PROFILE_ADM10_CLIENT_GetODU0State(Profile, Idx, ODU0Idx, &State);
+	}
+	
+	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1) &&
+		(OPU1Payload == PROFILE_ADM10_CL_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+		(State != PROFILE_STATE_OOS) && (Idx >= 8) && (Idx < 16) && ((Idx % 2) == 0))
+	{
 		ODU0Alarms = 0;
 		FpgaIdx = Idx / 8;
 		LineIdx = (Idx % 8) / 2;
@@ -2157,6 +2253,13 @@ static void PROFILE_ADM10_CLIENT_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint3
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
+	
+	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1) &&
+		(OPU1Payload == PROFILE_ADM10_CL_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+		(State != PROFILE_STATE_OOS) && (Idx >= 8) && (Idx < 16) && ((Idx % 2) == 0))
+	{
+		PROFILE_ADM10_CLIENT_GetODU0State(Profile, Idx, ODU0Idx, &State);
+	}
 	
 	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1) &&
 		(OPU1Payload == PROFILE_ADM10_CL_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
@@ -2517,6 +2620,13 @@ static void PROFILE_ADM10_CLIENT_UpdateODU0PerfValues(PROFILE_T *Profile, uint32
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
 		return;
+	
+	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1) &&
+		(OPU1Payload == PROFILE_ADM10_CL_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+		(State != PROFILE_STATE_OOS) && (Idx >= 8) && (Idx < 16) && ((Idx % 2) == 0))
+	{
+		PROFILE_ADM10_CLIENT_GetODU0State(Profile, Idx, ODU0Idx, &State);
+	}
 	
 	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1) &&
 		(OPU1Payload == PROFILE_ADM10_CL_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
