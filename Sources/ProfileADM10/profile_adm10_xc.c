@@ -1123,7 +1123,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 				if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
 				{
 					TargetLine = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) / 2);
-					TargetODU0Idx = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) % 2);
+					TargetODU0Idx = ((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) % 2);
 					FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(&fpga_client_adm_2_5[1], Client, TargetLine, TargetODU0Idx);				
 					FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_SET(&fpga_client_adm_2_5[1], Client, FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_EN_MASK);
 				}

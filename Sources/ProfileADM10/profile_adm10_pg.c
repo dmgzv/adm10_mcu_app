@@ -1683,24 +1683,14 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 	
 	for (i = 0; i < FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_CNT; i++)
 	{
-		switch (Mode)
-		{
-			case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
-				FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_MANUAL_PRIMARY);
-				break;
-		}
+		FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_MODE_MANUAL_PRIMARY);
 	}
 	
 	for (i = 0 ; i < BSP_FPGA_CLIENT_CNT; i++)
 	{
 		for (j = 0; j < FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_CNT; j++)
 		{
-			switch (Mode)
-			{
-				case PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5:
-					FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_SET(&fpga_client_adm_2_5[i], j, FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_MANUAL_PRIMARY);
-					break;
-			}
+			FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_SET(&fpga_client_adm_2_5[i], j, FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_MANUAL_PRIMARY);
 		}
 	}
 	
@@ -1720,7 +1710,6 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 					ProtectODU1Idx = (ODU1PGProtectODUk[i] - 1) % 4;
 					
 					PrimaryODU1Mux = FPGA_LINE_ADM_10_MUX_ODU12_GET(&fpga_line_adm_10, (PrimaryLineIdx * 4) + PrimaryODU1Idx);
-					FPGA_LINE_ADM_10_MUX_ODU12_SET(&fpga_line_adm_10, (ProtectLineIdx * 4) + ProtectODU1Idx, PrimaryODU1Mux);
 					
 					Target = 0xFFFFFFFF;
 					
@@ -1744,6 +1733,8 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 					
 					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU1(0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU1(15)))
 					{
+						FPGA_LINE_ADM_10_MUX_ODU12_SET(&fpga_line_adm_10, (ProtectLineIdx * 4) + ProtectODU1Idx, PrimaryODU1Mux);
+						
 						Client = Target - 1025;
 						FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU1_PG_PROTECT_ODU1_SET(&fpga_line_adm_10, Client, ProtectLineIdx, ProtectODU1Idx);
 						
@@ -1792,8 +1783,6 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 					
 					ODU1FramerOPU1PayloadType = FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_GET(&fpga_client_adm_2_5[1], PrimaryLineIdx);
 					ODU1FramerOPU1Mux = FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_GET(&fpga_client_adm_2_5[1], PrimaryLineIdx);
-					FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ODU1FramerOPU1PayloadType);
-					FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ODU1FramerOPU1Mux);
 					
 					Target = 0xFFFFFFFF;
 					
@@ -1820,6 +1809,9 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 							(Target == PROFILE_ADM10_XC_CLIENT_ODU1(13)) || 
 							(Target == PROFILE_ADM10_XC_CLIENT_ODU1(15)))
 					{
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ODU1FramerOPU1PayloadType);
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ODU1FramerOPU1Mux);
+						
 						Client = (Target - PROFILE_ADM10_XC_CLIENT_ODU1(8)) / 2;
 						FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_PROTECT_ODU1_SET(&fpga_client_adm_2_5[1], Client, ProtectLineIdx);
 						
@@ -1948,6 +1940,14 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 		FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_SET(&fpga_line_adm_10, i, FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_MODE_MANUAL_PRIMARY);
 	}
 	
+	for (i = 0 ; i < BSP_FPGA_CLIENT_CNT; i++)
+	{
+		for (j = 0; j < FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_CNT; j++)
+		{
+			FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_SET(&fpga_client_adm_2_5[i], j, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_MANUAL_PRIMARY);
+		}
+	}
+	
 	for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
 	{
 		switch (Mode)
@@ -1969,7 +1969,6 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 					ProtectODU1Mux =FPGA_LINE_ADM_10_MUX_ODU12_GET(&fpga_line_adm_10, (ProtectLineIdx * 4) + ProtectODU1Idx);
 					
 					PrimaryODU0Mux =FPGA_LINE_ADM_10_MUX_ODU01_GET(&fpga_line_adm_10, ((PrimaryODU1Mux - 8) * 2) + PrimaryODU0Idx);					
-					FPGA_LINE_ADM_10_MUX_ODU01_SET(&fpga_line_adm_10, ((ProtectODU1Mux - 8) * 2) + ProtectODU0Idx, PrimaryODU0Mux);
 					
 					Target = 0xFFFFFFFF;
 					
@@ -1993,6 +1992,8 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 					
 					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
 					{
+						FPGA_LINE_ADM_10_MUX_ODU01_SET(&fpga_line_adm_10, ((ProtectODU1Mux - 8) * 2) + ProtectODU0Idx, PrimaryODU0Mux);
+						
 						Client = (Target - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) / 2;
 						FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_SET(&fpga_line_adm_10, Client, ProtectLineIdx, (ProtectODU1Idx*2) + ProtectODU0Idx);
 						
@@ -2035,16 +2036,13 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 						(ODU0PGPrimaryODUk[i] != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_NONE) &&
 						(ODU0PGProtectODUk[i] != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_NONE))
 				{
-					
 					PrimaryLineIdx = ((ODU0PGPrimaryODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) / 2) / 2;
-					PrimaryODU0Idx = ((ODU0PGPrimaryODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) / 2) % 2;
+					PrimaryODU0Idx = (ODU0PGPrimaryODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) % 2;
 					ProtectLineIdx = ((ODU0PGProtectODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) / 2) / 2;
-					ProtectODU0Idx = ((ODU0PGProtectODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) / 2) % 2;
+					ProtectODU0Idx = (ODU0PGProtectODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) % 2;
 					
 					ODU1FramerOPU1PayloadType = FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_GET(&fpga_client_adm_2_5[1], PrimaryLineIdx);
 					ODU1FramerODU0Mux = FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_GET(&fpga_client_adm_2_5[1], PrimaryLineIdx, PrimaryODU0Idx);
-					FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ODU1FramerOPU1PayloadType);
-					FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ProtectODU0Idx, ODU1FramerODU0Mux);
 					
 					Target = 0xFFFFFFFF;
 					
@@ -2068,6 +2066,9 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 					
 					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
 					{
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ODU1FramerOPU1PayloadType);
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ProtectODU0Idx, ODU1FramerODU0Mux);
+						
 						Client = ((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) / 2;
 						FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PROTECT_ODU0_SET(&fpga_client_adm_2_5[1], Client, ProtectLineIdx, ProtectODU0Idx);
 						
@@ -2577,7 +2578,7 @@ static void PROFILE_ADM10_ODU0PG_UpdateValues(PROFILE_T *Profile)
 					PGActiveODUk = PROFILE_ADM10_ODU0_PG_ACTIVE_ODUK_ENUM_NONE;
 					
 					PrimaryLineIdx = ((PGPrimaryODUk - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) / 2) / 2;
-					PrimaryODU0Idx = ((PGPrimaryODUk - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) / 2) % 2;
+					PrimaryODU0Idx = (PGPrimaryODUk - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) % 2;
 					
 					Target = 0xFFFFFFFF;
 					

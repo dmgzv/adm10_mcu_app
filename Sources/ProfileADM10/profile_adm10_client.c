@@ -629,7 +629,7 @@ static void PROFILE_ADM10_CLIENT_GetODU0State(PROFILE_T *Profile, uint32_t Idx, 
 	uint32_t PrimaryODUk, __PrimaryODUk, __ProtectODUk;
 	
 	*State = PROFILE_STATE_OOS;
-	PrimaryODUk = (1 + ODU0Idx + (Idx * PROFILE_ADM10_CLIENT_PORT_ODU0S));
+	PrimaryODUk = (1025 + ODU0Idx + (Idx * PROFILE_ADM10_CLIENT_PORT_ODU0S));
 	for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[i], &__PrimaryODUk))
@@ -651,7 +651,7 @@ static void PROFILE_ADM10_CLIENT_GetODU0State(PROFILE_T *Profile, uint32_t Idx, 
 			return;
 		if (Src == PrimaryODUk)
 		{
-			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State1))
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State1))
 				return;
 			if ((Dst >= PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_CL_1_ODU0_1) && (Dst <= PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_CL_16_ODU0_2))
 			{
@@ -679,7 +679,7 @@ static void PROFILE_ADM10_CLIENT_GetODU0State(PROFILE_T *Profile, uint32_t Idx, 
 		}
 		else if (Dst == PrimaryODUk)
 		{
-			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State1))
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State1))
 				return;
 			if ((Src >= PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_CL_1_ODU0_1) && (Src <= PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_CL_16_ODU0_2))
 			{
