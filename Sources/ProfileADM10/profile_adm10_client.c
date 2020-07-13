@@ -2439,7 +2439,7 @@ static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_
 			TxErrs = fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].EthTxErrs;
 		}
 		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && \
-			(fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && \
+			(fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && \
 			(Idx < 8) && \
 			(BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx / 8]) == BSP_DEV_STATE_OK))
 		{
@@ -2451,7 +2451,7 @@ static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_
 			TxErrs = fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].EthTxErrs;
 		}
 		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && \
-			(fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && \
+			(fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && \
 			(Idx >= 8) && (Idx < 16) && ((Idx % 2) != 0) && \
 			(BSP_DEV_GET_STATE(&fpga_client_adm_2_5[Idx / 8]) == BSP_DEV_STATE_OK))
 		{
