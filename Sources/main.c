@@ -88,7 +88,7 @@ osThreadId SystemThreadHandle;
 /* Private function prototypes -----------------------------------------------*/
 static void System_Thread(void const *argument);
 /* System Thread definition */
-osThreadDef(System, System_Thread, osPriorityNormal, 0, 256);
+osThreadDef(System, System_Thread, osPriorityNormal, 0, 320);
 
 /* Private functions ---------------------------------------------------------*/
 
