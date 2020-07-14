@@ -8,10 +8,12 @@
 #include "cmsis_os.h"
 #endif
 
-#define FPGA_MAXV_MODE_NONE						0
-#define FPGA_MAXV_MODE_AGG_2X10_BS		1
-#define FPGA_MAXV_MODE_ADM_10					2
+#define FPGA_MAXV_MODE_NONE								0
+#define FPGA_MAXV_MODE_AGG_2X10_BS				1
+#define FPGA_MAXV_MODE_ADM_10							2
 #define FPGA_MAXV_MODE_AGG_2X10_EFEC	3
+#define FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5	4
+
 #define FPGA_MAXV_MODE_SET(Dev, __Mode) (Dev)->Mode = __Mode;
 
 #define FPGA_MAXV_STATUS_LINE_MASK				(1 << 1)

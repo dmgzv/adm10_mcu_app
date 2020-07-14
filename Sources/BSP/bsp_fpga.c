@@ -101,11 +101,29 @@ FPGA_CLIENT_AGG_2X10_EFEC_T fpga_client_agg_2x10_efec[BSP_FPGA_CLIENT_CNT] =
 	},
 };
 
+FPGA_CLIENT_ADM_2_5_T fpga_client_adm_2_5[BSP_FPGA_CLIENT_CNT] =
+{
+	{
+		.DevName = "FPGA_CLIENT_1_ADM_2_5",
+		.DevId = "",
+		.InitContErrThr = 10,
+		.UpdateContErrThr = 10,
+		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
+	},
+	{
+		.DevName = "FPGA_CLIENT_2_ADM_2_5",
+		.DevId = "",
+		.InitContErrThr = 10,
+		.UpdateContErrThr = 10,
+		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(1),
+	},
+};
+
 static int32_t BSP_FPGA_CheckConditions(void)
 {
 	uint32_t i;
 	
-	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) || (!dim3r3400_load_timeout))
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
 		return -1;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		return -1;
@@ -190,6 +208,17 @@ void BSP_FPGA_Process(void)
 							FPGA_LINE_AGG_2X10_EFEC_Update(&fpga_line_agg_2x10_efec);
 						}
 					}
+					else if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5)
+					{
+						if (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs)  != BSP_DEV_STATE_OK)
+						{
+							FPGA_LINE_AGG_2X10_BS_Init(&fpga_line_agg_2x10_bs);
+						}
+						else
+						{
+							FPGA_LINE_AGG_2X10_BS_Update(&fpga_line_agg_2x10_bs);
+						}
+					}
 				}
 				else
 				{
@@ -234,12 +263,38 @@ void BSP_FPGA_Process(void)
 								FPGA_CLIENT_AGG_2X10_EFEC_Update(&fpga_client_agg_2x10_efec[i]);
 							}
 						}
+						else if (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5)
+						{
+							if (i == 0)
+							{
+								if (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[i]) != BSP_DEV_STATE_OK)
+								{
+									FPGA_CLIENT_AGG_2X10_BS_Init(&fpga_client_agg_2x10_bs[i]);
+								}
+								else
+								{
+									FPGA_CLIENT_AGG_2X10_BS_Update(&fpga_client_agg_2x10_bs[i]);
+								}
+							}
+							else
+							{
+								if (BSP_DEV_GET_STATE(&fpga_client_adm_2_5[i]) != BSP_DEV_STATE_OK)
+								{
+									FPGA_CLIENT_ADM_2_5_Init(&fpga_client_adm_2_5[i]);
+								}
+								else
+								{
+									FPGA_CLIENT_ADM_2_5_Update(&fpga_client_adm_2_5[i]);
+								}
+							}
+						}
 					}
 					else
 					{
 						FPGA_CLIENT_ADM_10_Deinit(&fpga_client_adm_10[i]);
 						FPGA_CLIENT_AGG_2X10_BS_Deinit(&fpga_client_agg_2x10_bs[i]);
 						FPGA_CLIENT_AGG_2X10_EFEC_Deinit(&fpga_client_agg_2x10_efec[i]);
+						FPGA_CLIENT_ADM_2_5_Deinit(&fpga_client_adm_2_5[i]);
 					}
 				}
 			}

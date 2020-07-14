@@ -18,7 +18,7 @@ static void FPGA_MAXV_WriteByte(FPGA_MAXV_T *Dev, uint32_t Addr, uint8_t Data)
 
 static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 {
-	uint8_t LinePageSelect, ClientPageSelect;
+	uint8_t LinePageSelect, Client1PageSelect, Client2PageSelect;
 	uint32_t Timeout;
 	
 	if (Dev->Mode != Dev->__Mode)
@@ -26,17 +26,26 @@ static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 		if (Dev->Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 		{
 			LinePageSelect = 0;
-			ClientPageSelect = 1;
+			Client1PageSelect = 1;
+			Client2PageSelect = 1;
 		}
 		else if (Dev->Mode == FPGA_MAXV_MODE_ADM_10)
 		{
 			LinePageSelect = 2;
-			ClientPageSelect = 3;
+			Client1PageSelect = 3;
+			Client2PageSelect = 3;
 		}
 		else if (Dev->Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC)
 		{
 			LinePageSelect = 4;
-			ClientPageSelect = 5;
+			Client1PageSelect = 5;
+			Client2PageSelect = 5;
+		}
+		else if (Dev->Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5)
+		{
+			LinePageSelect = 0;
+			Client1PageSelect = 1;
+			Client2PageSelect = 7;
 		}
 		else
 		{
@@ -58,7 +67,7 @@ static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), 0);
 		
 		/*Upload Clien 1 FPGA*/
-		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), ClientPageSelect);
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), Client1PageSelect);
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), (1 << 1));
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_CONTROL_ADDR(Dev), (1 << 0));
 		Timeout = 100;
@@ -72,7 +81,7 @@ static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), 0);
 		
 		/*Upload Clien 2 FPGA*/
-		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), ClientPageSelect);
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), Client2PageSelect);
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), (1 << 2));
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_CONTROL_ADDR(Dev), (1 << 0));
 		Timeout = 100;
@@ -118,7 +127,6 @@ error:
 
 int32_t FPGA_MAXV_Update(FPGA_MAXV_T *Dev)
 {
-	uint32_t Mode;
 	if (!Dev)
 		return -1;	
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)

@@ -2,7 +2,9 @@
 #define __BSP_PWR_IN_H
 
 #include "dim3r3400.h"
-	
+
+//#define BSP_PWR_IN_POWER_RESET_TIMEOUT 60
+
 #define BSP_PWR_IN_DIM3R3400_ID				"A5"
 #define BSP_PWR_IN_DIM3R3400_I2C			I2C3
 #define BSP_PWR_IN_DIM3R3400_I2C_ADDR	(0x2B << 1)
@@ -19,7 +21,9 @@
 
 extern DIM3R3400_T dim3r3400;
 extern uint32_t dim3r3400_power_good;
-extern uint32_t dim3r3400_load_timeout;
+#ifdef BSP_PWR_IN_POWER_RESET_TIMEOUT
+extern uint32_t dim3r3400_power_reset_timeout;
+#endif
 	
 void BSP_PWR_IN_Process(void);
 

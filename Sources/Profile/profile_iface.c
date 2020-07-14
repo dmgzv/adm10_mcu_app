@@ -191,7 +191,7 @@ static void PROFILE_IFACE_Thread(void const *argument)
 
 int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_PROTOCOL_T *Protocol)
 {
-	osThreadDef_t ThreadDef = { ThreadName, PROFILE_IFACE_Thread, osPriorityAboveNormal, 0, 256};
+	osThreadDef_t ThreadDef = { ThreadName, PROFILE_IFACE_Thread, osPriorityAboveNormal, 0, 320};
 	
 	Iface->StartByte = 0x80 + SlotAddress;
 	Iface->Uart = Uart;

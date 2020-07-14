@@ -10,7 +10,7 @@
       <TargetName>Debug</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
       <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI, DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web;.\Sources\TFTP</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -630,6 +630,11 @@
               <FileName>ksz8895.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ksz8895.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_client_adm_2_5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_adm_2_5.c</FilePath>
             </File>
             <File>
               <FileName>fpga_client_adm_10.c</FileName>
@@ -1814,6 +1819,11 @@
               <FileName>ksz8895.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ksz8895.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_client_adm_2_5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_client_adm_2_5.c</FilePath>
             </File>
             <File>
               <FileName>fpga_client_adm_10.c</FileName>

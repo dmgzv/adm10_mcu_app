@@ -1,0 +1,329 @@
+#ifndef __FPGA_CLIENT_ADM_2_5_H
+#define __FPGA_CLIENT_ADM_2_5_H
+
+#include "stm32f4xx_hal.h"
+#include "bsp_config.h"
+#include "bsp_dev.h"
+#ifdef BSP_CONFIG_USE_FREERTOS
+#include "cmsis_os.h"
+#endif
+
+
+#define FPGA_CLIENT_ADM_2_5_LINE_CNT				4
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_CNT		2
+
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_TX_PLL_LOCK_MASK 			(1 << 0)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_RX_PLL_LOCK_MASK 			(1 << 1)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_TX_CLB_DONE_MASK 			(1 << 2)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_RX_LOS_MASK 						(1 << 3)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_SERIAL_MASK 	(1 << 4)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_POST_CDR_MASK (1 << 5)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_PRE_CDR_MASK 	(1 << 6)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_MASK 					(FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_SERIAL_MASK | FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_POST_CDR_MASK | FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_PRE_CDR_MASK)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_PWR_DOWM_MASK 					(1 << 7)
+#define FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_SET(Dev, LineIdx, __Loopback) \
+	((LineIdx) >= FPGA_CLIENT_ADM_2_5_LINE_CNT) ? \
+	-1 : \
+	((Dev)->Line[(LineIdx)].PMAStatus = ((Dev)->Line[(LineIdx)].PMAStatus & (~(FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_MASK))) | (__Loopback), 0)
+
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_LOS_MASK					(1 << 0)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_LOF_MASK					(1 << 1)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_LOM_MASK					(1 << 2)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_SMBIP8_MASK				(1 << 4)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_FEC_CORR_MASK			(1 << 5)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_FEC_UNCORR_MASK		(1 << 6)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_FEC_DISABLED_MASK	(1 << 7)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_SMBEI_MASK				(0x0F << 12)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_SMBDI_MASK				(1 << 11)
+#define FPGA_CLIENT_ADM_2_5_LINE_OTU1_ALARMS_SMIAE_MASK				(1 << 10)
+
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_SD_MASK				(1 << 0)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_LOF_MASK			(1 << 1)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_LOM_MASK			(1 << 2)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_AIS_MASK			(1 << 3)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_PMBIP8_MASK		(1 << 4)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_OPUCSF_MASK		(1 << 5)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_PMBEI_MASK		(0x0F << 12)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_PMBDI_MASK		(1 << 11)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_STAT_MASK			(0x07 << 8)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_STAT_OCI_MASK	(0x06 << 8)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_STAT_LCK_MASK	(0x05 << 8)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_STAT_AIS_MASK	(0x07 << 8)
+
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_SD_MASK				(1 << 0)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_LOF_MASK			(1 << 1)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_LOM_MASK			(1 << 2)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_AIS_MASK			(1 << 3)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_PMBIP8_MASK		(1 << 4)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_OPUCSF_MASK		(1 << 5)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_PMBEI_MASK		(0x0F << 12)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_PMBDI_MASK		(1 << 11)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_STAT_MASK			(0x07 << 8)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_STAT_OCI_MASK	(0x06 << 8)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_STAT_LCK_MASK	(0x05 << 8)
+#define FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_STAT_AIS_MASK	(0x07 << 8)
+
+#define FPGA_CLIENT_ADM_2_5_LINE_CTRL_EN_MASK				(1 << 0)
+#define FPGA_CLIENT_ADM_2_5_LINE_CTRL_RST_MASK			(1 << 1)
+#define FPGA_CLIENT_ADM_2_5_LINE_CTRL_FEC_DISABLED_MASK	(1 << 7)
+#define FPGA_CLIENT_ADM_2_5_LINE_CTRL_SET(Dev, LineIdx, __Ctrl)   		\
+	((LineIdx) >= FPGA_CLIENT_ADM_2_5_LINE_CNT) ? \
+	-1 : \
+	(((Dev)->Line[(LineIdx)].Ctrl = (__Ctrl)), 0)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_CNT	4
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_MODE_1GE		0x01
+#define FPGA_CLIENT_ADM_2_5_CLIENT_MODE_STM1	0x03
+#define FPGA_CLIENT_ADM_2_5_CLIENT_MODE_STM4	0x02
+#define FPGA_CLIENT_ADM_2_5_CLIENT_MODE_STM16	0x04
+#define FPGA_CLIENT_ADM_2_5_CLIENT_MODE_SET(Dev, ClientIdx, __Mode)		\
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_CNT) ? \
+	-1 : \
+	((Dev)->Client[(ClientIdx)].Mode = (__Mode), 0)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_TX_PLL_LOCK_MASK 			(1 << 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_RX_PLL_LOCK_MASK 			(1 << 1)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_TX_CLB_DONE_MASK 			(1 << 2)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_RX_LOS_MASK 						(1 << 3)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_SERIAL_MASK 	(1 << 4)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_POST_CDR_MASK (1 << 5)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_PRE_CDR_MASK 	(1 << 6)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_MASK 					(FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_SERIAL_MASK | FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_POST_CDR_MASK | FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_PRE_CDR_MASK)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_PWR_DOWM_MASK 					(1 << 7)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_SET(Dev, ClientIdx, __Loopback) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_CNT) ? \
+	-1 : \
+	((Dev)->Client[(ClientIdx)].PMAStatus = ((Dev)->Client[(ClientIdx)].PMAStatus & (~(FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_MASK))) | (__Loopback), 0)
+
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_PCSSTATUS_LOCK_MASK	(1 << 0)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_CDRSTATUS_LOCK_MASK	(1 << 0)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_EN_MASK		(1 << 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_RST_MASK	(1 << 1)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_AIS_MASK	(1 << 7)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_SET(Dev, ClientIdx, __Ctrl)		\
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_CNT) ? \
+	-1 : \
+	((Dev)->Client[(ClientIdx)].Ctrl = (__Ctrl), 0)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_STATUS_CNTR_OVERFLOW_MASK		(1 << 0)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_SDH_RX_STATUS_LOF_MASK 		(1 << 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_SDH_RX_STATUS_AIS_MASK 		(1 << 3)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_SDH_RX_STATUS_MSRDI_MASK 	(1 << 4)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_SDH_RX_STATUS_MSREI_MASK 	(1 << 5)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_SDH_RX_STATUS_BIP8_MASK 		(1 << 6)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_SDH_RX_STATUS_BIP24_MASK 	(1 << 7)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_CNT				4
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_MANUAL_PRIMARY			0x00
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_MANUAL_PROTECT			0x01
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_AUTO_NON_REVERTIVE 	0x04
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_AUTO_REVERTIVE 			0x06
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_SET(Dev, ClientIdx, __Mode) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU0PG.Mode = (__Mode)) , 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_GET(Dev, ClientIdx) 				((Dev)->Client[ClientIdx].ODU0PG.Mode)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_STATUS_GET(Dev, ClientIdx) 			((Dev)->Client[ClientIdx].ODU0PG.__Status)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(Dev, ClientIdx, LineIdx, ODU0Idx) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU0PG.PrimaryODUk = (((LineIdx) * 2) + ODU0Idx)), 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PRIMARY_ODU0_GET(Dev, ClientIdx) 									((Dev)->Client[ClientIdx].ODU0PG.PrimaryODUk)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PROTECT_ODU0_SET(Dev, ClientIdx, LineIdx, ODU0Idx) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU0PG.ProtectODUk = (((LineIdx) * 2) + ODU0Idx)), 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PROTECT_ODU0_GET(Dev, ClientIdx) 									((Dev)->Client[ClientIdx].ODU0PG.ProtectODUk)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_WTR_SET(Dev, ClientIdx, WTR) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU0PG.WTRTmr = (WTR)), 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_WTR_GET(Dev, ClientIdx) 			((Dev)->Client[ClientIdx].ODU0PG.WTRTmr)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_HO_SET(Dev, ClientIdx, HO) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU0PG.HOTmr = (HO)), 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_HO_GET(Dev, ClientIdx) 		((Dev)->Client[ClientIdx].ODU0PG.HOTmr)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_CNT				4
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_MANUAL_PRIMARY			0x00
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_MANUAL_PROTECT			0x01
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_AUTO_NON_REVERTIVE 	0x04
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_AUTO_REVERTIVE 			0x06
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_SET(Dev, ClientIdx, __Mode) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU1PG.Mode = (__Mode)) , 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_GET(Dev, ClientIdx) 				((Dev)->Client[ClientIdx].ODU1PG.Mode)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_STATUS_GET(Dev, ClientIdx) 			((Dev)->Client[ClientIdx].ODU1PG.__Status)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(Dev, ClientIdx, LineIdx) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU1PG.PrimaryODUk = (LineIdx)), 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_PRIMARY_ODU1_GET(Dev, ClientIdx) 									((Dev)->Client[ClientIdx].ODU1PG.PrimaryODUk)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_PROTECT_ODU1_SET(Dev, ClientIdx, LineIdx) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU1PG.ProtectODUk = (LineIdx)), 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_PROTECT_ODU1_GET(Dev, ClientIdx) 									((Dev)->Client[ClientIdx].ODU1PG.ProtectODUk)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_WTR_SET(Dev, ClientIdx, WTR) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU1PG.WTRTmr = (WTR)), 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_WTR_GET(Dev, ClientIdx) 			((Dev)->Client[ClientIdx].ODU1PG.WTRTmr)
+
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_HO_SET(Dev, ClientIdx, HO) \
+	((ClientIdx) >= FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_CNT) ? \
+	-1 : \
+	(((Dev)->Client[ClientIdx].ODU1PG.HOTmr = (HO)), 0)
+#define FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_HO_GET(Dev, ClientIdx) 		((Dev)->Client[ClientIdx].ODU1PG.HOTmr)
+
+#define FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_CNT	4
+
+#define FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_STM1	0x0A
+#define FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_STM4	0x0B
+#define FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_1GE		0x07
+#define FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_NULL	0xFD
+#define FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_SET(Dev, FramerIdx, __OPU0PayloadType) \
+	(FramerIdx) >= FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_CNT ? \
+	-1 : \
+	((Dev)->ODU0Framer[(FramerIdx)].OPU0PayloadType = __OPU0PayloadType, 0)
+
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_CNT	4
+
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_STM16		0x02
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_2XODU0	0x20
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_NULL		0xFD
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(Dev, FramerIdx, __OPU1PayloadType) \
+	(FramerIdx) >= FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_CNT ? \
+	-1 : \
+	((Dev)->ODU1Framer[(FramerIdx)].OPU1PayloadType = __OPU1PayloadType, 0)
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_GET(Dev, FramerIdx) ((Dev)->ODU1Framer[(FramerIdx)].OPU1PayloadType)
+	
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_CLIENT(ClientIdx)	(ClientIdx)
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_SET(Dev, FramerIdx, __OPU1Mux) \
+	(FramerIdx) >= FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_CNT ? \
+	-1 : \
+	((Dev)->ODU1Framer[(FramerIdx)].OPU1Mux = __OPU1Mux, 0)
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_GET(Dev, FramerIdx)	((Dev)->ODU1Framer[(FramerIdx)].OPU1Mux)
+
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ODU0_LINE(LineIdx, ODU0Idx)	(((LineIdx) * 2) + (ODU0Idx))
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ODU0_FRAMER(FramerIdx)			((FramerIdx) + 0x08)
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_SET(Dev, FramerIdx, ODU0Idx, __ODU0Mux) \
+	((FramerIdx) >= FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_CNT) || (ODU0Idx >= 2) ? \
+	-1 : \
+	((Dev)->ODU1Framer[(FramerIdx)].ODU0Mux[ODU0Idx] = __ODU0Mux, 0)
+#define FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_GET(Dev, FramerIdx, ODU0Idx) ((Dev)->ODU1Framer[(FramerIdx)].ODU0Mux[ODU0Idx])
+
+typedef struct {
+	uint8_t OPU0PayloadType;
+	uint8_t __OPU0PayloadType;
+} FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_T;
+
+typedef struct {
+	uint8_t OPU1PayloadType;
+	uint8_t __OPU1PayloadType;
+	uint8_t OPU1Mux;
+	uint8_t __OPU1Mux;
+	uint8_t ODU0Mux[2];
+	uint8_t __ODU0Mux[2];
+} FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_T;
+
+typedef struct {
+	uint8_t PMAStatus;
+	uint8_t __PMAStatus;
+	uint8_t Ctrl;
+	uint8_t __Ctrl;
+	uint16_t __OTU1Alarms;
+	uint16_t OTU1BIP;
+	uint16_t __OTU1BIP;
+	uint32_t OTU1FECCorr;
+	uint32_t __OTU1FECCorr;
+	uint16_t OTU1FECUncorr;
+	uint16_t __OTU1FECUncorr;
+	uint16_t __ODU1Alarms;
+	uint16_t ODU1BIP;
+	uint16_t __ODU1BIP;
+	uint16_t __ODU0Alarms[FPGA_CLIENT_ADM_2_5_LINE_ODU0_CNT];
+	uint16_t ODU0BIP[FPGA_CLIENT_ADM_2_5_LINE_ODU0_CNT];
+	uint16_t __ODU0BIP[FPGA_CLIENT_ADM_2_5_LINE_ODU0_CNT];
+} FPGA_CLIENT_ADM_2_5_LINE_T;
+
+typedef struct {
+	uint8_t Mode;
+	uint8_t __Mode;
+	uint8_t __Status;
+	uint8_t PrimaryODUk;
+	uint8_t __PrimaryODUk;
+	uint8_t ProtectODUk;
+	uint8_t __ProtectODUk;
+	uint8_t WTRTmr;
+	uint8_t __WTRTmr;
+	uint8_t HOTmr;
+	uint8_t __HOTmr;
+} FPGA_LINE_ADM_2_5_CLIENT_ODUk_PG_T;
+
+typedef struct {
+	uint8_t Mode;
+	uint8_t __Mode;
+	uint8_t PMAStatus;
+	uint8_t __PMAStatus;
+	uint8_t __PCSStatus;
+	uint8_t __CDRStatus;	
+	uint8_t Ctrl;
+	uint8_t __Ctrl;	
+	uint16_t __SDHRxStatus;
+	uint16_t SDHBIP8;
+	uint16_t __SDHBIP8;
+	uint16_t SDHBIP24;
+	uint16_t __SDHBIP24;	
+	uint32_t EthRxPkts;
+	uint32_t EthRxOcts;
+	uint16_t EthRxErrs;
+	uint32_t EthTxPkts;
+	uint32_t EthTxOcts;
+	uint16_t EthTxErrs;
+	uint32_t __EthRxPkts;
+	uint32_t __EthRxOcts;
+	uint16_t __EthRxErrs;
+	uint32_t __EthTxPkts;
+	uint32_t __EthTxOcts;
+	uint16_t __EthTxErrs;
+	FPGA_LINE_ADM_2_5_CLIENT_ODUk_PG_T ODU0PG;
+	FPGA_LINE_ADM_2_5_CLIENT_ODUk_PG_T ODU1PG;
+} FPGA_CLIENT_ADM_2_5_CLIENT_T;
+
+typedef struct {
+	BSP_DEV;
+	const uint32_t BaseAddr;
+	char SwVersion[16];
+	float Temp;
+	FPGA_CLIENT_ADM_2_5_CLIENT_T Client[FPGA_CLIENT_ADM_2_5_CLIENT_CNT];
+	FPGA_CLIENT_ADM_2_5_LINE_T Line[FPGA_CLIENT_ADM_2_5_LINE_CNT];
+	
+	FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_T	ODU1Framer[FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_CNT];
+	FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_T	ODU0Framer[FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_CNT];
+	
+} FPGA_CLIENT_ADM_2_5_T;
+
+int32_t FPGA_CLIENT_ADM_2_5_Init(FPGA_CLIENT_ADM_2_5_T *Dev);
+int32_t FPGA_CLIENT_ADM_2_5_Update(FPGA_CLIENT_ADM_2_5_T *Dev);
+void FPGA_CLIENT_ADM_2_5_Deinit(FPGA_CLIENT_ADM_2_5_T *Dev);
+
+#endif /* __FPGA_CLIENT_ADM_2_5_H */

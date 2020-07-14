@@ -67,10 +67,10 @@ PROFILE_VALUES_T __attribute__((section ("CCM_DATA"))) ProfileValues = {
 	.Static = &ProfileValuesStatic,
 	.Calib = &ProfileValuesCalib,
 };
-PROFILE_FLASH_T __attribute__((section ("CCM_DATA"))) ProfileFlash;
-PROFILE_PROTOCOL_T __attribute__((section ("CCM_DATA"))) ProfileProtocol;
-PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart5;
-PROFILE_IFACE_T __attribute__((section ("CCM_DATA"))) ProfileIfaceUart4;
+PROFILE_FLASH_T /*__attribute__((section ("CCM_DATA")))*/ ProfileFlash;
+PROFILE_PROTOCOL_T /*__attribute__((section ("CCM_DATA")))*/ ProfileProtocol;
+PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart5;
+PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart4;
 
 BOOTLOADER_T /*__attribute__((section ("CCM_DATA")))*/ Bootloader;
 const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= {
@@ -88,7 +88,7 @@ osThreadId SystemThreadHandle;
 /* Private function prototypes -----------------------------------------------*/
 static void System_Thread(void const *argument);
 /* System Thread definition */
-osThreadDef(System, System_Thread, osPriorityNormal, 0, 256);
+osThreadDef(System, System_Thread, osPriorityNormal, 0, 320);
 
 /* Private functions ---------------------------------------------------------*/
 
