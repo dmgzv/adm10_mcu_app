@@ -313,8 +313,9 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8
 				}
 				else if ((*(uint32_t*)Value >= PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) &&
 						(*(uint32_t*)Value <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)) &&
-						((((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) % 2) != 0) &&
-						(((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) % 2) == 0))
+						(((((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) % 2) == 0) ||
+						(((((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) % 2) != 0) &&
+						(((*(uint32_t*)Value - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) % 2) == 0))))
 				{
 					/*Allow to set ODU0XC source to Client 10, 12, 14, 16 ODU0 1 containers only*/
 				}
@@ -1054,7 +1055,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 0)) && ((((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) % 2) == 0))
 					{
 						TargetLine = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) / 2);
-						TargetODU0Idx = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) % 2);						
+						TargetODU0Idx = ((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) % 2);						
 						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_SET(&fpga_client_adm_2_5[1], Line, ODU0Idx, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ODU0_LINE(TargetLine, TargetODU0Idx));
 					}
 					else if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 0)) && ((((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) % 2) != 0))
