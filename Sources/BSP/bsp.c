@@ -21,6 +21,8 @@ const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&fpga_line_agg_2x10_bs,
 	(BSP_DEV_T*)&fpga_client_agg_2x10_bs[0],
 	(BSP_DEV_T*)&fpga_client_agg_2x10_bs[1],
+	(BSP_DEV_T*)&fpga_client_adm_2_5[0],
+	(BSP_DEV_T*)&fpga_client_adm_2_5[1],
 	(BSP_DEV_T*)&pca9548a[0],
 	(BSP_DEV_T*)&pca9548a[1],
 	(BSP_DEV_T*)&pca9548a[2],
