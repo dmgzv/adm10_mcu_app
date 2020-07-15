@@ -801,11 +801,11 @@ cmd_err:
 
 #define SHELL_CMD_PCA9548A_HELP \
 "Usage:\r"\
-"    pca9548 <cmd> [<data1> <data2> ...]\r"\
+"    pca9548a <cmd> [<data1> <data2> ...]\r"\
 "Commands:\r"\
 "    help - Display this help.\r"\
 "    init - Init device.\r"\
-"    select <idx> - Select device. <idx>: 0, 1\r"\
+"    select <idx> - Select device. <idx>: 0, 1, 2\r"\
 
 static void SHELL_CMD_PCA9548ACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
