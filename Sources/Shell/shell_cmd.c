@@ -1143,17 +1143,17 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			if (Dev == 0)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(0);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, (void*)BSP_FLASH_FPGA_1_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_1_FW_ADDR_START);
 			}
 			else if (Dev == 1)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(1);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, (void*)BSP_FLASH_FPGA_2_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_2_FW_ADDR_START);
 			}
 			else if (Dev == 2)
 			{
 				BSP_FPGA_FLASH_EraseFPGA(2);
-				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, NULL, (void*)BSP_FLASH_FPGA_3_FW_ADDR_START);
+				TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramFPGA, (void*)BSP_FLASH_FPGA_3_FW_ADDR_START);
 			}
 			else
 			{
@@ -1614,6 +1614,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 	char *p;
 	uint32_t ip[4];
 	ip_addr_t ip_addr;
+	int32_t result;
 	
 	if (CmdParamsCnt == 1)
 	{
@@ -1708,7 +1709,15 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);
 			
 			memset((char*)BSP_SDRAM_ADDR, 0xFF, BSP_FLASH_FPGA_1_FW_ADDR_END - BSP_FLASH_FPGA_1_FW_ADDR_START);
-			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramSDRAM, NULL, (void*)BSP_SDRAM_ADDR);
+			result = TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, TFTP_CLIENT_ProgramSDRAM, (void*)BSP_SDRAM_ADDR);
+			if (result == TFTP_CLIENT_ERROR)
+			{
+				goto download_error;
+			}
+			else if (result == TFTP_CLIENT_TIMEOUT)
+			{
+				goto download_timeout;
+			}
 		}
 	}
 	else
@@ -1726,6 +1735,12 @@ invalid_dev:
 	return;
 invalid_ip_addr:
 	SHELL_Transmit(Shell, "Error: invalid ip address\r");
+	return;
+download_error:
+	SHELL_Transmit(Shell, "Error: download error\r");
+	return;
+download_timeout:
+	SHELL_Transmit(Shell, "Error: download timeout\r");
 	return;
 }
 
@@ -1807,6 +1822,7 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 	char *c;
 	uint32_t ip[4];
 	ip_addr_t ip_addr;
+	int32_t result;
 		
 	if (CmdParamsCnt == 1)
 	{
@@ -1846,9 +1862,18 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 			
 			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);	
 			
-			BOOTLOADER_UpdateNewFwStart(&Bootloader);
+			if (BOOTLOADER_UpdateNewFwStart(&Bootloader))
+				goto download_error;
 			
-			TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback, NULL, (void*)BSP_FLASH_FW_ADDR);
+			result = TFTP_CLIENT_DownloadFile(CmdParamsList[2], &ip_addr, SHELL_CMD_FLASH_UPDATE_TFTP_ReceiveCallback, (void*)BSP_FLASH_FW_ADDR);
+			if (result == TFTP_CLIENT_ERROR)
+			{
+				goto download_error;
+			}
+			else if (result == TFTP_CLIENT_TIMEOUT)
+			{
+				goto download_timeout;
+			}
 		}
 		else 
 		{
@@ -1879,11 +1904,19 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 			IP_ADDR4(&ip_addr, ip[0], ip[1], ip[2], ip[3]);	
 			
 			if (!strcmp(CmdParamsList[2], "lng"))
-				TFTP_CLIENT_DownloadFile(CmdParamsList[3], &ip_addr, SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback, NULL, NULL);
+				result = TFTP_CLIENT_DownloadFile(CmdParamsList[3], &ip_addr, SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback, NULL);
 			else if (!strcmp(CmdParamsList[2], "web"))
-				TFTP_CLIENT_DownloadFile(CmdParamsList[3], &ip_addr, SHELL_CMD_FLASH_LOAD_WEB_TFTP_ReceiveCallback, NULL, NULL);
+				result = TFTP_CLIENT_DownloadFile(CmdParamsList[3], &ip_addr, SHELL_CMD_FLASH_LOAD_WEB_TFTP_ReceiveCallback, NULL);
 			else
 				goto invalid_file_type;
+			if (result == TFTP_CLIENT_ERROR)
+			{
+				goto download_error;
+			}
+			else if (result == TFTP_CLIENT_TIMEOUT)
+			{
+				goto download_timeout;
+			}
 		}
 		else 
 		{
@@ -1898,6 +1931,12 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 	return;
 invalid_cmd:
 	SHELL_Transmit(Shell, "Error: invalid command\r");
+	return;
+download_error:
+	SHELL_Transmit(Shell, "Error: download error\r");
+	return;
+download_timeout:
+	SHELL_Transmit(Shell, "Error: download timeout\r");
 	return;
 invalid_file_type:
 	SHELL_Transmit(Shell, "Error: invalid file type\r");

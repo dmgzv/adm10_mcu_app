@@ -11,7 +11,7 @@
 #define TFTP_BOOTLOADER_MCU_FILES_CNT 3
 
 static void TFTP_BOOTLOADER_MCU_ProcessEvent(uint32_t Event);
-static int32_t TFTP_BOOTLOADER_MCU_VerifyInfo(void);
+static int32_t TFTP_BOOTLOADER_MCU_VerifyInfo(char *Data);
 
 extern BOOTLOADER_T Bootloader;
 extern PROFILE_FLASH_T ProfileFlash;
@@ -26,14 +26,14 @@ TFTP_BOOTLOADER_COMPONENT_T TFTP_BOOTLOADER_MCU =
 	.VerifyInfo = TFTP_BOOTLOADER_MCU_VerifyInfo,
 };
 
-static int32_t TFTP_BOOTLOADER_MCU_VerifyInfo(void)
+static int32_t TFTP_BOOTLOADER_MCU_VerifyInfo(char *Data)
 {
 	char *p, *c;
 	uint32_t i, len;
 	
 	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Verify info");
 	
-	p = strstr(TFTP_BOOTLOADER_MCU.Info->Data, "MCUSwNumber: ");
+	p = strstr(Data, "MCUSwNumber: ");
 	if (!p)
 	{
 		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "MCUSwNumber: Not found");
@@ -110,25 +110,15 @@ error:
 	return -1;
 }
 
-static void TFTP_BOOTLOADER_MCU_DownloadWebTimeoutCallback(void *Priv)
-{
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Web: Timeout");
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
-}
-
 static int TFTP_BOOTLOADER_MCU_DownloadWebReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
 	uint32_t Addr;
-	uint32_t BlockSize;
 	uint32_t Size;
-	uint32_t NextEvent = (uint32_t)Priv;
 	
 	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Size += DataSize;	
 	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_WEB_SIZE)
 	{
 		Addr = BSP_FLASH_WEB_ADDR + ((Block - 1) * TFTP_DATA_LEN_MAX);
-		BlockSize = DataSize;	
 		while (DataSize)
 		{
 			if (DataSize > BSP_FLASH_PAGE_SIZE)
@@ -143,50 +133,56 @@ static int TFTP_BOOTLOADER_MCU_DownloadWebReceiveCallback(void *Priv, uint16_t B
 			Data += Size;
 			DataSize -= Size;
 		}
-		
-		if (BlockSize != TFTP_DATA_LEN_MAX)
-		{
-			LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Web: %d bytes", TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Size);
-			TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;
-			osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);
-		}
 		return 0;
 	}
 error:
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Web: Invalid file size");
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
 	return -1;
 }
 
-static void TFTP_BOOTLOADER_MCU_DownloadWeb(uint32_t NextEvent)
-{
-	ip_addr_t ip_addr;
-	
-	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Web");
-	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_MCU.Addr[0], TFTP_BOOTLOADER_MCU.Addr[1], TFTP_BOOTLOADER_MCU.Addr[2], TFTP_BOOTLOADER_MCU.Addr[3]);	
-	TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadWebReceiveCallback, TFTP_BOOTLOADER_MCU_DownloadWebTimeoutCallback, (void*)NextEvent);
+static void TFTP_BOOTLOADER_MCU_CompleteWeb(uint32_t NextEvent)
+{	
+	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Complete Web");
+	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
+	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);
 }
 
 static void TFTP_BOOTLOADER_MCU_VerifyWeb(uint32_t NextEvent)
 {
 	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Verify Web");
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);	
+	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;	
+	TFTP_BOOTLOADER_MCU_CompleteWeb(NextEvent);
 }
 
-static void TFTP_BOOTLOADER_MCU_DownloadLangpackTimeoutCallback(void *Priv)
+static void TFTP_BOOTLOADER_MCU_DownloadWeb(uint32_t NextEvent)
 {
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: Timeout");
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	int32_t result;
+	ip_addr_t ip_addr;
+	
+	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Web");
+	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_MCU.Addr[0], TFTP_BOOTLOADER_MCU.Addr[1], TFTP_BOOTLOADER_MCU.Addr[2], TFTP_BOOTLOADER_MCU.Addr[3]);	
+	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadWebReceiveCallback, NULL);
+	if (result == TFTP_CLIENT_OK)
+	{
+		TFTP_BOOTLOADER_MCU_VerifyWeb(NextEvent);
+	}
+	else if (result == TFTP_CLIENT_TIMEOUT)
+	{
+		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Web: Timeout Error");
+		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
+		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	}
+	else
+	{
+		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Web: Size Error");
+		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
+		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	}
 }
 
 static int TFTP_BOOTLOADER_MCU_DownloadLangpackReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
 	uint32_t DataAddr;
 	uint32_t TotalDataSize;
-	uint32_t NextEvent = (uint32_t)Priv;
 	
 	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Size += DataSize;
 	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_LANG_SIZE)
@@ -196,91 +192,117 @@ static int TFTP_BOOTLOADER_MCU_DownloadLangpackReceiveCallback(void *Priv, uint1
 			goto error;
 		if (DataSize != TFTP_DATA_LEN_MAX)
 		{
-			LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: %d bytes", TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Size);
 			TotalDataSize = DataSize + ((Block - 1) * TFTP_DATA_LEN_MAX);
 			if (PROFILE_FLASH_SaveLangpackHeader(&ProfileFlash, TotalDataSize))
 				goto error;
-			TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;
-			osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);
 		}
 		return 0;
 	}
 error:
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: Invalid file size");
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
 	return -1;
 }
 
-static void TFTP_BOOTLOADER_MCU_DownloadLangpack(uint32_t NextEvent)
+static void TFTP_BOOTLOADER_MCU_CompleteLangpack(uint32_t NextEvent)
 {
-	ip_addr_t ip_addr;
-	
-	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Langpack");
-	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_MCU.Addr[0], TFTP_BOOTLOADER_MCU.Addr[1], TFTP_BOOTLOADER_MCU.Addr[2], TFTP_BOOTLOADER_MCU.Addr[3]);	
-	TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadLangpackReceiveCallback, TFTP_BOOTLOADER_MCU_DownloadLangpackTimeoutCallback, (void*)NextEvent);
+	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Complete Langpack");
+	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
+	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);
 }
 
 static void TFTP_BOOTLOADER_MCU_VerifyLangpack(uint32_t NextEvent)
 {
 	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Verify Langpack");
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);	
+	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;	
+	TFTP_BOOTLOADER_MCU_CompleteLangpack(NextEvent);
 }
 
-static void TFTP_BOOTLOADER_MCU_DownloadFirmwareTimeoutCallback(void *Priv)
+static void TFTP_BOOTLOADER_MCU_DownloadLangpack(uint32_t NextEvent)
 {
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Firmware: Timeout");
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	int32_t result;
+	ip_addr_t ip_addr;
+	
+	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Langpack");
+	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_MCU.Addr[0], TFTP_BOOTLOADER_MCU.Addr[1], TFTP_BOOTLOADER_MCU.Addr[2], TFTP_BOOTLOADER_MCU.Addr[3]);	
+	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadLangpackReceiveCallback, NULL);
+	if (result == TFTP_CLIENT_OK)
+	{
+		TFTP_BOOTLOADER_MCU_VerifyLangpack(NextEvent);
+	}
+	else if (result == TFTP_CLIENT_TIMEOUT)
+	{
+		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: Timeout Error");
+		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
+		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	}
+	else
+	{
+		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: Size Error");
+		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
+		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	}
 }
+
 
 static int32_t TFTP_BOOTLOADER_MCU_DownloadFirmwareReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
-	uint32_t NextEvent = (uint32_t)Priv;
-	
 	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Size += DataSize;
 	if (BOOTLOADER_UpdateNewFwBlock(&Bootloader, Data, DataSize))
 		goto error;
-	if (DataSize != TFTP_DATA_LEN_MAX)
-	{
-		LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Firmware: %d bytes", TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Size);
-		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;
-		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);
-	}
-	return 0;
-	
-	error:
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Firmware: Invalid file size");
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	return 0;	
+error:
 	return -1;
 }
 
-static void TFTP_BOOTLOADER_MCU_DownloadFirmware(uint32_t NextEvent)
+static void TFTP_BOOTLOADER_MCU_CompleteFirmware(uint32_t NextEvent)
 {
-	ip_addr_t ip_addr;
-	
-	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Firmware");
-	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_MCU.Addr[0], TFTP_BOOTLOADER_MCU.Addr[1], TFTP_BOOTLOADER_MCU.Addr[2], TFTP_BOOTLOADER_MCU.Addr[3]);
-	BOOTLOADER_UpdateNewFwStart(&Bootloader);
-	TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadFirmwareReceiveCallback, TFTP_BOOTLOADER_MCU_DownloadFirmwareTimeoutCallback, (void*)NextEvent);
+	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Complete Firmware");
+	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
+	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);
 }
 
 static void TFTP_BOOTLOADER_MCU_VerifyFirmware(uint32_t NextEvent)
 {
 	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Verify Firmware");
+	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;
 	if (BOOTLOADER_UpdateNewFwFinish(&Bootloader))
 		goto error;
 	if (BOOTLOADER_CheckNewFw(&Bootloader))
 		goto error;
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, NextEvent, 0);
+	TFTP_BOOTLOADER_MCU_CompleteFirmware(NextEvent);
 	return;
 error:
 	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Verify Firmware: Error");
 	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY_ERROR;
 	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+}
+
+static void TFTP_BOOTLOADER_MCU_DownloadFirmware(uint32_t NextEvent)
+{
+	int32_t result;
+	ip_addr_t ip_addr;
+	
+	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Download Firmware");
+	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_MCU.Addr[0], TFTP_BOOTLOADER_MCU.Addr[1], TFTP_BOOTLOADER_MCU.Addr[2], TFTP_BOOTLOADER_MCU.Addr[3]);
+	if (BOOTLOADER_UpdateNewFwStart(&Bootloader))
+		goto error;
+	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadFirmwareReceiveCallback, (void*)NextEvent);
+	if (result == TFTP_CLIENT_OK)
+	{
+		TFTP_BOOTLOADER_MCU_VerifyFirmware(NextEvent);
+	}
+	else if (result == TFTP_CLIENT_TIMEOUT)
+	{
+		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Firmware: Timeout Error");
+		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
+		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	}
+	else
+	{
+error:
+		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Firmware: Size Error");
+		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_FIRMWARE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
+		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR, 0);
+	}
 }
 
 static void TFTP_BOOTLOADER_MCU_Download(uint32_t NextEvent)
@@ -305,22 +327,13 @@ static void TFTP_BOOTLOADER_MCU_ProcessEvent(uint32_t Event)
 			TFTP_BOOTLOADER_MCU_Download(TFTP_BOOTLOADER_MCU_MSG_WEB_DOWNLOAD);
 			break;
 		case TFTP_BOOTLOADER_MCU_MSG_WEB_DOWNLOAD:
-			TFTP_BOOTLOADER_MCU_DownloadWeb(TFTP_BOOTLOADER_MCU_MSG_WEB_VERIFY);
-			break;
-		case TFTP_BOOTLOADER_MCU_MSG_WEB_VERIFY:
-			TFTP_BOOTLOADER_MCU_VerifyWeb(TFTP_BOOTLOADER_MCU_MSG_LANGPACK_DOWNLOAD);
+			TFTP_BOOTLOADER_MCU_DownloadWeb(TFTP_BOOTLOADER_MCU_MSG_LANGPACK_DOWNLOAD);
 			break;
 		case TFTP_BOOTLOADER_MCU_MSG_LANGPACK_DOWNLOAD:
-			TFTP_BOOTLOADER_MCU_DownloadLangpack(TFTP_BOOTLOADER_MCU_MSG_LANGPACK_VERIFY);
-			break;
-		case TFTP_BOOTLOADER_MCU_MSG_LANGPACK_VERIFY:
-			TFTP_BOOTLOADER_MCU_VerifyLangpack(TFTP_BOOTLOADER_MCU_MSG_FIRMWARE_DOWNLOAD);
+			TFTP_BOOTLOADER_MCU_DownloadLangpack(TFTP_BOOTLOADER_MCU_MSG_FIRMWARE_DOWNLOAD);
 			break;
 		case TFTP_BOOTLOADER_MCU_MSG_FIRMWARE_DOWNLOAD:
-			TFTP_BOOTLOADER_MCU_DownloadFirmware(TFTP_BOOTLOADER_MCU_MSG_FIRMWARE_VERIFY);
-			break;
-		case TFTP_BOOTLOADER_MCU_MSG_FIRMWARE_VERIFY:
-			TFTP_BOOTLOADER_MCU_VerifyFirmware(TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_COMPLETE);
+			TFTP_BOOTLOADER_MCU_DownloadFirmware(TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_COMPLETE);
 			break;
 		case TFTP_BOOTLOADER_MCU_MSG_UPDATE:
 			TFTP_BOOTLOADER_MCU_Update();

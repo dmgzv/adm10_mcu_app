@@ -1,17 +1,19 @@
 #include "tftp_client.h"
 #include <string.h>
 
-static void TFTP_CLIENT_Timeout(void const* args);
+#define TFTP_EVENT_IN_PROGRESS	0
+#define TFTP_EVENT_COMPLETE			1
+#define TFTP_EVENT_ERROR				2
 
-osTimerDef(TFTP, TFTP_CLIENT_Timeout);
+#define TFTP_MESSAGE_QUEUE_SIZE 10
+
+osMessageQDef(TFTP, TFTP_MESSAGE_QUEUE_SIZE, uint32_t);
 osMutexDef(TFTP);
 static struct udp_pcb *TFTP_CLIENT_udp_pcb;
 static int (*TFTP_CLIENT_ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size);
-static void (*TFTP_CLIENT_TimeoutCallback)(void *Priv);
 static void *TFTP_CLIENT_Priv;
-static osTimerId TFTP_CLIENT_TimerId;
+static osMessageQId TFTP_CLIENT_MessageQId;
 static osMutexId TFTP_CLIENT_MutexId;
-static uint32_t TFTP_CLIENT_Status;
 
 static TFTP_OPCODE_T TFTP_CLIENT_GetOpcode(char *buf)
 {
@@ -93,52 +95,44 @@ static void __TFTP_CLIENT_ReceiveCallback(void *arg, struct udp_pcb *upcb, struc
 				TFTP_CLIENT_SendAck(upcb, block, addr, port);
 				if (pkt_buf->len == TFTP_DATA_PKT_LEN_MAX)
 				{
-					osTimerStart(TFTP_CLIENT_TimerId, TFTP_TIMEOUT_INTERVAL);
+					osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_IN_PROGRESS, 0);
 				}
 				else
 				{
-					osTimerStop(TFTP_CLIENT_TimerId);
-					TFTP_CLIENT_Status = TFTP_CLIENT_DOWNLOAD_SUCCESS;
+					osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_COMPLETE, 0);
 				}
 			}
 			else
 			{
-				osTimerStop(TFTP_CLIENT_TimerId);
-				TFTP_CLIENT_Status = TFTP_CLIENT_DOWNLOAD_FAILED;
+				osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_ERROR, 0);
 			}
 		}
 	}
 	pbuf_free(pkt_buf);
 }
 
-static void TFTP_CLIENT_Timeout(void const* args)
-{
-	TFTP_CLIENT_Status = TFTP_CLIENT_DOWNLOAD_TIMEOUT;
-	if (TFTP_CLIENT_TimeoutCallback)
-		TFTP_CLIENT_TimeoutCallback(TFTP_CLIENT_Priv);
-	TFTP_CLIENT_TimeoutCallback = NULL;
-	TFTP_CLIENT_ReceiveCallback = NULL;
-	TFTP_CLIENT_Priv = NULL;
-}
-
 int32_t TFTP_CLIENT_Init(void)
 {
 	err_t err;
 	
+	/* TFTP is already initialized*/
+	if ((TFTP_CLIENT_udp_pcb) && (TFTP_CLIENT_MessageQId) && (TFTP_CLIENT_MutexId))
+		return TFTP_CLIENT_OK;
+	
 	if (!TFTP_CLIENT_MutexId)
 		TFTP_CLIENT_MutexId = osMutexCreate(osMutex(TFTP));
 	
-	if (!TFTP_CLIENT_TimerId)
-		TFTP_CLIENT_TimerId = osTimerCreate(osTimer(TFTP), osTimerOnce, NULL);
+	if (!TFTP_CLIENT_MessageQId)
+		TFTP_CLIENT_MessageQId = osMessageCreate(osMessageQ(TFTP), NULL);
 	
-	if (!TFTP_CLIENT_TimerId)
-		return -1;
+	if (!TFTP_CLIENT_MessageQId)
+		return TFTP_CLIENT_ERROR;
 	
   if (!TFTP_CLIENT_udp_pcb)
 		TFTP_CLIENT_udp_pcb = udp_new();
 	
 	if (!TFTP_CLIENT_udp_pcb)
-		return -1;
+		return TFTP_CLIENT_ERROR;
 	
 	/* Bind this PCB to port TFTP_PORT  */
   err = udp_bind(TFTP_CLIENT_udp_pcb, IP_ADDR_ANY, TFTP_PORT);
@@ -147,37 +141,49 @@ int32_t TFTP_CLIENT_Init(void)
 	
 	udp_recv(TFTP_CLIENT_udp_pcb, __TFTP_CLIENT_ReceiveCallback, NULL);
 	
-	return 0;
+	return TFTP_CLIENT_OK;
 
 error:
 	udp_remove(TFTP_CLIENT_udp_pcb);
 	TFTP_CLIENT_udp_pcb = 0;
-	return -1;
+	return TFTP_CLIENT_ERROR;
 }
 
-int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void (*TimeoutCallback)(void *Priv), void *Priv)
-{	
-	/* TFTP is already initialized*/
-	if ((!TFTP_CLIENT_udp_pcb) || (!TFTP_CLIENT_TimerId) || (!TFTP_CLIENT_MutexId))
-		return -1;
+int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void *Priv)
+{
+	osEvent evt;	
+	/* TFTP is not initialized*/
+	if ((!TFTP_CLIENT_udp_pcb) || (!TFTP_CLIENT_MessageQId) || (!TFTP_CLIENT_MutexId))
+		return TFTP_CLIENT_ERROR;
 	
 	osMutexWait(TFTP_CLIENT_MutexId, osWaitForever);
-	
-	if (TFTP_CLIENT_Status == TFTP_CLIENT_DOWNLOAD_IN_PROGRESS)
-		goto error;
-	
-	TFTP_CLIENT_TimeoutCallback = TimeoutCallback;
+
 	TFTP_CLIENT_ReceiveCallback = ReceiveCallback;
 	TFTP_CLIENT_Priv = Priv;
 	TFTP_CLIENT_SendReadRequest(TFTP_CLIENT_udp_pcb, filename, addr, TFTP_PORT);
 	
-	osTimerStart(TFTP_CLIENT_TimerId, TFTP_TIMEOUT_INTERVAL);
-	TFTP_CLIENT_Status = TFTP_CLIENT_DOWNLOAD_IN_PROGRESS;
+in_progress:	
+	evt = osMessageGet(TFTP_CLIENT_MessageQId, TFTP_TIMEOUT_INTERVAL);
+	if (evt.status != osEventMessage) 
+		goto timeout;
+	
+	if (evt.value.v == TFTP_EVENT_IN_PROGRESS)
+		goto in_progress;
+	else if (evt.value.v != TFTP_EVENT_COMPLETE)
+		goto error;
 	
 	osMutexRelease(TFTP_CLIENT_MutexId);
 	return 0;
 	
 error:
+	TFTP_CLIENT_ReceiveCallback = NULL;
+	TFTP_CLIENT_Priv = NULL;
 	osMutexRelease(TFTP_CLIENT_MutexId);
-	return -1;
+	return TFTP_CLIENT_ERROR;
+	
+timeout:
+	TFTP_CLIENT_ReceiveCallback = NULL;
+	TFTP_CLIENT_Priv = NULL;
+	osMutexRelease(TFTP_CLIENT_MutexId);
+	return TFTP_CLIENT_TIMEOUT;
 }

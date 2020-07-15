@@ -25,13 +25,10 @@ typedef enum {
   TFTP_ERROR = 5
 } TFTP_OPCODE_T;
 
-#define TFTP_CLIENT_DOWNLOAD_IDLE					0
-#define TFTP_CLIENT_DOWNLOAD_IN_PROGRESS	1
-#define TFTP_CLIENT_DOWNLOAD_SUCCESS			2
-#define TFTP_CLIENT_DOWNLOAD_FAILED 			3
-#define TFTP_CLIENT_DOWNLOAD_TIMEOUT  		4
+#define TFTP_CLIENT_OK					(0)
+#define TFTP_CLIENT_ERROR 			(-1)
+#define TFTP_CLIENT_TIMEOUT  		(-2)
 
 int32_t TFTP_CLIENT_Init(void);
-int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void (*TFTP_CLIENT_TimeoutCallback)(void *Priv), void *Priv);
-void TFTP_CLIENT_GetStatus(uint32_t *Status, uint32_t *Bytes);
+int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void *Priv);
 #endif /*TFTP_CLIENT_H*/

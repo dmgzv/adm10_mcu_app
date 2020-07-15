@@ -29,11 +29,11 @@ typedef struct {
 	char *Dir;
 	char Version[64];
 	osMessageQId MessageQId;
-	TFTP_BOOTLOADER_FILE_T *Info;
+	//TFTP_BOOTLOADER_FILE_T *Info;
 	TFTP_BOOTLOADER_FILE_T *Files;
 	uint32_t FilesCnt;
 	void (*ProcessEvent)(uint32_t Event);
-	int32_t (*VerifyInfo)(void);
+	int32_t (*VerifyInfo)(char *Data);
 } TFTP_BOOTLOADER_COMPONENT_T;
 
 typedef struct {

@@ -12,7 +12,7 @@
 #define TFTP_BOOTLOADER_MSG_INFO_VERIFY		3
 #define TFTP_BOOTLOADER_MSG_INFO_COMPLETE	4
 
-#define TFTP_BOOTLOADER_QUEUE_SIZE 3
+#define TFTP_BOOTLOADER_QUEUE_SIZE 10
 
 /* Private function prototypes -----------------------------------------------*/
 static void TFTP_BOOTLOADER_Thread(void const *argument);
@@ -41,46 +41,23 @@ TFTP_BOOTLOADER_T TFTP_BOOTLOADER =
 extern BOOTLOADER_T Bootloader;
 extern PROFILE_FLASH_T ProfileFlash;
 
-static void TFTP_BOOTLOADER_DownloadInfoTimeoutCallback(void *Priv)
-{
-	LOG_Error("TFTP_BOOTLOADER", "", "", "Download Info: Timeout");
-	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
-	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
-}
-
 static int32_t TFTP_BOOTLOADER_DownloadInfoReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
-{
-	uint32_t NextEvent = (uint32_t)Priv;
-	
+{	
 	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < TFTP_BOOTLOADER.Info.MaxSize)
 	{
 		memcpy(&TFTP_BOOTLOADER.Info.Data[(Block - 1) * TFTP_DATA_LEN_MAX], Data, DataSize);
 		TFTP_BOOTLOADER.Info.Data[((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize] = 0;
 		TFTP_BOOTLOADER.Info.Size += DataSize;
-		if (DataSize != TFTP_DATA_LEN_MAX)
-		{
-			LOG_Info("TFTP_BOOTLOADER", "", "", "Download Info: %d bytes", TFTP_BOOTLOADER.Info.Size);
-			TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;
-			osMessagePut(TFTP_BOOTLOADER.MessageQId, NextEvent, 0);
-		}
 		return 0;
 	}
-	else
-	{
-		LOG_Error("TFTP_BOOTLOADER", "", "", "Download Info: Invalid file size", TFTP_BOOTLOADER.Info.Size);
-		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
-		osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
-		return -1;
-	}
+	return -1;
 }
 
-static void TFTP_BOOTLOADER_DownloadInfo(uint32_t NextEvent)
-{	
-	ip_addr_t ip_addr;
-	
-	LOG_Info("TFTP_BOOTLOADER", "", "", "Download Info");
-	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER.Addr[0], TFTP_BOOTLOADER.Addr[1], TFTP_BOOTLOADER.Addr[2], TFTP_BOOTLOADER.Addr[3]);	
-	TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER.Info.Name, &ip_addr, TFTP_BOOTLOADER_DownloadInfoReceiveCallback, TFTP_BOOTLOADER_DownloadInfoTimeoutCallback, (void*)NextEvent);
+static void TFTP_BOOTLOADER_CompleteInfo(uint32_t NextEvent)
+{
+	LOG_Info("TFTP_BOOTLOADER", "", "", "Complete Info");
+	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
+	osMessagePut(TFTP_BOOTLOADER.MessageQId, NextEvent, 0);	
 }
 
 static void TFTP_BOOTLOADER_VerifyInfo(uint32_t NextEvent)
@@ -89,6 +66,7 @@ static void TFTP_BOOTLOADER_VerifyInfo(uint32_t NextEvent)
 	char *p;
 	
 	LOG_Info("TFTP_BOOTLOADER", "", "", "Verify Info");
+	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;
 	
 	p = strstr(TFTP_BOOTLOADER.Info.Data, "pId: ");
 	if (!p)
@@ -118,18 +96,46 @@ static void TFTP_BOOTLOADER_VerifyInfo(uint32_t NextEvent)
 
 	for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
 	{
-		if (TFTP_BOOTLOADER.Components[i]->VerifyInfo())
+		if (TFTP_BOOTLOADER.Components[i]->VerifyInfo(TFTP_BOOTLOADER.Info.Data))
 			goto error;
 	}
 	
-	osMessagePut(TFTP_BOOTLOADER.MessageQId, NextEvent, 0);	
+	TFTP_BOOTLOADER_CompleteInfo(NextEvent);	
 	return;
 
 error:
+	LOG_Info("TFTP_BOOTLOADER", "", "", "Verify Info: Error");
 	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY_ERROR;
 	osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
 	return;
 }
+
+static void TFTP_BOOTLOADER_DownloadInfo(uint32_t NextEvent)
+{
+	int32_t result;
+	ip_addr_t ip_addr;
+	
+	LOG_Info("TFTP_BOOTLOADER", "", "", "Download Info");
+	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER.Addr[0], TFTP_BOOTLOADER.Addr[1], TFTP_BOOTLOADER.Addr[2], TFTP_BOOTLOADER.Addr[3]);	
+	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER.Info.Name, &ip_addr, TFTP_BOOTLOADER_DownloadInfoReceiveCallback, NULL);
+	if (result == TFTP_CLIENT_OK)
+	{
+		TFTP_BOOTLOADER_VerifyInfo(NextEvent);
+	}
+	else if (result == TFTP_CLIENT_TIMEOUT)
+	{
+		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Info: Timeout Error");
+		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
+		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
+	}
+	else
+	{
+		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Info: Size Error");
+		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
+		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
+	}
+}
+
 
 static void TFTP_BOOTLOADER_Thread(void const *argument)
 {
@@ -229,8 +235,8 @@ int32_t TFTP_BOOTLOADER_Update(char* Dir, char *Addr)
 	{
 		TFTP_BOOTLOADER.Components[i]->Addr = TFTP_BOOTLOADER.Addr;
 		TFTP_BOOTLOADER.Components[i]->Dir = TFTP_BOOTLOADER.Dir;
+		TFTP_BOOTLOADER.Components[i]->Version[0] = 0;
 		TFTP_BOOTLOADER.Components[i]->MessageQId = TFTP_BOOTLOADER.MessageQId;
-		TFTP_BOOTLOADER.Components[i]->Info = &TFTP_BOOTLOADER.Info;
 		TFTP_BOOTLOADER.Components[i]->FilesCnt = 0;
 		for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 		{

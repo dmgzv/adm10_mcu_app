@@ -7,5 +7,6 @@ extern TFTP_BOOTLOADER_T TFTP_BOOTLOADER;
 
 int32_t TFTP_BOOTLOADER_Init(void);
 int32_t TFTP_BOOTLOADER_Update(char* Dir, char *Addr);
+int32_t TFTP_BOOTLOADER_UpdateStatus(void);
 
 #endif /*TFTP_BOOTLOADER_H*/
