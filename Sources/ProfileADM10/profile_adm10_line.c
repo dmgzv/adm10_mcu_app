@@ -1665,12 +1665,26 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 	
-	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+	if (((Mode ==PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && ((Idx == 2) || (Idx == 3))) || \
+		((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5) && ((Idx == 2))))
+	{
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
 		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
 		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY) &&
 		(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU1State(Profile, Idx - 2, ODU1Idx, &State);
+		}
+	}
+	else
 	{
-		PROFILE_ADM10_LINE_GetODU1State(Profile, Idx, ODU1Idx, &State);
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY) &&
+		(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU1State(Profile, Idx, ODU1Idx, &State);
+		}
 	}
 
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
@@ -1686,33 +1700,45 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOM_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOM_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_LOF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_LOM_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOF_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOM_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOM_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOM_MASK)))
 		{
 			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
 		else if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU1Alarms[ODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_AIS_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_AIS_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)))
 		{
 			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
 		else if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && ((fpga_line_adm_10.Iface[Idx].__ODU1Alarms[ODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_STAT_MASK) == FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_STAT_OCI_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && ((fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_STAT_OCI_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)))
 		{
 			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
 		else if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && ((fpga_line_adm_10.Iface[Idx].__ODU1Alarms[ODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_STAT_MASK) == FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_STAT_LCK_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && ((fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_STAT_LCK_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)))
 		{
 			ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
@@ -1720,29 +1746,37 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 		{
 			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (fpga_line_adm_10.Iface[Idx].ODU1BIP[ODU1Idx])) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].ODU1BIP[ODU1Idx])) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[(Idx - 2)].ODU1BIP[ODU1Idx])) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.ODU1BIP[ODU1Idx])) || \
-				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].ODU1BIP[ODU1Idx])))
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].ODU1BIP[ODU1Idx])) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].ODU1BIP[ODU1Idx])))
 			{
 				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
 			}
 			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU1Alarms[ODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_PMBEI_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBEI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx -2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBEI_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_PMBEI_MASK)) || \
-				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBEI_MASK)))
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBEI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBEI_MASK)))
 			{
 				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
 			}
 			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU1Alarms[ODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_PMBDI_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBDI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBDI_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_PMBDI_MASK)) || \
-				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBDI_MASK)))
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBDI_MASK)) ||
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_PMBDI_MASK)))
 			{
 				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
 			}
 			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU1Alarms[ODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_SD_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_SD_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_SD_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_SD_MASK)) || \
-				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_SD_MASK)))
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_SD_MASK))|| \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_SD_MASK)))
 			{
 				ODU1Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
 			}
@@ -1773,12 +1807,26 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 
-	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
-		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY) &&
-		(State != PROFILE_STATE_OOS))
+	if (((Mode ==PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && ((Idx == 2) || (Idx == 3))) || \
+		((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5) && ((Idx == 2))))
 	{
-		PROFILE_ADM10_LINE_GetODU1State(Profile, Idx, ODU1Idx, &State);
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY) &&
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU1State(Profile, Idx - 2, ODU1Idx, &State);
+		}
+	}
+	else
+	{
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY) &&
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU1State(Profile, Idx, ODU1Idx, &State);
+		}
 	}
 	
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
@@ -1792,10 +1840,14 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU1Alarms[ODU1Idx] & FPGA_LINE_ADM_10_IFACE_ODU1_ALARMS_OPUCSF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_OPUCSF_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_OPUCSF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_OPUCSF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx]) != BSP_DEV_STATE_OK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_OPUCSF_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_OPUCSF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_OPUCSF_MASK)))
 		{
 			OPU1Alarms = PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;
 		}
@@ -1825,12 +1877,27 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;	
 
-	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
-		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
-		(State != PROFILE_STATE_OOS))
+	
+	if (((Mode ==PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && ((Idx == 2) || (Idx == 3))) || \
+		((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5) && ((Idx == 2))))
 	{
-		PROFILE_ADM10_LINE_GetODU0State(Profile, Idx, ODU0Idx, &State);
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU0State(Profile, Idx - 2, ODU0Idx, &State);
+		}
+	}
+	else
+	{
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU0State(Profile, Idx, ODU0Idx, &State);
+		}
 	}
 	
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
@@ -1847,33 +1914,45 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOM_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOM_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_LOF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_LOM_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOF_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOM_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOM_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOM_MASK)))
 		{
 			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
 		else if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (ODU0Idx < FPGA_LINE_ADM_10_IFACE_ODU0_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU0Alarms[ODU0Idx] & FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_AIS_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_AIS_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)))
 		{
 			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
 		else if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (ODU0Idx < FPGA_LINE_ADM_10_IFACE_ODU0_CNT) && ((fpga_line_adm_10.Iface[Idx].__ODU0Alarms[ODU0Idx] & FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_STAT_MASK) == FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_STAT_OCI_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && ((fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_STAT_OCI_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)))
 		{
 			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
 		else if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (ODU0Idx < FPGA_LINE_ADM_10_IFACE_ODU0_CNT) && ((fpga_line_adm_10.Iface[Idx].__ODU0Alarms[ODU0Idx] & FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_STAT_MASK) == FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_STAT_LCK_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && ((fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_STAT_LCK_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)))
 		{
 			ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK | PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF;
 		}
@@ -1881,29 +1960,37 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 		{
 			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (ODU0Idx < FPGA_LINE_ADM_10_IFACE_ODU0_CNT) && (fpga_line_adm_10.Iface[Idx].ODU0BIP[ODU0Idx])) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].ODU0BIP[ODU0Idx])) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].ODU0BIP[ODU0Idx])) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.ODU0BIP[ODU0Idx])) || \
-				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].ODU0BIP[ODU0Idx])))
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].ODU0BIP[ODU0Idx])) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].ODU0BIP[ODU0Idx])))
 			{
 				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP;
 			}
 			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (ODU0Idx < FPGA_LINE_ADM_10_IFACE_ODU0_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU0Alarms[ODU0Idx] & FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_PMBEI_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBEI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBEI_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_PMBEI_MASK)) || \
-				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBEI_MASK)))
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBEI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBEI_MASK)))
 			{
 				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI;
 			}
 			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (ODU0Idx < FPGA_LINE_ADM_10_IFACE_ODU0_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU0Alarms[ODU0Idx] & FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_PMBDI_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBDI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBDI_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_PMBDI_MASK)) || \
-				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBDI_MASK)))
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBDI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_PMBDI_MASK)))
 			{
 				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI;
 			}
 			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (ODU0Idx < FPGA_LINE_ADM_10_IFACE_ODU0_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU0Alarms[ODU0Idx] & FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_SD_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_SD_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_SD_MASK)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_SD_MASK)) || \
-				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_SD_MASK)))
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_SD_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_SD_MASK)))
 			{
 				ODU0Alarms |= PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD;
 			}
@@ -1934,12 +2021,26 @@ static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 
-	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
-		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
-		(State != PROFILE_STATE_OOS))
+	if (((Mode ==PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && ((Idx == 2) || (Idx == 3))) || \
+		((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5) && ((Idx == 2))))
 	{
-		PROFILE_ADM10_LINE_GetODU0State(Profile, Idx, ODU0Idx, &State);
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU0State(Profile, Idx - 2, ODU0Idx, &State);
+		}
+	}
+	else
+	{
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU0State(Profile, Idx, ODU0Idx, &State);
+		}
 	}
 	
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
@@ -1953,10 +2054,14 @@ static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (ODU0Idx < FPGA_LINE_ADM_10_IFACE_ODU0_CNT) && (fpga_line_adm_10.Iface[Idx].__ODU0Alarms[ODU0Idx] & FPGA_LINE_ADM_10_IFACE_ODU0_ALARMS_OPUCSF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_OPUCSF_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_OPUCSF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT)&& (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx]) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_OPUCSF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx]) != BSP_DEV_STATE_OK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_OPUCSF_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_OPUCSF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_OPUCSF_MASK)))
 		{
 			OPU0Alarms |= PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF;	
 		}
@@ -2198,14 +2303,29 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
-		
-	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && 
-		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && 
-		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY) && 
-		(State != PROFILE_STATE_OOS))
+	
+	if (((Mode ==PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && ((Idx == 2) || (Idx == 3))) || \
+		((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5) && ((Idx == 2))))
 	{
-		PROFILE_ADM10_LINE_GetODU1State(Profile, Idx, ODU1Idx, &State);
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && 
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && 
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY) && 
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU1State(Profile, Idx - 2, ODU1Idx, &State);
+		}
 	}
+	else
+	{
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && 
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && 
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY) && 
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU1State(Profile, Idx, ODU1Idx, &State);
+		}
+	}
+	
 	
 
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
@@ -2225,6 +2345,12 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOM_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_OK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_LOF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_ALARMS_LOM_MASK)) || \
@@ -2236,7 +2362,13 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOM_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_LOM_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_AIS_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_OCI_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU1Alarms[ODU1Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_MASK) ==FPGA_CLIENT_AGG_2X10_BS_ODU1_ALARMS_STAT_LCK_MASK)))
 		{
 			Defects = 1;
 			Errors = 0;
@@ -2253,6 +2385,11 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 				Defects = 0;
 				Errors = fpga_client_agg_2x10_bs[Idx].ODU1BIP[ODU1Idx];
 			}
+			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].ODU1BIP[ODU1Idx]))
+			{
+				Defects = 0;
+				Errors = fpga_client_agg_2x10_bs[Idx - 2].ODU1BIP[ODU1Idx];
+			}
 			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU1_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.ODU1BIP[ODU1Idx]))
 			{
 				Defects = 0;
@@ -2262,6 +2399,11 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 			{
 				Defects = 0;
 				Errors = fpga_client_agg_2x10_bs[Idx].ODU1BIP[ODU1Idx];
+			}
+			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU1Idx < FPGA_CLIENT_AGG_2X10_BS_ODU1_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].ODU1BIP[ODU1Idx]))
+			{
+				Defects = 0;
+				Errors = fpga_client_agg_2x10_bs[Idx - 2].ODU1BIP[ODU1Idx];
 			}
 			else
 			{
@@ -2304,12 +2446,26 @@ static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU0Idx / 2], &OPU1Payload))
 		return;
 	
-	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-		(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && 
-		(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
-		(State != PROFILE_STATE_OOS))
+	if (((Mode ==PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) && ((Idx == 2) || (Idx == 3))) || \
+		((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5) && ((Idx == 2))))
 	{
-		PROFILE_ADM10_LINE_GetODU0State(Profile, Idx, ODU0Idx, &State);
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && 
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU0State(Profile, Idx - 2, ODU0Idx, &State);
+		}
+	}
+	else
+	{
+		if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) && 
+			(OPU1Payload == PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0) &&
+			(State != PROFILE_STATE_OOS))
+		{
+			PROFILE_ADM10_LINE_GetODU0State(Profile, Idx, ODU0Idx, &State);
+		}
 	}
 
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && \
@@ -2330,6 +2486,12 @@ static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOM_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_LOF_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_LOM_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_ALARMS_AIS_MASK)) || \
@@ -2340,7 +2502,13 @@ static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOM_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)) || \
 			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)))
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 0) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[Idx - 2]) != BSP_DEV_STATE_OK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOF_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_LOM_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_AIS_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_OCI_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && ((fpga_client_agg_2x10_bs[Idx - 2].__ODU0Alarms[ODU0Idx] & FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_AGG_2X10_BS_ODU0_ALARMS_STAT_LCK_MASK)))
 		{
 			Defects = 1;
 			Errors = 0;
@@ -2357,6 +2525,11 @@ static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t
 				Defects = 0;
 				Errors = fpga_client_agg_2x10_bs[Idx].ODU0BIP[ODU0Idx];
 			}
+			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx - 2) < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].ODU0BIP[ODU0Idx]))
+			{
+				Defects = 0;
+				Errors = fpga_client_agg_2x10_bs[Idx - 2].ODU0BIP[ODU0Idx];
+			}
 			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_EFEC_LINE_ODU0_CNT) && (fpga_client_agg_2x10_efec[Idx].Line.ODU0BIP[ODU0Idx]))
 			{
 				Defects = 0;
@@ -2366,6 +2539,11 @@ static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t
 			{
 				Defects = 0;
 				Errors = fpga_client_agg_2x10_bs[Idx].ODU0BIP[ODU0Idx];
+			}
+			else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (Idx == 2) && (ODU0Idx < FPGA_CLIENT_AGG_2X10_BS_ODU0_CNT) && (fpga_client_agg_2x10_bs[Idx - 2].ODU0BIP[ODU0Idx]))
+			{
+				Defects = 0;
+				Errors = fpga_client_agg_2x10_bs[Idx - 2].ODU0BIP[ODU0Idx];
 			}
 			else
 			{

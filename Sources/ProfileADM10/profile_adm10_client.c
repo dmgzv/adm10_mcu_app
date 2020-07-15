@@ -1158,7 +1158,13 @@ static int32_t PROFILE_ADM10_CLIENT_SetFactoryConfigValues(PROFILE_T *Profile, u
 	}
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx]);
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetALSModeIdx[Idx]);
-	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC))
+	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
+	{
+		OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
+		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[(Idx / 8) + 2][(Idx % 8) / 2], &OPU1Payload);
+	}
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC)
 	{
 		OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
 		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
@@ -1169,6 +1175,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetFactoryConfigValues(PROFILE_T *Profile, u
 		{
 			OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[(Idx / 8) + 2][(Idx % 8) / 2], &OPU1Payload);
 		}
 	}
 	return 0;
@@ -1212,7 +1219,24 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetFactoryIdx[Idx + 1]);
 		}
 	}
-	else if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC))
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
+	{
+		if ((*(uint32_t*)Value) == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
+		{
+			PROFILE_ADM10_CLIENT_SetFactoryConfigValues(Profile, Idx + 1);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetFactoryIdx[Idx + 1]);
+			OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[(Idx / 8) + 2][(Idx % 8) / 2], &OPU1Payload);
+		}
+		else
+		{
+			OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[(Idx / 8) + 2][(Idx % 8) / 2], &OPU1Payload);
+		}
+	}
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC)
 	{
 		if ((*(uint32_t*)Value) == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
 		{
@@ -1237,11 +1261,13 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetFactoryIdx[Idx + 1]);
 				OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_ANY;
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[(Idx / 8) + 2][(Idx % 8) / 2], &OPU1Payload);
 			}
 			else
 			{
 				OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[(Idx / 8) + 2][(Idx % 8) / 2], &OPU1Payload);
 			}
 		}
 	}
