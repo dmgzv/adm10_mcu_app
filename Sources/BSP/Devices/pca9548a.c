@@ -23,8 +23,7 @@ int32_t PCA9548A_SelectChannel(PCA9548A_T *Dev, PCA9548A_CH_T Channel)
 	return 0;
 	
 error:
-	if (Channel	!= PCA9548A_CH_NO)
-		BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UNLOCK(Dev);
 	return -1;
 }
 
