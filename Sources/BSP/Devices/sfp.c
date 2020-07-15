@@ -584,7 +584,7 @@ int32_t SFP_Update(SFP_T *Dev)
 	BSP_DEV_UPDATE(Dev);
 	
 	if (SFP_GetPinState(Dev, SFP_PIN_MOD_ABS, &Dev->Pin.ModAbs))
-		goto reset;
+		goto error;
 	if (Dev->Pin.ModAbs)
 		goto reset;
 	
