@@ -61,6 +61,7 @@ typedef struct {
 
 #define HTTP_TRANSFER_ENCODING_CHUNKED	"chunked"
 
+#define HTTP_CONNECTION_CLOSE "close"
 #define HTTP_CONNECTION_KEEP_ALIVE "keep-alive"
 
 /* Private macro -------------------------------------------------------------*/
@@ -266,7 +267,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 				if (ReqHeader->ConnectionKeepAlive)
 					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					RspHeader.Connection = NULL;
+					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 				RspHeader.TransferEncoding = NULL;
 				RspHeader.AllowedLen = 0;
 				if (http_server_write_header(conn, &RspHeader))
@@ -281,7 +282,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 				if (ReqHeader->ConnectionKeepAlive)
 					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					RspHeader.Connection = NULL;
+					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 				RspHeader.TransferEncoding = NULL;
 				RspHeader.AllowedLen = 0;
 				if (http_server_write_header(conn, &RspHeader))
@@ -296,7 +297,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 				if (ReqHeader->ConnectionKeepAlive)
 					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					RspHeader.Connection = NULL;
+					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 				RspHeader.TransferEncoding = NULL;
 				RspHeader.AllowedLen = 0;
 				if (http_server_write_header(conn, &RspHeader))
@@ -311,7 +312,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 				if (ReqHeader->ConnectionKeepAlive)
 					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					RspHeader.Connection = NULL;
+					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 				RspHeader.TransferEncoding = NULL;
 				RspHeader.AllowedLen = 0;
 				if (http_server_write_header(conn, &RspHeader))
@@ -326,7 +327,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 				if (ReqHeader->ConnectionKeepAlive)
 					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					RspHeader.Connection = NULL;
+					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 				RspHeader.TransferEncoding = NULL;
 				RspHeader.AllowedLen = 0;
 				if (http_server_write_header(conn, &RspHeader))
@@ -341,7 +342,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 				if (ReqHeader->ConnectionKeepAlive)
 					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					RspHeader.Connection = NULL;
+					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 				RspHeader.TransferEncoding = NULL;
 				RspHeader.AllowedLen = 0;
 				if (http_server_write_header(conn, &RspHeader))
@@ -378,7 +379,7 @@ error_405:
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.Allowed[0] = HTTP_REQUEST_GET;
 	RspHeader.AllowedLen = 1;
@@ -413,7 +414,7 @@ void http_server_serve_get_api_v1_profile_langpack(struct netconn *conn, HTTP_RE
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -568,7 +569,7 @@ write_data:
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);
@@ -625,7 +626,7 @@ void http_server_serve_head_api_v1_profile_config(struct netconn *conn, HTTP_REQ
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);
@@ -694,7 +695,7 @@ void http_server_serve_get_api_v1_profile_config(struct netconn *conn, HTTP_REQU
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -961,7 +962,7 @@ write_data:
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);
@@ -989,7 +990,7 @@ void http_server_serve_get_api_v1_profile_line(struct netconn *conn, HTTP_REQUES
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -1035,7 +1036,7 @@ void http_server_serve_get_api_v1_profile(struct netconn *conn, HTTP_REQUEST_HEA
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -1117,7 +1118,7 @@ void http_server_serve_get_api_v1_profile_section_values(struct netconn *conn, H
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -1183,7 +1184,7 @@ void http_server_serve_get_api_v1_profile_section_colors(struct netconn *conn, H
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -1262,7 +1263,7 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);
@@ -1332,7 +1333,7 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);	
@@ -1397,7 +1398,7 @@ void http_server_serve_get_api_v1_system_os(struct netconn *conn, HTTP_REQUEST_H
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -1425,7 +1426,7 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn, HTTP_REQ
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -1518,7 +1519,7 @@ void http_server_serve_get_api_v1_system_interfaces(struct netconn *conn, HTTP_R
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -1860,7 +1861,7 @@ static void http_server_serve_get_api_v1_log(struct netconn *conn, HTTP_REQUEST_
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -1979,13 +1980,13 @@ write_data:
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);
 	netconn_close(conn);
 	netconn_delete(conn);
-	osDelay(1000);
+	osDelay(100);
 	BSP_Reset();
 	
 	return;
@@ -2103,7 +2104,7 @@ write_data:
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);	
@@ -2181,6 +2182,22 @@ static void http_server_serve_get_api_v1_system_update(struct netconn *conn, HTT
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\r\n");
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t]\r\n");
 	}
+	else if (TFTP_BOOTLOADER.Status == TFTP_BOOTLOADER_STATUS_COMPLETE)
+	{
+		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"status\" : \"Complete\",\r\n");
+		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"files\" : [\r\n");
+		http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Info);
+		for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
+		{
+			for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
+			{
+				RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, ",\r\n");
+				http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Components[i]->Files[j]);
+			}
+		}
+		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\r\n");
+		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t]\r\n");
+	}
 	else
 	{
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"status\" : \"Error\",\r\n");
@@ -2206,7 +2223,7 @@ static void http_server_serve_get_api_v1_system_update(struct netconn *conn, HTT
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
@@ -2276,17 +2293,37 @@ parse_data:
 	
 	REQUEST_BODY[REQUEST_BODY_LEN] = 0;
 	
-	p = strstr(REQUEST_BODY, "\"interface\" : \"");
+	p = strstr(REQUEST_BODY, "\"interface\"");
 	if (!p)
 		goto error;
-	p += sizeof("\"interface\" : \"") - 1;
+	p += sizeof("\"interface\"") - 1;
+	while ((*p == ' ') || (*p == '\t') || (*p == '\r') || (*p == '\n'))
+		p++;
+	if (*p != ':')
+		goto error;
+	p++;
+	while ((*p == ' ') || (*p == '\t') || (*p == '\r') || (*p == '\n'))
+		p++;
+	if (*p != '\"')
+		goto error;
+	p++;
 	if (memcmp(p, "tftp\"", sizeof("tftp\"") - 1))
 		goto error;
 	
-	p = strstr(REQUEST_BODY, "\"server_ip\" : \"");
+	p = strstr(REQUEST_BODY, "\"server_ip\"");
 	if (!p)
 		goto error;
-	p += sizeof("\"server_ip\" : \"") - 1;
+	p += sizeof("\"server_ip\"") - 1;
+	while ((*p == ' ') || (*p == '\t') || (*p == '\r') || (*p == '\n'))
+		p++;
+	if (*p != ':')
+		goto error;
+	p++;
+	while ((*p == ' ') || (*p == '\t') || (*p == '\r') || (*p == '\n'))
+		p++;
+	if (*p != '\"')
+		goto error;
+	p++;
 	tmp = strtoul(p, &p, 10);
 	if ((tmp == 0)  || (tmp > 255) || (*p != '.'))
 		goto error;
@@ -2307,10 +2344,20 @@ parse_data:
 		goto error;
 	ip[3] = tmp;
 
-	p = strstr(REQUEST_BODY, "\"server_folder\" : \"");
+	p = strstr(REQUEST_BODY, "\"server_folder\"");
 	if (!p)
 		goto error;
-	p += sizeof("\"server_folder\" : \"") - 1;
+	p += sizeof("\"server_folder\"") - 1;
+	while ((*p == ' ') || (*p == '\t') || (*p == '\r') || (*p == '\n'))
+		p++;
+	if (*p != ':')
+		goto error;
+	p++;
+	while ((*p == ' ') || (*p == '\t') || (*p == '\r') || (*p == '\n'))
+		p++;
+	if (*p != '\"')
+		goto error;
+	p++;
 	_p = strchr(p, '\"');
 	if (!_p)
 		goto error;
@@ -2326,7 +2373,7 @@ parse_data:
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
-		RspHeader.Connection = NULL;
+		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);
@@ -2384,7 +2431,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 				rsp_header.AllowedLen = 1;
@@ -2406,7 +2453,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 				rsp_header.AllowedLen = 1;
@@ -2428,7 +2475,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 				rsp_header.AllowedLen = 1;
@@ -2450,7 +2497,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 				rsp_header.AllowedLen = 1;
@@ -2472,7 +2519,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 				rsp_header.AllowedLen = 1;
@@ -2501,7 +2548,7 @@ receive:
 					if (req_header.ConnectionKeepAlive)
 						rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 					else
-						rsp_header.Connection = NULL;
+						rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 					rsp_header.TransferEncoding = NULL;
 					rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 					rsp_header.AllowedLen = 1;
@@ -2561,7 +2608,7 @@ receive:
 								if (req_header.ConnectionKeepAlive)
 									rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 								else
-									rsp_header.Connection = NULL;
+									rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 								rsp_header.TransferEncoding = NULL;
 								rsp_header.Allowed[0] = HTTP_REQUEST_PUT;
 								rsp_header.AllowedLen = 1;
@@ -2583,7 +2630,7 @@ receive:
 								if (req_header.ConnectionKeepAlive)
 									rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 								else
-									rsp_header.Connection = NULL;
+									rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 								rsp_header.TransferEncoding = NULL;
 								rsp_header.Allowed[0] = HTTP_REQUEST_PUT;
 								rsp_header.AllowedLen = 1;
@@ -2611,7 +2658,7 @@ receive:
 						if (req_header.ConnectionKeepAlive)
 							rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 						else
-							rsp_header.Connection = NULL;
+							rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 						rsp_header.TransferEncoding = NULL;
 						rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 						rsp_header.AllowedLen = 1;
@@ -2633,7 +2680,7 @@ receive:
 						if (req_header.ConnectionKeepAlive)
 							rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 						else
-							rsp_header.Connection = NULL;
+							rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 						rsp_header.TransferEncoding = NULL;
 						rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 						rsp_header.AllowedLen = 1;
@@ -2669,7 +2716,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_HEAD;
 				rsp_header.Allowed[1] = HTTP_REQUEST_GET;
@@ -2697,7 +2744,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 				rsp_header.Allowed[1] = HTTP_REQUEST_PUT;
@@ -2720,7 +2767,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_POST;
 				rsp_header.AllowedLen = 1;
@@ -2742,7 +2789,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_POST;
 				rsp_header.AllowedLen = 1;
@@ -2768,7 +2815,7 @@ receive:
 				if (req_header.ConnectionKeepAlive)
 					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 				else
-					rsp_header.Connection = NULL;
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
 				rsp_header.TransferEncoding = NULL;
 				rsp_header.Allowed[0] = HTTP_REQUEST_GET;
 				rsp_header.Allowed[1] = HTTP_REQUEST_POST;

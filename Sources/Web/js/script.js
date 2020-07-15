@@ -1278,6 +1278,49 @@ function getLog() {
 	}
 }
 
+function updateSystemTFTPUpdateStatus(systemTFTPUpdateStatus) {
+	if (systemTFTPUpdateStatus.status != undefined )	{
+		$('#system-tftp-update-status-value').text(systemTFTPUpdateStatus.status);
+	}
+	if (systemTFTPUpdateStatus.files != undefined )	{
+		$('#system-tftp-update-files-table').show();
+		let files_tbody = $('#system-tftp-update-files-tbody');
+		files_tbody.empty();
+		for (let i = 0; i < systemTFTPUpdateStatus.files.length; i++) {
+			files_tbody.append(
+				'<tr>' +
+					'<td>'+ systemTFTPUpdateStatus.files[i].name + '</td>' +
+					'<td>'+ systemTFTPUpdateStatus.files[i].status + '</td>' +
+					'<td>'+ systemTFTPUpdateStatus.files[i].bytes + '</td>' +
+				'</tr>'
+			);
+		}
+	}
+}
+
+function getSystemTFTPUpdateStatus() {
+	console.log('getTFTPUpdateStatus');
+	clearTimeout(timerId);
+	if (!debug)	{
+		let xhr = new XMLHttpRequest();
+		xhr.open('GET', 'api/v1/system/update', true);
+		xhr.send();
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4)
+				return;
+			if (xhr.status != 200) {
+				console.log('[Error] getSystemTFTPUpdateStatus() Status: ' + xhr.status);
+				showToast('alarm', 'System', 'Get system tftp update status: failed');
+			} else {
+				let systemTFTPUpdateStatus = JSON.parse(xhr.responseText);
+				updateSystemTFTPUpdateStatus(systemTFTPUpdateStatus);
+				timerId = setTimeout(() => getSystemTFTPUpdateStatus(), 1000);
+			}
+		}
+	}	else	{
+	}
+}
+
 function registerNavbarCallbacks() {
 	$('.nav-item .nav-link').on('click', function(){
 		$('.nav-item').find('.active').removeClass('active');
@@ -1293,6 +1336,12 @@ function registerNavbarCallbacks() {
 		$('.content').hide();
 		$('#system-update-content').show();
 		clearTimeout(timerId);
+	});
+	$('#nav-system-tftp-update').on('click', function(){
+		$('.content').hide();
+		$('#system-tftp-update-content').show();
+		clearTimeout(timerId);
+		getSystemTFTPUpdateStatus();
 	});
 	$('#nav-system-os').on('click', function(){
 		$('.content').hide();
@@ -1332,16 +1381,16 @@ function registerUpdateMCUSoftwareCallbacks() {
 		//form_data.append('file', file_data);
 		let xhr = new XMLHttpRequest();
 		xhr.open('POST', '/api/v1/system/update/mcu/software', true);
-		xhr.upload.onprogress = function(event) {
-		  console.log( 'Отправлено ' + event.loaded + ' байт из ' + event.total );
-		}
-		xhr.onload = function() {
-		  showToast('normal', 'System', 'MCU software update: ok');
-		  console.log( 'Данные полностью загружены' );
-		}
-		xhr.onerror = function() {
-		  showToast('alarm', 'System', 'MCU software update: failed');
-		  console.log( 'Произошла ошибка при загрузке данных' );
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4)
+				return;
+			if (xhr.status != 200) {
+				showToast('alarm', 'System', 'MCU software update: failed');
+				console.log( 'Произошла ошибка при загрузке данных' );
+			} else {
+				showToast('normal', 'System', 'MCU software update: ok');
+				console.log( 'Данные полностью загружены' );
+			}
 		}
 		xhr.send(file_data);
 	});
@@ -1359,16 +1408,16 @@ function registerUpdateMCUWebCallbacks() {
 		//form_data.append('file', file_data);
 		let xhr = new XMLHttpRequest();
 		xhr.open('POST', '/api/v1/system/update/mcu/web', true);
-		xhr.upload.onprogress = function(event) {
-		  console.log( 'Отправлено ' + event.loaded + ' байт из ' + event.total );
-		}
-		xhr.onload = function() {
-		  showToast('normal', 'System', 'MCU web update: ok');
-		  console.log( 'Данные полностью загружены' );
-		}
-		xhr.onerror = function() {
-		  showToast('alarm', 'System', 'MCU web update: failed');
-		  console.log( 'Произошла ошибка при загрузке данных' );
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4)
+				return;
+			if (xhr.status != 200) {
+				showToast('alarm', 'System', 'MCU web update: failed');
+				console.log( 'Произошла ошибка при загрузке данных' );
+			} else {
+				showToast('normal', 'System', 'MCU web update: ok');
+				console.log( 'Данные полностью загружены' );
+			}
 		}
 		xhr.send(file_data);
 	});
@@ -1387,18 +1436,43 @@ function registerUpdateMCULangpackCallbacks() {
 		//form_data.append('file', file_data);
 		let xhr = new XMLHttpRequest();
 		xhr.open('PUT', '/api/v1/profile/langpack', true);
-		xhr.upload.onprogress = function(event) {
-		  console.log( 'Отправлено ' + event.loaded + ' байт из ' + event.total );
-		}
-		xhr.onload = function() {
-		  showToast('normal', 'System', 'Profile langpack update: ok');
-		  console.log( 'Данные полностью загружены' );
-		}
-		xhr.onerror = function() {
-		  showToast('alarm', 'System', 'Profile langpack update: failed');
-		  console.log( 'Произошла ошибка при загрузке данных' );
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4)
+				return;
+			if (xhr.status != 200) {
+				showToast('alarm', 'System', 'Profile langpack update: failed');
+				console.log( 'Произошла ошибка при загрузке данных' );
+			} else {
+				showToast('normal', 'System', 'Profile langpack update: ok');
+				console.log( 'Данные полностью загружены' );
+			}
 		}
 		xhr.send(file_data);
+	});
+}
+
+function registerSystemTFTPUpdateCallbacks() {	
+	$("#system-tftp-update-btn").on('click', function() {
+		let update_data = {};
+		update_data.interface = "tftp";
+		update_data.server_ip = $('#system-tftp-update-ip-input').val();
+		update_data.server_folder = $('#system-tftp-update-folder-input').val();
+		let xhr = new XMLHttpRequest();
+		xhr.open('POST', '/api/v1/system/update', true);
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState != 4)
+				return;
+			if (xhr.status != 200) {
+				showToast('alarm', 'System', 'TFTP update start: failed');
+			} else {
+				showToast('normal', 'System', 'TFTP update start: ok');
+			}
+		}
+		update_data = JSON.stringify(update_data);
+		update_data = update_data.replace('"interface":', '"interface" : ');
+		update_data = update_data.replace('"server_ip":', '"server_ip" : ');
+		update_data = update_data.replace('"server_folder":', '"server_folder" : ');
+		xhr.send(update_data);
 	});
 }
 
@@ -1407,6 +1481,7 @@ function DOMContentLoadedEvent () {
 	registerUpdateMCUSoftwareCallbacks();
 	registerUpdateMCUWebCallbacks();
 	registerUpdateMCULangpackCallbacks();
+	registerSystemTFTPUpdateCallbacks();
 	getProfile( () => {
 		getProfileColors( () => {
 			let profileDiv = $('#profile');

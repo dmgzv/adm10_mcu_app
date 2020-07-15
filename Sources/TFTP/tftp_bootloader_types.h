@@ -25,11 +25,11 @@ typedef struct {
 } TFTP_BOOTLOADER_FILE_T;
 
 typedef struct {
+	uint32_t Status;
 	char *Addr;
 	char *Dir;
 	char Version[64];
 	osMessageQId MessageQId;
-	//TFTP_BOOTLOADER_FILE_T *Info;
 	TFTP_BOOTLOADER_FILE_T *Files;
 	uint32_t FilesCnt;
 	void (*ProcessEvent)(uint32_t Event);

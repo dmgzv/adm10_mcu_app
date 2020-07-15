@@ -1191,6 +1191,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_client.c</FilePath>
             </File>
+            <File>
+              <FileName>tftp_bootloader_fpga.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_bootloader_fpga.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -2379,6 +2384,11 @@
               <FileName>tftp_client.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_client.c</FilePath>
+            </File>
+            <File>
+              <FileName>tftp_bootloader_fpga.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_bootloader_fpga.c</FilePath>
             </File>
           </Files>
         </Group>

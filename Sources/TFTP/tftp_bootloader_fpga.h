@@ -1,0 +1,19 @@
+#ifndef TFTP_BOOTLOADER_FPGA_H
+#define TFTP_BOOTLOADER_FPGA_H
+
+#include "tftp_bootloader_types.h"
+
+#define TFTP_BOOTLOADER_FPGA_MSG(Msg)								(0x3000 + (Msg))
+/* This events are sent to component for internal processing*/
+#define TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD			 			TFTP_BOOTLOADER_FPGA_MSG(0x100)
+#define TFTP_BOOTLOADER_FPGA_MSG_UPDATE							TFTP_BOOTLOADER_FPGA_MSG(0x200)
+/* This events are sent by component for external processing*/
+#define TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_COMPLETE	TFTP_BOOTLOADER_FPGA_MSG(0x1FE)
+#define TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_ERROR			TFTP_BOOTLOADER_FPGA_MSG(0x1FF)
+#define TFTP_BOOTLOADER_FPGA_MSG_UPDATE_COMPLETE		TFTP_BOOTLOADER_FPGA_MSG(0x2FF)
+/* This events are sent by component for internal processing*/
+#define TFTP_BOOTLOADER_FPGA_MSG_IMAGE_DOWNLOAD 		TFTP_BOOTLOADER_FPGA_MSG(0x101)
+
+extern TFTP_BOOTLOADER_COMPONENT_T TFTP_BOOTLOADER_FPGA;
+
+#endif /*TFTP_BOOTLOADER_FPGA_H*/

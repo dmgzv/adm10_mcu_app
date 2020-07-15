@@ -1,5 +1,6 @@
 #include "tftp_bootloader.h"
 #include "tftp_bootloader_mcu.h"
+#include "tftp_bootloader_fpga.h"
 #include "tftp_client.h"
 #include "bootloader.h"
 #include "profile_flash.h"
@@ -26,6 +27,7 @@ char TFTP_BOOTLOADER_InfoData[512];
 TFTP_BOOTLOADER_COMPONENT_T *TFTP_BOOTLOADER_COMPONENTS[] = 
 {
 	&TFTP_BOOTLOADER_MCU,
+	&TFTP_BOOTLOADER_FPGA,
 };
 
 TFTP_BOOTLOADER_T TFTP_BOOTLOADER = 
@@ -165,13 +167,16 @@ event_wait:
 		else if (Event.value.v == TFTP_BOOTLOADER_MSG_INFO_COMPLETE)
 		{
 			/*Trigger all componets to download and verify their files*/
+			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD, 0);
 			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD, 0);
 		}
-		else if (Event.value.v == TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR)
+		else if ((Event.value.v == TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR) || \
+			(Event.value.v == TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_ERROR))
 		{
 			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
 		}
-		else if (Event.value.v == TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_COMPLETE)
+		else if ((Event.value.v == TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_COMPLETE) || \
+			(Event.value.v == TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_COMPLETE))
 		{
 			/*Make sure that all files for all componets are downloaded and verified*/
 			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
@@ -182,7 +187,21 @@ event_wait:
 						goto event_wait;
 				}
 			}
+			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_FPGA_MSG_UPDATE, 0);
 			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MCU_MSG_UPDATE, 0);
+		}
+		else if (Event.value.v == TFTP_BOOTLOADER_MCU_MSG_UPDATE_COMPLETE)
+		{
+			/*Make sure that all componets are updated*/
+			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
+			{
+				if (TFTP_BOOTLOADER.Components[i]->Status != TFTP_BOOTLOADER_STATUS_COMPLETE)
+					goto event_wait;
+			}
+			LOG_Error("TFTP_BOOTLOADER", "", "", "Update Complete");
+			TFTP_BOOTLOADER.Status = TFTP_BOOTLOADER_STATUS_COMPLETE;
+			osDelay(3000);
+			BSP_Reset();
 		}
 		else
 		{
@@ -233,6 +252,7 @@ int32_t TFTP_BOOTLOADER_Update(char* Dir, char *Addr)
 	
 	for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
 	{
+		TFTP_BOOTLOADER.Components[i]->Status = TFTP_BOOTLOADER_STATUS_IN_PROGRESS;
 		TFTP_BOOTLOADER.Components[i]->Addr = TFTP_BOOTLOADER.Addr;
 		TFTP_BOOTLOADER.Components[i]->Dir = TFTP_BOOTLOADER.Dir;
 		TFTP_BOOTLOADER.Components[i]->Version[0] = 0;
