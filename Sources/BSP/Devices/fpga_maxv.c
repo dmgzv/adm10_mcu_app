@@ -7,8 +7,10 @@
 #define FPGA_MAXV_STATUS_ADDR(Dev)			(FPGA_MAXV_BASE_ADDR(Dev) + 0x01)
 #define FPGA_MAXV_CONTROL_ADDR(Dev)			(FPGA_MAXV_BASE_ADDR(Dev) + 0x02)
 #define FPGA_MAXV_POWER_UP_ADDR(Dev)		(FPGA_MAXV_BASE_ADDR(Dev) + 0x03)
-#define FPGA_MAXV_PAGE_SELECT_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x04)
-#define FPGA_MAXV_FPGA_SELECT_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x05)
+#define FPGA_MAXV_FPGA_SELECT_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x04)
+#define FPGA_MAXV_FPGA_LINE_PAGE_SELECT_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x05)
+#define FPGA_MAXV_FPGA_CLIENT_1_PAGE_SELECT_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x06)
+#define FPGA_MAXV_FPGA_CLIENT_2_PAGE_SELECT_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x07)
 
 static void FPGA_MAXV_WriteByte(FPGA_MAXV_T *Dev, uint32_t Addr, uint8_t Data)
 {
@@ -53,7 +55,7 @@ static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 		}
 
 		/*Upload Line FPGA*/
-		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), LinePageSelect);
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_LINE_PAGE_SELECT_ADDR(Dev), LinePageSelect);
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), (1 << 0));
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_CONTROL_ADDR(Dev), (1 << 0));
 		Timeout = 100;
@@ -67,7 +69,7 @@ static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), 0);
 		
 		/*Upload Clien 1 FPGA*/
-		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), Client1PageSelect);
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_CLIENT_1_PAGE_SELECT_ADDR(Dev), Client1PageSelect);
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), (1 << 1));
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_CONTROL_ADDR(Dev), (1 << 0));
 		Timeout = 100;
@@ -81,7 +83,7 @@ static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), 0);
 		
 		/*Upload Clien 2 FPGA*/
-		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_PAGE_SELECT_ADDR(Dev), Client2PageSelect);
+		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_CLIENT_2_PAGE_SELECT_ADDR(Dev), Client2PageSelect);
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_FPGA_SELECT_ADDR(Dev), (1 << 2));
 		FPGA_MAXV_WriteByte(Dev, FPGA_MAXV_CONTROL_ADDR(Dev), (1 << 0));
 		Timeout = 100;
