@@ -4,10 +4,71 @@
 #include "bsp.h"
 #include "profile.h"
 #include "profile_adm10_idx.h"
+#include "profile_adm10_values.h"
 
 int32_t PROFILE_ADM10_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
 int32_t PROFILE_ADM10_LINE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
 void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile);
 void PROFILE_ADM10_LINE_UpdateValues(PROFILE_T *Profile);
+
+extern const uint16_t ProfileADM10DynamicLnSFPStateIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10DynamicLnSFPTempIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10DynamicLnSFPRxPwrIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10DynamicLnSFPTxPwrIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10DynamicLnOTU2AlarmsIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10DynamicLnOTU2FECBERIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10DynamicLnODU2AlarmsIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10DynamicLnOPU2AlarmsIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10DynamicLnODU1AlarmsIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
+extern const uint16_t ProfileADM10DynamicLnOPU1AlarmsIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
+extern const uint16_t ProfileADM10DynamicLnODU0AlarmsIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU0S];
+extern const uint16_t ProfileADM10DynamicLnOPU0AlarmsIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU0S];
+extern const uint16_t ProfileADM10DynamicLnALSStateIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10InfoLnDestinationIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10InfoLnSFPVendorIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10InfoLnSFPSrNumberIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10InfoLnSFPPtNumberIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10externLnSFPSetFreqIdx[PROFILE_ADM10_LINE_PORTS][2];
+extern const uint16_t ProfileADM10externLnSFPRxPwrIdx[PROFILE_ADM10_LINE_PORTS][4];
+extern const uint16_t ProfileADM10externLnSFPTxPwrIdx[PROFILE_ADM10_LINE_PORTS][4];
+extern const uint16_t ProfileADM10externLnSFPTempIdx[PROFILE_ADM10_LINE_PORTS][4];
+extern const uint16_t ProfileADM10ConfigLnSetStateIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10ConfigLnSFPEnableTxIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10ConfigLnSFPSetFreqIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10ConfigLnSFPSetFreqSpIdx[PROFILE_ADM10_LINE_PORTS];
+/*extern const uint16_t ProfileADM10ConfigLnSFPSetRxDTIdx[PROFILE_ADM10_LINE_PORTS];*/
+extern const uint16_t ProfileADM10ConfigLnSetDataTypeIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10ConfigLnSetFECTypeIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10ConfigLnOPU2SetPayloadIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10ConfigLnOPU1SetPayloadIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
+extern const uint16_t ProfileADM10ConfigLnSetLoopbackIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10ConfigLnSetALSModeIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10ConfigLnSetFactoryIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnOTU2EBIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnOTU2ESIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnOTU2SESIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnOTU2BBEIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnOTU2UASIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnODU2EBIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnODU2ESIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnODU2SESIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnODU2BBEIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnODU2UASIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PerfLnODU1EBIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
+extern const uint16_t ProfileADM10PerfLnODU1ESIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
+extern const uint16_t ProfileADM10PerfLnODU1SESIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
+extern const uint16_t ProfileADM10PerfLnODU1BBEIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
+extern const uint16_t ProfileADM10PerfLnODU1UASIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
+extern const uint16_t ProfileADM10PerfLnODU0EBIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU0S];
+extern const uint16_t ProfileADM10PerfLnODU0ESIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU0S];
+extern const uint16_t ProfileADM10PerfLnODU0SESIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU0S];
+extern const uint16_t ProfileADM10PerfLnODU0BBEIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU0S];
+extern const uint16_t ProfileADM10PerfLnODU0UASIdx[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU0S];
+extern const uint16_t ProfileADM10LedLnAlarmIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10LedLnEnableTxIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PortRxLnInfoIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PortRxLnCatIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PortTxLnInfoIdx[PROFILE_ADM10_LINE_PORTS];
+extern const uint16_t ProfileADM10PortTxLnCatIdx[PROFILE_ADM10_LINE_PORTS];
 
 #endif /* __PROFILE_ADM10_LINE_H */

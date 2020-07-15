@@ -16,9 +16,9 @@ int32_t PROFILE_ADM10_XC_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t 
 void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile);
 void PROFILE_ADM10_XC_UpdateValues(PROFILE_T *Profile);
 
-extern uint32_t ProfileADM10ConfigODU1XCSetSrcIdx[PROFILE_ADM10_ODU1_XCS];
-extern uint32_t ProfileADM10ConfigODU1XCSetDstIdx[PROFILE_ADM10_ODU1_XCS];
-extern uint32_t ProfileADM10ConfigODU0XCSetSrcIdx[PROFILE_ADM10_ODU0_XCS];
-extern uint32_t ProfileADM10ConfigODU0XCSetDstIdx[PROFILE_ADM10_ODU0_XCS];
+extern const uint16_t ProfileADM10ConfigODU1XCSetSrcIdx[PROFILE_ADM10_ODU1_XCS];
+extern const uint16_t ProfileADM10ConfigODU1XCSetDstIdx[PROFILE_ADM10_ODU1_XCS];
+extern const uint16_t ProfileADM10ConfigODU0XCSetSrcIdx[PROFILE_ADM10_ODU0_XCS];
+extern const uint16_t ProfileADM10ConfigODU0XCSetDstIdx[PROFILE_ADM10_ODU0_XCS];
 
 #endif /* __PROFILE_ADM10_XC_H */

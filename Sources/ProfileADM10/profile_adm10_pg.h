@@ -4,47 +4,45 @@
 #include "bsp.h"
 #include "profile.h"
 #include "profile_adm10_idx.h"
-
-#define PROFILE_ADM10_ODU1_XC_CNT	8
-#define PROFILE_ADM10_ODU0_XC_CNT	16
+#include "profile_adm10_values.h"
 
 int32_t PROFILE_ADM10_PG_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
 int32_t PROFILE_ADM10_PG_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
 void PROFILE_ADM10_PG_UpdateConfigs(PROFILE_T *Profile);
 void PROFILE_ADM10_PG_UpdateValues(PROFILE_T *Profile);
 
-extern uint32_t ProfileADM10DynamicODU2PGStateIdx[];
-extern uint32_t ProfileADM10DynamicODU2PGActiveODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetTypeIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetModeIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetMonModeIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetRevModeIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetPrimaryODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetProtectODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetWTRTmrIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetHOTmrIdx[];
-extern uint32_t ProfileADM10ConfigODU2PGSetFactoryIdx[];
-extern uint32_t ProfileADM10DynamicODU1PGStateIdx[];
-extern uint32_t ProfileADM10DynamicODU1PGActiveODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetTypeIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetModeIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetMonModeIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetRevModeIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetProtectODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetWTRTmrIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetHOTmrIdx[];
-extern uint32_t ProfileADM10ConfigODU1PGSetFactoryIdx[];
-extern uint32_t ProfileADM10DynamicODU0PGStateIdx[];
-extern uint32_t ProfileADM10DynamicODU0PGActiveODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetTypeIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetModeIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetMonModeIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetRevModeIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetProtectODUkIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetWTRTmrIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetHOTmrIdx[];
-extern uint32_t ProfileADM10ConfigODU0PGSetFactoryIdx[];
+extern const uint16_t ProfileADM10DynamicODU2PGStateIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10DynamicODU2PGActiveODUkIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetTypeIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetModeIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetMonModeIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetRevModeIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetPrimaryODUkIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetProtectODUkIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetWTRTmrIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetHOTmrIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10ConfigODU2PGSetFactoryIdx[PROFILE_ADM10_ODU2_PGS];
+extern const uint16_t ProfileADM10DynamicODU1PGStateIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10DynamicODU1PGActiveODUkIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetTypeIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetModeIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetMonModeIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetRevModeIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetProtectODUkIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetWTRTmrIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetHOTmrIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10ConfigODU1PGSetFactoryIdx[PROFILE_ADM10_ODU1_PGS];
+extern const uint16_t ProfileADM10DynamicODU0PGStateIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10DynamicODU0PGActiveODUkIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetTypeIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetModeIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetMonModeIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetRevModeIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetProtectODUkIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetWTRTmrIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetHOTmrIdx[PROFILE_ADM10_ODU0_PGS];
+extern const uint16_t ProfileADM10ConfigODU0PGSetFactoryIdx[PROFILE_ADM10_ODU0_PGS];
 
 #endif /* __PROFILE_ADM10_PG_H */
