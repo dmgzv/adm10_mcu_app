@@ -81,6 +81,9 @@ const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= 
 };
 
 osThreadId SystemThreadHandle;
+uint32_t SystemThreadStage = 0;
+uint32_t SystemThreadPeriod = 0;
+uint32_t SystemThreadMaxPeriod = 0;
 /* Private functions */
 
 /* Threads */
@@ -143,7 +146,7 @@ void PROFILE_UpdateConfigs(void)
   */
 static void System_Thread(void const *argument)
 {
-	uint32_t Time = 0, Period = 0, MaxPeriod = 0, MinPeriod = 0xFFFFFFFF;
+	uint32_t Time = 0;
 	
 	/* Init Log*/	
 	LOG_Init();
@@ -196,16 +199,31 @@ static void System_Thread(void const *argument)
 	
 	for(;;)
   {
+		SystemThreadStage = 0;
+		
 		WATCHDOG_Refresh();
 		Time = osKernelSysTick();
+		
+		SystemThreadStage++;
+		
 		PROFILE_UpdateConfigs();
+		
+		SystemThreadStage++;
+		
 		BSP_UpdateCard();
+		
+		SystemThreadStage++;
+		
 		PROFILE_UpdateValues();
-		Period = osKernelSysTick() - Time;
-		if (Period > MaxPeriod)
-			MaxPeriod = Period;
-		if (Period < MinPeriod)
-			MinPeriod = Period;
+		
+		SystemThreadStage++;
+		
+		SystemThreadPeriod = osKernelSysTick() - Time;
+		if (SystemThreadPeriod > SystemThreadMaxPeriod)
+			SystemThreadMaxPeriod = SystemThreadPeriod;
+		
+		SystemThreadStage++;
+		
 		osDelayUntil(&Time, 1000);
   }
 }

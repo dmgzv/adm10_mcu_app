@@ -1,6 +1,8 @@
 #include "bsp.h"
 #include "mt48lc16m16a2.h"
 
+uint32_t BSP_Stage = 0;
+
 uint8_t SlotAddress;
 const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&at45db641e,
@@ -195,32 +197,60 @@ void BSP_UpdateCard(void)
 {
 	uint32_t i;
 
+	BSP_Stage = 0;
+	
 	BSP_PWR_IN_Process();
+	
+	BSP_Stage++;
 	
 	BSP_PWR_PIN_Process();
 	
+	BSP_Stage++;
+	
 	BSP_PWR_SEQ_Process();
+	
+	BSP_Stage++;
 	
 	BSP_ETH_PIN_Process();
 	
+	BSP_Stage++;
+	
 	BSP_ETH_SW_Process();
+	
+	BSP_Stage++;
 	
 	BSP_ETH_Process(SlotAddress);
 	
+	BSP_Stage++;
+	
 	BSP_SFP_I2C_SWITCH_Process();
+	
+	BSP_Stage++;
 	
 	BSP_SFP_PIN_Process();
 	
+	BSP_Stage++;
+	
 	BSP_CLK_Process();
+	
+	BSP_Stage++;
 	
 	//BSP_FPGA_PWR_Process();
 	
+	BSP_Stage++;
+	
 	BSP_FPGA_Process();
 	
+	BSP_Stage++;
+	
 	BSP_FPGA_FLASH_Process();
+	
+	BSP_Stage++;
 	
 	for (i = 0; i < BSP_SFP_CNT; i++)
 	{
 		BSP_SFP_Process(i);
+		
+		BSP_Stage++;
 	}
 }

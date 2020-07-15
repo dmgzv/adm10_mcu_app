@@ -2,6 +2,9 @@
 #include "profile_adm10_enums.h"
 #include "profile_adm10_bitmsks.h"
 
+uint32_t PROFILE_ADM10_UpdateConfigsStage = 0;
+uint32_t PROFILE_ADM10_UpdateStateStage = 0;
+
 static void PROFILE_ADM10_UpdatepId(PROFILE_T *Profile)
 {
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, PROFILE_ADM10_PID_IDX, PROFILE_STATE_IS);	
@@ -517,47 +520,91 @@ static void PROFILE_ADM10_UpdateLedsValue(PROFILE_T *Profile)
 
 void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 {
+	PROFILE_ADM10_UpdateStateStage = 0;
+	
 	PROFILE_ADM10_UpdatepId(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 	
 	PROFILE_ADM10_UpdateSrNumber(Profile);
 	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_UpdateSwNumber(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 	
 	PROFILE_ADM10_UpdateMCUSwNumber(Profile);
 	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_UpdateMaxVFPGASwNumber(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 	
 	PROFILE_ADM10_UpdateLineFPGASwNumber(Profile);
 	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_UpdateClient1FPGASwNumber(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 	
 	PROFILE_ADM10_UpdateClient2FPGASwNumber(Profile);
 	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_UpdateHwNumber(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 
 	PROFILE_ADM10_UpdateTimeValue(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 
 	PROFILE_ADM10_UpdatePowerAlarmsValue(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 
 	PROFILE_ADM10_UpdateHwAlarmsValue(Profile);
 	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_UpdateLineFPGATemp(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 	
 	PROFILE_ADM10_UpdateClient1FPGATemp(Profile);
 	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_UpdateClient2FPGATemp(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 
 	PROFILE_ADM10_UpdateBlockStateValue(Profile);
 	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_LINE_UpdateValues(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 	
 	PROFILE_ADM10_CLIENT_UpdateValues(Profile);
 	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_PG_UpdateValues(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 
 	PROFILE_ADM10_UpdateBlockColorValue(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 
 	PROFILE_ADM10_UpdateLedsValue(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
 }
 
 int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
@@ -612,8 +659,12 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 {
 	uint32_t Mode, SI5332_1_SetAdjCap, SI5332_2_SetAdjCap;
 	
+	PROFILE_ADM10_UpdateConfigsStage = 0;
+	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
 	
 	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
 	{
@@ -640,16 +691,24 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 		si5332_mode[1] = BSP_CLK_SI5332_MODE_RSFEC;
 	}
 	
+	PROFILE_ADM10_UpdateConfigsStage++;
+	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))
 		return;
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
 	
 	if (SI5332_1_SetAdjCap == PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_10_0)
 	{
 		si5332_cfg[0] = BSP_CLK_SI5332_10P0_CFG;
 	}
 	
+	PROFILE_ADM10_UpdateConfigsStage++;
+	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_2_SETADJCAP_IDX, &SI5332_2_SetAdjCap))
 		return;
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
 	
 	if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_6_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_6P0_CFG;
@@ -678,8 +737,21 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_12_0)
 		si5332_cfg[1] = BSP_CLK_SI5332_12P0_CFG;
 	
+	PROFILE_ADM10_UpdateConfigsStage++;
+	
 	PROFILE_ADM10_LINE_UpdateConfigs(Profile);
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
+	
 	PROFILE_ADM10_CLIENT_UpdateConfigs(Profile);
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
+	
 	PROFILE_ADM10_XC_UpdateConfigs(Profile);
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
+	
 	PROFILE_ADM10_PG_UpdateConfigs(Profile);
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
 }
