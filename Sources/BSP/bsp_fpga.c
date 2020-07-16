@@ -119,6 +119,8 @@ FPGA_CLIENT_ADM_2_5_T fpga_client_adm_2_5[BSP_FPGA_CLIENT_CNT] =
 	},
 };
 
+uint32_t fpga_sw_update;
+
 static int32_t BSP_FPGA_CheckConditions(void)
 {
 	uint32_t i;
@@ -140,6 +142,9 @@ static int32_t BSP_FPGA_CheckConditions(void)
 void BSP_FPGA_Process(void)
 {
 	uint32_t i;
+	
+	if (fpga_sw_update)
+		return;
 	
 	if (BSP_FPGA_CheckConditions())
 	{

@@ -58,7 +58,7 @@ static int32_t TFTP_BOOTLOADER_FPGA_VerifyInfo(char *Data)
 	strcat(TFTP_BOOTLOADER_FPGA.Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Name, ".bin");
 	TFTP_BOOTLOADER_FPGA.Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Size = 0;
 	TFTP_BOOTLOADER_FPGA.Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD;
-	TFTP_BOOTLOADER_FPGA.Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].MaxSize = 0x4000000;
+	TFTP_BOOTLOADER_FPGA.Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].MaxSize = S29GL01GS_SIZE / 2;
 	TFTP_BOOTLOADER_FPGA.Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Data = NULL;
 	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Image: %s", TFTP_BOOTLOADER_FPGA_Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Name);
 	
@@ -72,7 +72,8 @@ error:
 static int TFTP_BOOTLOADER_FPGA_DownloadImageReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {	
 	TFTP_BOOTLOADER_FPGA_Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Size += DataSize;
-	/*todo: Write data to FPGA flash*/
+	if (BSP_FPGA_FLASH_WriteSection(BSP_FLASH_FPGA_UPDATE_SECTION, ((Block - 1) * TFTP_DATA_LEN_MAX), Data, DataSize))
+		return -1;
 	return 0;
 }
 
@@ -96,7 +97,14 @@ static void TFTP_BOOTLOADER_FPGA_DownloadImage(uint32_t NextEvent)
 	ip_addr_t ip_addr;
 	
 	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download Image");
-	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_FPGA.Addr[0], TFTP_BOOTLOADER_FPGA.Addr[1], TFTP_BOOTLOADER_FPGA.Addr[2], TFTP_BOOTLOADER_FPGA.Addr[3]);	
+	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_FPGA.Addr[0], TFTP_BOOTLOADER_FPGA.Addr[1], TFTP_BOOTLOADER_FPGA.Addr[2], TFTP_BOOTLOADER_FPGA.Addr[3]);
+	/*if (BSP_FPGA_FLASH_EraseSection(BSP_FLASH_FPGA_UPDATE_SECTION))
+	{
+		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Image: Size Error");
+		TFTP_BOOTLOADER_FPGA_Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
+		fpga_sw_update = 0;
+		osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_ERROR, 0);
+	}*/
 	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_FPGA_Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Name, &ip_addr, TFTP_BOOTLOADER_FPGA_DownloadImageReceiveCallback, NULL);
 	if (result == TFTP_CLIENT_OK)
 	{
@@ -106,12 +114,14 @@ static void TFTP_BOOTLOADER_FPGA_DownloadImage(uint32_t NextEvent)
 	{
 		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Image: Timeout Error");
 		TFTP_BOOTLOADER_FPGA_Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
+		fpga_sw_update = 0;
 		osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_ERROR, 0);
 	}
 	else
 	{
 		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Image: Size Error");
 		TFTP_BOOTLOADER_FPGA_Files[TFTP_BOOTLOADER_FPGA_FILE_IMAGE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
+		fpga_sw_update = 0;
 		osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_ERROR, 0);
 	}
 }
@@ -119,6 +129,7 @@ static void TFTP_BOOTLOADER_FPGA_DownloadImage(uint32_t NextEvent)
 static void TFTP_BOOTLOADER_FPGA_Download(uint32_t NextEvent)
 {
 	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download");
+	fpga_sw_update = 1;
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, NextEvent, 0);
 	return;	
 }
@@ -128,6 +139,7 @@ static void TFTP_BOOTLOADER_FPGA_Update(void)
 	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Update");
 	/*todo: Update FPGA*/
 	TFTP_BOOTLOADER_FPGA.Status = TFTP_BOOTLOADER_STATUS_COMPLETE;
+	fpga_sw_update = 0;
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_FPGA_MSG_UPDATE_COMPLETE, 0);
 }
 

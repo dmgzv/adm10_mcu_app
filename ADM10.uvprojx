@@ -1177,6 +1177,11 @@
           <GroupName>TFTP</GroupName>
           <Files>
             <File>
+              <FileName>tftp_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_client.c</FilePath>
+            </File>
+            <File>
               <FileName>tftp_bootloader.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader.c</FilePath>
@@ -1185,11 +1190,6 @@
               <FileName>tftp_bootloader_mcu.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader_mcu.c</FilePath>
-            </File>
-            <File>
-              <FileName>tftp_client.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\TFTP\tftp_client.c</FilePath>
             </File>
             <File>
               <FileName>tftp_bootloader_fpga.c</FileName>
@@ -2371,6 +2371,11 @@
           <GroupName>TFTP</GroupName>
           <Files>
             <File>
+              <FileName>tftp_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\TFTP\tftp_client.c</FilePath>
+            </File>
+            <File>
               <FileName>tftp_bootloader.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader.c</FilePath>
@@ -2379,11 +2384,6 @@
               <FileName>tftp_bootloader_mcu.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader_mcu.c</FilePath>
-            </File>
-            <File>
-              <FileName>tftp_client.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\TFTP\tftp_client.c</FilePath>
             </File>
             <File>
               <FileName>tftp_bootloader_fpga.c</FileName>

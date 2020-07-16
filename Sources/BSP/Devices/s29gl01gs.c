@@ -439,7 +439,7 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 		return -1;
 	
 	BSP_DEV_UPDATE(Dev);
-	
+#if 0	
 	/* todo: Fix programing of data to several banks*/
 	if (Addr < S29GL01GS_NOR_BANK_SIZE)
 	{
@@ -497,7 +497,23 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 				goto error;
 		}
 	}
-	
+#else
+	if (Addr < S29GL01GS_NOR_BANK_SIZE)
+	{
+		if (HAL_NOR_GetStatus(&Dev->hnor[0], S29GL01GS_NOR_BANK_ADDR, 0) != HAL_NOR_STATUS_SUCCESS)
+			goto error;
+		if (HAL_NOR_ProgramBuffer(&Dev->hnor[0], Addr, Buffer, Size / 2) != HAL_OK)
+			goto error;		
+	}
+	else
+	{
+		if (HAL_NOR_GetStatus(&Dev->hnor[1], S29GL01GS_NOR_BANK_ADDR, 0) != HAL_NOR_STATUS_SUCCESS)
+			goto error;
+		if (HAL_NOR_ProgramBuffer(&Dev->hnor[1], Addr - S29GL01GS_NOR_BANK_SIZE, Buffer, Size / 2) != HAL_OK)
+			goto error;
+	}
+
+#endif
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	

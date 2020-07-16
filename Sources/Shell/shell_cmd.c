@@ -1119,6 +1119,7 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 	}
 	else if (CmdParamsCnt == 4)
 	{
+#if 0
 		if (!strcmp(CmdParamsList[1], "update"))
 		{			
 			p = CmdParamsList[3];
@@ -1161,7 +1162,9 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 			}
 			
 		}
-		else if (!strcmp(CmdParamsList[1], "w"))
+		else 
+#endif
+		if (!strcmp(CmdParamsList[1], "w"))
 		{
 			if ((CmdParamsList[2][0] != '0') || (CmdParamsList[2][1] != 'x'))
 				goto invalid_addr;
