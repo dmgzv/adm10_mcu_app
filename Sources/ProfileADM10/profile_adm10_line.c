@@ -364,6 +364,32 @@ static PERF_T LnODU0Perf[PROFILE_ADM10_LINE_PORTS][8];
 
 static ALS_T LnALS[PROFILE_ADM10_LINE_PORTS];
 
+static int32_t PROFILE_ADM10_LINE_GetState(PROFILE_T *Profile, uint32_t Idx, uint8_t *State)
+{
+	uint32_t __State;
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &__State))
+		return -1;
+	
+	if (__State == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS)
+	{
+		*State = PROFILE_STATE_OOS;
+	}
+	else if (__State == PROFILE_ADM10_LN_SET_STATE_ENUM_MT)
+	{
+		*State = PROFILE_STATE_MT;
+	}
+	else if (__State == PROFILE_ADM10_LN_SET_STATE_ENUM_IS)
+	{
+		*State = PROFILE_STATE_IS;
+	}
+	else
+	{
+		return -1;
+	}
+	return 0;
+}
+
 static int32_t PROFILE_ADM10_LINE_GetXCODU1(PROFILE_T *Profile, uint32_t LineIdx, uint32_t LineODU1Idx, uint32_t *PortType, uint32_t *PortIdx, uint32_t *PortODU1Idx)
 {
 	uint32_t i, j;
@@ -979,15 +1005,16 @@ int32_t PROFILE_ADM10_LINE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_
 void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 {
 	uint32_t i, j;
-	uint32_t State, SFPEnableTx, Loopback, FECType, ALSMode;
+	uint32_t SFPEnableTx, Loopback, FECType, ALSMode;
 	uint32_t OPU2PayloadType;
 	uint32_t OPU1PayloadType[4];
 	float SFPSetFreq/*, SFPSetRxDT*/;
 	uint32_t RxLos;
+	uint8_t State;
 	
 	for (i = 0; i < PROFILE_ADM10_LINE_PORTS; i++)
 	{
-		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[i], &State))
+		if (PROFILE_ADM10_LINE_GetState(Profile, i, &State))
 			return;
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSFPEnableTxIdx[i], &SFPEnableTx))
 			return;
@@ -1098,11 +1125,11 @@ static void PROFILE_ADM10_LINE_UpdateInfoAndStaticValues(PROFILE_T *Profile, uin
 {
 	char Tmp[PROFILE_STRING_MAX_LEN];
 	uint32_t UpdateFlag;
-	uint32_t State;
 	float __Freq, __MinFreq, __MaxFreq, __FreqSp;
 	uint32_t Freq, MinFreq, MaxFreq, FreqSp;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]))
@@ -1187,10 +1214,9 @@ static void PROFILE_ADM10_LINE_UpdateInfoAndStaticValues(PROFILE_T *Profile, uin
 static void PROFILE_ADM10_LINE_UpdateSFPStateValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t Value;
-
-	uint32_t State;	
-		
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	uint8_t State;
+	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]))
@@ -1216,9 +1242,9 @@ static void PROFILE_ADM10_LINE_UpdateSFPStateValue(PROFILE_T *Profile, uint32_t 
 static void PROFILE_ADM10_LINE_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
-	uint32_t State;	
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
 		
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]))
@@ -1239,9 +1265,9 @@ static void PROFILE_ADM10_LINE_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t I
 static void PROFILE_ADM10_LINE_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
-	uint32_t State;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]))
@@ -1262,9 +1288,9 @@ static void PROFILE_ADM10_LINE_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_t 
 static void PROFILE_ADM10_LINE_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
-	uint32_t State;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]))
@@ -1285,11 +1311,12 @@ static void PROFILE_ADM10_LINE_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_t 
 static void PROFILE_ADM10_LINE_UpdateOTU2AlarmsValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t OTU2Alarms;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	
 	if (DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2)
@@ -1343,11 +1370,12 @@ static void PROFILE_ADM10_LINE_UpdateOTU2AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateOTU2FECBERValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float OTU2FECBER;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	
 	if (DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2)
@@ -1371,11 +1399,12 @@ static void PROFILE_ADM10_LINE_UpdateOTU2FECBERValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateODU2AlarmsValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t ODU2Alarms;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 
 	if (DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2)
@@ -1431,11 +1460,12 @@ static void PROFILE_ADM10_LINE_UpdateODU2AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateOPU2AlarmsValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t OPU2Alarms;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 
 	if (DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2)
@@ -1462,9 +1492,12 @@ static void PROFILE_ADM10_LINE_UpdateOPU2AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU1Idx)
 {
 	uint32_t ODU1Alarms;
-	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
-
+	uint8_t State;
+	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -1472,8 +1505,6 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU1Idx], &OPU1Payload))
-		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 	
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
@@ -1586,9 +1617,12 @@ static void PROFILE_ADM10_LINE_UpdateODU1AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU1Idx)
 {
 	uint32_t OPU1Alarms;
-	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
-
+	uint8_t State;
+	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -1596,8 +1630,6 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU1Idx], &OPU1Payload))
-		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
@@ -1652,9 +1684,12 @@ static void PROFILE_ADM10_LINE_UpdateOPU1AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU0Idx)
 {
 	uint32_t ODU0Alarms;
-	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
+	uint8_t State;
 	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -1663,8 +1698,6 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU0Idx / 2], &OPU1Payload))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
-		return;	
 
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
 			(OPU2Payload == PROFILE_ADM10_LN_OPU2_SET_PAYLOAD_ENUM_AMP_4XODU1) &&
@@ -1778,9 +1811,12 @@ static void PROFILE_ADM10_LINE_UpdateODU0AlarmsValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU0Idx)
 {
 	uint32_t OPU0Alarms;
-	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
-
+	uint8_t State;
+	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -1788,8 +1824,6 @@ static void PROFILE_ADM10_LINE_UpdateOPU0AlarmsValue(PROFILE_T *Profile, uint32_
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU0Idx / 2], &OPU1Payload))
-		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
@@ -1846,11 +1880,11 @@ static void PROFILE_ADM10_LINE_UpdateALSValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t ALSMode;
 	uint32_t ALSState;
-	uint32_t State;
-		
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetALSModeIdx[Idx], &ALSMode))
+	uint8_t State;
+	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetALSModeIdx[Idx], &ALSMode))
 		return;
 	
 	if (LnALS[Idx].Status == ALS_STATUS_DISABLED)
@@ -1890,15 +1924,16 @@ static void PROFILE_ADM10_LINE_UpdateDynamicValues(PROFILE_T *Profile, uint32_t 
 static void PROFILE_ADM10_LINE_UpdateOTU2PerfValues(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-			(State != PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
+			(State != PROFILE_STATE_OOS))
 	{
 		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
@@ -1927,7 +1962,7 @@ static void PROFILE_ADM10_LINE_UpdateOTU2PerfValues(PROFILE_T *Profile, uint32_t
 	}
 	else
 	{
-		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
+		State = PROFILE_STATE_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&LnOTU2Perf[Idx]);
@@ -1943,15 +1978,16 @@ static void PROFILE_ADM10_LINE_UpdateOTU2PerfValues(PROFILE_T *Profile, uint32_t
 static void PROFILE_ADM10_LINE_UpdateODU2PerfValues(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
-			(State != PROFILE_ADM10_LN_SET_STATE_ENUM_OOS))
+			(State != PROFILE_STATE_OOS))
 	{
 		if ((BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_LINE_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
@@ -1983,7 +2019,7 @@ static void PROFILE_ADM10_LINE_UpdateODU2PerfValues(PROFILE_T *Profile, uint32_t
 	}
 	else
 	{
-		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
+		State = PROFILE_STATE_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&LnODU2Perf[Idx]);
@@ -1999,9 +2035,12 @@ static void PROFILE_ADM10_LINE_UpdateODU2PerfValues(PROFILE_T *Profile, uint32_t
 static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU1Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU1Idx, PGPortType, PGPortIdx, PGPortODU1Idx;
-
+	uint8_t State;
+	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
@@ -2009,8 +2048,6 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU1Idx], &OPU1Payload))
-		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
 		return;
 		
 	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) && 
@@ -2022,7 +2059,7 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 		if (PROFILE_ADM10_LINE_GetPGODU1(Profile, Idx, ODU1Idx, &PGPortType, &PGPortIdx, &PGPortODU1Idx))
 			return;
 		if (((XCPortType == 0xFF) || (XCPortIdx == 0xFF) || (XCPortODU1Idx == 0xFF)) && ((PGPortType == 0xFF) || (PGPortIdx == 0xFF) || (PGPortODU1Idx == 0xFF)))
-			State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
+			State = PROFILE_STATE_OOS;
 	}
 	
 	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) && \
@@ -2093,17 +2130,18 @@ static void PROFILE_ADM10_LINE_UpdateODU1PerfValues(PROFILE_T *Profile, uint32_t
 static void PROFILE_ADM10_LINE_UpdateODU0PerfValues(PROFILE_T *Profile, uint32_t Idx, uint32_t ODU0Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t Mode, State, DataType, OPU2Payload, OPU1Payload;
+	uint32_t Mode, DataType, OPU2Payload, OPU1Payload;
 	uint32_t XCPortType, XCPortIdx, XCPortODU0Idx, PGPortType, PGPortIdx, PGPortODU0Idx;
+	uint8_t State;
 	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
-		return;	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx], &OPU2Payload))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][ODU0Idx / 2], &OPU1Payload))
@@ -2203,13 +2241,14 @@ static void PROFILE_ADM10_LINE_UpdatePerfValues(PROFILE_T *Profile, uint32_t Idx
 
 static void PROFILE_ADM10_LINE_UpdateAlarmLedValue(PROFILE_T *Profile, uint32_t Idx)
 {
-	uint32_t State, LedColor, i;
+	uint32_t LedColor, i;
 	uint8_t Color, ParamColor, ParamState;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
 		return;
 	
-	if (State == PROFILE_ADM10_LN_SET_STATE_ENUM_IS)
+	if (State == PROFILE_STATE_IS)
 	{
 		Color = PROFILE_COLOR_NORMAL;
 		

@@ -2,7 +2,7 @@
 
 const PROFILE_ADM10_VALUES_STATIC_T ProfileADM10ValuesStaticDefault = {
     "IP1459-1",
-    "1.0.0.1",
+    "1.0.0.7",
     0,
     "1.0.0.1",
     "1.0.0.1",

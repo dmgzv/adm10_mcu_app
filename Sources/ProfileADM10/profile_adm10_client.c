@@ -348,6 +348,91 @@ static uint64_t ClEthTxErrs[PROFILE_ADM10_CLIENT_PORTS];
 
 static ALS_T ClALS[PROFILE_ADM10_CLIENT_PORTS];
 
+static uint32_t ClAISCnt[PROFILE_ADM10_CLIENT_PORTS];
+
+static int32_t PROFILE_ADM10_CLIENT_GetState(PROFILE_T *Profile, uint32_t Idx, uint8_t *State)
+{
+	uint8_t Color, ParamColor, ParamState;
+	uint32_t __State;
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &__State))
+		return -1;
+	
+	if (__State == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS)
+	{
+		*State = PROFILE_STATE_OOS;
+		ClAISCnt[Idx] = 20;
+	}
+	else if (__State == PROFILE_ADM10_CL_SET_STATE_ENUM_MT)
+	{
+		*State = PROFILE_STATE_MT;
+		ClAISCnt[Idx] = 20;
+	}
+	else if (__State == PROFILE_ADM10_CL_SET_STATE_ENUM_IS)
+	{
+		*State = PROFILE_STATE_IS;
+		ClAISCnt[Idx] = 0;
+	}
+	else if (__State == PROFILE_ADM10_CL_SET_STATE_ENUM_AIS)
+	{
+		Color = PROFILE_COLOR_NORMAL;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPStateIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPStateIdx[Idx], &ParamState);
+		if ((ParamState != PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTempIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTempIdx[Idx], &ParamState);
+		if ((ParamState != PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPRxPwrIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPRxPwrIdx[Idx], &ParamState);
+		if ((ParamState != PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTxPwrIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSFPTxPwrIdx[Idx], &ParamState);
+		if ((ParamState != PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSDHRSAlarmsIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClSDHRSAlarmsIdx[Idx], &ParamState);
+		if ((ParamState != PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		PROFILE_GetColor(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClEthAlarmsIdx[Idx], &ParamColor);
+		PROFILE_GetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicClEthAlarmsIdx[Idx], &ParamState);
+		if ((ParamState != PROFILE_STATE_IS) && (Color < ParamColor))
+			Color = ParamColor;
+		
+		if ((Color == PROFILE_COLOR_NORMAL) && (ClAISCnt[Idx]))
+		{
+			ClAISCnt[Idx]--;
+		}
+		else if ((Color != PROFILE_COLOR_NORMAL) && (ClAISCnt[Idx]))
+		{
+			ClAISCnt[Idx] = 20;
+		}
+		
+		if (ClAISCnt[Idx])
+		{
+			*State = PROFILE_STATE_MT;
+		}
+		else
+		{
+			*State = PROFILE_STATE_IS;
+		}
+		
+	}
+	else
+	{
+		return -1;
+	}
+	return 0;
+}
+
 static int32_t PROFILE_ADM10_CLIENT_GetXCLineODU1(PROFILE_T *Profile, uint32_t ClientIdx, uint32_t *LineIdx, uint32_t *ODU1Idx)
 {
 	uint32_t i, j;
@@ -458,7 +543,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &SetState))
 		return -1;
 	
-	if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) && (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_IS))
+	if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) && ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_IS) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_AIS)))
 		return -1;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
@@ -503,7 +588,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, 
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &SetState))
 			return -1;
-		if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) || (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_IS))
+		if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) || (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_IS) || (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_AIS))
 			return -1;
 	}
 	return 0;
@@ -726,7 +811,8 @@ int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint
 void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 {
 	uint32_t i;
-	uint32_t Mode, State, SFPEnableTx, DataType, Loopback, ALSMode;
+	uint8_t State;
+	uint32_t Mode, SFPEnableTx, DataType, Loopback, ALSMode;
 	uint32_t RxLos;
 	uint32_t LineIdx, ODU0Idx, ODU1Idx;
 	
@@ -735,7 +821,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 	
 	for (i = 0; i < PROFILE_ADM10_CLIENT_PORTS; i++)
 	{
-		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[i], &State))
+		if (PROFILE_ADM10_CLIENT_GetState(Profile, i, &State))
 			return;
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[i], &SFPEnableTx))
 			return;
@@ -874,9 +960,9 @@ static void PROFILE_ADM10_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, u
 {
 	char Tmp[PROFILE_STRING_MAX_LEN];
 	uint32_t UpdateFlag;
-	uint32_t State;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
@@ -943,10 +1029,9 @@ static void PROFILE_ADM10_CLIENT_UpdateInfoAndStaticValues(PROFILE_T *Profile, u
 static void PROFILE_ADM10_CLIENT_UpdateSFPStateValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t Value;
-
-	uint32_t State;	
+	uint8_t State;	
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
@@ -975,9 +1060,9 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPStateValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_CLIENT_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
-	uint32_t State;	
+	uint8_t State;	
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
 		
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
@@ -998,9 +1083,9 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPTempValue(PROFILE_T *Profile, uint32_t
 static void PROFILE_ADM10_CLIENT_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
-	uint32_t State;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
@@ -1021,9 +1106,9 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPRxPwrValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_CLIENT_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
-	uint32_t State;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
 	
 	switch (BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]))
@@ -1044,12 +1129,14 @@ static void PROFILE_ADM10_CLIENT_UpdateSFPTxPwrValue(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t SDHRSAlarms;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
-		return;
+	
 	
 	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1) || (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4) || (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16))
 	{
@@ -1106,12 +1193,12 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint
 static void PROFILE_ADM10_CLIENT_UpdateEthAlarmsValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t EthAlarms;
-	uint32_t State, DataType;
-
+	uint32_t DataType;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
 		return;
 	
 	if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE)
@@ -1142,9 +1229,9 @@ static void PROFILE_ADM10_CLIENT_UpdateEthAlarmsValue(PROFILE_T *Profile, uint32
 static void PROFILE_ADM10_CLIENT_UpdateALSValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t ALSState;
-	uint32_t State;	
-
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	uint8_t State;
+	
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
 		
 	if (ClALS[Idx].Status == ALS_STATUS_DISABLED)
@@ -1171,16 +1258,18 @@ static void PROFILE_ADM10_CLIENT_UpdateDynamicValues(PROFILE_T *Profile, uint32_
 static void PROFILE_ADM10_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t Errors, Defects;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
+		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
-		return;
+
 	if ((((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1) ||
 				(DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4) ||
 				(DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16))  &&
-			(State != PROFILE_ADM10_CL_SET_STATE_ENUM_OOS)))
+			(State != PROFILE_STATE_OOS)))
 	{
 		if ((BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
 			(BSP_DEV_GET_STATE(&sfp[BSP_SFP_CLIENT_IDX(Idx)]) != BSP_DEV_STATE_OK) || \
@@ -1208,7 +1297,7 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint3
 	}
 	else
 	{
-		State = PROFILE_ADM10_CL_SET_STATE_ENUM_OOS;
+		State = PROFILE_STATE_OOS;
 		Defects = 0;
 		Errors = 0;
 		PERF_Reset(&ClSDHRSPerf[Idx]);
@@ -1224,15 +1313,16 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSPerfValues(PROFILE_T *Profile, uint3
 static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t RxPkts, RxOcts, RxErrs, TxPkts, TxOcts, TxErrs;
-	uint32_t State, DataType;
+	uint32_t DataType;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType))
 		return;
 	
 	if ((DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE) &&
-			(State != PROFILE_ADM10_CL_SET_STATE_ENUM_OOS))
+			(State != PROFILE_STATE_OOS))
 	{
 		if (BSP_DEV_GET_STATE(&fpga_client[BSP_FPGA_CLIENT_FPGA_IDX(Idx)]) != BSP_DEV_STATE_OK)
 		{
@@ -1261,7 +1351,7 @@ static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_
 	}
 	else
 	{
-		State = PROFILE_ADM10_CL_SET_STATE_ENUM_OOS;
+		State = PROFILE_STATE_OOS;
 		ClEthRxPkts[Idx] = 0;
 		ClEthRxOcts[Idx] = 0;
 		ClEthRxErrs[Idx] = 0;
@@ -1288,12 +1378,14 @@ static void PROFILE_ADM10_CLIENT_UpdatePerfValues(PROFILE_T *Profile, uint32_t I
 
 static void PROFILE_ADM10_CLIENT_UpdateAlarmLedValue(PROFILE_T *Profile, uint32_t Idx)
 {
-	uint32_t State, LedColor;
+	uint32_t LedColor;
 	uint8_t Color, ParamColor, ParamState;
+	uint8_t State;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &State))
+	if (PROFILE_ADM10_CLIENT_GetState(Profile, Idx, &State))
 		return;
-	if (State == PROFILE_ADM10_CL_SET_STATE_ENUM_IS)
+	
+	if (State == PROFILE_STATE_IS)
 	{
 		Color = PROFILE_COLOR_NORMAL;
 		
