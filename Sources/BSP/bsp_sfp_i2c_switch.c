@@ -63,7 +63,7 @@ int32_t BSP_SFP_I2C_SWITCH_SelectChannel(uint32_t Channel)
 		for (i = 0; i< BSP_PCA9548_CNT; i++)
 		{
 			if (PCA9548A_SelectChannel(&pca9548a[i], PCA9548A_CH_NO))
-				return -1;
+				goto error;
 		}		
 	}
 	else if (Channel < 24)
@@ -71,7 +71,7 @@ int32_t BSP_SFP_I2C_SWITCH_SelectChannel(uint32_t Channel)
 		for (i = 0; i< BSP_PCA9548_CNT; i++)
 		{
 			if (PCA9548A_SelectChannel(&pca9548a[i], pca9548a_ch_set[Channel][i]))
-				return -1;
+				goto error;
 		}
 	}
 	else
@@ -80,6 +80,13 @@ int32_t BSP_SFP_I2C_SWITCH_SelectChannel(uint32_t Channel)
 	}
 
 	return 0;
+
+error:
+	for (i = 0; i< BSP_PCA9548_CNT; i++)
+	{
+		PCA9548A_SelectChannel(&pca9548a[i], PCA9548A_CH_NO);
+	}
+	return -1;
 }
 
 static int32_t BSP_SFP_I2C_SWITCH_CheckConditions(void)
