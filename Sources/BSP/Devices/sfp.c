@@ -600,9 +600,9 @@ int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, c
 	Dev->PinCtrl = PinCtrl;
 	
 	if (SFP_InitPin(Dev, SFP_PIN_MOD_ABS))
-		goto error;
+		goto reset;
 	if (SFP_GetPinState(Dev, SFP_PIN_MOD_ABS, &Dev->Pin.ModAbs))
-		goto error;
+		goto reset;
 	if (Dev->Pin.ModAbs)
 		goto reset;
 	
