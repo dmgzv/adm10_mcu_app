@@ -373,7 +373,7 @@ static int32_t PROFILE_ADM10_CLIENT_GetState(PROFILE_T *Profile, uint32_t Idx, u
 		*State = PROFILE_STATE_IS;
 		ClAISCnt[Idx] = 0;
 	}
-	else if (__State == PROFILE_ADM10_CL_SET_STATE_ENUM_AIS)
+	else if (__State == PROFILE_ADM10_CL_SET_STATE_ENUM_AINS)
 	{
 		Color = PROFILE_COLOR_NORMAL;
 		
@@ -543,7 +543,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &SetState))
 		return -1;
 	
-	if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) && ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_IS) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_AIS)))
+	if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) && ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_IS) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_AINS)))
 		return -1;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
@@ -588,7 +588,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, 
 	{
 		if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &SetState))
 			return -1;
-		if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) || (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_IS) || (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_AIS))
+		if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) || (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_IS) || (SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_AINS))
 			return -1;
 	}
 	return 0;
