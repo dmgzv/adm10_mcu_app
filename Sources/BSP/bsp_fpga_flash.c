@@ -267,9 +267,9 @@ static int32_t BSP_FPGA_FLASH_CheckConditions(void)
 		return -1;
 	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 		return -1;
+	/*
 	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
 		return -1;
-	/*
 	if (BSP_DEV_GET_STATE(&fpga_line) != BSP_DEV_STATE_OK)
 		return -1;
 	for (i = 0 ; i < BSP_FPGA_CLIENT_CNT; i++)
@@ -303,9 +303,19 @@ void BSP_FPGA_FLASH_Process(void)
 		if(BSP_DEV_GET_STATE(&s29gl01gs) != BSP_DEV_STATE_OK)
 		{
 			S29GL01GS_Init(&s29gl01gs);
-			BSP_FPGA_FLASH_Addr = 0;
+			BSP_FPGA_FLASH_Addr = S29GL01GS_SIZE / 2;
 			BSP_FPGA_FLASH_Error = 0;
 			memset(BSP_FPGA_FLASH_Data, 0xAA, sizeof(BSP_FPGA_FLASH_Data));
+		}
+		else
+		{
+			//if (S29GL01GS_WaitReady(&s29gl01gs))
+			//	BSP_FPGA_FLASH_Error++;
+			if (S29GL01GS_ProgramSector(&s29gl01gs, S29GL01GS_SIZE / 2, BSP_FPGA_FLASH_Data, sizeof(BSP_FPGA_FLASH_Data)))
+				BSP_FPGA_FLASH_Error++;
+			BSP_FPGA_FLASH_Addr += sizeof(BSP_FPGA_FLASH_Data);
+			if (BSP_FPGA_FLASH_Addr >= S29GL01GS_SIZE)
+				BSP_FPGA_FLASH_Addr = S29GL01GS_SIZE / 2;
 		}
 	}
 }

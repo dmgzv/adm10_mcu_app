@@ -235,7 +235,6 @@ void HAL_NOR_MspDeInit(NOR_HandleTypeDef *hnor)
 int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 {
   FMC_NORSRAM_TimingTypeDef Timing;
-  FMC_NORSRAM_TimingTypeDef ExtTiming;
 
 	if (!Dev)
 		return -1;
@@ -257,7 +256,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
   Dev->hnor[0].Init.WaitSignalActive = FMC_WAIT_TIMING_BEFORE_WS;
   Dev->hnor[0].Init.WriteOperation = FMC_WRITE_OPERATION_ENABLE;
   Dev->hnor[0].Init.WaitSignal = FMC_WAIT_SIGNAL_DISABLE;
-  Dev->hnor[0].Init.ExtendedMode = FMC_EXTENDED_MODE_ENABLE;
+  Dev->hnor[0].Init.ExtendedMode = FMC_EXTENDED_MODE_DISABLE;
   Dev->hnor[0].Init.AsynchronousWait = FMC_ASYNCHRONOUS_WAIT_DISABLE;
   Dev->hnor[0].Init.WriteBurst = FMC_WRITE_BURST_DISABLE;
   Dev->hnor[0].Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
@@ -267,29 +266,27 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 		todo: Set correct values timing values
 		HCLK == 180 MHz
 		tHCLK = 5,5 ns
+		tsu(Data_NE) + tv(A_NE) = 2 x tHCLK + 25 ns		
 		
-		tWC == 60 ns
-		tWP = 20 ns
-		tRC = 100 ns
-		tAVQV = 100 ns
+		tWC = 60 ns
+		tRC = 110 ns
+		tWP = 25 ns
+		tAVQV = 110 ns
+		
+		(ADDSET + (DATAST + 1)) x tHCLK >= max (tWC, tRC)
+		DATAST x tHCLK >= tWP
+		DATAST >= (tAVQV + tsu(Data_NE) + tv(A_NE)) / tHCLK – ADDSET
+		
 	*/
-  Timing.AddressSetupTime = 4;
-  Timing.AddressHoldTime = 4;
-  Timing.DataSetupTime = 20; // tWP = 
-  Timing.BusTurnAroundDuration = 4;
+  Timing.AddressSetupTime = 6;
+  Timing.AddressHoldTime = 15;
+  Timing.DataSetupTime = 22;
+  Timing.BusTurnAroundDuration = 15;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;
-  Timing.AccessMode = FMC_ACCESS_MODE_D;
-  /* ExtTiming */
-  ExtTiming.AddressSetupTime = 4;
-  ExtTiming.AddressHoldTime = 4;
-  ExtTiming.DataSetupTime = 20;
-  ExtTiming.BusTurnAroundDuration = 4;
-  ExtTiming.CLKDivision = 16;
-  ExtTiming.DataLatency = 17;
-  ExtTiming.AccessMode = FMC_ACCESS_MODE_D;
+  Timing.AccessMode = FMC_ACCESS_MODE_B;
 
-  if (HAL_NOR_Init(&Dev->hnor[0], &Timing, &ExtTiming) != HAL_OK)
+  if (HAL_NOR_Init(&Dev->hnor[0], &Timing, &Timing) != HAL_OK)
 		goto error;
 	
 	if (HAL_NOR_Read_ID(&Dev->hnor[0], &Dev->Id) != HAL_OK)
@@ -323,29 +320,36 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
   Dev->hnor[1].Init.WaitSignalActive = FMC_WAIT_TIMING_BEFORE_WS;
   Dev->hnor[1].Init.WriteOperation = FMC_WRITE_OPERATION_ENABLE;
   Dev->hnor[1].Init.WaitSignal = FMC_WAIT_SIGNAL_DISABLE;
-  Dev->hnor[1].Init.ExtendedMode = FMC_EXTENDED_MODE_ENABLE;
+  Dev->hnor[1].Init.ExtendedMode = FMC_EXTENDED_MODE_DISABLE;
   Dev->hnor[1].Init.AsynchronousWait = FMC_ASYNCHRONOUS_WAIT_DISABLE;
   Dev->hnor[1].Init.WriteBurst = FMC_WRITE_BURST_DISABLE;
   Dev->hnor[1].Init.ContinuousClock = FMC_CONTINUOUS_CLOCK_SYNC_ONLY;
   Dev->hnor[1].Init.PageSize = FMC_PAGE_SIZE_NONE;
-  /* Timing */
-  Timing.AddressSetupTime = 4;
-  Timing.AddressHoldTime = 4;
-  Timing.DataSetupTime = 20;
-  Timing.BusTurnAroundDuration = 4;
+  /*
+		Set correct values timing values
+		HCLK == 180 MHz
+		tHCLK = 5,5 ns
+		tsu(Data_NE) + tv(A_NE) = 2 x tHCLK + 25 ns		
+		
+		tWC = 60 ns
+		tRC = 110 ns
+		tWP = 25 ns
+		tAVQV = 110 ns
+		
+		(ADDSET + (DATAST + 1)) x tHCLK >= max (tWC, tRC)
+		DATAST x tHCLK >= tWP
+		DATAST >= (tAVQV + tsu(Data_NE) + tv(A_NE)) / tHCLK – ADDSET
+		
+	*/
+  Timing.AddressSetupTime = 6;
+  Timing.AddressHoldTime = 15;
+  Timing.DataSetupTime = 22;
+  Timing.BusTurnAroundDuration = 15;
   Timing.CLKDivision = 16;
   Timing.DataLatency = 17;
-  Timing.AccessMode = FMC_ACCESS_MODE_D;
-  /* ExtTiming */
-  ExtTiming.AddressSetupTime = 4;
-  ExtTiming.AddressHoldTime = 4;
-  ExtTiming.DataSetupTime = 20;
-  ExtTiming.BusTurnAroundDuration = 4;
-  ExtTiming.CLKDivision = 16;
-  ExtTiming.DataLatency = 17;
-  ExtTiming.AccessMode = FMC_ACCESS_MODE_D;
+  Timing.AccessMode = FMC_ACCESS_MODE_B;
 
-  if (HAL_NOR_Init(&Dev->hnor[1], &Timing, &ExtTiming) != HAL_OK)
+  if (HAL_NOR_Init(&Dev->hnor[1], &Timing, &Timing) != HAL_OK)
 		goto error;
 	
 	if (HAL_NOR_Read_ID(&Dev->hnor[1], &Dev->Id) != HAL_OK)

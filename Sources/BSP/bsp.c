@@ -235,11 +235,11 @@ void BSP_UpdateCard(void)
 	
 	BSP_Stage++;
 	
-	//BSP_FPGA_PWR_Process();
+	BSP_FPGA_PWR_Process();
 	
 	BSP_Stage++;
 	
-	BSP_FPGA_Process();
+	//BSP_FPGA_Process();
 	
 	BSP_Stage++;
 	
