@@ -1,5 +1,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "eth.h"
+#include "lwip/tcpip.h"
 #include <string.h>
 
 
@@ -16,7 +17,8 @@
 typedef struct {
 	ETH_HandleTypeDef Handle;
 #ifdef BSP_CONFIG_USE_FREERTOS
-  osMessageQId MessageQId;
+  //osMessageQId MessageQId;
+	osSemaphoreId s_xSemaphore;
 #endif
 } ETH_T;
 
@@ -125,7 +127,8 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef *heth)
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMessagePut(eth.MessageQId, ETH_EVENT_COMPLETE, 0);
+	//osMessagePut(eth.MessageQId, ETH_EVENT_COMPLETE, 0);
+	osSemaphoreRelease(eth.s_xSemaphore);
 #endif
 }
 /**
@@ -136,7 +139,8 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 int32_t ETH_Init(uint8_t *macaddress)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
-	osMessageQDef(eth, ETH_MESSAGE_QUEUE_SIZE, uint32_t);
+	osSemaphoreDef(SEM);
+	//osMessageQDef(eth, ETH_MESSAGE_QUEUE_SIZE, uint32_t);
 #endif
   
   eth.Handle.Instance = ETH;  
@@ -162,8 +166,10 @@ int32_t ETH_Init(uint8_t *macaddress)
   HAL_ETH_DMARxDescListInit(&eth.Handle, DMARxDscrTab, &Rx_Buff[0][0], ETH_RXBUFNB);
   
 #ifdef BSP_CONFIG_USE_FREERTOS
-	if (!eth.MessageQId)
-		eth.MessageQId = osMessageCreate (osMessageQ(eth), NULL);	
+	//if (!eth.MessageQId)
+	//	eth.MessageQId = osMessageCreate (osMessageQ(eth), NULL);
+	if (!eth.s_xSemaphore)
+		eth.s_xSemaphore = osSemaphoreCreate(osSemaphore(SEM) , 1 );
 #endif
 
   /* Enable MAC and DMA transmission and reception */
@@ -212,7 +218,7 @@ err_t ETH_Transmit(struct pbuf *p)
 
   DmaTxDesc = eth.Handle.TxDesc;
   bufferoffset = 0;
-  
+	
   /* copy frame from pbufs to driver buffers */
   for(q = p; q != NULL; q = q->next)
   {
@@ -258,7 +264,11 @@ err_t ETH_Transmit(struct pbuf *p)
   }
   
   /* Prepare transmit descriptors to give to DMA */ 
-  HAL_ETH_TransmitFrame(&eth.Handle, framelength);
+  if (HAL_ETH_TransmitFrame(&eth.Handle, framelength) != HAL_OK)
+	{
+		errval = ERR_USE;
+		goto error;
+	}
   
   errval = ERR_OK;
   
@@ -294,17 +304,13 @@ struct pbuf * ETH_Receive(void)
   uint32_t payloadoffset = 0;
   uint32_t byteslefttocopy = 0;
   uint32_t i=0;
-	osEvent evt;
-  	
-	evt = osMessageGet(eth.MessageQId, ETH_TIMEOUT);
-	if (evt.status != osEventMessage) 
-		return NULL; 
-	
-	if (evt.value.v != ETH_EVENT_COMPLETE)
-		return NULL; 
+	HAL_StatusTypeDef status;
 	
 	/* get received frame */
-  if(HAL_ETH_GetReceivedFrame_IT(&eth.Handle) != HAL_OK)
+	LOCK_TCPIP_CORE();
+	status = HAL_ETH_GetReceivedFrame_IT(&eth.Handle);
+	UNLOCK_TCPIP_CORE();
+	if(status != HAL_OK)
 		return NULL; 
 	
   /* Obtain the size of the packet and put it into the "len" variable. */
@@ -370,6 +376,34 @@ struct pbuf * ETH_Receive(void)
     eth.Handle.Instance->DMARPDR = 0;
   }
   return p;
+}
+
+void ETH_NETIF_Input( void const * argument )
+{
+	struct pbuf *p;
+  struct netif *netif = (struct netif *) argument;
+  //osEvent evt;
+	
+  for( ;; )
+  {
+		if (osSemaphoreWait( eth.s_xSemaphore, ETH_TIMEOUT) != osOK)
+			continue;
+		do {
+			p = ETH_Receive();
+			if (p != NULL)
+			{
+				if (netif->input( p, netif) != ERR_OK )
+				{
+					pbuf_free(p);
+				}
+			}
+		} while(p!=NULL);
+  }
+}
+
+err_t ETH_NETIF_Output(struct netif *netif, struct pbuf *p)
+{
+	return ETH_Transmit(p);
 }
 
 int32_t ETH_ReadPHYRegister(uint16_t PhyAddr, uint16_t PHYReg, uint32_t *RegValue)
