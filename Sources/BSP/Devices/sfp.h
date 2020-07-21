@@ -70,20 +70,9 @@ typedef struct {
 	float RDT;
 } SFP_T;
 
-int32_t SFP_GetInfo(SFP_T *Dev, SFP_INFO_T *Info);
-int32_t SFP_GetThr(SFP_T *Dev, SFP_THR_T *Thr);
-int32_t SFP_GetRxPwr(SFP_T *Dev, float *RxPwr);
-int32_t SFP_GetTxPwr(SFP_T *Dev, float *TxPwr);
-int32_t SFP_GetTemp(SFP_T *Dev, float *Temp);
-int32_t SFP_GetModAbs(SFP_T *Dev, uint32_t *ModAbs);
-int32_t SFP_GetRxLos(SFP_T *Dev, uint32_t *RxLos);
-int32_t SFP_GetTxFault(SFP_T *Dev, uint32_t *TxFault);
-
-int32_t SFP_GetRateSel(SFP_T *Dev, uint32_t *RateSel);
 int32_t SFP_SetRateSel(SFP_T *Dev, uint32_t RateSel);
 int32_t SFP_ConfigRateSel(SFP_T *Dev, uint32_t RateSel);
 
-int32_t SFP_GetTxDisable(SFP_T *Dev, uint32_t *TxDisable);
 int32_t SFP_SetTxDisable(SFP_T *Dev, uint32_t TxDisable);
 int32_t SFP_ConfigTxDisable(SFP_T *Dev, uint32_t TxDisable);
 

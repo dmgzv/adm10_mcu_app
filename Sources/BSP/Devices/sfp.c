@@ -133,14 +133,14 @@ int32_t SFP_WriteRDT(SFP_T *Dev, float RDT)
 	Addr = 127;
 	Data = 0x02;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 1))
-		return -1;
+		goto error;
 	
 	osDelay(1);
 	
 	Data = (RDT * 255.0f) - 128;
 	Addr = 131;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 2))
-		return -1;
+		goto error;
 	Dev->RDT = RDT;
 	
 	LOG_Add(Dev->DevName, Dev->DevId, "Write RDT: %.2f", Dev->RDT);	
@@ -295,7 +295,7 @@ int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq)
 	Addr = 127;
 	Data[0] = 0x02;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 1))
-		return -1;
+		goto error;
 	
 	osDelay(1);
 	
@@ -304,7 +304,7 @@ int32_t SFP_WriteFreq(SFP_T *Dev, uint32_t Freq)
 	Data[1] = Channel;
 	Addr = 144;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
-		return -1;
+		goto error;
 	Dev->Freq.Channel = Channel;
 	Dev->Freq.Cur = Freq;
 	
@@ -324,6 +324,8 @@ int32_t SFP_ConfigFreq(SFP_T *Dev, uint32_t Freq)
 	
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
+	
+	BSP_DEV_LOCK(Dev);
 	
 	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK))
 		goto error;
@@ -520,6 +522,27 @@ int32_t SFP_ConfigTxDisable(SFP_T *Dev, uint32_t TxDisable)
 	return 0;
 }
 
+int32_t SFP_SetRateSel(SFP_T *Dev, uint32_t RateSel)
+{
+	if (!Dev)
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	if (SFP_SetPinState(Dev, SFP_PIN_RATE_SEL, RateSel))
+		goto error;
+	Dev->Pin.RateSel = RateSel;
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
 int32_t SFP_ConfigRateSel(SFP_T *Dev, uint32_t RateSel)
 {
 	if (!Dev)
@@ -562,22 +585,23 @@ int32_t SFP_Update(SFP_T *Dev)
 		goto error;
 	
 	if (SFP_UpdateRDT(Dev))
-		goto error;	
+		goto reset_switch;	
 	if (SFP_UpdateFreq(Dev))
-		goto error;	
+		goto reset_switch;	
 	if (SFP_ReadTemp(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadRxPwr(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadTxPwr(Dev))
-		goto error;
+		goto reset_switch;
 	
 	SFP_I2C_ResetSwitch(Dev);	
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
+reset_switch:
+	SFP_I2C_ResetSwitch(Dev);
 error:
-	SFP_I2C_ResetSwitch(Dev);	
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
 	
@@ -607,7 +631,7 @@ int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, c
 		goto reset;
 	
 	if (SFP_InitPin(Dev, SFP_PIN_TX_DISABLE))
-		goto error;
+		goto reset;
 	if (SFP_GetPinState(Dev, SFP_PIN_TX_DISABLE, &Dev->Pin.TxDisable))
 		goto error;
 	
@@ -630,29 +654,29 @@ int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, c
 		goto error;
 	
 	if (SFP_ReadProductOpts(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadVendor(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadPartNumber(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadSerialNumber(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadRDT(Dev, NULL))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadFreq(Dev, NULL))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadTempThrs(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadRxPwrThrs(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadTxPwrThrs(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadTemp(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadRxPwr(Dev))
-		goto error;
+		goto reset_switch;
 	if (SFP_ReadTxPwr(Dev))
-		goto error;
+		goto reset_switch;
 	
 	SFP_I2C_ResetSwitch(Dev);
 	LOG_Add(Dev->DevName, Dev->DevId, "Init: Ok");
@@ -660,8 +684,9 @@ int32_t SFP_Init(SFP_T *Dev, const char *DevId, const BSP_I2C_CTRL_T *I2CCtrl, c
 	BSP_DEV_UNLOCK(Dev);
 	return 0;
 	
+reset_switch:
+	SFP_I2C_ResetSwitch(Dev);
 error:
-	SFP_I2C_ResetSwitch(Dev);	
 	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_FAIL);
 	BSP_DEV_UNLOCK(Dev);
 	return -1;
