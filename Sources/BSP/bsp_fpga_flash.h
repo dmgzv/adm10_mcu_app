@@ -33,7 +33,7 @@ extern S29GL01GS_T s29gl01gs;
 #define BSP_FPGA_FLASH_Read(Addr, Buffer, Size) 					S29GL01GS_Read(&s29gl01gs, (Addr), (Buffer), (Size))
 #define BSP_FPGA_FLASH_ProgramSector(Addr, Buffer, Size)	S29GL01GS_ProgramSector(&s29gl01gs, (Addr), (Buffer), (Size))
 #define BSP_FPGA_FLASH_EraseSectorErase(Addr) 						S29GL01GS_EraseSector(&s29gl01gs, (Addr))
-#define BSP_FPGA_FLASH_WaitReady() 												S29GL01GS_WaitReady(&s29gl01gs)
+#define BSP_FPGA_FLASH_WaitReady() 												S29GL01GS_WaitReady(&s29gl01gs, S29GL01GS_TIMEOUT_INF)
 
 int32_t BSP_FPGA_FLASH_EraseSection(uint32_t Section);
 int32_t BSP_FPGA_FLASH_WriteSection(uint32_t Section, uint32_t Addr, char *Data, uint32_t Size);

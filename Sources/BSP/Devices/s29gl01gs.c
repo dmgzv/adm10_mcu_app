@@ -15,6 +15,8 @@
 #define S29GL01GS_NOR_BANK_ADDR       ((uint32_t)0x60000000)
 #define S29GL01GS_NOR_BANK_SIZE       ((uint32_t)0x04000000)
 
+#define S29GL01GS_PROGRAM_BUFFER_MAX_SIZE		512
+
 void HAL_NOR_MspInit(NOR_HandleTypeDef* hnor)
 {
 	/* GPIO Ports Clock Enable */
@@ -31,11 +33,6 @@ void HAL_NOR_MspInit(NOR_HandleTypeDef* hnor)
   __HAL_RCC_FMC_CLK_ENABLE();
   
   /** FMC GPIO Configuration  
-  PE2   ------> FMC_A23
-  PE3   ------> FMC_A19
-  PE4   ------> FMC_A20
-  PE5   ------> FMC_A21
-  PE6   ------> FMC_A22
   PF0   ------> FMC_A0
   PF1   ------> FMC_A1
   PF2   ------> FMC_A2
@@ -46,8 +43,11 @@ void HAL_NOR_MspInit(NOR_HandleTypeDef* hnor)
   PF13   ------> FMC_A7
   PF14   ------> FMC_A8
   PF15   ------> FMC_A9
-  PG0   ------> FMC_A10
-  PG1   ------> FMC_A11
+	PE2   ------> FMC_A23
+  PE3   ------> FMC_A19
+  PE4   ------> FMC_A20
+  PE5   ------> FMC_A21
+  PE6   ------> FMC_A22
   PE7   ------> FMC_D4
   PE7   ------> FMC_DA4
   PE8   ------> FMC_D5
@@ -66,22 +66,6 @@ void HAL_NOR_MspInit(NOR_HandleTypeDef* hnor)
   PE14   ------> FMC_DA11
   PE15   ------> FMC_D12
   PE15   ------> FMC_DA12
-  PD8   ------> FMC_D13
-  PD8   ------> FMC_DA13
-  PD9   ------> FMC_D14
-  PD9   ------> FMC_DA14
-  PD10   ------> FMC_D15
-  PD11   ------> FMC_A16
-  PD12   ------> FMC_A17
-  PD13   ------> FMC_A18
-  PD14   ------> FMC_D0
-  PD14   ------> FMC_DA0
-  PD15   ------> FMC_D1
-  PD15   ------> FMC_DA1
-  PG2   ------> FMC_A12
-  PG3   ------> FMC_A13
-  PG4   ------> FMC_A14
-  PG5   ------> FMC_A15
   PD0   ------> FMC_D2
   PD0   ------> FMC_DA2
   PD1   ------> FMC_D3
@@ -89,9 +73,28 @@ void HAL_NOR_MspInit(NOR_HandleTypeDef* hnor)
   PD4   ------> FMC_NOE
   PD5   ------> FMC_NWE
   PD7   ------> FMC_NE1
+	PD8   ------> FMC_D13
+  PD8   ------> FMC_DA13
+  PD9   ------> FMC_D14
+  PD9   ------> FMC_DA14
+	PD10   ------> FMC_D15
+  PD11   ------> FMC_A16
+  PD12   ------> FMC_A17
+  PD13   ------> FMC_A18
+  PD14   ------> FMC_D0
+  PD14   ------> FMC_DA0
+  PD15   ------> FMC_D1
+  PD15   ------> FMC_DA1
+	PG0   ------> FMC_A10
+  PG1   ------> FMC_A11
+  PG2   ------> FMC_A12
+  PG3   ------> FMC_A13
+  PG4   ------> FMC_A14
+  PG5   ------> FMC_A15  
   PG9   ------> FMC_NE2
   PG10   ------> FMC_NE3
   PG13   ------> FMC_A24
+	PG14   ------> FMC_A25
   PB7   ------> FMC_NL
   */
   GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
@@ -115,17 +118,16 @@ void HAL_NOR_MspInit(NOR_HandleTypeDef* hnor)
 
   GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
                           |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_9|GPIO_PIN_10 
-                          |GPIO_PIN_13;
+                          |GPIO_PIN_13|GPIO_PIN_14;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF12_FMC;
   HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
-                          |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
-                          |GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5 
-                          |GPIO_PIN_7;
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5 
+                          |GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
+                          |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -208,6 +210,7 @@ void HAL_NOR_MspDeInit(NOR_HandleTypeDef *hnor)
   PG9   ------> FMC_NE2
   PG10   ------> FMC_NE3
   PG13   ------> FMC_A24
+	PG14   ------> FMC_A25
   PB7   ------> FMC_NL
   */
   HAL_GPIO_DeInit(GPIOE, GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5 
@@ -221,7 +224,7 @@ void HAL_NOR_MspDeInit(NOR_HandleTypeDef *hnor)
 
   HAL_GPIO_DeInit(GPIOG, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3 
                           |GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_9|GPIO_PIN_10 
-                          |GPIO_PIN_13);
+                          |GPIO_PIN_13|GPIO_PIN_14);
 
   HAL_GPIO_DeInit(GPIOD, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11 
                           |GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
@@ -439,85 +442,30 @@ int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, u
 	
 	if ((!Dev) || (!Buffer))
 		return -1;
+	/*S29GL01GS do not allow to write more than 512 bytes in one request*/
+	if (Size > S29GL01GS_PROGRAM_BUFFER_MAX_SIZE)
+		return -1;
+	/*S29GL01GS is 512-byte aligned and do not allow to cross 512-byte boundary in one request*/
+	if ((Addr / S29GL01GS_PROGRAM_BUFFER_MAX_SIZE) != ((Addr + Size - 1) / S29GL01GS_PROGRAM_BUFFER_MAX_SIZE))
+		return -1;
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return -1;
 	
 	BSP_DEV_UPDATE(Dev);
-#if 0	
-	/* todo: Fix programing of data to several banks*/
-	if (Addr < S29GL01GS_NOR_BANK_SIZE)
-	{
-		pdata = Buffer;
-		index = Size / 2;
-		startaddress = Addr + S29GL01GS_NOR_BANK_ADDR;
-		while(index > 0)
-		{
-			/* Read NOR device status */
-			while(1)
-			{
-				if (HAL_NOR_GetStatus(&Dev->hnor[0], S29GL01GS_NOR_BANK_ADDR, 0) == HAL_NOR_STATUS_SUCCESS)
-					break;
-			}
-			/* Write data to NOR */
-			if (HAL_NOR_Program(&Dev->hnor[0], (uint32_t *)startaddress, pdata) != HAL_OK)
-				goto error;
-			/* Update the counters */
-			index--;
-			startaddress += 2;
-			pdata++; 
-		}
-		if (Size % 2)
-		{
-			Data = 0xFF00 | ((char*)Buffer)[Size - 1];
-			if (HAL_NOR_Program(&Dev->hnor[0], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR + (Size / 2)), &Data) != HAL_OK)
-				goto error;
-		}
-	}
-	else
-	{
-		pdata = Buffer;
-		index = Size / 2;
-		startaddress = Addr + S29GL01GS_NOR_BANK_ADDR ;
-		while(index > 0)
-		{
-			/* Read NOR device status */
-			while(1)
-			{
-				if (HAL_NOR_GetStatus(&Dev->hnor[1], S29GL01GS_NOR_BANK_ADDR + S29GL01GS_NOR_BANK_SIZE, 0) == HAL_NOR_STATUS_SUCCESS)
-					break;
-			}		
-			/* Write data to NOR */
-			if (HAL_NOR_Program(&Dev->hnor[1], (uint32_t *)startaddress, pdata) != HAL_OK)
-				goto error;
-			/* Update the counters */
-			index--;
-			startaddress += 2;
-			pdata++; 
-		}
-		if (Size % 2)
-		{
-			Data = 0xFF00 | ((char*)Buffer)[Size - 1];
-			if (HAL_NOR_Program(&Dev->hnor[1], (uint32_t*)(Addr + S29GL01GS_NOR_BANK_ADDR + (Size / 2)), &Data) != HAL_OK)
-				goto error;
-		}
-	}
-#else
 	if (Addr < S29GL01GS_NOR_BANK_SIZE)
 	{
 		if (HAL_NOR_GetStatus(&Dev->hnor[0], S29GL01GS_NOR_BANK_ADDR, 0) != HAL_NOR_STATUS_SUCCESS)
 			goto error;
-		if (HAL_NOR_ProgramBuffer(&Dev->hnor[0], Addr, Buffer, Size / 2) != HAL_OK)
+		if (HAL_NOR_ProgramBuffer(&Dev->hnor[0], Addr + S29GL01GS_NOR_BANK_ADDR, Buffer, Size / 2) != HAL_OK)
 			goto error;		
 	}
 	else
 	{
 		if (HAL_NOR_GetStatus(&Dev->hnor[1], S29GL01GS_NOR_BANK_ADDR, 0) != HAL_NOR_STATUS_SUCCESS)
 			goto error;
-		if (HAL_NOR_ProgramBuffer(&Dev->hnor[1], Addr - S29GL01GS_NOR_BANK_SIZE, Buffer, Size / 2) != HAL_OK)
+		if (HAL_NOR_ProgramBuffer(&Dev->hnor[1], Addr + S29GL01GS_NOR_BANK_ADDR, Buffer, Size / 2) != HAL_OK)
 			goto error;
 	}
-
-#endif
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
@@ -559,7 +507,7 @@ error:
 	return -1;
 }
 
-int32_t S29GL01GS_WaitReady(S29GL01GS_T *Dev)
+int32_t S29GL01GS_WaitReady(S29GL01GS_T *Dev, uint32_t Timeout)
 {
 	HAL_NOR_StatusTypeDef Status[2];
 	
@@ -578,8 +526,11 @@ int32_t S29GL01GS_WaitReady(S29GL01GS_T *Dev)
 			break;
 		else if ((Status[0] == HAL_NOR_STATUS_ERROR) || (Status[1] == HAL_NOR_STATUS_ERROR))
 			goto error;
-		else
-			S29GL01GS_msDelay(1);
+		if (!Timeout)
+			goto error;
+		if (Timeout != S29GL01GS_TIMEOUT_INF)
+			Timeout--;
+		S29GL01GS_msDelay(1);
 	}
 	
 	BSP_DEV_UPDATE_OK(Dev);

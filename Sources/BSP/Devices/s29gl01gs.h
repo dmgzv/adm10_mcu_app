@@ -13,6 +13,8 @@
 #define S29GL01GS_SECTORS_COUNT			(1024)
 #define S29GL01GS_SIZE							(S29GL01GS_SECTOR_SIZE * S29GL01GS_SECTORS_COUNT)
 
+#define S29GL01GS_TIMEOUT_INF				(0xFFFFFFFF)
+
 typedef struct {
 	BSP_DEV;
 	NOR_HandleTypeDef hnor[2];
@@ -24,6 +26,6 @@ void S29GL01GS_Deinit(S29GL01GS_T *Dev);
 int32_t S29GL01GS_Read(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size);
 int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size);
 int32_t S29GL01GS_EraseSector(S29GL01GS_T *Dev, uint32_t Addr);
-int32_t S29GL01GS_WaitReady(S29GL01GS_T *Dev);
+int32_t S29GL01GS_WaitReady(S29GL01GS_T *Dev, uint32_t Timeout);
 
 #endif /* __S29GL01GS_H */

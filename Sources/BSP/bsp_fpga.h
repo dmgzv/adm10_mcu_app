@@ -27,8 +27,6 @@ extern FPGA_CLIENT_AGG_2X10_BS_T fpga_client_agg_2x10_bs[BSP_FPGA_CLIENT_CNT];
 extern FPGA_CLIENT_AGG_2X10_EFEC_T fpga_client_agg_2x10_efec[BSP_FPGA_CLIENT_CNT];
 extern FPGA_CLIENT_ADM_2_5_T fpga_client_adm_2_5[BSP_FPGA_CLIENT_CNT];
 
-extern uint32_t fpga_sw_update;
-
 void BSP_FPGA_Process(void);
 
 #endif /* __BSP_FPGA_H */

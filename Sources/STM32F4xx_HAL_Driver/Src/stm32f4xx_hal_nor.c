@@ -657,8 +657,8 @@ HAL_StatusTypeDef HAL_NOR_ProgramBuffer(NOR_HandleTypeDef *hnor, uint32_t uwAddr
   NOR_WRITE(NOR_ADDR_SHIFT(deviceaddress, uwNORMemoryDataWidth, NOR_CMD_ADDRESS_SECOND), NOR_CMD_DATA_SECOND); 
 
   /* Write Buffer Load Command */
-  NOR_WRITE(NOR_ADDR_SHIFT(deviceaddress, uwNORMemoryDataWidth, uwAddress), NOR_CMD_DATA_BUFFER_AND_PROG); 
-  NOR_WRITE(NOR_ADDR_SHIFT(deviceaddress, uwNORMemoryDataWidth, uwAddress), (uwBufferSize - 1U)); 
+  NOR_WRITE(p_currentaddress/*NOR_ADDR_SHIFT(deviceaddress, uwNORMemoryDataWidth, uwAddress)*/, NOR_CMD_DATA_BUFFER_AND_PROG); 
+  NOR_WRITE(p_currentaddress/*NOR_ADDR_SHIFT(deviceaddress, uwNORMemoryDataWidth, uwAddress)*/, (uwBufferSize - 1U)); 
 
   /* Load Data into NOR Buffer */
   while(p_currentaddress <= p_endaddress)
