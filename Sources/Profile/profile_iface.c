@@ -82,7 +82,6 @@ static void PROFILE_IFACE_ProcessThread(void const *argument)
 		
 		if (Complete)
 		{
-			BSP_DeinitInterfaces();
 			BSP_Reset();
 		}
 
@@ -183,7 +182,6 @@ static void PROFILE_IFACE_Thread(void const *argument)
 		
 		if (Complete)
 		{
-			BSP_DeinitInterfaces();
 			BSP_Reset();
 		}
   }	
