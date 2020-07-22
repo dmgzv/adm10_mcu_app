@@ -77,7 +77,7 @@ const BSP_DEV_T *Devices[] = {
 };
 const uint32_t DevicesCnt = sizeof(Devices) / sizeof(Devices[0]);
 
-void assert_failed(uint8_t* file, uint32_t line)
+void hal_assert_failed(uint8_t* file, uint32_t line)
 {
 	BSP_Reset();
 	while(1);
