@@ -3001,10 +3001,6 @@ typedef struct {
     char Cl_16_SFP_PtNumber[PROFILE_STRING_MAX_LEN];
     uint8_t BlockStateDegradeColor;
     uint8_t BlockStateFailureColor;
-    uint8_t PowerAlarmsDegradeColor;
-    uint8_t PowerAlarmsFailureColor;
-    uint8_t HwAlarmsDegradeColor;
-    uint8_t HwAlarmsFailureColor;
     uint8_t Ln_1_SFP_StateDegradeColor;
     uint8_t Ln_1_SFP_StateFailureColor;
     uint8_t Ln_1_SFP_TempDegradeColor;

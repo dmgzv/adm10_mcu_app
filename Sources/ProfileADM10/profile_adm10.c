@@ -428,34 +428,28 @@ error:
 static void PROFILE_ADM10_UpdateBlockStateValue(PROFILE_T *Profile)
 {
 	uint32_t Value;
-	uint32_t HwAlarms, PowerAlarms;
+	uint32_t i;
 	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKSTATE_IDX, &Value))
-		return;
+	Value = PROFILE_ADM10_BLOCK_STATE_ENUM_OK;
 	
-	if ((!Value) || ((Value == PROFILE_ADM10_BLOCK_STATE_ENUM_NOT_READY) && (osKernelSysTick() < (30 * osKernelSysTickFrequency))))
+	for (i = 0; i < DevicesCnt; i++)
 	{
-		Value = PROFILE_ADM10_BLOCK_STATE_ENUM_NOT_READY;
+		if (BSP_DEV_GET_STATE(Devices[i]) == BSP_DEV_STATE_FAIL)
+		{
+			Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
+			break;
+		}
+		else if (BSP_DEV_GET_STATE(Devices[i]) == BSP_DEV_STATE_INIT)
+		{
+			Value = PROFILE_ADM10_BLOCK_STATE_ENUM_NOT_READY;
+			break;
+		}
 	}
-	else
-	{
-		Value = PROFILE_ADM10_BLOCK_STATE_ENUM_OK;
-		
-		if (PROFILE_GetValue(Profile, PROFILE_TABLE_2, PROFILE_ADM10_POWERALARMS_IDX, &PowerAlarms))
-			return;
-		if (PROFILE_GetValue(Profile, PROFILE_TABLE_2, PROFILE_ADM10_HWALARMS_IDX, &HwAlarms))
-			return;
-		
-		if (HwAlarms != 0)
-			Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
-		if ((PowerAlarms & (~(PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_A | PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B))) != 0)
-			Value = PROFILE_ADM10_BLOCK_STATE_ENUM_FAIL;
-		
+	
 #ifdef BSP_PWR_IN_POWER_RESET_TIMEOUT
-		if (Value == PROFILE_ADM10_BLOCK_STATE_ENUM_OK)
-			 dim3r3400_power_reset_timeout = BSP_PWR_IN_POWER_RESET_TIMEOUT;
+	if (Value == PROFILE_ADM10_BLOCK_STATE_ENUM_OK)
+		 dim3r3400_power_reset_timeout = BSP_PWR_IN_POWER_RESET_TIMEOUT;
 #endif
-	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKSTATE_IDX, &Value, PROFILE_STATE_IS);		
 }
 

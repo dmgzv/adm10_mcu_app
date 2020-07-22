@@ -150,10 +150,13 @@ void BSP_FPGA_Process(void)
 			FPGA_MAXV_Deinit(&fpga_maxv);
 			FPGA_LINE_ADM_10_Deinit(&fpga_line_adm_10);
 			FPGA_LINE_AGG_2X10_BS_Deinit(&fpga_line_agg_2x10_bs);
+			FPGA_LINE_AGG_2X10_EFEC_Deinit(&fpga_line_agg_2x10_efec);
 			for (i = 0; i < BSP_FPGA_CLIENT_CNT; i++)
 			{
 				FPGA_CLIENT_ADM_10_Deinit(&fpga_client_adm_10[i]);
 				FPGA_CLIENT_AGG_2X10_BS_Deinit(&fpga_client_agg_2x10_bs[i]);
+				FPGA_CLIENT_AGG_2X10_EFEC_Deinit(&fpga_client_agg_2x10_efec[i]);
+				FPGA_CLIENT_ADM_2_5_Deinit(&fpga_client_adm_2_5[i]);
 			}
 		}
 	}

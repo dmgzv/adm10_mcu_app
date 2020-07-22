@@ -787,6 +787,11 @@
               <FilePath>.\Sources\BSP\bsp_clk.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_eth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_eth.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_eth_pin.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_eth_pin.c</FilePath>
@@ -810,11 +815,6 @@
               <FileName>bsp_fpga_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_eth.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_eth.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1981,6 +1981,11 @@
               <FilePath>.\Sources\BSP\bsp_clk.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_eth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_eth.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_eth_pin.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_eth_pin.c</FilePath>
@@ -2004,11 +2009,6 @@
               <FileName>bsp_fpga_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_eth.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_eth.c</FilePath>
             </File>
           </Files>
         </Group>

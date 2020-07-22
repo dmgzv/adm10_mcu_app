@@ -1041,14 +1041,13 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 	}
 	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
 	{
-		/*Cross-connects is autoconfigured in FPGA for AGG-10-BS*/
+		/* Cross-connect is autoconfigured in FPGA */
 		for (Client = 0; Client < 16; Client++)
 		{
-			FPGA_CLIENT_AGG_2X10_BS_IFACE_CTRL_SET(&fpga_line_agg_2x10_bs, Client, FPGA_CLIENT_ADM_10_IFACE_CTRL_EN_MASK);
+			FPGA_CLIENT_AGG_2X10_BS_IFACE_CTRL_SET(&fpga_client_agg_2x10_bs[Client / 8], Client % 8, FPGA_CLIENT_AGG_2X10_BS_IFACE_CTRL_EN_MASK);
 		}
 		
-		/*Cross-connects configuration for ADM-2.5*/
-		
+		/*Cross-connects configuration for ADM-2.5*/		
 		for (i = 0; i < FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_CNT; i++)
 		{
 			FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[1], i, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_STM16);
