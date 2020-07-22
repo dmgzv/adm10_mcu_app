@@ -174,7 +174,6 @@ int32_t FPGA_LINE_ADM_10_Init(FPGA_LINE_ADM_10_T *Dev)
 		Dev->Demux.ClientODU0PG[i].ProtectODUk = Dev->Demux.ClientODU0PG[i].__ProtectODUk = *((uint8_t*)(FPGA_LINE_ADM_10_DEMUX_CLIENT_ODU0_PG_PROTECT_ODU0_ADDR(Dev, i)));
 	}
 	
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_INIT_OK(Dev);
 	return 0;
 

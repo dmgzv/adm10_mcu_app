@@ -97,7 +97,6 @@ int32_t FPGA_LINE_AGG_2X10_BS_Init(FPGA_LINE_AGG_2X10_BS_T *Dev)
 		Dev->AGG[i].HO = Dev->AGG[i].__HO = *(uint8_t*)(FPGA_LINE_AGG_2X10_BS_AGG_HO_ADDR(Dev, i));
 	}
 	
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_INIT_OK(Dev);
 	return 0;
 

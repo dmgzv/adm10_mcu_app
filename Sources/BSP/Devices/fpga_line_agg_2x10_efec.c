@@ -62,7 +62,6 @@ int32_t FPGA_LINE_AGG_2X10_EFEC_Init(FPGA_LINE_AGG_2X10_EFEC_T *Dev)
 		Dev->Line[i].__Status = *((uint16_t*)FPGA_LINE_AGG_2X10_EFEC_LINE_STATUS_ADDR(Dev, i));
 	}
 	
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Init: Ok");
 	BSP_DEV_INIT_OK(Dev);
 	return 0;
 
