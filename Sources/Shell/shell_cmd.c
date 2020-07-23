@@ -1785,17 +1785,18 @@ static int32_t SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback(void *Priv, ui
 {
 	uint32_t DataAddr;
 	uint32_t TotalDataSize;
+	uint32_t Blocks;
 	
 	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_LANG_SIZE)
 	{
 		DataAddr = (Block - 1) * TFTP_DATA_LEN_MAX;	
 		if (PROFILE_FLASH_SaveLangpackData(&ProfileFlash, DataAddr, Data, DataSize))
 			return -1;
-		
 		if (DataSize != TFTP_DATA_LEN_MAX)
 		{
 			TotalDataSize = DataSize + ((Block - 1) * TFTP_DATA_LEN_MAX);
-			if (PROFILE_FLASH_SaveLangpackHeader(&ProfileFlash, TotalDataSize))
+			Blocks = (TotalDataSize % PROFILE_FLASH_LANG_BLOCK_SIZE) ? ((TotalDataSize / PROFILE_FLASH_LANG_BLOCK_SIZE) + 1) : (TotalDataSize / PROFILE_FLASH_LANG_BLOCK_SIZE);
+			if (PROFILE_FLASH_SaveLangpackHeader(&ProfileFlash, Blocks, 1))
 				return -1;
 		}
 		return 0;

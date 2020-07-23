@@ -39,6 +39,9 @@ typedef struct {
 	PROFILE_T *Profile;
 	BOOTLOADER_T *Bootloader;
 	PROFILE_FLASH_T *ProfileFlash;
+	
+	uint32_t LangpackBlocks;
+	uint32_t LangpackType;
 }PROFILE_PROTOCOL_T;
 
 void PROFILE_PROTOCOL_Init(PROFILE_PROTOCOL_T *Protocol, PROFILE_T *Profile, BOOTLOADER_T *Bootloader, PROFILE_FLASH_T *ProfileFlash);

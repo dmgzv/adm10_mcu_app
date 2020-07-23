@@ -395,22 +395,16 @@ error_405:
 void http_server_serve_get_api_v1_profile_langpack(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {
 	uint32_t i, j;
-	char *c;
-	uint32_t blocks_cnt;
+	uint32_t LangpackBlocks, LangpackType;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
-	memset(RESPONCE_BODY, 0, PROFILE_PROTOCOL_LANG_BLOCK_SIZE);	
-	PROFILE_FLASH_LangpackLoad(&ProfileFlash, RESPONCE_BODY, 0);
-	
-	blocks_cnt = strtoul(RESPONCE_BODY, &c, 10);
-	
-	if ((blocks_cnt == 0) || (blocks_cnt > (PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE)) || (*c != ';'))
+	if (PROFILE_FLASH_LoadLangpackHeader(&ProfileFlash, &LangpackBlocks, &LangpackType))
 		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_OCTET;
 	RspHeader.Charset = NULL;
-	RspHeader.ContentLength = blocks_cnt * PROFILE_PROTOCOL_LANG_BLOCK_SIZE;
+	RspHeader.ContentLength = LangpackBlocks * PROFILE_FLASH_LANG_BLOCK_SIZE;
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
@@ -422,40 +416,23 @@ void http_server_serve_get_api_v1_profile_langpack(struct netconn *conn, HTTP_RE
 	
 	RESPONCE_BODY_LEN = 0;
 	
-	for (i = 1; i <= blocks_cnt; i++)
+	for (i = 0; i < LangpackBlocks; i++)
 	{
-		PROFILE_FLASH_LangpackLoad(&ProfileFlash, &RESPONCE_BODY[RESPONCE_BODY_LEN], i);
-		RESPONCE_BODY_LEN += PROFILE_PROTOCOL_LANG_BLOCK_SIZE;
+		if (PROFILE_FLASH_LoadLangpackData(&ProfileFlash, i * PROFILE_FLASH_LANG_BLOCK_SIZE, &RESPONCE_BODY[RESPONCE_BODY_LEN], PROFILE_FLASH_LANG_BLOCK_SIZE))
+			goto error;
+		RESPONCE_BODY_LEN += PROFILE_FLASH_LANG_BLOCK_SIZE;
 		if (RESPONCE_BODY_LEN >= 1024)
 		{
-			for(j = 0; j < RESPONCE_BODY_LEN; j++)
-			{
-				if (RESPONCE_BODY[j] == '\r')
-					RESPONCE_BODY[j] = '\x03';
-				//if (RESPONCE_BODY[j] == ';')
-				//	RESPONCE_BODY[j] = '\x02';
-				if (RESPONCE_BODY[j] == '\0')
-					RESPONCE_BODY[j] = '\x03';
-			}
 			if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_MORE | NETCONN_COPY))
 				return;
 			RESPONCE_BODY_LEN = 0;
-			
 		}
 	}
 	if (RESPONCE_BODY_LEN)
 	{
-		for(j = 0; j < RESPONCE_BODY_LEN; j++)
-		{
-			if (RESPONCE_BODY[j] == '\r')
-				RESPONCE_BODY[j] = '\x03';
-			//if (RESPONCE_BODY[j] == ';')
-			//	RESPONCE_BODY[j] = '\x02';
-			if (RESPONCE_BODY[j] == '\0')
-				RESPONCE_BODY[j] = '\x03';
-		}
 		if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_MORE | NETCONN_COPY))
 			return;
+		RESPONCE_BODY_LEN = 0;
 	}
 	RESPONCE_BODY_LEN = 0;
 	
@@ -476,24 +453,16 @@ void http_server_serve_put_api_v1_profile_langpack(struct netconn *conn, HTTP_RE
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
-	uint32_t datashift, block_idx, blocks_cnt;
+	uint32_t LangpackAddr, LangpackBlocks;
 	uint32_t ContentLength;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	ContentLength = ReqHeader->ContentLength;
-	if ((ContentLength > PROFILE_FLASH_LANGS_SIZE) || (ContentLength == 0))
+	if ((ContentLength > PROFILE_FLASH_LANG_RECORD_BODY_SIZE) || (ContentLength == 0))
 		goto error;
 	
-	blocks_cnt = ContentLength % PROFILE_PROTOCOL_LANG_BLOCK_SIZE ? (ContentLength / PROFILE_PROTOCOL_LANG_BLOCK_SIZE) + 1 : (ContentLength / PROFILE_PROTOCOL_LANG_BLOCK_SIZE);
-	
-	memset(REQUEST_BODY, 0x03, PROFILE_PROTOCOL_LANG_BLOCK_SIZE);
-	sprintf(REQUEST_BODY, "%d;1", blocks_cnt);
-	datashift = strlen(REQUEST_BODY);
-	REQUEST_BODY[datashift] = 0x03;	
-	PROFILE_FLASH_LangpackSave(&ProfileFlash, REQUEST_BODY, 0);
-	
-	datashift = 0;
-	block_idx = 1;
+	LangpackAddr = 0;
+	LangpackBlocks = (ContentLength % PROFILE_FLASH_LANG_BLOCK_SIZE) ? ((ContentLength / PROFILE_FLASH_LANG_BLOCK_SIZE) + 1) : (ContentLength / PROFILE_FLASH_LANG_BLOCK_SIZE);
 	inbuf = NULL;
 	if ((body) && (bodylen))
 	{
@@ -509,51 +478,9 @@ void http_server_serve_put_api_v1_profile_langpack(struct netconn *conn, HTTP_RE
 			netbuf_data(inbuf, (void**)&data, &datalen);
 write_data:
 			ContentLength -= datalen;
-			while(datalen)
-			{
-				if (datashift != 0)
-				{
-					if ((datashift + datalen) >= PROFILE_PROTOCOL_LANG_BLOCK_SIZE)
-					{
-						memcpy(&REQUEST_BODY[datashift], data, PROFILE_PROTOCOL_LANG_BLOCK_SIZE - datashift);
-						PROFILE_FLASH_LangpackSave(&ProfileFlash, REQUEST_BODY, block_idx);
-						block_idx++;
-						datalen -= PROFILE_PROTOCOL_LANG_BLOCK_SIZE - datashift;
-						data += PROFILE_PROTOCOL_LANG_BLOCK_SIZE - datashift;
-						datashift = 0;
-					}
-					else
-					{
-						memcpy(&REQUEST_BODY[datashift], data, datalen);
-						datashift += datalen;
-						data += datalen;
-						datalen = 0;
-					}
-				}
-				else
-				{
-					if (datalen >= PROFILE_PROTOCOL_LANG_BLOCK_SIZE)
-					{
-						PROFILE_FLASH_LangpackSave(&ProfileFlash, data, block_idx);
-						block_idx++;
-						data += PROFILE_PROTOCOL_LANG_BLOCK_SIZE;
-						datalen -= PROFILE_PROTOCOL_LANG_BLOCK_SIZE;						
-					}
-					else
-					{
-						memcpy(REQUEST_BODY, data, datalen);
-						datashift = datalen;
-						data += datalen;
-						datalen = 0;
-					}
-				}
-			}
-			if ((!ContentLength) && (datashift))
-			{
-				memset(&REQUEST_BODY[datashift], 0x03, PROFILE_PROTOCOL_LANG_BLOCK_SIZE - datashift);
-				PROFILE_FLASH_LangpackSave(&ProfileFlash, REQUEST_BODY, block_idx);
-				block_idx++;
-			}
+			if (PROFILE_FLASH_SaveLangpackData(&ProfileFlash, LangpackAddr, data, datalen))
+				goto error;
+			LangpackAddr += datalen;
 			netbuf_delete(inbuf);
 		}
 		else
@@ -561,6 +488,9 @@ write_data:
 			return;
 		}
 	}
+	
+	if (PROFILE_FLASH_SaveLangpackHeader(&ProfileFlash, LangpackBlocks, 1))
+		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -2402,7 +2332,6 @@ static void http_server_serve(struct netconn *conn)
 	char *c;
 	HTTP_REQUEST_HEADER_T req_header;
 	HTTP_RESPONCE_HEADER_T rsp_header;
-	uint32_t KeepAlive;
 
 receive:
 	recv_err = netconn_recv(conn, &inbuf);

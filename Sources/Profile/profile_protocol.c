@@ -583,6 +583,7 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 	char* LangBlock;
 	uint32_t Item;
 	uint32_t error = 0;
+	uint32_t LangpackBlocks, LangpackType;
 
 	//проверка и разбор структуры запроса	
 	p = cmd + 2;
@@ -597,13 +598,39 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 	p += 2;
 	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE)
 	{
-		PROFILE_FLASH_LangpackSave(Protocol->ProfileFlash, LangBlock, Item);
-		p = UintToStr( p, Item );
-		strcpy( p, ";OK;" );
-		p += 4;
+		if (Item == 0)
+		{
+			if( !StrToUint( LangBlock, &LangpackBlocks, ';' ) )
+				goto error;
+			if( ( LangBlock = strchr( LangBlock + 1, ';' ) ) == NULL )
+				goto error;
+			LangBlock++;
+			if( !StrToUint( LangBlock, &LangpackType, ';' ) )
+				goto error;
+			Protocol->LangpackBlocks = LangpackBlocks;
+			Protocol->LangpackType = LangpackType;			
+		}
+		else if (Item <= Protocol->LangpackBlocks)
+		{
+			if (PROFILE_FLASH_SaveLangpackData(Protocol->ProfileFlash, (Item - 1) * PROFILE_PROTOCOL_LANG_BLOCK_SIZE, LangBlock, PROFILE_PROTOCOL_LANG_BLOCK_SIZE))
+				goto error;
+			if (Item == Protocol->LangpackBlocks)
+			{
+				if (PROFILE_FLASH_SaveLangpackHeader(Protocol->ProfileFlash, Protocol->LangpackBlocks, Protocol->LangpackType))
+					goto error;
+			}
+			p = UintToStr( p, Item );
+			strcpy( p, ";OK;" );
+			p += 4;
+		}
+		else
+		{
+			goto error;
+		}
 	}
 	else 
 	{// ответ об ошибке
+error:
 		p = UintToStr( p, Item );
 		strcpy( p, ";NA;" );
 		p += 4;
@@ -617,6 +644,7 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
 	uint32_t Item;
+	uint32_t LangpackBlocks, LangpackType;
 	uint32_t error = 0, i;
 	char *p;
 	
@@ -631,20 +659,27 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, 
 	
 	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE )
 	{// читаем блок из флеш, если он доступен
-		PROFILE_FLASH_LangpackLoad(Protocol->ProfileFlash, p, Item);
-		for(i = 0; i < PROFILE_PROTOCOL_LANG_BLOCK_SIZE; i++)
+		if (Item == 0)
 		{
-			if (*p == '\r')
-				*p = '\x03';
-			//if (*p == ';')
-			//	*p = '\x02';
-			if (*p == '\0')
-				*p = '\x03';
-			p++;
+			if (PROFILE_FLASH_LoadLangpackHeader(Protocol->ProfileFlash, &LangpackBlocks, &LangpackType))
+				goto error;
+			i = sprintf(p, "%d;%d", LangpackBlocks, LangpackType);
+			for (;i < PROFILE_PROTOCOL_LANG_BLOCK_SIZE; i++)
+			{
+				p[i] = '\x03';
+			}
+			p += PROFILE_PROTOCOL_LANG_BLOCK_SIZE;
+		}
+		else
+		{
+			if (PROFILE_FLASH_LoadLangpackData(Protocol->ProfileFlash, (Item - 1) * PROFILE_PROTOCOL_LANG_BLOCK_SIZE, p, PROFILE_PROTOCOL_LANG_BLOCK_SIZE))
+				goto error;
+			p += PROFILE_PROTOCOL_LANG_BLOCK_SIZE;
 		}
 	}
 	else
 	{//блок не доступен - ошибка
+error:
 		strcpy( p,"NA" );
 		p += 2;
 	}
