@@ -11,6 +11,7 @@
 #include "shell_uart.h"
 #include "shell_telnet.h"
 #include "http_server.h"
+#include "http_server_files.h"
 #include "tftp_client.h"
 #include "tftp_bootloader.h"
 #include "log.h"
@@ -195,6 +196,7 @@ static void System_Thread(void const *argument)
 	
 	TFTP_CLIENT_Init();
 	TFTP_BOOTLOADER_Init();
+	HTTP_SERVER_FILES_Init();
 	HTTP_SERVER_Init();
 	
 	for(;;)

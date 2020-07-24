@@ -1171,6 +1171,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server.c</FilePath>
             </File>
+            <File>
+              <FileName>http_server_files.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_files.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2364,6 +2369,11 @@
               <FileName>http_server.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_files.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_files.c</FilePath>
             </File>
           </Files>
         </Group>

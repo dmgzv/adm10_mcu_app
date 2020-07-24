@@ -1,4 +1,5 @@
 #include "http_server.h"
+#include "http_server_files.h"
 #include "string.h"
 #include "cmsis_os.h"
 #include "profile.h"
@@ -214,160 +215,127 @@ static int32_t http_server_write_header(struct netconn *conn, HTTP_RESPONCE_HEAD
 
 static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {	
-	uint32_t addr;
+	uint32_t data_addr, data_size, data_type;
 	char *name, *name_end;
-	char *fname, *fname_end, *ftype, *fsize, *fdata;
-	uint32_t fname_size, name_size, size;
+	uint32_t name_size, size;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	name = ReqHeader->Url + 1;
 	name_end = strchr(name, ' ');
 	name_size = name_end - name;
 	
-	addr = BSP_FLASH_WEB_ADDR;
-	while(1) {
-		if (BSP_FLASH_Read(addr, RESPONCE_BODY, 256))
-			goto error_404;
-		RESPONCE_BODY[256] = 0;
-		fname = strstr(RESPONCE_BODY, "name: ");
-		if (fname)
-			fname += sizeof("name: ") - 1;
-		
-		ftype = strstr(RESPONCE_BODY, "type: ");
-		if (ftype)
-			ftype += sizeof("type: ") - 1;
-		
-		fsize = strstr(RESPONCE_BODY, "size: ");
-		if (fsize)
-			fsize += sizeof("size: ") - 1;
-		
-		fdata = strstr(RESPONCE_BODY, "\r\n\r\n");
-		if (fdata)
-			fdata += sizeof("\r\n\r\n") - 1;
-		
-		if ((!fname) || (!ftype) || (!fsize) || (!fdata))
-			goto error_404;
-		
-		fname_end = strchr(fname, '\r');
-		fname_size = fname_end - fname;
-		
-		size = strtoul(fsize, NULL, 10);
-		
-		if ((fname_size == name_size) && (!memcmp(name, fname, fname_size)))
-		{
-			if (strncmp(ReqHeader->Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)) != 0)
-				goto error_405;
+	if (HTTP_SERVER_FILES_FindByName(name, name_size, &data_addr, &data_size, &data_type))
+		goto error_404;
+
+	if (strncmp(ReqHeader->Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)) != 0)
+		goto error_405;	
 			
-			if (!memcmp(ftype, "html", sizeof("html") - 1))
-			{
-				RspHeader.Code = HTTP_RESPONCE_200_OK;
-				RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_HTML;
-				RspHeader.Charset = HTTP_CHARSET_UTF_8;
-				RspHeader.ContentLength = size;
-				if (ReqHeader->ConnectionKeepAlive)
-					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-				else
-					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-				RspHeader.TransferEncoding = NULL;
-				RspHeader.AllowedLen = 0;
-				if (http_server_write_header(conn, &RspHeader))
-					return;
-			}
-			else if (!memcmp(ftype, "js", sizeof("js") - 1))
-			{
-				RspHeader.Code = HTTP_RESPONCE_200_OK;
-				RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_JS;
-				RspHeader.Charset = HTTP_CHARSET_UTF_8;
-				RspHeader.ContentLength = size;
-				if (ReqHeader->ConnectionKeepAlive)
-					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-				else
-					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-				RspHeader.TransferEncoding = NULL;
-				RspHeader.AllowedLen = 0;
-				if (http_server_write_header(conn, &RspHeader))
-					return;
-			}
-			else if (!memcmp(ftype, "css", sizeof("css") - 1))
-			{
-				RspHeader.Code = HTTP_RESPONCE_200_OK;
-				RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_CSS;
-				RspHeader.Charset = HTTP_CHARSET_UTF_8;
-				RspHeader.ContentLength = size;
-				if (ReqHeader->ConnectionKeepAlive)
-					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-				else
-					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-				RspHeader.TransferEncoding = NULL;
-				RspHeader.AllowedLen = 0;
-				if (http_server_write_header(conn, &RspHeader))
-					return;
-			}
-			else if (!memcmp(ftype, "woff2", sizeof("woff2") - 1))
-			{
-				RspHeader.Code = HTTP_RESPONCE_200_OK;
-				RspHeader.ContentType = HTTP_CONTENT_TYPE_FONT_WOFF2;
-				RspHeader.Charset = HTTP_CHARSET_UTF_8;
-				RspHeader.ContentLength = size;
-				if (ReqHeader->ConnectionKeepAlive)
-					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-				else
-					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-				RspHeader.TransferEncoding = NULL;
-				RspHeader.AllowedLen = 0;
-				if (http_server_write_header(conn, &RspHeader))
-					return;
-			}
-			else if (!memcmp(ftype, "json", sizeof("json") - 1))
-			{
-				RspHeader.Code = HTTP_RESPONCE_200_OK;
-				RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
-				RspHeader.Charset = HTTP_CHARSET_UTF_8;
-				RspHeader.ContentLength = size;
-				if (ReqHeader->ConnectionKeepAlive)
-					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-				else
-					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-				RspHeader.TransferEncoding = NULL;
-				RspHeader.AllowedLen = 0;
-				if (http_server_write_header(conn, &RspHeader))
-					return;
-			}
-			else
-			{
-				RspHeader.Code = HTTP_RESPONCE_200_OK;
-				RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_OCTET;
-				RspHeader.Charset = NULL;
-				RspHeader.ContentLength = size;
-				if (ReqHeader->ConnectionKeepAlive)
-					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-				else
-					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-				RspHeader.TransferEncoding = NULL;
-				RspHeader.AllowedLen = 0;
-				if (http_server_write_header(conn, &RspHeader))
-					return;
-			}
-				
-			addr += fdata - RESPONCE_BODY;
-			while(size)
-			{
-				if (size > 1024)
-					RESPONCE_BODY_LEN = 1024;
-				else
-					RESPONCE_BODY_LEN = size;
-				if (BSP_FLASH_Read(addr, RESPONCE_BODY, RESPONCE_BODY_LEN))
-					return;
-				if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
-					return;
-				addr += RESPONCE_BODY_LEN;
-				size -= RESPONCE_BODY_LEN;
-				
-			}
-			return;			
-		}		
-		addr += size + fdata - RESPONCE_BODY;		
+	if (data_type == HTTP_SERVER_FILES_DATA_TYPE_HTML)
+	{
+		RspHeader.Code = HTTP_RESPONCE_200_OK;
+		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_HTML;
+		RspHeader.Charset = HTTP_CHARSET_UTF_8;
+		RspHeader.ContentLength = size;
+		if (ReqHeader->ConnectionKeepAlive)
+			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+		else
+			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+		RspHeader.TransferEncoding = NULL;
+		RspHeader.AllowedLen = 0;
+		if (http_server_write_header(conn, &RspHeader))
+			return;
 	}
+	else if (data_type == HTTP_SERVER_FILES_DATA_TYPE_JS)
+	{
+		RspHeader.Code = HTTP_RESPONCE_200_OK;
+		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_JS;
+		RspHeader.Charset = HTTP_CHARSET_UTF_8;
+		RspHeader.ContentLength = size;
+		if (ReqHeader->ConnectionKeepAlive)
+			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+		else
+			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+		RspHeader.TransferEncoding = NULL;
+		RspHeader.AllowedLen = 0;
+		if (http_server_write_header(conn, &RspHeader))
+			return;
+	}
+	else if (data_type == HTTP_SERVER_FILES_DATA_TYPE_CSS)
+	{
+		RspHeader.Code = HTTP_RESPONCE_200_OK;
+		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_CSS;
+		RspHeader.Charset = HTTP_CHARSET_UTF_8;
+		RspHeader.ContentLength = size;
+		if (ReqHeader->ConnectionKeepAlive)
+			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+		else
+			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+		RspHeader.TransferEncoding = NULL;
+		RspHeader.AllowedLen = 0;
+		if (http_server_write_header(conn, &RspHeader))
+			return;
+	}
+	else if (data_type == HTTP_SERVER_FILES_DATA_TYPE_WOFF2)
+	{
+		RspHeader.Code = HTTP_RESPONCE_200_OK;
+		RspHeader.ContentType = HTTP_CONTENT_TYPE_FONT_WOFF2;
+		RspHeader.Charset = HTTP_CHARSET_UTF_8;
+		RspHeader.ContentLength = size;
+		if (ReqHeader->ConnectionKeepAlive)
+			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+		else
+			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+		RspHeader.TransferEncoding = NULL;
+		RspHeader.AllowedLen = 0;
+		if (http_server_write_header(conn, &RspHeader))
+			return;
+	}
+	else if (data_type == HTTP_SERVER_FILES_DATA_TYPE_JSON)
+	{
+		RspHeader.Code = HTTP_RESPONCE_200_OK;
+		RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
+		RspHeader.Charset = HTTP_CHARSET_UTF_8;
+		RspHeader.ContentLength = size;
+		if (ReqHeader->ConnectionKeepAlive)
+			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+		else
+			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+		RspHeader.TransferEncoding = NULL;
+		RspHeader.AllowedLen = 0;
+		if (http_server_write_header(conn, &RspHeader))
+			return;
+	}
+	else
+	{
+		RspHeader.Code = HTTP_RESPONCE_200_OK;
+		RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_OCTET;
+		RspHeader.Charset = NULL;
+		RspHeader.ContentLength = size;
+		if (ReqHeader->ConnectionKeepAlive)
+			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+		else
+			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+		RspHeader.TransferEncoding = NULL;
+		RspHeader.AllowedLen = 0;
+		if (http_server_write_header(conn, &RspHeader))
+			return;
+	}
+	
+	while(data_size)
+	{
+		if (data_size > 1024)
+			RESPONCE_BODY_LEN = 1024;
+		else
+			RESPONCE_BODY_LEN = data_size;
+		if (HTTP_SERVER_FILES_ReadData(data_addr, RESPONCE_BODY, RESPONCE_BODY_LEN))
+			return;
+		if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+			return;
+		data_addr += RESPONCE_BODY_LEN;
+		data_size -= RESPONCE_BODY_LEN;
+	}
+	return;			
+
 error_404:
 	http_server_write_404_error(conn);
 	return;
@@ -394,7 +362,7 @@ error_405:
   */
 void http_server_serve_get_api_v1_profile_langpack(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {
-	uint32_t i, j;
+	uint32_t i;
 	uint32_t LangpackBlocks, LangpackType;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
@@ -1916,9 +1884,8 @@ write_data:
 	http_server_write_header(conn, &RspHeader);
 	netconn_close(conn);
 	netconn_delete(conn);
-	osDelay(100);
+	osDelay(1000);
 	BSP_Reset();
-	
 	return;
 	
 error:
@@ -1936,16 +1903,15 @@ static void http_server_serve_post_api_v1_system_update_mcu_web(struct netconn *
 	err_t recv_err;
 	char *data;
 	uint16_t error, datalen;
-	uint32_t addr, ContentLength;
+	uint32_t dataaddr, ContentLength;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	ContentLength = ReqHeader->ContentLength;
 	
-	if ((ContentLength == 0) || (ContentLength > BSP_FLASH_WEB_SIZE))
+	if ((ContentLength == 0) || (ContentLength > HTTP_SERVER_FILES_RECORD_BODY_SIZE))
 		goto error;
 	
-	REQUEST_BODY_LEN = 0;
-	addr = BSP_FLASH_WEB_ADDR;
+	dataaddr = 0;
 	inbuf = NULL;
 	error = 0;
 	if ((body) && (bodylen))
@@ -1964,50 +1930,10 @@ write_data:
 			ContentLength -= datalen;
 			if (!error)
 			{
-				if (REQUEST_BODY_LEN != 0)
-				{
-					if ((REQUEST_BODY_LEN + datalen) >= BSP_FLASH_PAGE_SIZE)
-					{
-						memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, BSP_FLASH_PAGE_SIZE - REQUEST_BODY_LEN);
-						if (BSP_FLASH_WaitReady())
-							error = 1;
-						if (BSP_FLASH_ProgramPage(addr, REQUEST_BODY, BSP_FLASH_PAGE_SIZE))
-							error = 1;
-						addr += BSP_FLASH_PAGE_SIZE;
-						data += BSP_FLASH_PAGE_SIZE - REQUEST_BODY_LEN;
-						datalen -= BSP_FLASH_PAGE_SIZE - REQUEST_BODY_LEN;
-						REQUEST_BODY_LEN = 0;
-					}
-					else
-					{
-						memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, datalen);
-						data += datalen;
-						REQUEST_BODY_LEN += datalen;
-						datalen = 0;
-					}
-				}
-				
-				while (datalen)
-				{
-					if (datalen >= BSP_FLASH_PAGE_SIZE)
-					{
-						if (BSP_FLASH_WaitReady())
-							goto error;
-						if (BSP_FLASH_ProgramPage(addr, data, BSP_FLASH_PAGE_SIZE))
-							goto error;
-						addr += BSP_FLASH_PAGE_SIZE;
-						data += BSP_FLASH_PAGE_SIZE;
-						datalen -= BSP_FLASH_PAGE_SIZE;
-					}
-					else
-					{
-						memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, datalen);
-						data += datalen;
-						REQUEST_BODY_LEN += datalen;
-						datalen = 0;
-					}
-				}
-			}			
+				if (HTTP_SERVER_FILES_WriteData(dataaddr, data, datalen))
+					error = 1;
+			}
+			dataaddr += datalen;
 			netbuf_delete(inbuf);
 		}
 		else
@@ -2018,14 +1944,8 @@ write_data:
 	if (error)
 		goto error;
 	
-	if (REQUEST_BODY_LEN != 0)
-	{
-		if (BSP_FLASH_WaitReady())
-			goto error;
-		if (BSP_FLASH_ProgramPage(addr, REQUEST_BODY, REQUEST_BODY_LEN))
-			goto error;
-		REQUEST_BODY_LEN = 0;
-	}
+	if (HTTP_SERVER_FILES_WriteDataComplete())
+		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;

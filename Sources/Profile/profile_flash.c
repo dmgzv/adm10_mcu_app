@@ -48,12 +48,10 @@ typedef struct {
 }PROFILE_FLASH_CONFIG_RECORD_HEADER_T;
 
 typedef struct {
-	uint32_t Idx;
 	char Project[sizeof(BSP_PROJECT)];
 	char HwVersion[sizeof(BSP_HW_VERSION)];
 	uint32_t LangpackType;
 	uint32_t LangpackBlocks;
-	uint16_t LangpackCrc16;
 	uint16_t Crc16;
 }PROFILE_FLASH_LANGPACK_RECORD_HEADER_T;
 
@@ -303,17 +301,17 @@ int32_t PROFILE_FLASH_CheckCalibsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *Re
 		goto mismatch;
 	
 	*RestoreValues = 0;
-	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Calibs Map Check: Ok");
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Check Calibs Map: Ok");
 	return 0;
 	
 error:
 	*RestoreValues = 0;
-	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Calibs Map Check: Invalid");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Check Calibs Map: Invalid");
 	return -1;
 	
 mismatch:
 	*RestoreValues = 1;
-	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Calibs Map Check: Mismatch");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Check Calibs Map: Mismatch");
 	return -1;
 }
 
@@ -1056,17 +1054,17 @@ int32_t PROFILE_FLASH_CheckConfigsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *R
 		goto mismatch;
 	
 	*RestoreValues = 0;
-	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Configs Map Check: Ok");
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Check Configs Map: Ok");
 	return 0;
 	
 error:
 	*RestoreValues = 0;
-	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Configs Map Check: Invalid");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Check Configs Map: Invalid");
 	return -1;
 	
 mismatch:
 	*RestoreValues = 1;
-	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Configs Map Check: Mismatch");
+	LOG_Warn("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Check Configs Map: Mismatch");
 	return -1;
 }
 
@@ -1687,7 +1685,7 @@ int32_t PROFILE_FLASH_InitConfigs(PROFILE_FLASH_T *ProfileFlash)
 	return PROFILE_FLASH_InitConfigsValues(ProfileFlash);
 }
 
-int32_t __PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t *LangpackIdx, uint32_t *LangpackBlocks, uint32_t *LangpackType)
+int32_t __PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t *LangpackBlocks, uint32_t *LangpackType)
 {
 	PROFILE_FLASH_LANGPACK_RECORD_HEADER_T Header;
 	uint32_t Addr;
@@ -1712,11 +1710,10 @@ int32_t __PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32
 	if (Crc16 != Calc_CRC16((char*)&Header, sizeof(Header), 0))
 		goto error;
 	
-	*LangpackIdx = Header.Idx;
 	*LangpackBlocks = Header.LangpackBlocks;
 	*LangpackType = Header.LangpackType;
 
-	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "", "Load Langpack %d Header: Idx %d, Blocks %d, Type %d", Idx, *LangpackIdx, *LangpackBlocks, *LangpackType);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass, "", "Load Langpack %d Header: Blocks %d, Type %d", Idx, *LangpackBlocks, *LangpackType);
 	return 0;
 	
 error:
@@ -1724,7 +1721,7 @@ error:
 	return -1;
 }
 
-int32_t __PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t LangpackIdx, uint32_t LangpackBlocks, uint32_t LangpackType)
+int32_t __PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t LangpackBlocks, uint32_t LangpackType)
 {
 	PROFILE_FLASH_LANGPACK_RECORD_HEADER_T Header;
 	uint32_t i, Addr;
@@ -1733,10 +1730,8 @@ int32_t __PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32
 	memset(&Header, 0, sizeof(Header));
 	memcpy(Header.Project, BSP_PROJECT, sizeof(BSP_PROJECT));
 	memcpy(Header.HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION));
-	Header.Idx = LangpackIdx;
 	Header.LangpackType = LangpackType;
 	Header.LangpackBlocks = LangpackBlocks;
-	Header.LangpackCrc16 = 0;
 	Header.Crc16 = Calc_CRC16((char*)&Header, sizeof(Header), 0);
 	
 	Idx = Idx % PROFILE_FLASH_LANG_RECORDS_CNT;
@@ -1768,12 +1763,11 @@ int32_t __PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32
 		}
 	}
 	
-	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Langpack %d Header: Idx %d, Blocks %d, Type %d", Idx % PROFILE_FLASH_HEADERS_CNT, Header.Idx, Header.LangpackBlocks, Header.LangpackType);
-	ProfileFlash->LangpackIdx++;	
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Langpack %d Header: Blocks %d, Type %d", Idx, Header.LangpackBlocks, Header.LangpackType);
 	return 0;
 
 error:
-	LOG_Error("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Langpack %d Header: Error", Idx % PROFILE_FLASH_HEADERS_CNT);
+	LOG_Error("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Save Langpack %d Header: Error", Idx);
 	return -1;
 }
 
@@ -1861,16 +1855,16 @@ int32_t PROFILE_FLASH_InitLangpacks(PROFILE_FLASH_T *ProfileFlash)
 	
 	for (Idx = 0; Idx < PROFILE_FLASH_LANG_RECORDS_CNT; Idx++)
 	{
-		if (__PROFILE_FLASH_LoadLangpackHeader(ProfileFlash, Idx, &LangpackIdx, &LangpackBlocks, &LangpackType))
+		if (__PROFILE_FLASH_LoadLangpackHeader(ProfileFlash, Idx, &LangpackBlocks, &LangpackType))
 			continue;
-		ProfileFlash->LangpackIdx = LangpackIdx + 1;
-		LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Init Langpack %d: Idx %d, Blocks %d, Type %d", Idx, LangpackIdx, LangpackBlocks, LangpackType);
+		ProfileFlash->LangpackIdx = Idx;
+		LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Init Langpack %d: Blocks %d, Type %d", Idx, LangpackBlocks, LangpackType);
 		return 0;
 	}
 
-	ProfileFlash->LangpackIdx = 1;
-	__PROFILE_FLASH_SaveLangpackHeader(ProfileFlash, 0, 0, 0, 1);
-	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Init Langpack 0: Idx 0, Blocks 0, Type 1");
+	ProfileFlash->LangpackIdx = 0;
+	__PROFILE_FLASH_SaveLangpackHeader(ProfileFlash, 0, 0, 1);
+	LOG_Info("PROFILE_FLASH", ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->DeviceClass,  "", "Init Langpack 0: Blocks 0, Type 1");
 	return 0;	
 }
 
@@ -1977,51 +1971,26 @@ void PROFILE_FLASH_SaveValue(PROFILE_FLASH_T *ProfileFlash, uint8_t Table, uint1
 			break;
 	}
 }
-/*
-void PROFILE_FLASH_LangpackSave(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index)
-{
-	uint32_t Addr;
-	
-	Addr = PROFILE_FLASH_LANG_ADDR(ProfileFlash->Profile->Idx) + Index * BSP_FLASH_PAGE_SIZE;
-	if (BSP_FLASH_WaitReady())
-		return;
-	BSP_FLASH_ProgramPage(Addr, Block, BSP_FLASH_PAGE_SIZE);
-}
-void PROFILE_FLASH_LangpackLoad(PROFILE_FLASH_T *ProfileFlash, char *Block, uint32_t Index)
-{
-	uint32_t Addr;
-	Addr = PROFILE_FLASH_LANG_ADDR(ProfileFlash->Profile->Idx) + Index * BSP_FLASH_PAGE_SIZE;
-	if (BSP_FLASH_WaitReady())
-		return;
-	BSP_FLASH_Read(Addr, Block, BSP_FLASH_PAGE_SIZE);
-}
-void PROFILE_FLASH_LangpackClear(PROFILE_FLASH_T *ProfileFlash)
-{
-	uint32_t Addr;
-	Addr = PROFILE_FLASH_LANG_ADDR(ProfileFlash->Profile->Idx);
-	if (BSP_FLASH_WaitReady())
-		return;
-	BSP_FLASH_ErasePage(Addr);
-}
-*/
 
 int32_t PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t *LangpackBlocks, uint32_t *LangpackType)
 {
-	uint32_t Idx;
-	return __PROFILE_FLASH_LoadLangpackHeader(ProfileFlash, (ProfileFlash->LangpackIdx - 1) % PROFILE_FLASH_LANG_RECORDS_CNT, &Idx, LangpackBlocks, LangpackType);
+	return __PROFILE_FLASH_LoadLangpackHeader(ProfileFlash, ProfileFlash->LangpackIdx % PROFILE_FLASH_LANG_RECORDS_CNT, LangpackBlocks, LangpackType);
 }
 
 int32_t PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t LangpackBlocks, uint32_t LangpackType)
 {
-	return __PROFILE_FLASH_SaveLangpackHeader(ProfileFlash, ProfileFlash->LangpackIdx % PROFILE_FLASH_LANG_RECORDS_CNT, ProfileFlash->LangpackIdx, LangpackBlocks, LangpackType);
+	if (__PROFILE_FLASH_SaveLangpackHeader(ProfileFlash, (ProfileFlash->LangpackIdx + 1) % PROFILE_FLASH_LANG_RECORDS_CNT, LangpackBlocks, LangpackType))
+		return -1;
+	ProfileFlash->LangpackIdx++;
+	return 0;
 }
 
 int32_t PROFILE_FLASH_LoadLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize)
 {
-	return __PROFILE_FLASH_LoadLangpackData(ProfileFlash, (ProfileFlash->LangpackIdx - 1) % PROFILE_FLASH_LANG_RECORDS_CNT, DataAddr, Data, DataSize);
+	return __PROFILE_FLASH_LoadLangpackData(ProfileFlash, ProfileFlash->LangpackIdx % PROFILE_FLASH_LANG_RECORDS_CNT, DataAddr, Data, DataSize);
 }
 
 int32_t PROFILE_FLASH_SaveLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize)
 {
-	return __PROFILE_FLASH_SaveLangpackData(ProfileFlash, ProfileFlash->LangpackIdx % PROFILE_FLASH_LANG_RECORDS_CNT, DataAddr, Data, DataSize);
+	return __PROFILE_FLASH_SaveLangpackData(ProfileFlash, (ProfileFlash->LangpackIdx + 1) % PROFILE_FLASH_LANG_RECORDS_CNT, DataAddr, Data, DataSize);
 }

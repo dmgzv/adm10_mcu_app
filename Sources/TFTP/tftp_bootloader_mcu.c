@@ -2,6 +2,7 @@
 #include "tftp_client.h"
 #include "bootloader.h"
 #include "profile_flash.h"
+#include "http_server_files.h"
 #include <string.h>
 #include "log.h"
 
@@ -63,7 +64,7 @@ static int32_t TFTP_BOOTLOADER_MCU_VerifyInfo(char *Data)
 	strcat(TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Name, ".bin");
 	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Size = 0;
 	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD;
-	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_WEB].MaxSize = BSP_FLASH_WEB_SIZE;
+	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_WEB].MaxSize = HTTP_SERVER_FILES_RECORD_BODY_SIZE;
 	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Data = NULL;
 	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Web: %s", TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Name);
 	
@@ -81,7 +82,7 @@ static int32_t TFTP_BOOTLOADER_MCU_VerifyInfo(char *Data)
 	strcat(TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Name, ".lng");
 	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Size = 0;
 	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD;
-	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].MaxSize = BSP_FLASH_LANG_SIZE;
+	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].MaxSize = PROFILE_FLASH_LANG_RECORD_BODY_SIZE;
 	TFTP_BOOTLOADER_MCU.Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Data = NULL;
 	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Langpack: %s", TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Name);
 	
@@ -112,31 +113,10 @@ error:
 
 static int TFTP_BOOTLOADER_MCU_DownloadWebReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
-	uint32_t Addr;
-	uint32_t Size;
-	
-	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Size += DataSize;	
-	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_WEB_SIZE)
-	{
-		Addr = BSP_FLASH_WEB_ADDR + ((Block - 1) * TFTP_DATA_LEN_MAX);
-		while (DataSize)
-		{
-			if (DataSize > BSP_FLASH_PAGE_SIZE)
-				Size = BSP_FLASH_PAGE_SIZE;
-			else
-				Size = DataSize;
-			if (BSP_FLASH_WaitReady())
-				goto error;
-			if (BSP_FLASH_ProgramPage(Addr, Data, Size))
-				goto error;
-			Addr += Size;
-			Data += Size;
-			DataSize -= Size;
-		}
-		return 0;
-	}
-error:
-	return -1;
+	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Size += DataSize;
+	if (HTTP_SERVER_FILES_WriteData(((Block - 1) * TFTP_DATA_LEN_MAX), Data, DataSize))
+		return -1;
+	return 0;
 }
 
 static void TFTP_BOOTLOADER_MCU_CompleteWeb(uint32_t NextEvent)
@@ -181,27 +161,10 @@ static void TFTP_BOOTLOADER_MCU_DownloadWeb(uint32_t NextEvent)
 
 static int TFTP_BOOTLOADER_MCU_DownloadLangpackReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
-	uint32_t DataAddr;
-	uint32_t TotalDataSize;
-	uint32_t Blocks;
-	
 	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Size += DataSize;
-	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_LANG_SIZE)
-	{
-		DataAddr = (Block - 1) * TFTP_DATA_LEN_MAX;	
-		if (PROFILE_FLASH_SaveLangpackData(&ProfileFlash, DataAddr, Data, DataSize))
-			goto error;
-		if (DataSize != TFTP_DATA_LEN_MAX)
-		{
-			TotalDataSize = DataSize + ((Block - 1) * TFTP_DATA_LEN_MAX);
-			Blocks = (TotalDataSize % PROFILE_FLASH_LANG_BLOCK_SIZE) ? ((TotalDataSize / PROFILE_FLASH_LANG_BLOCK_SIZE) + 1) : (TotalDataSize / PROFILE_FLASH_LANG_BLOCK_SIZE);
-			if (PROFILE_FLASH_SaveLangpackHeader(&ProfileFlash, Blocks, 1))
-				goto error;
-		}
-		return 0;
-	}
-error:
-	return -1;
+	if (PROFILE_FLASH_SaveLangpackData(&ProfileFlash, (Block - 1) * TFTP_DATA_LEN_MAX, Data, DataSize))
+		return -1;
+	return 0;
 }
 
 static void TFTP_BOOTLOADER_MCU_CompleteLangpack(uint32_t NextEvent)
@@ -319,7 +282,15 @@ static void TFTP_BOOTLOADER_MCU_Download(uint32_t NextEvent)
 
 static void TFTP_BOOTLOADER_MCU_Update(void)
 {
+	uint32_t LangpackBlocks;
+	
 	LOG_Info("TFTP_BOOTLOADER", "MCU", "", "Update");
+	if (TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Size % PROFILE_FLASH_LANG_BLOCK_SIZE)
+		LangpackBlocks = (TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Size / PROFILE_FLASH_LANG_BLOCK_SIZE) + 1;
+	else
+		LangpackBlocks = TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Size / PROFILE_FLASH_LANG_BLOCK_SIZE;
+	PROFILE_FLASH_SaveLangpackHeader(&ProfileFlash, LangpackBlocks, 1);
+	HTTP_SERVER_FILES_WriteDataComplete();
 	BOOTLOADER_UpdateNewFw(&Bootloader);
 	TFTP_BOOTLOADER_MCU.Status = TFTP_BOOTLOADER_STATUS_COMPLETE;
 	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MCU_MSG_UPDATE_COMPLETE, 0);

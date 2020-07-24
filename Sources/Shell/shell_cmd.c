@@ -9,6 +9,7 @@
 #include "profile_flash.h"
 #include "tftp_client.h"
 #include "bootloader.h"
+#include "http_server_files.h"
 
 extern BOOTLOADER_T Bootloader;
 extern PROFILE_FLASH_T ProfileFlash;
@@ -1758,27 +1759,14 @@ download_timeout:
 
 static int32_t SHELL_CMD_FLASH_LOAD_WEB_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
-	uint32_t Addr;
-	uint32_t Size;
-	
-	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_WEB_SIZE)
+	if (HTTP_SERVER_FILES_WriteData(((Block - 1) * TFTP_DATA_LEN_MAX), Data, DataSize))
+		return -1;
+	if (DataSize != TFTP_DATA_LEN_MAX)
 	{
-		Addr = BSP_FLASH_WEB_ADDR + ((Block - 1) * TFTP_DATA_LEN_MAX);
-		while (DataSize)
-		{
-			if (DataSize > BSP_FLASH_PAGE_SIZE)
-				Size = BSP_FLASH_PAGE_SIZE;
-			else
-				Size = DataSize;
-			BSP_FLASH_WaitReady();
-			BSP_FLASH_ProgramPage(Addr, Data, Size);
-			Addr += Size;
-			Data += Size;
-			DataSize -= Size;
-		}
-		return 0;
+		if (HTTP_SERVER_FILES_WriteDataComplete())
+			return -1;
 	}
-	return -1;
+	return 0;
 }
 
 static int32_t SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
@@ -1787,7 +1775,7 @@ static int32_t SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback(void *Priv, ui
 	uint32_t TotalDataSize;
 	uint32_t Blocks;
 	
-	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < BSP_FLASH_LANG_SIZE)
+	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < PROFILE_FLASH_LANG_RECORD_BODY_SIZE)
 	{
 		DataAddr = (Block - 1) * TFTP_DATA_LEN_MAX;	
 		if (PROFILE_FLASH_SaveLangpackData(&ProfileFlash, DataAddr, Data, DataSize))
