@@ -237,6 +237,7 @@ void BSP_UpdateCard(void)
 	
 	BSP_Stage++;
 	
+	/*Processing is disabled because it cause errors with pca9548a*/
 	//BSP_FPGA_PWR_Process();
 	
 	BSP_Stage++;
