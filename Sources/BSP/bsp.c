@@ -16,7 +16,9 @@ const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&si5332[0],
 	(BSP_DEV_T*)&si5332[1],
 	(BSP_DEV_T*)&s29gl01gs,
+	(BSP_DEV_T*)&fpga_iface,
 	(BSP_DEV_T*)&fpga_maxv,
+	(BSP_DEV_T*)&fpga_fw,
 	(BSP_DEV_T*)&fpga_line_adm_10,
 	(BSP_DEV_T*)&fpga_client_adm_10[0],
 	(BSP_DEV_T*)&fpga_client_adm_10[1],
@@ -235,15 +237,31 @@ void BSP_UpdateCard(void)
 	
 	BSP_Stage++;
 	
-	BSP_FPGA_PWR_Process();
+	//BSP_FPGA_PWR_Process();
 	
 	BSP_Stage++;
 	
-	BSP_FPGA_Process();
+	BSP_FPGA_IFACE_Process();
+	
+	BSP_Stage++;
+	
+	BSP_FPGA_MAXV_Process();
 	
 	BSP_Stage++;
 	
 	BSP_FPGA_FLASH_Process();
+	
+	BSP_Stage++;
+	
+	BSP_FPGA_FW_Process();
+	
+	BSP_Stage++;
+	
+	BSP_FPGA_LINE_Process();
+	
+	BSP_Stage++;
+	
+	BSP_FPGA_CLIENT_Process();
 	
 	BSP_Stage++;
 	

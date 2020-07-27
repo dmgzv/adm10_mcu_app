@@ -12,18 +12,18 @@ int32_t PCA9548A_SelectChannel(PCA9548A_T *Dev, PCA9548A_CH_T Channel)
 		return -1;
 	
 	if (Channel	!= PCA9548A_CH_NO)
-		BSP_DEV_LOCK(Dev);
+		BSP_DEV_UPDATE(Dev);
 	
 	if (I2C_Transmit(Dev->I2C, Dev->Addr, (char*)&Channel, sizeof(Channel)))
 		goto error;	
 	Dev->Channel = Channel;
 	
 	if (Channel	== PCA9548A_CH_NO)
-		BSP_DEV_UNLOCK(Dev);
+		BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
-	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 

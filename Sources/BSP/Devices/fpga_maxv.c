@@ -23,7 +23,7 @@ static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 	uint8_t LinePageSelect, Client1PageSelect, Client2PageSelect;
 	uint32_t Timeout;
 	
-	if (Dev->Mode != Dev->__Mode)
+	if ((Dev->Mode != Dev->__Mode) && (Dev->FwStatus))
 	{
 		if (Dev->Mode == FPGA_MAXV_MODE_AGG_2X10_BS)
 		{
@@ -104,6 +104,7 @@ int32_t FPGA_MAXV_Init(FPGA_MAXV_T *Dev)
 {
 	uint8_t SwVersion;
 	uint8_t PowerUpMarker;
+	uint8_t LinePageSelect, Client1PageSelect, Client2PageSelect;
 	
 	if (!Dev)
 		return -1;
@@ -117,7 +118,22 @@ int32_t FPGA_MAXV_Init(FPGA_MAXV_T *Dev)
 	SwVersion = *((uint8_t*)FPGA_MAXV_SW_VERSION_ADDR(Dev));
 	snprintf(Dev->SwVersion, sizeof(Dev->SwVersion), "%d", SwVersion);
 	Dev->Status = *((uint8_t*)FPGA_MAXV_STATUS_ADDR(Dev));
-	Dev->Mode = Dev->__Mode = FPGA_MAXV_MODE_NONE;
+	Dev->FwStatus = 0;
+	
+	LinePageSelect =  *((uint8_t*)FPGA_MAXV_FPGA_LINE_PAGE_SELECT_ADDR(Dev));
+	Client1PageSelect =  *((uint8_t*)FPGA_MAXV_FPGA_CLIENT_1_PAGE_SELECT_ADDR(Dev));
+	Client2PageSelect =  *((uint8_t*)FPGA_MAXV_FPGA_CLIENT_2_PAGE_SELECT_ADDR(Dev));
+	
+	if ((LinePageSelect == 0) && (Client1PageSelect == 1) && (Client2PageSelect == 1))
+		Dev->Mode = Dev->__Mode = FPGA_MAXV_MODE_AGG_2X10_BS;
+	else if ((LinePageSelect == 2) && (Client1PageSelect == 3) && (Client2PageSelect == 3))
+		Dev->Mode = Dev->__Mode = FPGA_MAXV_MODE_ADM_10;
+	else if ((LinePageSelect == 4) && (Client1PageSelect == 5) && (Client2PageSelect == 5))
+		Dev->Mode = Dev->__Mode = FPGA_MAXV_MODE_AGG_2X10_EFEC;
+	else if ((LinePageSelect == 0) && (Client1PageSelect == 1) && (Client2PageSelect == 7))
+		Dev->Mode = Dev->__Mode = FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5;
+	else
+		Dev->Mode = Dev->__Mode = FPGA_MAXV_MODE_NONE;
 	
 	BSP_DEV_INIT_OK(Dev);
 	return 0;

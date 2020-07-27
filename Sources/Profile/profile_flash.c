@@ -1851,7 +1851,7 @@ error:
 
 int32_t PROFILE_FLASH_InitLangpacks(PROFILE_FLASH_T *ProfileFlash)
 {
-	uint32_t Idx, LangpackIdx, LangpackBlocks, LangpackType;
+	uint32_t Idx, LangpackBlocks, LangpackType;
 	
 	for (Idx = 0; Idx < PROFILE_FLASH_LANG_RECORDS_CNT; Idx++)
 	{

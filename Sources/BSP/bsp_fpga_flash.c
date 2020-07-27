@@ -2,7 +2,7 @@
 #include "bsp_pwr_in.h"
 #include "bsp_pwr_pin.h"
 #include "bsp_pwr_seq.h"
-#include "bsp_fpga.h"
+#include "bsp_fpga_maxv.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,88 +14,21 @@ S29GL01GS_T s29gl01gs =
 	.UpdateContErrThr = BSP_DEV_CONT_ERR_THR_INF,
 };
 
-int32_t BSP_FPGA_FLASH_EraseFPGA(uint32_t Idx)
-{
-	uint32_t Addr;
-	
-	if (Idx == 0)
-	{
-		for (Addr = BSP_FLASH_FPGA_1_FW_ADDR_START; Addr < BSP_FLASH_FPGA_1_FW_ADDR_END; Addr+=S29GL01GS_SECTOR_SIZE)
-		{
-			if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-				return -1;
-			if (S29GL01GS_EraseSector(&s29gl01gs, Addr))
-				return -1;
-		}
-		if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-			return -1;
-	}
-	else if (Idx == 1)
-	{
-		for (Addr = BSP_FLASH_FPGA_2_FW_ADDR_START; Addr < BSP_FLASH_FPGA_2_FW_ADDR_END; Addr+=S29GL01GS_SECTOR_SIZE)
-		{
-			if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-				return -1;
-			if (S29GL01GS_EraseSector(&s29gl01gs, Addr))
-				return -1;
-		}
-		if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-			return -1;
-	}
-	else if (Idx == 2)
-	{
-		for (Addr = BSP_FLASH_FPGA_3_FW_ADDR_START; Addr < BSP_FLASH_FPGA_3_FW_ADDR_END; Addr+=S29GL01GS_SECTOR_SIZE)
-		{
-			if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-				return -1;
-			if (S29GL01GS_EraseSector(&s29gl01gs, Addr))
-				return -1;
-		}
-		if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-			return -1;
-	}
-	
-	return 0;
-}
-
-int32_t BSP_FPGA_FLASH_EraseChip(void)
-{
-	uint32_t i;
-	
-	for (i = 0; i < S29GL01GS_SECTORS_COUNT; i++)
-	{
-		if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-			return -1;
-		if (S29GL01GS_EraseSector(&s29gl01gs, i * S29GL01GS_SECTOR_SIZE))
-			return -1;
-	}
-	
-	return 0;
-}
-
 int32_t BSP_FPGA_FLASH_EraseSection(uint32_t Section)
-{
-	uint32_t i;
-	
+{	
 	if (Section == BSP_FLASH_FPGA_BOOT_SECTION)
 	{
-		for (i = 0; i < S29GL01GS_SECTORS_COUNT / 2; i++)
-		{
-			if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-				return -1;
-			if (S29GL01GS_EraseSector(&s29gl01gs, i * S29GL01GS_SECTOR_SIZE))
-				return -1;
-		}
+		if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
+			return -1;
+		if (S29GL01GS_EraseSector(&s29gl01gs, ((S29GL01GS_SECTORS_COUNT / 2) - 1) * S29GL01GS_SECTOR_SIZE))
+			return -1;
 	}
 	else if (Section == BSP_FLASH_FPGA_UPDATE_SECTION)
 	{
-		for (i = S29GL01GS_SECTORS_COUNT / 2; i < S29GL01GS_SECTORS_COUNT; i++)
-		{
-			if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
-				return -1;
-			if (S29GL01GS_EraseSector(&s29gl01gs, i * S29GL01GS_SECTOR_SIZE))
-				return -1;
-		}
+		if (S29GL01GS_WaitReady(&s29gl01gs, 1000))
+			return -1;
+		if (S29GL01GS_EraseSector(&s29gl01gs, (S29GL01GS_SECTORS_COUNT - 1) * S29GL01GS_SECTOR_SIZE))
+			return -1;
 	}
 	else
 	{
@@ -279,7 +212,7 @@ static int32_t BSP_FPGA_FLASH_CheckConditions(void)
 		return -1;
 	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 		return -1;
-	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)
+	if ((BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK) || (fpga_maxv.Status & FPGA_MAXV_STATUS_FLASH_BUSY_MASK))
 		return -1;
 	return 0;
 }

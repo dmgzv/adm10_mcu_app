@@ -14,8 +14,11 @@
 #define FPGA_MAXV_MODE_AGG_2X10_EFEC			3
 #define FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5	4
 
-#define FPGA_MAXV_MODE_SET(Dev, __Mode) (Dev)->Mode = __Mode;
+#define FPGA_MAXV_MODE_SET(Dev, __Mode) (Dev)->Mode = __Mode
+#define FPGA_MAXV_MODE_RESET(Dev)	(Dev)->Mode = (Dev)->__Mode = FPGA_MAXV_MODE_NONE
+#define FPGA_MAXV_FW_STATUS_SET(Dev, __FwStatus) (Dev)->FwStatus = __FwStatus
 
+#define FPGA_MAXV_STATUS_FLASH_BUSY_MASK	(1 << 0)
 #define FPGA_MAXV_STATUS_LINE_MASK				(1 << 1)
 #define FPGA_MAXV_STATUS_CLIENT_MASK(Idx)	(1 << ((Idx) + 2))
 
@@ -24,6 +27,7 @@ typedef struct {
 	const uint32_t BaseAddr;
 	char SwVersion[9];
 	uint8_t Status;
+	uint32_t FwStatus;
 	uint32_t Mode;
 	uint32_t __Mode;
 } FPGA_MAXV_T;

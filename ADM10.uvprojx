@@ -802,19 +802,39 @@
               <FilePath>.\Sources\BSP\bsp_eth_sw.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_fpga.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_fpga.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_fpga_pwr.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga_pwr.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_fpga_iface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_iface.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_maxv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_maxv.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_fpga_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_line.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_line.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_client.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_fw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_fw.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1331,7 +1351,7 @@
             <UseTargetDll>1</UseTargetDll>
             <UseExternalTool>0</UseExternalTool>
             <RunIndependent>0</RunIndependent>
-            <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
+            <UpdateFlashBeforeDebugging>0</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
             <DriverSelection>4096</DriverSelection>
           </Flash1>
@@ -2001,19 +2021,39 @@
               <FilePath>.\Sources\BSP\bsp_eth_sw.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_fpga.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\BSP\bsp_fpga.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_fpga_pwr.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga_pwr.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_fpga_iface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_iface.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_maxv.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_maxv.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_fpga_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_line.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_line.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_client.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_client.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_fpga_fw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_fpga_fw.c</FilePath>
             </File>
           </Files>
         </Group>

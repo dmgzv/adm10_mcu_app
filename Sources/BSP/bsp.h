@@ -14,7 +14,11 @@
 #include "bsp_pwr_pin.h"
 #include "bsp_pwr_in.h"
 #include "bsp_pwr_seq.h"
-#include "bsp_fpga.h"
+#include "bsp_fpga_iface.h"
+#include "bsp_fpga_maxv.h"
+#include "bsp_fpga_fw.h"
+#include "bsp_fpga_line.h"
+#include "bsp_fpga_client.h"
 #include "bsp_fpga_pwr.h"
 #include "bsp_fpga_flash.h"
 #include "bsp_sfp.h"
@@ -24,7 +28,6 @@
 #include "bsp_eth.h"
 #include "bsp_eth_pin.h"
 #include "bsp_eth_sw.h"
-
 
 #define BSP_SLOT_ADDR_GPIO_CNT	4
 
