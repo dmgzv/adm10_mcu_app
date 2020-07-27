@@ -434,12 +434,7 @@ error:
 }
 
 int32_t S29GL01GS_ProgramSector(S29GL01GS_T *Dev, uint32_t Addr, void *Buffer, uint32_t Size)
-{
-	uint16_t Data;
-	uint16_t *pdata = NULL;
-  uint32_t index  = 0;
-  uint32_t startaddress = 0;
-	
+{	
 	if ((!Dev) || (!Buffer))
 		return -1;
 	/*S29GL01GS do not allow to write more than 512 bytes in one request*/
