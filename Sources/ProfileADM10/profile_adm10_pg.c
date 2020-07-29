@@ -2813,12 +2813,12 @@ static void PROFILE_ADM10_ODU0PG_UpdateValues(PROFILE_T *Profile)
 							return;
 						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[j], &ODU0XCDst))
 							return;
-						if (ODU0XCSrc == PROFILE_ADM10_XC_CLIENT_ODU0(8 + PrimaryLineIdx, PrimaryODU0Idx))
+						if (ODU0XCSrc == PROFILE_ADM10_XC_CLIENT_ODU0(8 + (PrimaryLineIdx * 2), PrimaryODU0Idx))
 						{
 							Target = ODU0XCDst;
 							break;
 						}
-						if (ODU0XCDst == PROFILE_ADM10_XC_CLIENT_ODU0(8 + PrimaryLineIdx, PrimaryODU0Idx))
+						if (ODU0XCDst == PROFILE_ADM10_XC_CLIENT_ODU0(8 + (PrimaryLineIdx * 2), PrimaryODU0Idx))
 						{
 							Target = ODU0XCSrc;
 							break;
