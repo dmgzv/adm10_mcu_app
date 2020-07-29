@@ -82,9 +82,9 @@ typedef int sys_prot_t;
 
 #endif
 
-#define LWIP_PLATFORM_ASSERT(x) lwip_assert_failed() //do { if(!(x)) lwip_assert_failed(); } while(0)
+#define LWIP_PLATFORM_ASSERT(x) lwip_assert_failed(__FILE__, __LINE__) //do { if(!(x)) lwip_assert_failed(); } while(0)
 
-void lwip_assert_failed(void);
+void lwip_assert_failed(char* file, unsigned int line);
 
 #define LWIP_RAND() ((u32_t)rand())
 

@@ -387,9 +387,9 @@
   *         If expr is true, it returns no value.
   * @retval None
   */
-  #define assert_param(expr) ((expr) ? (void)0 : hal_assert_failed((uint8_t *)__FILE__, __LINE__))
+  #define assert_param(expr) ((expr) ? (void)0 : hal_assert_failed(__FILE__, __LINE__))
 /* Exported functions ------------------------------------------------------- */
-  void hal_assert_failed(uint8_t* file, uint32_t line);
+  void hal_assert_failed(char* file, unsigned int line);
 #else
   #define assert_param(expr) ((void)0U)
 #endif /* USE_FULL_ASSERT */    
