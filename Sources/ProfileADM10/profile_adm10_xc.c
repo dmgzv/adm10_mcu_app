@@ -79,7 +79,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8
 					return -1;	
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 			/*ODU1XC source values are fixed*/
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
 				return -1;
@@ -92,7 +92,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8
 			if (Src != *(uint32_t*)Value)
 				return -1;
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			if (i < 4)
 			{
 				/*First 4 ODU1XC source values are fixed*/
@@ -186,7 +186,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8
 				}					
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 			/*ODU1XC destination values are fixed*/
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
 				return -1;
@@ -199,7 +199,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8
 			if (Dst != *(uint32_t*)Value)
 				return -1;
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			if (i < 4)
 			{
 				/*First 4 ODU1XC destination values are fixed*/
@@ -299,7 +299,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8
 					return -1;	
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 			/*ODU0XC source is fixed*/
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
 				return -1;
@@ -312,7 +312,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8
 			if (Src != *(uint32_t*)Value)
 				return -1;
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			if (i < 8)
 			{
 				/*ODU0XC source is fixed*/
@@ -407,7 +407,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetDstValue(PROFILE_T *Profile, uint8
 				}					
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 			/*ODU0XC destination is fixed*/
 			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
 				return -1;
@@ -420,7 +420,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetDstValue(PROFILE_T *Profile, uint8
 			if (Dst != *(uint32_t*)Value)
 				return -1;
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			if (i < 8)
 			{
 				/*ODU0XC destination is fixed*/
@@ -551,7 +551,7 @@ static int32_t PROFILE_ADM10_XC_SetModeValueDependencies(PROFILE_T *Profile, uin
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], (uint32_t*)&ODU1XCSrcFactory[i]);
@@ -575,7 +575,7 @@ static int32_t PROFILE_ADM10_XC_SetModeValueDependencies(PROFILE_T *Profile, uin
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], (uint32_t*)&ODU0XCDstFactory[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5:			
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:			
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
 				if (i < 4)
@@ -625,7 +625,7 @@ static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profi
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], (uint32_t*)&ODU1XCSrcFactory[i]);
@@ -639,7 +639,7 @@ static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profi
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], (uint32_t*)&ODU1XCDstFactory[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5:			
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:			
 			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 			{
 				if (i < 4)
@@ -676,7 +676,7 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS:
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
 			{
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], (uint32_t*)&ODU0XCSrcFactory[i]);
@@ -690,7 +690,7 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], (uint32_t*)&ODU0XCDstFactory[i]);
 			}
 			break;
-		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5:			
+		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:			
 			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
 			{
 				if (i < 8)
@@ -1023,7 +1023,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 			}
 		}
 	}
-	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS)
 	{
 		/* Cross-connect is autoconfigured in FPGA */
 		for (Client = 0; Client < 16; Client++)
@@ -1039,7 +1039,7 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 			FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CTRL_SET(&fpga_client_agg_2x10_efec[Client / 8], Client % 8, FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CTRL_EN_MASK);
 		}
 	}
-	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 	{
 		/* Cross-connect is autoconfigured in FPGA */
 		for (Client = 0; Client < 16; Client++)

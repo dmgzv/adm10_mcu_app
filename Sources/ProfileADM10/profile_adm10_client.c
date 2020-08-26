@@ -997,7 +997,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return -1;
 	
-	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS))
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS))
 	{
 		if ((Idx % 2) == 0)
 			return 0;
@@ -1011,7 +1011,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 		if (*(uint32_t*)Value != PROFILE_ADM10_CL_SET_STATE_ENUM_OOS)
 			return -1;
 	}
-	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 	{
 		if (Idx < 8)
 		{
@@ -1069,7 +1069,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, 
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return -1;
 	
-	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS))
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS))
 	{
 		if (Idx % 2)
 		{
@@ -1082,7 +1082,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, 
 				return -1;
 		}
 	}
-	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 	{
 		if (Idx < 8)
 		{
@@ -1179,11 +1179,11 @@ static int32_t PROFILE_ADM10_CLIENT_SetModeValueDependencies(PROFILE_T *Profile,
 	{
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[i]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[i]);
-		if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC))
+		if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC))
 		{
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[i]);
 		}
-		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
+		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 		{
 			if (i < 8)
 			{
@@ -1218,11 +1218,11 @@ static int32_t PROFILE_ADM10_CLIENT_SetFactoryConfigValues(PROFILE_T *Profile, u
 	
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx]);
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx]);
-	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS))
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS))
 	{
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx]);
 	}
-	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 	{
 		if (Idx < 8)
 		{
@@ -1243,7 +1243,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetFactoryConfigValues(PROFILE_T *Profile, u
 	}
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx]);
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetALSModeIdx[Idx]);
-	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
+	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS)
 	{
 		OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
 		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
@@ -1254,7 +1254,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetFactoryConfigValues(PROFILE_T *Profile, u
 		OPU1Payload = PROFILE_ADM10_LN_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0;
 		PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
 	}
-	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 	{
 		if (Idx < 8)
 		{
@@ -1304,7 +1304,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetFactoryIdx[Idx + 1]);
 		}
 	}
-	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS)
 	{
 		if ((*(uint32_t*)Value) == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
 		{
@@ -1336,7 +1336,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx / 8][(Idx % 8) / 2], &OPU1Payload);
 		}
 	}
-	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 	{
 		if (Idx < 8)
 		{
@@ -1672,7 +1672,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_SET(&fpga_client_adm_10[i / 8], i % 8, FPGA_CLIENT_ADM_10_IFACE_PMASTATUS_LOOPBACK_SERIAL_MASK);
 			}
 		}
-		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_BS)
+		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS)
 		{
 			if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1)
 			{
@@ -1744,7 +1744,7 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_PMASTATUS_LOOPBACK_SET(&fpga_client_agg_2x10_efec[i / 8], i % 8, FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_PMASTATUS_LOOPBACK_SERIAL_MASK);
 			}
 		}
-		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10_BS_ADM_2_5)
+		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 		{
 			if (i < 8)
 			{
