@@ -62,6 +62,8 @@
 extern uint8_t SlotAddress;
 extern const BSP_DEV_T *Devices[];
 extern const uint32_t DevicesCnt;
+extern const BSP_DEV_T *Modules[];
+extern const uint32_t ModulesCnt;
 
 #define BSP_Reset HAL_NVIC_SystemReset
 void BSP_Init(void);

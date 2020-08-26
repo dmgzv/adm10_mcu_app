@@ -8,10 +8,6 @@
 #include "log.h"
 
 #define TFTP_BOOTLOADER_MSG_UPDATE				0
-#define TFTP_BOOTLOADER_MSG_ERROR					1
-#define TFTP_BOOTLOADER_MSG_INFO_DOWNLOAD	2
-#define TFTP_BOOTLOADER_MSG_INFO_VERIFY		3
-#define TFTP_BOOTLOADER_MSG_INFO_COMPLETE	4
 
 #define TFTP_BOOTLOADER_QUEUE_SIZE 10
 
@@ -55,14 +51,32 @@ static int32_t TFTP_BOOTLOADER_DownloadInfoReceiveCallback(void *Priv, uint16_t 
 	return -1;
 }
 
-static void TFTP_BOOTLOADER_CompleteInfo(uint32_t NextEvent)
+static int32_t TFTP_BOOTLOADER_DownloadInfo(void)
 {
-	LOG_Info("TFTP_BOOTLOADER", "", "", "Complete Info");
-	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_COMPLETE;
-	osMessagePut(TFTP_BOOTLOADER.MessageQId, NextEvent, 0);	
+	int32_t result;
+	ip_addr_t ip_addr;
+	
+	LOG_Info("TFTP_BOOTLOADER", "", "", "Download Info");
+	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD;
+	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER.Addr[0], TFTP_BOOTLOADER.Addr[1], TFTP_BOOTLOADER.Addr[2], TFTP_BOOTLOADER.Addr[3]);	
+	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER.Info.Name, &ip_addr, TFTP_BOOTLOADER_DownloadInfoReceiveCallback, NULL);
+	if (result == TFTP_CLIENT_TIMEOUT)
+	{
+		LOG_Error("TFTP_BOOTLOADER", "", "", "Download Info: Timeout Error");
+		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
+	}
+	else if (result != TFTP_CLIENT_OK)
+	{
+		LOG_Error("TFTP_BOOTLOADER", "", "", "Download Info: Size Error");
+		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
+	}
+	
+	LOG_Info("TFTP_BOOTLOADER", "", "", "Download Info: Complete");
+	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_COMPLETE;
+	return 0;
 }
 
-static void TFTP_BOOTLOADER_VerifyInfo(uint32_t NextEvent)
+static int32_t TFTP_BOOTLOADER_VerifyInfo(void)
 {
 	uint32_t i;
 	char *p;
@@ -102,40 +116,14 @@ static void TFTP_BOOTLOADER_VerifyInfo(uint32_t NextEvent)
 			goto error;
 	}
 	
-	TFTP_BOOTLOADER_CompleteInfo(NextEvent);	
-	return;
+	LOG_Info("TFTP_BOOTLOADER", "", "", "Verify Info: Complete");
+	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE;
+	return 0;
 
 error:
-	LOG_Info("TFTP_BOOTLOADER", "", "", "Verify Info: Error");
+	LOG_Error("TFTP_BOOTLOADER", "", "", "Verify Info: Error");
 	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY_ERROR;
-	osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
-	return;
-}
-
-static void TFTP_BOOTLOADER_DownloadInfo(uint32_t NextEvent)
-{
-	int32_t result;
-	ip_addr_t ip_addr;
-	
-	LOG_Info("TFTP_BOOTLOADER", "", "", "Download Info");
-	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER.Addr[0], TFTP_BOOTLOADER.Addr[1], TFTP_BOOTLOADER.Addr[2], TFTP_BOOTLOADER.Addr[3]);	
-	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER.Info.Name, &ip_addr, TFTP_BOOTLOADER_DownloadInfoReceiveCallback, NULL);
-	if (result == TFTP_CLIENT_OK)
-	{
-		TFTP_BOOTLOADER_VerifyInfo(NextEvent);
-	}
-	else if (result == TFTP_CLIENT_TIMEOUT)
-	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Info: Timeout Error");
-		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR;
-		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
-	}
-	else
-	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Info: Size Error");
-		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR;
-		osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
-	}
+	return -1;
 }
 
 
@@ -143,69 +131,105 @@ static void TFTP_BOOTLOADER_Thread(void const *argument)
 {
 	uint32_t i, j;
 	osEvent Event;
+	uint32_t IdleCompleteCntr, DownloadCompleteCntr, UpdateCompleteCntr;
 	
 	while(1)
   {
 event_wait:
 		Event = osMessageGet(TFTP_BOOTLOADER.MessageQId, osWaitForever);
 		if (Event.status != osEventMessage)
-			continue;
+			goto error;
+		if (TFTP_BOOTLOADER.Status == TFTP_BOOTLOADER_STATUS_ERROR)
+			goto event_wait;
 		
-		if (Event.value.v == TFTP_BOOTLOADER_MSG_ERROR)
+		if (Event.value.v == TFTP_BOOTLOADER_MSG_UPDATE)
 		{
-			LOG_Error("TFTP_BOOTLOADER", "", "", "Update Terminated");
-			TFTP_BOOTLOADER.Status = TFTP_BOOTLOADER_STATUS_ERROR;
-		}		
-		if (Event.value.v == TFTP_BOOTLOADER_MSG_INFO_DOWNLOAD)
-		{
-			TFTP_BOOTLOADER_DownloadInfo(TFTP_BOOTLOADER_MSG_INFO_COMPLETE);
-		}
-		else if (Event.value.v == TFTP_BOOTLOADER_MSG_INFO_COMPLETE)
-		{
-			/*Trigger all componets to download and verify their files*/
-			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD, 0);
-			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD, 0);
-		}
-		else if ((Event.value.v == TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_ERROR) || \
-			(Event.value.v == TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_ERROR))
-		{
-			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MSG_ERROR, 0);
-		}
-		else if ((Event.value.v == TFTP_BOOTLOADER_MCU_MSG_DOWNLOAD_COMPLETE) || \
-			(Event.value.v == TFTP_BOOTLOADER_FPGA_MSG_DOWNLOAD_COMPLETE))
-		{
-			/*Make sure that all files for all componets are downloaded and verified*/
+			if (TFTP_BOOTLOADER_DownloadInfo())
+				goto error;
+			if (TFTP_BOOTLOADER_VerifyInfo())
+				goto error;
+			
+			IdleCompleteCntr = 0;
 			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
 			{
-				for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
-				{
-					if (TFTP_BOOTLOADER.Components[i]->Files[j].Status != TFTP_BOOTLOADER_FILE_STATUS_COMPLETE)
-						goto event_wait;
-				}
+				osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_IDLE(TFTP_BOOTLOADER_COMPONENTS[i]), 0);
 			}
-			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_FPGA_MSG_UPDATE, 0);
-			osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MCU_MSG_UPDATE, 0);
+			goto event_wait;
 		}
-		else if (Event.value.v == TFTP_BOOTLOADER_MCU_MSG_UPDATE_COMPLETE)
+		
+		for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
 		{
-			/*Make sure that all componets are updated*/
-			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
-			{
-				if (TFTP_BOOTLOADER.Components[i]->Status != TFTP_BOOTLOADER_STATUS_COMPLETE)
-					goto event_wait;
-			}
-			LOG_Error("TFTP_BOOTLOADER", "", "", "Update Complete");
-			TFTP_BOOTLOADER.Status = TFTP_BOOTLOADER_STATUS_COMPLETE;
-			osDelay(3000);
-			BSP_Reset();
-		}
-		else
-		{
-			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
+			if (Event.value.v == TFTP_BOOTLOADER_COMPONENT_MSG_IDLE(TFTP_BOOTLOADER_COMPONENTS[i]))
 			{
 				TFTP_BOOTLOADER.Components[i]->ProcessEvent(Event.value.v);
+				goto event_wait;
+			}
+			else if (Event.value.v == TFTP_BOOTLOADER_COMPONENT_MSG_IDLE_COMPLETE(TFTP_BOOTLOADER_COMPONENTS[i]))
+			{
+				IdleCompleteCntr++;
+				if (IdleCompleteCntr == TFTP_BOOTLOADER.ComponentsCnt)
+				{
+					DownloadCompleteCntr = 0;
+					LOG_Info("TFTP_BOOTLOADER", "", "", "Idle: Complete");
+					for (j = 0; j < TFTP_BOOTLOADER.ComponentsCnt; j++)
+					{
+						osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_DOWNLOAD(TFTP_BOOTLOADER_COMPONENTS[j]), 0);
+					}
+				}
+				goto event_wait;
+			}
+			else if (Event.value.v == TFTP_BOOTLOADER_COMPONENT_MSG_IDLE_ERROR(TFTP_BOOTLOADER_COMPONENTS[i]))
+			{
+				goto error;
+			}
+			else if (Event.value.v == TFTP_BOOTLOADER_COMPONENT_MSG_DOWNLOAD(TFTP_BOOTLOADER_COMPONENTS[i]))
+			{
+				TFTP_BOOTLOADER.Components[i]->ProcessEvent(Event.value.v);
+				goto event_wait;
+			}
+			else if (Event.value.v == TFTP_BOOTLOADER_COMPONENT_MSG_DOWNLOAD_COMPLETE(TFTP_BOOTLOADER_COMPONENTS[i]))
+			{
+				DownloadCompleteCntr++;
+				if (DownloadCompleteCntr == TFTP_BOOTLOADER.ComponentsCnt)
+				{
+					UpdateCompleteCntr = 0;
+					LOG_Info("TFTP_BOOTLOADER", "", "", "Download: Complete");
+					for (j = 0; j < TFTP_BOOTLOADER.ComponentsCnt; j++)
+					{
+						osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_UPDATE(TFTP_BOOTLOADER_COMPONENTS[j]), 0);
+					}
+				}
+				goto event_wait;
+			}
+			else if (Event.value.v == TFTP_BOOTLOADER_COMPONENT_MSG_DOWNLOAD_ERROR(TFTP_BOOTLOADER_COMPONENTS[i]))
+			{
+				goto error;
+			}
+			else if (Event.value.v == TFTP_BOOTLOADER_COMPONENT_MSG_UPDATE(TFTP_BOOTLOADER_COMPONENTS[i]))
+			{
+				TFTP_BOOTLOADER.Components[i]->ProcessEvent(Event.value.v);
+				goto event_wait;
+			}
+			else if (Event.value.v == TFTP_BOOTLOADER_COMPONENT_MSG_UPDATE_COMPLETE(TFTP_BOOTLOADER_COMPONENTS[i]))
+			{
+				UpdateCompleteCntr++;
+				if (UpdateCompleteCntr == TFTP_BOOTLOADER.ComponentsCnt)
+				{
+					UpdateCompleteCntr = 0;
+					LOG_Info("TFTP_BOOTLOADER", "", "", "Update: Complete");
+					TFTP_BOOTLOADER.Status = TFTP_BOOTLOADER_STATUS_COMPLETE;
+					osDelay(3000);
+					BSP_Reset();
+				}
+				goto event_wait;
 			}
 		}
+		
+		LOG_Error("TFTP_BOOTLOADER", "", "", "Update: Unknown Event");
+error:
+		LOG_Error("TFTP_BOOTLOADER", "", "", "Update: Terminated");
+		TFTP_BOOTLOADER.Status = TFTP_BOOTLOADER_STATUS_ERROR;
+		goto event_wait;
 	}
 }
 
@@ -248,23 +272,22 @@ int32_t TFTP_BOOTLOADER_Update(char* Dir, char *Addr)
 	
 	for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
 	{
-		TFTP_BOOTLOADER.Components[i]->Status = TFTP_BOOTLOADER_STATUS_IN_PROGRESS;
+		TFTP_BOOTLOADER.Components[i]->Status = TFTP_BOOTLOADER_STATUS_IDLE;
 		TFTP_BOOTLOADER.Components[i]->Addr = TFTP_BOOTLOADER.Addr;
 		TFTP_BOOTLOADER.Components[i]->Dir = TFTP_BOOTLOADER.Dir;
 		TFTP_BOOTLOADER.Components[i]->Version[0] = 0;
 		TFTP_BOOTLOADER.Components[i]->MessageQId = TFTP_BOOTLOADER.MessageQId;
-		TFTP_BOOTLOADER.Components[i]->FilesCnt = 0;
 		for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 		{
 			TFTP_BOOTLOADER.Components[i]->Files[j].Name[0] = 0;
 			TFTP_BOOTLOADER.Components[i]->Files[j].Size = 0;
-			TFTP_BOOTLOADER.Components[i]->Files[j].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD;
+			TFTP_BOOTLOADER.Components[i]->Files[j].Status = TFTP_BOOTLOADER_FILE_STATUS_IDLE;
 		}
 	}
 	
 	TFTP_BOOTLOADER.Status = TFTP_BOOTLOADER_STATUS_IN_PROGRESS;
 		
-	osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MSG_INFO_DOWNLOAD, 0);
+	osMessagePut(TFTP_BOOTLOADER.MessageQId, TFTP_BOOTLOADER_MSG_UPDATE, 0);
 	
 	osMutexRelease(TFTP_BOOTLOADER.MutexId);	
 	return 0;

@@ -1353,21 +1353,39 @@ void http_server_serve_get_api_v1_system_hardware(struct netconn *conn, HTTP_REQ
 	}
 	RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t],\r\n");	
 	RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"devices\" : [\r\n");
-	for (i = 0; i < DevicesCnt; i++)
+	for (i = 0; i < (DevicesCnt + ModulesCnt); i++)
 	{
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t{\r\n");
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"name\" : \"%s\",\r\n", Devices[i]->DevName);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"id\" : \"%s\",\r\n", Devices[i]->DevId);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"%s\",\r\n", BSP_DEV_GET_STATE_STR(Devices[i]));
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cnt\" : \"%d\",\r\n", Devices[i]->InitCnt);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_err\" : \"%d\",\r\n", Devices[i]->InitErr);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cont_err\" : \"%d\",\r\n", Devices[i]->InitContErr);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cont_err_thr\" : \"%d\",\r\n", Devices[i]->InitContErrThr);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cnt\" : \"%d\",\r\n", Devices[i]->UpdateCnt);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_err\" : \"%d\",\r\n", Devices[i]->UpdateErr);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cont_err\" : \"%d\",\r\n", Devices[i]->UpdateContErr);
-		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cont_err_thr\" : \"%d\"\r\n", Devices[i]->UpdateContErrThr);
-		if (i == (DevicesCnt - 1))
+		if (i < DevicesCnt)
+		{
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t{\r\n");
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"name\" : \"%s\",\r\n", Devices[i]->DevName);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"id\" : \"%s\",\r\n", Devices[i]->DevId);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"%s\",\r\n", BSP_DEV_GET_STATE_STR(Devices[i]));
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cnt\" : \"%d\",\r\n", Devices[i]->InitCnt);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_err\" : \"%d\",\r\n", Devices[i]->InitErr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cont_err\" : \"%d\",\r\n", Devices[i]->InitContErr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cont_err_thr\" : \"%d\",\r\n", Devices[i]->InitContErrThr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cnt\" : \"%d\",\r\n", Devices[i]->UpdateCnt);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_err\" : \"%d\",\r\n", Devices[i]->UpdateErr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cont_err\" : \"%d\",\r\n", Devices[i]->UpdateContErr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cont_err_thr\" : \"%d\"\r\n", Devices[i]->UpdateContErrThr);
+		}
+		else
+		{
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t{\r\n");
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"name\" : \"%s\",\r\n", Modules[i - DevicesCnt]->DevName);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"id\" : \"%s\",\r\n", Modules[i - DevicesCnt]->DevId);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"%s\",\r\n", BSP_DEV_GET_STATE_STR(Modules[i - DevicesCnt]));
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cnt\" : \"%d\",\r\n", Modules[i - DevicesCnt]->InitCnt);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_err\" : \"%d\",\r\n", Modules[i - DevicesCnt]->InitErr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cont_err\" : \"%d\",\r\n", Modules[i - DevicesCnt]->InitContErr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"init_cont_err_thr\" : \"%d\",\r\n", Modules[i - DevicesCnt]->InitContErrThr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cnt\" : \"%d\",\r\n", Modules[i - DevicesCnt]->UpdateCnt);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_err\" : \"%d\",\r\n", Modules[i - DevicesCnt]->UpdateErr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cont_err\" : \"%d\",\r\n", Modules[i - DevicesCnt]->UpdateContErr);
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"update_cont_err_thr\" : \"%d\"\r\n", Modules[i - DevicesCnt]->UpdateContErrThr);
+		}
+		if (i == (DevicesCnt + ModulesCnt - 1))
 			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t}\r\n");
 		else
 			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t},\r\n");
@@ -1976,26 +1994,37 @@ static void http_server_serve_get_api_v1_system_update_add_file_to_response(TFTP
 	RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"name\" : \"%s\",\r\n", File->Name);
 	switch (File->Status)
 	{
+		case TFTP_BOOTLOADER_FILE_STATUS_IDLE:
+		case TFTP_BOOTLOADER_FILE_STATUS_IDLE_COMPLETE:
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Idle\",\r\n");
+			break;
+		case TFTP_BOOTLOADER_FILE_STATUS_IDLE_TIMEOUT:
+		case TFTP_BOOTLOADER_FILE_STATUS_IDLE_ERROR:
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Error\",\r\n");
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"error\" : \"Internal error\",\r\n");
+			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD:
+		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_COMPLETE:
 			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Download\",\r\n");
+			break;
+		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT:
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Error\",\r\n");
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"error\" : \"Download timeout\",\r\n");
+			break;
+		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR:
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Error\",\r\n");
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"error\" : \"Download error\",\r\n");
 			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_VERIFY:
 			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Verify\",\r\n");
 			break;
-		case TFTP_BOOTLOADER_FILE_STATUS_COMPLETE:
+		case TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE:
 			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Complete\",\r\n");
 			break;
-		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT_ERROR:
-			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Error\",\r\n");
-			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"error\" : \"Download timeout\",\r\n");
-			break;
-		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_SIZE_ERROR:
-			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Error\",\r\n");
-			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"error\" : \"Invalid file size\",\r\n");
-			break;
+		case TFTP_BOOTLOADER_FILE_STATUS_VERIFY_TIMEOUT:
 		case TFTP_BOOTLOADER_FILE_STATUS_VERIFY_ERROR:
 			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Error\",\r\n");
-			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"error\" : \"Invalid file data\",\r\n");
+			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"error\" : \"Verify error\",\r\n");
 			break;
 		default:
 			RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\t\t\"status\" : \"Unknown\",\r\n");

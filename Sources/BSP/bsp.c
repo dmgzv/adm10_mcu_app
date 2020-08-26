@@ -56,6 +56,10 @@ const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&pca9536[17],
 	(BSP_DEV_T*)&pca9536[18],
 	(BSP_DEV_T*)&pca9536[19],
+};
+const uint32_t DevicesCnt = sizeof(Devices) / sizeof(Devices[0]);
+
+const BSP_DEV_T *Modules[] = {
 	(BSP_DEV_T*)&sfp[0],
 	(BSP_DEV_T*)&sfp[1],
 	(BSP_DEV_T*)&sfp[2],
@@ -77,7 +81,7 @@ const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&sfp[18],
 	(BSP_DEV_T*)&sfp[19],
 };
-const uint32_t DevicesCnt = sizeof(Devices) / sizeof(Devices[0]);
+const uint32_t ModulesCnt = sizeof(Modules) / sizeof(Modules[0]);
 
 void os_assert_failed(char* file, unsigned int line)
 {
