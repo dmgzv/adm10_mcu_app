@@ -36,6 +36,8 @@ PCA9548A_T pca9548a[BSP_PCA9548A_CNT] =
 	{
 		.DevName = PCA9548A_DEV_NAME,
 		.DevId = BSP_PCA9548A_1_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
 		.I2C = BSP_PCA9548A_1_I2C,
 		.Addr = BSP_PCA9548A_1_ADDR,
 		.PinCtrl = NULL,
@@ -43,6 +45,8 @@ PCA9548A_T pca9548a[BSP_PCA9548A_CNT] =
 	{
 		.DevName = PCA9548A_DEV_NAME,
 		.DevId = BSP_PCA9548A_2_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
 		.I2C = BSP_PCA9548A_2_I2C,
 		.Addr = BSP_PCA9548A_2_ADDR,
 		.PinCtrl = NULL,
@@ -50,6 +54,8 @@ PCA9548A_T pca9548a[BSP_PCA9548A_CNT] =
 	{
 		.DevName = PCA9548A_DEV_NAME,
 		.DevId = BSP_PCA9548A_3_ID,
+		.InitContErrThr = 3,
+		.UpdateContErrThr = 3,
 		.I2C = BSP_PCA9548A_3_I2C,
 		.Addr = BSP_PCA9548A_3_ADDR,
 		.PinCtrl = NULL,
