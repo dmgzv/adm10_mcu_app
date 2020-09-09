@@ -64,11 +64,13 @@ static int32_t TFTP_BOOTLOADER_DownloadInfo(void)
 	{
 		LOG_Error("TFTP_BOOTLOADER", "", "", "Download Info: Timeout Error");
 		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
+		return -1;
 	}
 	else if (result != TFTP_CLIENT_OK)
 	{
 		LOG_Error("TFTP_BOOTLOADER", "", "", "Download Info: Size Error");
 		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
+		return -1;
 	}
 	
 	LOG_Info("TFTP_BOOTLOADER", "", "", "Download Info: Complete");
