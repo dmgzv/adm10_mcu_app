@@ -81,9 +81,9 @@ error:
 
 static int32_t TFTP_BOOTLOADER_FPGA_IdleUpdate(uint32_t Idx)
 {
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Idle Update %d", Idx);
+	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Idle Update %d", Idx + 1);
 	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_IDLE;
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Idle Update %d: Complete", Idx);
+	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Idle Update %d: Complete", Idx + 1);
 	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_IDLE_COMPLETE;
 	return 0;
 }
@@ -109,22 +109,23 @@ static int32_t TFTP_BOOTLOADER_FPGA_DownloadUpdate(uint32_t Idx)
 	ip_addr_t ip_addr;
 	
 	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d", Idx + 1);
+	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD;
 	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_FPGA.Addr[0], TFTP_BOOTLOADER_FPGA.Addr[1], TFTP_BOOTLOADER_FPGA.Addr[2], TFTP_BOOTLOADER_FPGA.Addr[3]);
 	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_FPGA_Files[Idx].Name, &ip_addr, TFTP_BOOTLOADER_FPGA_DownloadUpdateReceiveCallback, (void*)Idx);
 	if (result == TFTP_CLIENT_TIMEOUT)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Timeout", Idx);
+		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Timeout", Idx + 1);
 		TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
 		return -1;
 	}
 	else if (result != TFTP_CLIENT_OK)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Error", Idx);
+		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Error", Idx + 1);
 		TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
 		return -1;
 	}	
 	
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Complete", Idx);
+	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Complete", Idx + 1);
 	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_COMPLETE;
 	return 0;
 }
