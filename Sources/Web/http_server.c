@@ -2074,8 +2074,11 @@ static void http_server_serve_get_api_v1_system_update(struct netconn *conn, HTT
 		{
 			for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 			{
-				RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, ",\r\n");
-				http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Components[i]->Files[j]);
+				if (TFTP_BOOTLOADER.Components[i]->Files[j].Name[0] != 0)
+				{
+					RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, ",\r\n");
+					http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Components[i]->Files[j]);
+				}
 			}
 		}
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\r\n");
@@ -2090,8 +2093,11 @@ static void http_server_serve_get_api_v1_system_update(struct netconn *conn, HTT
 		{
 			for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 			{
-				RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, ",\r\n");
-				http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Components[i]->Files[j]);
+				if (TFTP_BOOTLOADER.Components[i]->Files[j].Name[0] != 0)
+				{
+					RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, ",\r\n");
+					http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Components[i]->Files[j]);
+				}
 			}
 		}
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\r\n");
