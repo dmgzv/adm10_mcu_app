@@ -2050,12 +2050,11 @@ static void http_server_serve_get_api_v1_system_update(struct netconn *conn, HTT
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"status\" : \"Download\",\r\n");
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"files\" : [\r\n");
 		http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Info);
-		for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
+		if (TFTP_BOOTLOADER.Info.Status == TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE)
 		{
-			
-			for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
+			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
 			{
-				if (TFTP_BOOTLOADER.Components[i]->Files[j].Name[0] != 0)
+				for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 				{
 					RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, ",\r\n");
 					http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Components[i]->Files[j]);
@@ -2070,11 +2069,11 @@ static void http_server_serve_get_api_v1_system_update(struct netconn *conn, HTT
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"status\" : \"Complete\",\r\n");
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"files\" : [\r\n");
 		http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Info);
-		for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
+		if (TFTP_BOOTLOADER.Info.Status == TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE)
 		{
-			for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
+			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
 			{
-				if (TFTP_BOOTLOADER.Components[i]->Files[j].Name[0] != 0)
+				for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 				{
 					RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, ",\r\n");
 					http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Components[i]->Files[j]);
@@ -2089,11 +2088,11 @@ static void http_server_serve_get_api_v1_system_update(struct netconn *conn, HTT
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"status\" : \"Error\",\r\n");
 		RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, "\t\"files\" : [\r\n");
 		http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Info);
-		for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
+		if (TFTP_BOOTLOADER.Info.Status == TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE)
 		{
-			for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
+			for (i = 0; i < TFTP_BOOTLOADER.ComponentsCnt; i++)
 			{
-				if (TFTP_BOOTLOADER.Components[i]->Files[j].Name[0] != 0)
+				for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 				{
 					RESPONCE_BODY_LEN += snprintf (&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY) - RESPONCE_BODY_LEN, ",\r\n");
 					http_server_serve_get_api_v1_system_update_add_file_to_response(&TFTP_BOOTLOADER.Components[i]->Files[j]);
