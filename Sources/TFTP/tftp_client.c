@@ -1,4 +1,5 @@
 #include "tftp_client.h"
+#include "log.h"
 #include <string.h>
 
 #define TFTP_EVENT_IN_PROGRESS	0
@@ -14,6 +15,10 @@ static int (*TFTP_CLIENT_ReceiveCallback)(void *Priv, uint16_t Block, char *Data
 static void *TFTP_CLIENT_Priv;
 static osMessageQId TFTP_CLIENT_MessageQId;
 static osMutexId TFTP_CLIENT_MutexId;
+static ip_addr_t *TFTP_CLIENT_Addr;
+static uint16_t TFTP_CLIENT_Block;
+static uint32_t TFTP_CLIENT_TimeoutCntr;
+static uint32_t TFTP_CLIENT_TimeoutTotalCntr;
 
 static TFTP_OPCODE_T TFTP_CLIENT_GetOpcode(char *buf)
 {
@@ -90,24 +95,27 @@ static void __TFTP_CLIENT_ReceiveCallback(void *arg, struct udp_pcb *upcb, struc
 		block = ntohs(((uint16_t*)pkt_buf->payload)[1]);
 		if (TFTP_CLIENT_ReceiveCallback)
 		{
-			if (!TFTP_CLIENT_ReceiveCallback(TFTP_CLIENT_Priv, block, &((char*)pkt_buf->payload)[4], pkt_buf->len - TFTP_DATA_PKT_HDR_LEN))
+			if (TFTP_CLIENT_Block != block)
 			{
-				TFTP_CLIENT_SendAck(upcb, block, addr, port);
-				if (pkt_buf->len == TFTP_DATA_PKT_LEN_MAX)
+				if (TFTP_CLIENT_ReceiveCallback(TFTP_CLIENT_Priv, block, &((char*)pkt_buf->payload)[4], pkt_buf->len - TFTP_DATA_PKT_HDR_LEN))
 				{
-					osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_IN_PROGRESS, 0);
+					osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_ERROR, 0);
+					goto exit;
 				}
-				else
-				{
-					osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_COMPLETE, 0);
-				}
+			}
+			TFTP_CLIENT_Block = block;
+			TFTP_CLIENT_SendAck(upcb, block, addr, port);
+			if (pkt_buf->len == TFTP_DATA_PKT_LEN_MAX)
+			{
+				osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_IN_PROGRESS, 0);
 			}
 			else
 			{
-				osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_ERROR, 0);
+				osMessagePut(TFTP_CLIENT_MessageQId, TFTP_EVENT_COMPLETE, 0);
 			}
 		}
 	}
+exit:
 	pbuf_free(pkt_buf);
 }
 
@@ -157,7 +165,12 @@ int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int (*ReceiveC
 		return TFTP_CLIENT_ERROR;
 	
 	osMutexWait(TFTP_CLIENT_MutexId, osWaitForever);
-
+	LOG_Info("TFTP", "CLIENT", "", "Download");
+	
+	TFTP_CLIENT_Addr = addr;
+	TFTP_CLIENT_Block = 0;
+	TFTP_CLIENT_TimeoutCntr = 0;
+	TFTP_CLIENT_TimeoutTotalCntr = 0;
 	TFTP_CLIENT_ReceiveCallback = ReceiveCallback;
 	TFTP_CLIENT_Priv = Priv;
 	TFTP_CLIENT_SendReadRequest(TFTP_CLIENT_udp_pcb, filename, addr, TFTP_PORT);
@@ -168,22 +181,45 @@ in_progress:
 		goto timeout;
 	
 	if (evt.value.v == TFTP_EVENT_IN_PROGRESS)
+	{
+		TFTP_CLIENT_TimeoutCntr = 0;
 		goto in_progress;
+	}
 	else if (evt.value.v != TFTP_EVENT_COMPLETE)
 		goto error;
 	
+	LOG_Info("TFTP", "CLIENT", "", "Timeouts: %d", TFTP_CLIENT_TimeoutTotalCntr);
+	LOG_Info("TFTP", "CLIENT", "", "Download: Complete");
 	osMutexRelease(TFTP_CLIENT_MutexId);
 	return 0;
 	
 error:
 	TFTP_CLIENT_ReceiveCallback = NULL;
 	TFTP_CLIENT_Priv = NULL;
+	LOG_Info("TFTP", "CLIENT", "", "Timeouts: %d", TFTP_CLIENT_TimeoutTotalCntr);
+	LOG_Error("TFTP", "CLIENT", "", "Download: Error");
 	osMutexRelease(TFTP_CLIENT_MutexId);
 	return TFTP_CLIENT_ERROR;
 	
 timeout:
+	if (TFTP_CLIENT_TimeoutCntr < TFTP_TIMEOUT_THR)
+	{
+		if (TFTP_CLIENT_Block != 0)
+		{
+			TFTP_CLIENT_SendAck(TFTP_CLIENT_udp_pcb, TFTP_CLIENT_Block, TFTP_CLIENT_Addr, TFTP_PORT);
+		}
+		else
+		{
+			TFTP_CLIENT_SendReadRequest(TFTP_CLIENT_udp_pcb, filename, addr, TFTP_PORT);
+		}
+		TFTP_CLIENT_TimeoutCntr++;
+		TFTP_CLIENT_TimeoutTotalCntr++;
+		goto in_progress;
+	}
 	TFTP_CLIENT_ReceiveCallback = NULL;
 	TFTP_CLIENT_Priv = NULL;
+	LOG_Info("TFTP", "CLIENT", "", "Timeouts: %d", TFTP_CLIENT_TimeoutTotalCntr);
+	LOG_Error("TFTP", "CLIENT", "", "Download: Timeout");
 	osMutexRelease(TFTP_CLIENT_MutexId);
 	return TFTP_CLIENT_TIMEOUT;
 }
