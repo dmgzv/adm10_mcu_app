@@ -5,18 +5,18 @@
 #include "stdio.h"
 #include "bsp.h"
 #include "log.h"
-#include "profile_iface.h"
-#include "profile_flash.h"
+//#include "profile_iface.h"
+//#include "profile_flash.h"
 #include "tftp_client.h"
 #include "bootloader.h"
 #include "http_server_files.h"
 
 extern BOOTLOADER_T Bootloader;
-extern PROFILE_FLASH_T ProfileFlash;
+//extern PROFILE_FLASH_T ProfileFlash;
 
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
-static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+//static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 #ifdef BSP_CONFIG_USE_LOG
 static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 #endif
@@ -40,7 +40,7 @@ const SHELL_CMD_T ShellCmdList[] =
 {
 	{ "system", 	"System information", &SHELL_CMD_SystemCallback},
 	{ "info", 		"Project information", &SHELL_CMD_InfoCallback},
-	{ "iface", 		"Profile iface information", &SHELL_CMD_IfaceCallback},
+//	{ "iface", 		"Profile iface information", &SHELL_CMD_IfaceCallback},
 #ifdef BSP_CONFIG_USE_LOG
 	{ "log", 			"Log control", &SHELL_CMD_LOGCallback},
 #endif
@@ -118,7 +118,7 @@ static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t C
 	}
 	SHELL_Transmit(Shell, "Time: %d s\r", osKernelSysTick() / 1000);
 }
-
+/*
 extern PROFILE_IFACE_T ProfileIfaceUart4;
 extern PROFILE_IFACE_T ProfileIfaceUart5;
 
@@ -139,7 +139,7 @@ static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t 
 	SHELL_Transmit(Shell, "Max Transmit Time: %d ms\r", ProfileIfaceUart5.MaxTransmitTime);
 	SHELL_Transmit(Shell, "Max Transmit Time Cmd: 0x%02x\r", ProfileIfaceUart5.MaxTransmitTimeCommand);
 }
-
+*/
 #ifdef BSP_CONFIG_USE_LOG
 static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
@@ -1720,10 +1720,11 @@ static int32_t SHELL_CMD_FLASH_LOAD_WEB_TFTP_ReceiveCallback(void *Priv, uint16_
 
 static int32_t SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
+/*
 	uint32_t DataAddr;
 	uint32_t TotalDataSize;
 	uint32_t Blocks;
-	
+
 	if ((((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize) < PROFILE_FLASH_LANG_RECORD_BODY_SIZE)
 	{
 		DataAddr = (Block - 1) * TFTP_DATA_LEN_MAX;	
@@ -1738,6 +1739,7 @@ static int32_t SHELL_CMD_FLASH_LOAD_LANGPACK_TFTP_ReceiveCallback(void *Priv, ui
 		}
 		return 0;
 	}
+*/
 	return -1;
 }
 

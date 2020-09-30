@@ -1,108 +1,909 @@
-#include "profile_adm10_bitmsks.h"
+﻿#include "profile_adm10_bitmsks.h"
 
-const PROFILE_BITMSK_T PROFILE_ADM10_POWER_ALARMS_BITMSK[PROFILE_ADM10_POWER_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_POWER_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_A, PROFILE_COLOR_TYPE_NORMAL }, 
-    { PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B, PROFILE_COLOR_TYPE_NORMAL }, 
-    { PROFILE_ADM10_POWER_ALARMS_BITMSK_0V9, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_POWER_ALARMS_BITMSK_0V95, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_POWER_ALARMS_BITMSK_1V8, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_POWER_ALARMS_BITMSK_3V3, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_POWER_ALARMS_BITMSK_12V, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2049_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = -1,
+	},
+	{
+		.Name = "48V_A",
+		.Number = 0,
+		.Color = -1,
+	},
+	{
+		.Name = "48V_B",
+		.Number = 1,
+		.Color = -1,
+	},
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_HW_ALARMS_BITMSK[PROFILE_ADM10_HW_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_AT45DB641E_D94, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_DIM3R3400_A5, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9536_D107, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_UCD90120A_D28, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_GDT080A_A6, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_GDT080A_A7, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_SI5332_D83, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_SI5332_D84, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_MAXV_D85, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_LN_D92, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_1_D88, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_FPGA_CL_2_D90, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9548_D72, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9548_D73, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9548_D74, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_PCAL6624_D67, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_PCAL6624_D58, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_PCAL6624_D57, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_HW_ALARMS_BITMSK_KSZ8895_D99, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2049 = {
+	.Values = PROFILE_ADM10_BITMSK_2049_Values,
+	.ValuesCnt = 3,
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_LN_OTU_ALARMS_BITMSK[PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_LOS, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_LOF, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_LOM, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_BIP, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_IAE, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_BEI_BIAE, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_BDI, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_SD, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_OTU_ALARMS_BITMSK_SM_SF, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2050_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = -1,
+	},
+	{
+		.Name = "AT45DB641E",
+		.Number = 0,
+		.Color = -1,
+	},
+	{
+		.Name = "DIM3R3400",
+		.Number = 1,
+		.Color = -1,
+	},
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_LN_ODU_ALARMS_BITMSK[PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LOFLOM, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_AIS, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_OCI, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_LCK, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BIP, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BEI, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_BDI, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SD, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_LN_ODU_ALARMS_BITMSK_PM_SF, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2050 = {
+	.Values = PROFILE_ADM10_BITMSK_2050_Values,
+	.ValuesCnt = 3,
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_LN_OPU_ALARMS_BITMSK[PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_PLM, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_LN_OPU_ALARMS_BITMSK_CSF, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2051_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOS",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "LOF",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "LOM",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "SM-BIP",
+		.Number = 4,
+		.Color = 1,
+	},
+	{
+		.Name = "SM-BIAE",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "SM-BEI/BIAE",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "SM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "SM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "SM-SD",
+		.Number = 8,
+		.Color = 1,
+	},
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK[PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_LOS, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_LOF, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_RS_BIP, PROFILE_COLOR_TYPE_DEGRADE }, 
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2051 = {
+	.Values = PROFILE_ADM10_BITMSK_2051_Values,
+	.ValuesCnt = 10,
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_CL_ETH_ALARMS_BITMSK[PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_LOS, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_LINK_DOWN, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_FCS, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_LOCAL_FAULT, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_REMOTE_FAULT, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2052_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_CL_OTU_ALARMS_BITMSK[PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_LOS, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_LOF, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_LOM, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_SM_BIP, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_SM_IAE, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_SM_BEI_BIAE, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_SM_BDI, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_SM_SD, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_OTU_ALARMS_BITMSK_SM_SF, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2052 = {
+	.Values = PROFILE_ADM10_BITMSK_2052_Values,
+	.ValuesCnt = 13,
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_CL_ODU_ALARMS_BITMSK[PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_LOFLOM, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_AIS, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_OCI, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_LCK, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_PM_BIP, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_PM_BEI, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_PM_BDI, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_PM_SD, PROFILE_COLOR_TYPE_DEGRADE }, 
-    { PROFILE_ADM10_CL_ODU_ALARMS_BITMSK_PM_SF, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2053_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
 };
-const PROFILE_BITMSK_T PROFILE_ADM10_CL_OPU_ALARMS_BITMSK[PROFILE_ADM10_CL_OPU_ALARMS_BITMSK_CNT + 1] = { 
-    { PROFILE_ADM10_CL_OPU_ALARMS_BITMSK_CNT, PROFILE_COLOR_TYPE_NORMAL },
-    { PROFILE_ADM10_CL_OPU_ALARMS_BITMSK_PLM, PROFILE_COLOR_TYPE_FAILURE }, 
-    { PROFILE_ADM10_CL_OPU_ALARMS_BITMSK_CSF, PROFILE_COLOR_TYPE_FAILURE }, 
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2053 = {
+	.Values = PROFILE_ADM10_BITMSK_2053_Values,
+	.ValuesCnt = 13,
 };
-
-
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2054_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2054 = {
+	.Values = PROFILE_ADM10_BITMSK_2054_Values,
+	.ValuesCnt = 13,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2055_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOS",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "LOF",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "LOM",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "SM-BIP",
+		.Number = 4,
+		.Color = 1,
+	},
+	{
+		.Name = "SM-BIAE",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "SM-BEI/BIAE",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "SM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "SM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "SM-SD",
+		.Number = 8,
+		.Color = 1,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2055 = {
+	.Values = PROFILE_ADM10_BITMSK_2055_Values,
+	.ValuesCnt = 10,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2056_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2056 = {
+	.Values = PROFILE_ADM10_BITMSK_2056_Values,
+	.ValuesCnt = 13,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2057_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2057 = {
+	.Values = PROFILE_ADM10_BITMSK_2057_Values,
+	.ValuesCnt = 13,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2058_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOS",
+		.Number = 0,
+		.Color = 2,
+	},
+	{
+		.Name = "LOF",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "RS-BIP",
+		.Number = 2,
+		.Color = 1,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2058 = {
+	.Values = PROFILE_ADM10_BITMSK_2058_Values,
+	.ValuesCnt = 4,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2059_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2059 = {
+	.Values = PROFILE_ADM10_BITMSK_2059_Values,
+	.ValuesCnt = 13,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2060_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOS",
+		.Number = 0,
+		.Color = 2,
+	},
+	{
+		.Name = "LOF",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "RS-BIP",
+		.Number = 2,
+		.Color = 1,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2060 = {
+	.Values = PROFILE_ADM10_BITMSK_2060_Values,
+	.ValuesCnt = 4,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2061_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2061 = {
+	.Values = PROFILE_ADM10_BITMSK_2061_Values,
+	.ValuesCnt = 13,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2062_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOS",
+		.Number = 0,
+		.Color = 2,
+	},
+	{
+		.Name = "LOF",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "RS-BIP",
+		.Number = 2,
+		.Color = 1,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2062 = {
+	.Values = PROFILE_ADM10_BITMSK_2062_Values,
+	.ValuesCnt = 4,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2063_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2063 = {
+	.Values = PROFILE_ADM10_BITMSK_2063_Values,
+	.ValuesCnt = 13,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2064_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOS",
+		.Number = 0,
+		.Color = 2,
+	},
+	{
+		.Name = "Link Down",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "FCS",
+		.Number = 2,
+		.Color = 1,
+	},
+	{
+		.Name = "Local Fault",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "Remote Fault",
+		.Number = 4,
+		.Color = 2,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2064 = {
+	.Values = PROFILE_ADM10_BITMSK_2064_Values,
+	.ValuesCnt = 6,
+};
+const PROFILE_BITMSK_VALUE_T PROFILE_ADM10_BITMSK_2065_Values[] = {
+	{
+		.Name = "Ok",
+		.Number = -1,
+		.Color = 0,
+	},
+	{
+		.Name = "LOFLOM",
+		.Number = 1,
+		.Color = 2,
+	},
+	{
+		.Name = "AIS",
+		.Number = 2,
+		.Color = 2,
+	},
+	{
+		.Name = "OCI",
+		.Number = 3,
+		.Color = 2,
+	},
+	{
+		.Name = "LCK",
+		.Number = 4,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-BIP",
+		.Number = 5,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BEI",
+		.Number = 6,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-BDI",
+		.Number = 7,
+		.Color = 1,
+	},
+	{
+		.Name = "PM-SF",
+		.Number = 8,
+		.Color = 2,
+	},
+	{
+		.Name = "PM-SD",
+		.Number = 9,
+		.Color = 1,
+	},
+	{
+		.Name = "OPU-CSF",
+		.Number = 10,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-PLM",
+		.Number = 11,
+		.Color = 2,
+	},
+	{
+		.Name = "OPU-MSIM",
+		.Number = 12,
+		.Color = 2,
+	},
+};
+const PROFILE_BITMSK_T PROFILE_ADM10_BITMSK_2065 = {
+	.Values = PROFILE_ADM10_BITMSK_2065_Values,
+	.ValuesCnt = 13,
+};

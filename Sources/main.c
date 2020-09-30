@@ -3,9 +3,9 @@
 #include "cmsis_os.h"
 #include "bsp.h"
 #include "profile.h"
-#include "profile_iface.h"
-#include "profile_types.h"
-#include "profile_protocol.h"
+//#include "profile_iface.h"
+//#include "profile_types.h"
+//#include "profile_protocol.h"
 #include "profile_adm10.h"
 #include "shell_cmd.h"
 #include "shell_uart.h"
@@ -19,15 +19,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define PROFILE_IFACE_UART4 UART4
-#ifndef BSP_CONFIG_USE_UART4
-	#error	Define BSP_CONFIG_USE_UART4 in bsp_config.h for PROFILE_IFACE
-#endif
-
-#define PROFILE_IFACE_UART5 UART5
-#ifndef BSP_CONFIG_USE_UART5
-	#error	Define BSP_CONFIG_USE_UART5 in bsp_config.h for PROFILE_IFACE
-#endif
 	
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -43,35 +34,6 @@ const SHELL_IFACE_T ShellTelnetIface =
 	&SHELL_TELNET_Disconnect,
 	&ShellTelnetPriv
 };
-	
-typedef union {
-	PROFILE_ADM10_VALUES_DYNAMIC_T	ADM10;
-} PROFILE_VALUES_DYNAMIC_T;
-
-typedef union {
-	PROFILE_ADM10_VALUES_STATIC_T	ADM10;
-}PROFILE_VALUES_STATIC_T;
-
-typedef union {
-	PROFILE_ADM10_VALUES_STATIC_T	ADM10;
-}PROFILE_VALUES_CALIB_T;
-
-extern PROFILE_DESCR_T ProfileADM10Descr;
-PROFILE_DESCR_T __attribute__((section ("CCM_DATA"))) *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADM10Descr};
-
-PROFILE_T __attribute__((section ("CCM_DATA"))) Profile;
-PROFILE_VALUES_STATIC_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValuesStatic;
-PROFILE_VALUES_DYNAMIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesDynamic;
-PROFILE_VALUES_CALIB_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValuesCalib;
-PROFILE_VALUES_T __attribute__((section ("CCM_DATA"))) ProfileValues = {
-	.Dynamic = &ProfileValuesDynamic,
-	.Static = &ProfileValuesStatic,
-	.Calib = &ProfileValuesCalib,
-};
-PROFILE_FLASH_T /*__attribute__((section ("CCM_DATA")))*/ ProfileFlash;
-PROFILE_PROTOCOL_T /*__attribute__((section ("CCM_DATA")))*/ ProfileProtocol;
-PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart5;
-PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart4;
 
 BOOTLOADER_T /*__attribute__((section ("CCM_DATA")))*/ Bootloader;
 const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= {
@@ -115,7 +77,7 @@ int main(void)
   /* We should never get here as control is now taken by the scheduler */
   for(;;);
 }
-
+#if 0
 void PROFILE_UpdateValues(void)
 {
 	PROFILE_ADM10_UpdateValues(&Profile);	
@@ -139,7 +101,7 @@ void PROFILE_UpdateConfigs(void)
 {
 	PROFILE_ADM10_UpdateConfigs(&Profile);
 }
-
+#endif
 /**
   * @brief  System thread
   * @param  argument not used
@@ -170,20 +132,20 @@ static void System_Thread(void const *argument)
 	WATCHDOG_Refresh();
 	
 	/* Init Profile*/
-	PROFILE_Init(&Profile, ProfileDescr, &ProfileValues);
+	PROFILE_Init(&PROFILE_ADM10);
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Flash*/
-	PROFILE_FLASH_Init(&ProfileFlash, "Profile FLASH", &Profile);
+	//PROFILE_FLASH_Init(&ProfileFlash, "Profile FLASH", &Profile);
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Protocol*/
-	PROFILE_PROTOCOL_Init(&ProfileProtocol, &Profile, &Bootloader, &ProfileFlash);
+	//PROFILE_PROTOCOL_Init(&ProfileProtocol, &Profile, &Bootloader, &ProfileFlash);
 	
 	/* Init Profile Interfaces*/
-	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Profile UART5", PROFILE_IFACE_UART5, SlotAddress, &ProfileProtocol);
+	//PROFILE_IFACE_Init(&ProfileIfaceUart5, "Profile UART5", PROFILE_IFACE_UART5, SlotAddress, &ProfileProtocol);
 	WATCHDOG_Refresh();
-	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", PROFILE_IFACE_UART4, SlotAddress, &ProfileProtocol);
+	//PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", PROFILE_IFACE_UART4, SlotAddress, &ProfileProtocol);
 	WATCHDOG_Refresh();
 	
 	/*Init Ethernet stack*/
@@ -208,7 +170,7 @@ static void System_Thread(void const *argument)
 		
 		SystemThreadStage++;
 		
-		PROFILE_UpdateConfigs();
+		//PROFILE_UpdateConfigs();
 		
 		SystemThreadStage++;
 		
@@ -216,7 +178,7 @@ static void System_Thread(void const *argument)
 		
 		SystemThreadStage++;
 		
-		PROFILE_UpdateValues();
+		//PROFILE_UpdateValues();
 		
 		SystemThreadStage++;
 		

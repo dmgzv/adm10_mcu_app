@@ -1,7 +1,6 @@
 #include "tftp_bootloader_fpga.h"
 #include "tftp_client.h"
-#include "bootloader.h"
-#include "profile_flash.h"
+#include "bsp_fpga_flash.h"
 #include <string.h>
 #include "log.h"
 

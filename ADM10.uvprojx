@@ -867,6 +867,11 @@
           <GroupName>Profile</GroupName>
           <Files>
             <File>
+              <FileName>profile.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Profile\profile.c</FilePath>
+            </File>
+            <File>
               <FileName>bootloader.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Profile\bootloader.c</FilePath>
@@ -875,26 +880,6 @@
               <FileName>bootloader_protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Profile\bootloader_protocol.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_iface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_iface.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_protocol.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -907,39 +892,9 @@
               <FilePath>.\Sources\ProfileADM10\profile_adm10.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm10_client.c</FileName>
+              <FileName>profile_adm10_adminstates.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_client.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_line.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_line.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_params.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_params.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_pg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_pg.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_text.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_text.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_values.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_values.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_xc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_xc.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_adminstates.c</FilePath>
             </File>
             <File>
               <FileName>profile_adm10_bitmsks.c</FileName>
@@ -947,9 +902,34 @@
               <FilePath>.\Sources\ProfileADM10\profile_adm10_bitmsks.c</FilePath>
             </File>
             <File>
+              <FileName>profile_adm10_constraints.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_constraints.c</FilePath>
+            </File>
+            <File>
               <FileName>profile_adm10_enums.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_enums.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_lines.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_lines.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_thrs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_thrs.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_values.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_values.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_colors.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_colors.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1210,11 +1190,6 @@
               <FileName>tftp_bootloader.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader.c</FilePath>
-            </File>
-            <File>
-              <FileName>tftp_bootloader_mcu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\TFTP\tftp_bootloader_mcu.c</FilePath>
             </File>
             <File>
               <FileName>tftp_bootloader_fpga.c</FileName>
@@ -2086,6 +2061,11 @@
           <GroupName>Profile</GroupName>
           <Files>
             <File>
+              <FileName>profile.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Profile\profile.c</FilePath>
+            </File>
+            <File>
               <FileName>bootloader.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Profile\bootloader.c</FilePath>
@@ -2094,26 +2074,6 @@
               <FileName>bootloader_protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Profile\bootloader_protocol.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_iface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_iface.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Profile\profile_protocol.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2126,39 +2086,9 @@
               <FilePath>.\Sources\ProfileADM10\profile_adm10.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm10_client.c</FileName>
+              <FileName>profile_adm10_adminstates.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_client.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_line.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_line.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_params.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_params.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_pg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_pg.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_text.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_text.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_values.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_values.c</FilePath>
-            </File>
-            <File>
-              <FileName>profile_adm10_xc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_xc.c</FilePath>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_adminstates.c</FilePath>
             </File>
             <File>
               <FileName>profile_adm10_bitmsks.c</FileName>
@@ -2166,9 +2096,34 @@
               <FilePath>.\Sources\ProfileADM10\profile_adm10_bitmsks.c</FilePath>
             </File>
             <File>
+              <FileName>profile_adm10_constraints.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_constraints.c</FilePath>
+            </File>
+            <File>
               <FileName>profile_adm10_enums.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_enums.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_lines.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_lines.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_thrs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_thrs.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_values.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_values.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_colors.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_colors.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2429,11 +2384,6 @@
               <FileName>tftp_bootloader.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader.c</FilePath>
-            </File>
-            <File>
-              <FileName>tftp_bootloader_mcu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\TFTP\tftp_bootloader_mcu.c</FilePath>
             </File>
             <File>
               <FileName>tftp_bootloader_fpga.c</FileName>

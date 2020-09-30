@@ -1,9 +1,8 @@
 #include "tftp_bootloader.h"
-#include "tftp_bootloader_mcu.h"
+//#include "tftp_bootloader_mcu.h"
 #include "tftp_bootloader_fpga.h"
 #include "tftp_client.h"
-#include "bootloader.h"
-#include "profile_flash.h"
+#include "bsp.h"
 #include <string.h>
 #include "log.h"
 
@@ -22,7 +21,7 @@ char TFTP_BOOTLOADER_InfoData[512];
 
 TFTP_BOOTLOADER_COMPONENT_T *TFTP_BOOTLOADER_COMPONENTS[] = 
 {
-	&TFTP_BOOTLOADER_MCU,
+	//&TFTP_BOOTLOADER_MCU,
 	&TFTP_BOOTLOADER_FPGA,
 };
 
@@ -35,9 +34,6 @@ TFTP_BOOTLOADER_T TFTP_BOOTLOADER =
 	.Components = TFTP_BOOTLOADER_COMPONENTS,
 	.ComponentsCnt = sizeof(TFTP_BOOTLOADER_COMPONENTS) / sizeof(TFTP_BOOTLOADER_COMPONENTS[0]) 
 };
-
-extern BOOTLOADER_T Bootloader;
-extern PROFILE_FLASH_T ProfileFlash;
 
 static int32_t TFTP_BOOTLOADER_DownloadInfoReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {	

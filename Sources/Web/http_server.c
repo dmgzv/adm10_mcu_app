@@ -3,8 +3,7 @@
 #include "string.h"
 #include "cmsis_os.h"
 #include "profile.h"
-#include "profile_protocol.h"
-#include "profile_types.h"
+#include "profile_adm10.h"
 #include "bootloader.h"
 #include "bsp.h"
 #include "crc.h"
@@ -67,16 +66,13 @@ typedef struct {
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern PROFILE_T Profile;
 extern BOOTLOADER_T Bootloader;
-extern PROFILE_PROTOCOL_T ProfileProtocol;
-extern PROFILE_FLASH_T ProfileFlash;
 
-static char REQUEST_BODY[PROFILE_PROTOCOL_CMD_MAX_SIZE];
+static char REQUEST_BODY[512];
 static uint32_t REQUEST_BODY_LEN;
 static char RESPONCE_HEADER[512];
 static uint32_t RESPONCE_HEADER_LEN;
-static char RESPONCE_BODY[PROFILE_PROTOCOL_RSP_MAX_SIZE];
+static char RESPONCE_BODY[4096];
 static uint32_t RESPONCE_BODY_LEN;
 
 static int32_t http_server_write(struct netconn *conn, const void *dataptr, size_t size, u8_t apiflags)
@@ -354,7 +350,7 @@ error_405:
 	http_server_write_header(conn, &RspHeader);
 	return;
 }
-
+#if 0
 /**
   * @brief  Get profile langpack. 
   * @param  conn pointer on connection structure 
@@ -869,7 +865,7 @@ write_data:
 error:
 	http_server_write_400_error(conn);
 }
-
+#endif
 /**
   * @brief  Send profile line. 
   * @param  conn pointer on connection structure 
@@ -878,13 +874,13 @@ error:
 void http_server_serve_get_api_v1_profile_line(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen, uint32_t line_idx)
 {
 	HTTP_RESPONCE_HEADER_T RspHeader;
-	if (line_idx >= *Profile.Descr[Profile.Idx]->TextSize)
+	if (line_idx >= *PROFILE_ADM10.LinesCnt)
 		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_WINDOWS_1251;
-	RspHeader.ContentLength = strlen(Profile.Descr[Profile.Idx]->Text[line_idx]) + 2;
+	RspHeader.ContentLength = strlen(PROFILE_ADM10.Lines[line_idx]) + 2;
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
@@ -894,9 +890,9 @@ void http_server_serve_get_api_v1_profile_line(struct netconn *conn, HTTP_REQUES
 	if (http_server_write_header(conn, &RspHeader))
 		return;
 	
-	RESPONCE_BODY_LEN = strlen(Profile.Descr[Profile.Idx]->Text[line_idx]);
+	RESPONCE_BODY_LEN = strlen(PROFILE_ADM10.Lines[line_idx]);
 	
-	memcpy(RESPONCE_BODY, Profile.Descr[Profile.Idx]->Text[line_idx], RESPONCE_BODY_LEN);
+	memcpy(RESPONCE_BODY, PROFILE_ADM10.Lines[line_idx], RESPONCE_BODY_LEN);
 	RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
 	RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
 
@@ -919,49 +915,56 @@ void http_server_serve_get_api_v1_profile(struct netconn *conn, HTTP_REQUEST_HEA
 {
 	uint32_t i;
 	uint32_t len;
+	char chunk_size[16];
 	HTTP_RESPONCE_HEADER_T RspHeader;
   
-	len = 0;
-	for (i = 0; i < *Profile.Descr[Profile.Idx]->TextSize; i++)
-	{
-		len += strlen(Profile.Descr[Profile.Idx]->Text[i]) + 2;
-	}
-	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
-	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
-	RspHeader.Charset = HTTP_CHARSET_WINDOWS_1251;
-	RspHeader.ContentLength = len;
+	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
+	RspHeader.Charset = HTTP_CHARSET_UTF_8;
+	RspHeader.ContentLength = 0;
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-	RspHeader.TransferEncoding = NULL;
+	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
 		return;
 	
 	RESPONCE_BODY_LEN = 0;	
-	for (i = 0; i < *Profile.Descr[Profile.Idx]->TextSize; i++)
+	for (i = 0; i < *PROFILE_ADM10.LinesCnt; i++)
 	{
-		len = strlen(Profile.Descr[Profile.Idx]->Text[i]);
-		
-		memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], Profile.Descr[Profile.Idx]->Text[i], len);
+		len = strlen(PROFILE_ADM10.Lines[i]);		
+		memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], PROFILE_ADM10.Lines[i], len);
 		RESPONCE_BODY_LEN += len;
 		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
 		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
 		if (RESPONCE_BODY_LEN > 1024)
 		{
+			snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+			if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+				return;
+			RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+			RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
 			if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
 				return;
 			RESPONCE_BODY_LEN = 0;
-			
 		}
 	}
 	if (RESPONCE_BODY_LEN)
 	{
+		snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+		if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+			return;	
+		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
 		if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
 			return;
+		RESPONCE_BODY_LEN = 0;
 	}
+	strncpy(chunk_size, "0\r\n\r\n", sizeof(chunk_size));
+	if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY))
+		return;
 }
 
 /**
@@ -971,63 +974,82 @@ void http_server_serve_get_api_v1_profile(struct netconn *conn, HTTP_REQUEST_HEA
   */
 void http_server_serve_get_api_v1_profile_section_values(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen, uint32_t section_idx)
 {
-	uint32_t i;
-	uint32_t complete;
-	uint32_t header_len;
+	uint32_t i, j, Len;
+	PROFILE_VALUE_T Value;
+	uint8_t Color;
+	int32_t AdminState;
+	char chunk_size[16];
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_GET_VALUES_2;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d;", section_idx);
-	header_len = REQUEST_BODY_LEN - 1;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-	
-	if (RESPONCE_BODY_LEN < REQUEST_BODY_LEN)
-		goto error;
-	
-	for (i = 0; i < header_len; i++)
+	for (i = 0; i < PROFILE_ADM10.SectionsCnt; i++)
 	{
-		if (REQUEST_BODY[i] != RESPONCE_BODY[i])
-			goto error;
+		if (PROFILE_ADM10.Sections[i]->Index == section_idx)
+		{
+			RspHeader.Code = HTTP_RESPONCE_200_OK;
+			RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
+			RspHeader.Charset = HTTP_CHARSET_UTF_8;
+			RspHeader.ContentLength = 0;
+			if (ReqHeader->ConnectionKeepAlive)
+				RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+			else
+				RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+			RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
+			RspHeader.AllowedLen = 0;
+			if (http_server_write_header(conn, &RspHeader))
+				return;
+			
+			RESPONCE_BODY_LEN = 0;
+			PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
+			for (j = 0; j < PROFILE_ADM10.Sections[i]->ParamsCnt; j++)
+			{
+				__PROFILE_GetParamValue(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &Value);
+				__PROFILE_GetParamColor(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &Color);
+				__PROFILE_GetParamAdminState(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &AdminState);
+				__PROFILE_ParamValueToString(PROFILE_ADM10.Sections[i]->Params[j]->Type, &Value, &RESPONCE_BODY[RESPONCE_BODY_LEN], &Len);
+				RESPONCE_BODY_LEN += Len;
+				RESPONCE_BODY_LEN += sprintf(&RESPONCE_BODY[RESPONCE_BODY_LEN], "@%d", AdminState);
+				if (Color != PROFILE_COLOR_NA)
+					RESPONCE_BODY_LEN += sprintf(&RESPONCE_BODY[RESPONCE_BODY_LEN], "@%u", Color);
+				if (j != PROFILE_ADM10.Sections[i]->ParamsCnt - 1)
+					RESPONCE_BODY[RESPONCE_BODY_LEN++] = ';';
+				if (RESPONCE_BODY_LEN > 1024)
+				{
+					snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+					if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+					{
+						PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+						return;
+					}
+					RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+					RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
+					if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+					{
+						PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+						return;
+					}
+					RESPONCE_BODY_LEN = 0;
+				}
+			}
+			PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+			if (RESPONCE_BODY_LEN)
+			{
+				snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+				if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+					return;	
+				RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+				RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
+				if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+					return;
+				RESPONCE_BODY_LEN = 0;
+			}
+			strncpy(chunk_size, "0\r\n\r\n", sizeof(chunk_size));
+			if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY))
+				return;
+			return;
+		}
 	}
-	
-	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
-		goto error;
-	
-	while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
-	{
-		RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-		RESPONCE_BODY_LEN--;
-	}
-	RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-	
-	body = &RESPONCE_BODY[header_len + 1];
-	bodylen = RESPONCE_BODY_LEN - header_len - 1;
-	
-	RspHeader.Code = HTTP_RESPONCE_200_OK;
-	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_OCTET;
-	RspHeader.Charset = NULL;
-	RspHeader.ContentLength = bodylen;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-	RspHeader.TransferEncoding = NULL;
-	RspHeader.AllowedLen = 0;
-	if (http_server_write_header(conn, &RspHeader))
-		return;
-	if (http_server_write(conn, body, bodylen, NETCONN_COPY))
-		return;
-	
-	return;
-
-error:
-	http_server_write_400_error(conn);
+	http_server_write_404_error(conn);
 }
 
 /**
@@ -1037,63 +1059,76 @@ error:
   */
 void http_server_serve_get_api_v1_profile_section_colors(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen, uint32_t section_idx)
 {
-	uint32_t i;
-	uint32_t complete;
-	uint32_t header_len;
+	uint32_t i, j;
+	char chunk_size[16];
+	uint8_t Normal, Degrade, Failure;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_GET_COLORS;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d;", section_idx);
-	header_len = REQUEST_BODY_LEN - 1;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-	
-	if (RESPONCE_BODY_LEN < REQUEST_BODY_LEN)
-		goto error;
-	
-	for (i = 0; i < header_len; i++)
+	for (i = 0; i < PROFILE_ADM10.SectionsCnt; i++)
 	{
-		if (REQUEST_BODY[i] != RESPONCE_BODY[i])
-			goto error;
+		if (PROFILE_ADM10.Sections[i]->Index == section_idx)
+		{
+			RspHeader.Code = HTTP_RESPONCE_200_OK;
+			RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
+			RspHeader.Charset = HTTP_CHARSET_UTF_8;
+			RspHeader.ContentLength = 0;
+			if (ReqHeader->ConnectionKeepAlive)
+				RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+			else
+				RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+			RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
+			RspHeader.AllowedLen = 0;
+			if (http_server_write_header(conn, &RspHeader))
+				return;
+			
+			RESPONCE_BODY_LEN = 0;
+			PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
+			for (j = 0; j < PROFILE_ADM10.Sections[i]->ParamsCnt; j++)
+			{
+				if (!__PROFILE_GetParamColors(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &Normal, &Degrade, &Failure))
+				{
+					RESPONCE_BODY_LEN += sprintf(&RESPONCE_BODY[RESPONCE_BODY_LEN], "%d@%d@%d", Normal, Degrade, Failure);
+				}
+				if (j != PROFILE_ADM10.Sections[i]->ParamsCnt - 1)
+					RESPONCE_BODY[RESPONCE_BODY_LEN++] = ';';
+				if (RESPONCE_BODY_LEN > 1024)
+				{
+					snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+					if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+					{
+						PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+						return;
+					}
+					RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+					RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
+					if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+					{
+						PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+						return;
+					}
+					RESPONCE_BODY_LEN = 0;
+				}
+			}
+			PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+			if (RESPONCE_BODY_LEN)
+			{
+				snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+				if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+					return;	
+				RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+				RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
+				if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+					return;
+				RESPONCE_BODY_LEN = 0;
+			}
+			strncpy(chunk_size, "0\r\n\r\n", sizeof(chunk_size));
+			if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY))
+				return;
+			return;
+		}
 	}
-	
-	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
-		goto error;
-	
-	while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
-	{
-		RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-		RESPONCE_BODY_LEN--;
-	}
-	RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-	
-	body = &RESPONCE_BODY[header_len + 1];
-	bodylen = RESPONCE_BODY_LEN - header_len - 1;
-	
-	RspHeader.Code = HTTP_RESPONCE_200_OK;
-	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_OCTET;
-	RspHeader.Charset = NULL;
-	RspHeader.ContentLength = bodylen;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-	RspHeader.TransferEncoding = NULL;
-	RspHeader.AllowedLen = 0;
-	if (http_server_write_header(conn, &RspHeader))
-		return;
-	if (http_server_write(conn, body, bodylen, NETCONN_COPY))
-		return;
-	
-	return;
-
-error:
-	http_server_write_400_error(conn);
+	http_server_write_404_error(conn);
 }
 
 /**
@@ -1103,56 +1138,48 @@ error:
   */
 static void http_server_serve_put_api_v1_profile_section_param_value(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen, uint32_t section_idx, uint32_t param_idx)
 {
-	uint32_t i;
-	uint32_t complete;
-	uint32_t header_len;
+	struct netbuf *inbuf;
+	err_t recv_err;
+	char *data;
+	uint16_t datalen;
 	HTTP_RESPONCE_HEADER_T RspHeader;
+	PROFILE_PARAM_T *Param;
+	PROFILE_VALUE_T Value;
 
-	if ((!body) || (!bodylen))
+	if (ReqHeader->ContentLength == 0)
+		goto error;
+	
+	if ((body) && (bodylen))
 	{
-		http_server_write_400_error(conn);
-		return;
-	}	
+		inbuf = NULL;
+		data = body;
+		datalen = bodylen;
+	}
+	else
+	{
+		recv_err = netconn_recv(conn, &inbuf);
+		if (recv_err == ERR_OK)
+		{
+			netbuf_data(inbuf, (void**)&data, &datalen);
+		}
+		else
+		{
+			goto error;
+		}
+	}
+	
 	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_SET_VALUE_2;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d;%d;", section_idx, param_idx);
-	header_len = REQUEST_BODY_LEN - 1;
-	memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], body, bodylen);
-	REQUEST_BODY_LEN += bodylen;
-	REQUEST_BODY[REQUEST_BODY_LEN++] = ';';
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	Profile.SetEnable = 1;
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-	Profile.SetEnable = 0;
-	
-	if (RESPONCE_BODY_LEN < REQUEST_BODY_LEN)
+	if (__PROFILE_GetParamByIndex(&PROFILE_ADM10, section_idx, param_idx, &Param))
 		goto error;
-	
-	for (i = 0; i < header_len; i++)
+	if (__PROFILE_StringToParamValue(Param->Type, &Value, data, datalen))
+		goto error;	
+	PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
+	if (__PROFILE_SetParamValue(&PROFILE_ADM10, Param, &Value))
 	{
-		if (REQUEST_BODY[i] != RESPONCE_BODY[i])
-			goto error;
-	}
-	
-	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
+		PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
 		goto error;
-	
-	for (i = 0; i < bodylen; i++)
-	{
-		if (REQUEST_BODY[header_len + 1 + i] != RESPONCE_BODY[header_len + 1 + i])
-			goto error;
 	}
-		
-	while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
-	{
-		RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-		RESPONCE_BODY_LEN--;
-	}
-	RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
+	PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -1178,51 +1205,55 @@ error:
   */
 static void http_server_serve_put_api_v1_profile_section_param_color(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen, uint32_t section_idx, uint32_t param_idx)
 {
-	uint32_t i;
-	uint32_t complete;
-	uint32_t header_len;
+	struct netbuf *inbuf;
+	err_t recv_err;
+	char *data;
+	uint16_t datalen;
 	HTTP_RESPONCE_HEADER_T RspHeader;
+	PROFILE_PARAM_T *Param;
+	uint8_t Normal, Degrade, Failure;
 
-	if ((!body) || (!bodylen))
+	if (ReqHeader->ContentLength == 0)
+		goto error;
+	
+	if ((body) && (bodylen))
 	{
-		http_server_write_400_error(conn);
-		return;
+		inbuf = NULL;
+		data = body;
+		datalen = bodylen;
+	}
+	else
+	{
+		recv_err = netconn_recv(conn, &inbuf);
+		if (recv_err == ERR_OK)
+		{
+			netbuf_data(inbuf, (void**)&data, &datalen);
+		}
+		else
+		{
+			goto error;
+		}
 	}
 	
 	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_SET_COLOR;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d;%d;", section_idx, param_idx);
-	header_len = REQUEST_BODY_LEN - 1;
-	memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], body, bodylen);
-	REQUEST_BODY_LEN += bodylen;
-	REQUEST_BODY[REQUEST_BODY_LEN++] = ';';
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	Profile.SetEnable = 1;
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-	Profile.SetEnable = 0;
-	
-	if (RESPONCE_BODY_LEN < REQUEST_BODY_LEN)
+	if (__PROFILE_GetParamByIndex(&PROFILE_ADM10, section_idx, param_idx, &Param))
 		goto error;
-	
-	for (i = 0; i < header_len; i++)
-	{
-		if (REQUEST_BODY[i] != RESPONCE_BODY[i])
-			goto error;
-	}
-	
-	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
+	Normal = strtoul(data, &data, 10);
+	if (*data != ';')
 		goto error;
-	
-	while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
+	data++;
+	Degrade = strtoul(data, &data, 10);
+	if (*data != ';')
+		goto error;
+	data++;
+	Failure = strtoul(data, &data, 10);
+	PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
+	if (__PROFILE_SetParamColors(&PROFILE_ADM10, Param, Normal, Degrade, Failure))
 	{
-		RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-		RESPONCE_BODY_LEN--;
+		PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+		goto error;
 	}
-	RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
+	PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -1234,7 +1265,7 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	http_server_write_header(conn, &RspHeader);	
+	http_server_write_header(conn, &RspHeader);
 	return;
 
 error:
@@ -2416,15 +2447,86 @@ receive:
 		else if (strncmp(req_header.Url, "/api/v1/profile?line=", sizeof("/api/v1/profile?line=") - 1) == 0)
 		{
 			line_idx = strtoul(&req_header.Url[sizeof("/api/v1/profile?line=") - 1], &c, 10);
-			if (line_idx >= *Profile.Descr[Profile.Idx]->TextSize)
+			if (strncmp(req_header.Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)) == 0)
 			{
-				http_server_write_404_error(conn);
+				http_server_serve_get_api_v1_profile_line(conn, &req_header, body, bodylen, line_idx);
 			}
 			else
 			{
+				rsp_header.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
+				rsp_header.ContentType = NULL;
+				rsp_header.Charset = NULL;
+				rsp_header.ContentLength = 0;
+				if (req_header.ConnectionKeepAlive)
+					rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+				else
+					rsp_header.Connection = HTTP_CONNECTION_CLOSE;
+				rsp_header.TransferEncoding = NULL;
+				rsp_header.Allowed[0] = HTTP_REQUEST_GET;
+				rsp_header.AllowedLen = 1;
+				http_server_write_header(conn, &rsp_header);
+			}
+		}
+		else if (strncmp(req_header.Url, "/api/v1/profile/sections/", sizeof("/api/v1/profile/sections/") - 1) == 0)
+		{
+			section_idx = strtoul(&req_header.Url[sizeof("/api/v1/profile/sections/") - 1], &c, 10);
+			if (strncmp(c, "/params/", sizeof("/params/") - 1) == 0)
+			{
+				param_idx = strtoul(&c[sizeof("/params/") - 1], &c, 10);
+				if (strncmp(c, "/value ", sizeof("/value ") - 1) == 0)
+				{
+					if (strncmp(req_header.Type, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT)) == 0)
+					{
+						http_server_serve_put_api_v1_profile_section_param_value(conn, &req_header, body, bodylen, section_idx, param_idx); 
+					}
+					else
+					{
+						rsp_header.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
+						rsp_header.ContentType = NULL;
+						rsp_header.Charset = NULL;
+						rsp_header.ContentLength = 0;
+						if (req_header.ConnectionKeepAlive)
+							rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+						else
+							rsp_header.Connection = HTTP_CONNECTION_CLOSE;
+						rsp_header.TransferEncoding = NULL;
+						rsp_header.Allowed[0] = HTTP_REQUEST_PUT;
+						rsp_header.AllowedLen = 1;
+						http_server_write_header(conn, &rsp_header);
+					}
+				}
+				else if (strncmp(c, "/colors ", sizeof("/colors ") - 1) == 0)
+				{
+					if (strncmp(req_header.Type, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT)) == 0)
+					{
+						http_server_serve_put_api_v1_profile_section_param_color(conn, &req_header, body, bodylen, section_idx, param_idx); 
+					}
+					else
+					{
+						rsp_header.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
+						rsp_header.ContentType = NULL;
+						rsp_header.Charset = NULL;
+						rsp_header.ContentLength = 0;
+						if (req_header.ConnectionKeepAlive)
+							rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+						else
+							rsp_header.Connection = HTTP_CONNECTION_CLOSE;
+						rsp_header.TransferEncoding = NULL;
+						rsp_header.Allowed[0] = HTTP_REQUEST_PUT;
+						rsp_header.AllowedLen = 1;
+						http_server_write_header(conn, &rsp_header);
+					}
+				}
+				else
+				{
+					http_server_write_404_error(conn);
+				}
+			}
+			else if (strncmp(c, "/values ", sizeof("/values ") - 1) == 0)
+			{
 				if (strncmp(req_header.Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)) == 0)
 				{
-					http_server_serve_get_api_v1_profile_line(conn, &req_header, body, bodylen, line_idx);
+					http_server_serve_get_api_v1_profile_section_values(conn, &req_header, body, bodylen, section_idx);
 				}
 				else
 				{
@@ -2442,144 +2544,34 @@ receive:
 					http_server_write_header(conn, &rsp_header);
 				}
 			}
-		}
-		else if (strncmp(req_header.Url, "/api/v1/profile/sections/", sizeof("/api/v1/profile/sections/") - 1) == 0)
-		{
-			section_idx = strtoul(&req_header.Url[sizeof("/api/v1/profile/sections/") - 1], &c, 10);
-			if (((section_idx != 1) &&
-					(section_idx != 2) &&
-					(section_idx != 3) &&
-					(section_idx != 4) &&
-					(section_idx != 5) &&
-					(section_idx != 8) &&
-					(section_idx != 103)) ||
-					((section_idx == 1) && (Profile.Descr[Profile.Idx]->Table1Size == 0)) ||
-					((section_idx == 2) && (Profile.Descr[Profile.Idx]->Table2Size == 0)) ||
-					((section_idx == 3) && (Profile.Descr[Profile.Idx]->Table3Size == 0)) ||
-					((section_idx == 4) && (Profile.Descr[Profile.Idx]->Table4Size == 0)) ||
-					((section_idx == 5) && (Profile.Descr[Profile.Idx]->Table5Size == 0)) ||
-					((section_idx == 8) && (Profile.Descr[Profile.Idx]->Table8Size == 0)) ||
-					((section_idx == 103) && (Profile.Descr[Profile.Idx]->Table103Size == 0)))
+			else if ((strncmp(c, "/colors ", sizeof("/colors ") - 1) == 0) && (section_idx == 2))
 			{
-				http_server_write_404_error(conn);
-			}
-			else
-			{
-				if (strncmp(c, "/params/", sizeof("/params/") - 1) == 0)
+				if (strncmp(req_header.Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)) == 0)
 				{
-					param_idx = strtoul(&c[sizeof("/params/") - 1], &c, 10);
-					if (((section_idx == 1) && (param_idx >= Profile.Descr[Profile.Idx]->Table1Size)) ||
-							((section_idx == 2) && (param_idx >= Profile.Descr[Profile.Idx]->Table2Size)) ||
-							((section_idx == 3) && (param_idx >= Profile.Descr[Profile.Idx]->Table3Size)) ||
-							((section_idx == 4) && (param_idx >= Profile.Descr[Profile.Idx]->Table4Size)) ||
-							((section_idx == 5) && (param_idx >= Profile.Descr[Profile.Idx]->Table5Size)) ||
-							((section_idx == 8) && (param_idx >= Profile.Descr[Profile.Idx]->Table8Size)) ||
-							((section_idx == 103) && (param_idx >= Profile.Descr[Profile.Idx]->Table103Size)))
-					{
-						http_server_write_404_error(conn);
-					}
-					else
-					{
-						if (strncmp(c, "/value ", sizeof("/value ") - 1) == 0)
-						{
-							if (strncmp(req_header.Type, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT)) == 0)
-							{
-								http_server_serve_put_api_v1_profile_section_param_value(conn, &req_header, body, bodylen, section_idx, param_idx); 
-							}
-							else
-							{
-								rsp_header.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
-								rsp_header.ContentType = NULL;
-								rsp_header.Charset = NULL;
-								rsp_header.ContentLength = 0;
-								if (req_header.ConnectionKeepAlive)
-									rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-								else
-									rsp_header.Connection = HTTP_CONNECTION_CLOSE;
-								rsp_header.TransferEncoding = NULL;
-								rsp_header.Allowed[0] = HTTP_REQUEST_PUT;
-								rsp_header.AllowedLen = 1;
-								http_server_write_header(conn, &rsp_header);
-							}
-						}
-						else if (strncmp(c, "/colors ", sizeof("/colors ") - 1) == 0)
-						{
-							if (strncmp(req_header.Type, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT)) == 0)
-							{
-								http_server_serve_put_api_v1_profile_section_param_color(conn, &req_header, body, bodylen, section_idx, param_idx); 
-							}
-							else
-							{
-								rsp_header.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
-								rsp_header.ContentType = NULL;
-								rsp_header.Charset = NULL;
-								rsp_header.ContentLength = 0;
-								if (req_header.ConnectionKeepAlive)
-									rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-								else
-									rsp_header.Connection = HTTP_CONNECTION_CLOSE;
-								rsp_header.TransferEncoding = NULL;
-								rsp_header.Allowed[0] = HTTP_REQUEST_PUT;
-								rsp_header.AllowedLen = 1;
-								http_server_write_header(conn, &rsp_header);
-							}
-						}
-						else
-						{
-							http_server_write_404_error(conn);
-						}
-					}
-				}
-				else if (strncmp(c, "/values ", sizeof("/values ") - 1) == 0)
-				{
-					if (strncmp(req_header.Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)) == 0)
-					{
-						http_server_serve_get_api_v1_profile_section_values(conn, &req_header, body, bodylen, section_idx);
-					}
-					else
-					{
-						rsp_header.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
-						rsp_header.ContentType = NULL;
-						rsp_header.Charset = NULL;
-						rsp_header.ContentLength = 0;
-						if (req_header.ConnectionKeepAlive)
-							rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-						else
-							rsp_header.Connection = HTTP_CONNECTION_CLOSE;
-						rsp_header.TransferEncoding = NULL;
-						rsp_header.Allowed[0] = HTTP_REQUEST_GET;
-						rsp_header.AllowedLen = 1;
-						http_server_write_header(conn, &rsp_header);
-					}
-				}
-				else if ((strncmp(c, "/colors ", sizeof("/colors ") - 1) == 0) && (section_idx == 2))
-				{
-					if (strncmp(req_header.Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)) == 0)
-					{
-						http_server_serve_get_api_v1_profile_section_colors(conn, &req_header, body, bodylen, section_idx);
-					}
-					else
-					{
-						rsp_header.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
-						rsp_header.ContentType = NULL;
-						rsp_header.Charset = NULL;
-						rsp_header.ContentLength = 0;
-						if (req_header.ConnectionKeepAlive)
-							rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-						else
-							rsp_header.Connection = HTTP_CONNECTION_CLOSE;
-						rsp_header.TransferEncoding = NULL;
-						rsp_header.Allowed[0] = HTTP_REQUEST_GET;
-						rsp_header.AllowedLen = 1;
-						http_server_write_header(conn, &rsp_header);
-					}
+					http_server_serve_get_api_v1_profile_section_colors(conn, &req_header, body, bodylen, section_idx);
 				}
 				else
 				{
-					http_server_write_404_error(conn);
+					rsp_header.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
+					rsp_header.ContentType = NULL;
+					rsp_header.Charset = NULL;
+					rsp_header.ContentLength = 0;
+					if (req_header.ConnectionKeepAlive)
+						rsp_header.Connection = HTTP_CONNECTION_KEEP_ALIVE;
+					else
+						rsp_header.Connection = HTTP_CONNECTION_CLOSE;
+					rsp_header.TransferEncoding = NULL;
+					rsp_header.Allowed[0] = HTTP_REQUEST_GET;
+					rsp_header.AllowedLen = 1;
+					http_server_write_header(conn, &rsp_header);
 				}
 			}
+			else
+			{
+				http_server_write_404_error(conn);
+			}
 		}
+#if 0
 		else if (strncmp(req_header.Url, "/api/v1/profile/config ", sizeof("/api/v1/profile/config ") - 1) == 0)
 		{
 			if (strncmp(req_header.Type, HTTP_REQUEST_HEAD" ", sizeof(HTTP_REQUEST_HEAD)) == 0)
@@ -2639,6 +2631,7 @@ receive:
 				http_server_write_header(conn, &rsp_header);
 			}
 		}
+#endif
 		else if (strncmp(req_header.Url, "/api/v1/system/update/mcu/software ", sizeof("/api/v1/system/update/mcu/software ") - 1) == 0)
 		{
 			if (strncmp(req_header.Type, HTTP_REQUEST_POST" ", sizeof(HTTP_REQUEST_POST)) == 0)

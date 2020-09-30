@@ -76,7 +76,7 @@ function getParamValueString(param) {
 function updateProfileTable(section) {
 	for (let id = 1; id <= 2; id++) {
 		for (let i = 0; i < section.params.length; i++) {
-			if (section.params[i].hidden)
+			if (section.params[i].admin_state == '0')
 				$('#profile_' + id + '_' + section.params[i].name).addClass('profile_param_value_hidden');
 			else {
 				$('#profile_' + id + '_' + section.params[i].name).removeClass('profile_param_value_hidden');
@@ -110,21 +110,19 @@ function parseProfileSectionValues(section, tableText) {
 	if (section.params.length != table.length)
 		return;
 	for (let i = 0; i < table.length; i++) {
-		if (table[i] == '\x01') {
-			section.params[i].hidden = 1;
+		if (section.name == 'Dynamic') {
+			let values = table[i].split('@');
+			section.params[i].value = values[0];
+			section.params[i].admin_state = values[1];
+			if (values.length > 2)
+				section.params[i].colors.current = values[2];
+			else
+				section.params[i].colors.current = 0;
 		}	else {
-			section.params[i].hidden = 0;
-			if (section.name == 'Dynamic') {
-				let values = table[i].split('@');
-				section.params[i].value = values[0];
-				if (values.length > 1)
-					section.params[i].colors.current = values[1];
-				else
-					section.params[i].colors.current = 0;
-			}	else {
-				section.params[i].value = table[i];
-			}
-	  }
+			let values = table[i].split('@');
+			section.params[i].value = values[0];
+			section.params[i].admin_state = values[1];
+		}
 	}
 }
 
@@ -187,24 +185,7 @@ function getProfileSections() {
 	getProfileSectionValues(0, getProfileSectionValueCallback);
 }
 
-function parseProfileParamLine(section, line) {
-	let line_words = line.split(';');
-	let param = {};
-	param.section = section;
-	param.groups = [];
-	param.groups[0] = 'All';
-	param.name = line_words[0];
-	param.idx = line_words[1];
-	param.type = line_words[2];
-	param.access = line_words[3];
-	param.units = line_words[4];
-	param.descr = line_words[6];
-	param.value = '0';
-	param.hidden = 0;
-	return param;
-}
-
-const profileThrNames = ['HMax', 'CMax', 'WMax', 'WMin', 'CMin', 'HMin'];
+const profileThrNames = ['HMax', 'FMax', 'DMax', 'DMin', 'FMin', 'HMin'];
 
 function parseProfileParamLine(section, line) {
 	let line_words = line.split(';');
@@ -212,17 +193,21 @@ function parseProfileParamLine(section, line) {
 	param.section = section;
 	param.groups = [];
 	param.groups[0] = 'All';
-	param.name = line_words[0];
+	param.name = line_words[0].replaceAll('.', '_');
 	param.idx = line_words[1];
-	param.type = line_words[2];
-	param.access = line_words[3];
-	param.units = line_words[4];
-	param.descr = line_words[6];
+	param.category = line_words[2];
+	param.type = line_words[3];
+	param.access = line_words[4];
+	param.units = line_words[5];
+	param.default_value = line_words[6];
+	param.descr = line_words[7];
 	param.value = '0';
+	param.admin_state = '0';
 	if (section == 'Dynamic') {
 		param.thr = [];
 		param.colors = {};
 		param.colors.current = 0;
+		param.colors.normal = 0;
 		param.colors.warning = 0;
 		param.colors.critical = 0;
 	}
@@ -235,7 +220,7 @@ function parseProfileParamLine(section, line) {
 function parseProfileEnumLine(params, line) {
 	let line_words = line.split(';');
 	for (let i = 0; i < params.length; i++)	{
-		if (line_words[0] == params[i].name) {
+		if (line_words[0] == params[i].type) {
 			let line_words_enums = line_words[1].split('|');
 			params[i].enum = [];
 			for (let j = 0; j < line_words_enums.length; j++)	{
@@ -251,12 +236,12 @@ function parseProfileEnumLine(params, line) {
 function parseProfileBitmskLine(params, line) {
 	let line_words = line.split(';');
 	for (let i = 0; i < params.length; i++)	{
-		if (line_words[0] == params[i].name) {
+		if (line_words[0] == params[i].type) {
 			let line_words_bitmsks = line_words[2].split('|');
 			params[i].bitmask = [];
 			params[i].bitmask[0] = {};
 			params[i].bitmask[0].mask = 0
-			params[i].bitmask[0].string = line_words[1];
+			params[i].bitmask[0].string = line_words[1].split('@')[0];
 			for (let j = 0; j < line_words_bitmsks.length; j++) {
 				let line_words_bitmsks_values = line_words_bitmsks[j].split('@');
 				params[i].bitmask[j + 1] = {};
@@ -298,12 +283,13 @@ function createProfileParamSection(name, idx) {
 
 const profileParamSectionsMap  = [
 	{	profileName: '[1]', profileGroup: '[Group1]', sectionName: 'Info', sectionIdx: 1 },
-	{	profileName: '[2]', profileGroup: '[GROUPMON]', sectionName: 'Dynamic', sectionIdx: 2 },
+	{	profileName: '[2]', profileGroup: '[Group1]', sectionName: 'Dynamic', sectionIdx: 2 },
 	{	profileName: '[3]', profileGroup: '[Group3]', sectionName: 'Config', sectionIdx: 3 },
 	{	profileName: '[4]', profileGroup: '[Group4]', sectionName: 'Threshould', sectionIdx: 4 },
 	{	profileName: '[5]', profileGroup: '[Group5]', sectionName: 'Led', sectionIdx: 5 },
+	{	profileName: '[6]', profileGroup: '[Group6]', sectionName: 'Calib', sectionIdx: 6 },
+	{	profileName: '[7]', profileGroup: '[Group7]', sectionName: 'CalibValues', sectionIdx: 7 },
 	{	profileName: '[8]', profileGroup: '[Group8]', sectionName: 'Counter', sectionIdx: 8 },
-	{	profileName: '[103]', profileGroup: '[Group103]', sectionName: 'Port', sectionIdx: 103 },
 ];
 
 function parseProfileText(profileText) {
@@ -334,13 +320,13 @@ function parseProfileText(profileText) {
 				continue;
 			}
 
-			if (profile.lines[i] == '[EnumParam]') {
+			if (profile.lines[i] == '[Enums]') {
 				profileSectionName = profile.lines[i];
 				profileSectionType = 'Enum';
 				continue;
 			}
 
-			if (profile.lines[i] == '[BitmaskParam]') {
+			if (profile.lines[i] == '[Bitmasks]') {
 				profileSectionName = profile.lines[i];
 				profileSectionType = 'Bitmask';
 				continue;
@@ -393,9 +379,10 @@ function parseProfileColors(__profileColors) {
 
 	for (let i = 0; i < profileSection.params.length; i++) {
 		let paramColors = profileColors[i].split('@');
-		if (paramColors.length == 2) {
-			profileSection.params[i].colors.warning = parseInt(paramColors[0]);
-			profileSection.params[i].colors.critical = parseInt(paramColors[1]);
+		if (paramColors.length == 3) {
+			profileSection.params[i].colors.normal = parseInt(paramColors[0]);
+			profileSection.params[i].colors.warning = parseInt(paramColors[1]);
+			profileSection.params[i].colors.critical = parseInt(paramColors[2]);
 		}
 	}
 }
@@ -554,11 +541,15 @@ function profileParamValueSaveButtonOnClick(id, param) {
 function profileParamValueDetailsButtonOnClick(id, param) {
 	let col;
 
-	col = $('#profile_' + id + '_' + param.name + '_ccolor');
+	col = $('#profile_' + id + '_' + param.name + '_ncolor');
 	if (col.length != 0)
 		col.toggleClass('profile_param_section_group_hidden');
-
+	
 	col = $('#profile_' + id + '_' + param.name + '_wcolor');
+	if (col.length != 0)
+		col.toggleClass('profile_param_section_group_hidden');
+	
+	col = $('#profile_' + id + '_' + param.name + '_ccolor');
 	if (col.length != 0)
 		col.toggleClass('profile_param_section_group_hidden');
 
@@ -600,17 +591,16 @@ function appendProfileParamValueEdit(id, parent, param) {
 			}
 		}).appendTo(td);
 	}
-	if (param.section == 'Dynamic') {
-		if ((param.thr.length != 0) || (param.colors.warning != 0) || (param.colors.critical != 0)) {
-			$('<button/>', {
-				id : 'profile_' + id + '_' + param.name + '_save',
-				text : '...',
-				class : 'btn btn-primary',
-				on : {
-					click : () => { profileParamValueDetailsButtonOnClick(id, param); },
-				},
-			}).appendTo(td);
-		}
+	if (((param.thr != undefined) && (param.thr.length != 0)) || 
+	((param.colors != undefined) && ((param.colors.warning != 0) || (param.colors.critical != 0)))) {
+		$('<button/>', {
+			id : 'profile_' + id + '_' + param.name + '_save',
+			text : '...',
+			class : 'btn btn-primary',
+			on : {
+				click : () => { profileParamValueDetailsButtonOnClick(id, param); },
+			},
+		}).appendTo(td);
 	}
 }
 
@@ -623,7 +613,9 @@ function profileParamColorEditButtonOnClick(id, param, color) {
 	p.hide();
 	edit.hide();
 	if (select.length)	{
-		if (color == 'wcolor')
+		if (color == 'ncolor')
+			select.val(param.colors.warning);
+		else if (color == 'wcolor')
 			select.val(param.colors.warning);
 		else if (color == 'ccolor')
 			select.val(param.colors.critical);
@@ -635,7 +627,9 @@ function profileParamColorEditButtonOnClick(id, param, color) {
 }
 
 function updateProfileParamColor(id, param, color, value) {
-	if (color == 'wcolor')
+	if (color == 'ncolor')
+		param.colors.normal = value;
+	else if (color == 'wcolor')
 		param.colors.warning = value;
 	else if (color == 'ccolor')
 		param.colors.critical = value;
@@ -650,10 +644,12 @@ function putProfileParamColor(id, param, color, value) {
 		let xhr = new XMLHttpRequest();
 		let section = profile.sections.find(item => item.name == param.section);
 		xhr.open('PUT', 'api/v1/profile/sections/' + section.idx + '/params/' + param.idx + '/colors', true);
-		if (color == 'wcolor')
-			body = value + ';' + param.colors.critical;
+		if (color == 'ncolor')
+			body = value + ';' + param.colors.warning + ';' + param.colors.critical;
+		else if (color == 'wcolor')
+			body = param.colors.normal + ';' + value + ';' + param.colors.critical;
 		else if (color == 'ccolor')
-			body = param.colors.warning + ';' + value;
+			body = param.colors.normal + ';' +  param.colors.warning + ';' + value;
 		xhr.send(body);
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState != 4)
@@ -661,7 +657,14 @@ function putProfileParamColor(id, param, color, value) {
 
 			if (xhr.status != 200) {
 				console.log('[Error] putProfileParamColor() Status: ' + xhr.status);
-				if (color == 'wcolor') {
+				if (color == 'ncolor') {
+					updateProfileParamColor(id, param, color, param.colors.normal);
+					let colorSave = param.colors.normal;
+					param.colors.normal = color;
+					showToast('alarm', 'Profile', 'Set ' + param.name + 'NColor=' + getParamColorString(param.colors.warning) + ': failed');
+					param.colors.normal = colorSave;
+				}
+				else if (color == 'wcolor') {
 					updateProfileParamColor(id, param, color, param.colors.warning);
 					let colorSave = param.colors.warning;
 					param.colors.warning = color;
@@ -677,7 +680,10 @@ function putProfileParamColor(id, param, color, value) {
 				}
 			} else {
 				updateProfileParamColor(id, param, color, value);
-				if (color == 'wcolor') {
+				if (color == 'ncolor') {
+					showToast('normal', 'Profile', 'Set ' + param.name + 'NColor=' + getParamColorString(param.colors.warning) + ': ok');
+				}
+				else if (color == 'wcolor') {
 					showToast('normal', 'Profile', 'Set ' + param.name + 'WColor=' + getParamColorString(param.colors.warning) + ': ok');
 				}
 				else if (color == 'ccolor')	{
@@ -728,7 +734,9 @@ function appendProfileParamWDColor(id, parent, param, color) {
 		id : 'profile_' + id + '_' + param.name + '_' + color + '_name',
 		class : 'profile_' + id +'_param_' + color + '_name font-weight-bold m-0',
 	}).appendTo(td);
-	if (color == 'wcolor') {
+	if (color == 'ncolor') {
+		p.text(param.name + 'NColor');
+	}	else if (color == 'wcolor') {
 		p.text(param.name + 'WColor');
 	}	else if (color == 'ccolor') {
 		p.text(param.name + 'CColor');
@@ -738,7 +746,9 @@ function appendProfileParamWDColor(id, parent, param, color) {
 		id : 'profile_' + id + '_' + param.name + '_' + color + '_descr',
 		class : 'profile_' + id + '_param_' + color + '_descr font-weight-light m-0',
 	}).appendTo(td);
-	if (color == 'wcolor') {
+	if (color == 'ncolor') {
+		p.text(param.name + ' normal color');
+	}	else if (color == 'wcolor') {
 		p.text(param.name + ' warning color');
 	}	else if (color == 'ccolor') {
 		p.text(param.name + ' critical color');
@@ -750,7 +760,9 @@ function appendProfileParamWDColor(id, parent, param, color) {
 		class : 'profile_' + id + '_param_p m-0',
 		text : getParamColorString(param.color),
 	}).appendTo(td);
-	if (color == 'wcolor') {
+	if (color == 'ncolor') {
+		p.text(getParamColorString(param.colors.normal));
+	}	else if (color == 'wcolor') {
 		p.text(getParamColorString(param.colors.warning));
 	}	else if (color == 'ccolor') {
 		p.text(getParamColorString(param.colors.critical));
@@ -858,6 +870,8 @@ function appendProfileParamsTable (id, parent) {
 		appendProfileParam(id, tbody, profile.params[i]);
 		if (profile.params[i].thr != undefined)
 			appendProfileParamThr(id, tbody, profile.params[i]);
+		if ((profile.params[i].section == 'Dynamic') && (profile.params[i].colors.normal != 0))
+			appendProfileParamWDColor(id, tbody, profile.params[i], 'ncolor');
 		if ((profile.params[i].section == 'Dynamic') && (profile.params[i].colors.warning != 0))
 			appendProfileParamWDColor(id, tbody, profile.params[i], 'wcolor');
 		if ((profile.params[i].section == 'Dynamic') && (profile.params[i].colors.critical != 0))
