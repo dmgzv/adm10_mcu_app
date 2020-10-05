@@ -76,10 +76,24 @@ static int32_t __PROFILE_CheckParamValueLimits(const PROFILE_T *Profile, const P
 
 static int32_t __PROFILE_CheckParamValueConstraint(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, void *Value)
 {
-	if (Param->CheckConstraint)
+	uint32_t i;
+	
+	if (Param->Constraints)
 	{
-		if (Param->CheckConstraint(Value) != true)
-			return -1;
+		for (i = 0; i < *Param->ConstraintsCnt; i++)
+		{
+			if (Param->Constraints[i].CheckCondition())
+			{
+				if (Param->Constraints[i].CheckValue(Value))
+				{
+					return 0;
+				}
+				else
+				{
+					return -1;
+				}
+			}
+		}
 	}
 	return 0;
 }
@@ -122,6 +136,23 @@ static int32_t __PROFILE_WriteParamValue(const PROFILE_T *Profile, const PROFILE
 		return 0;
 	}
 	
+	return -1;
+}
+
+static int32_t __PROFILE_WriteParamValidValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param)
+{
+	uint32_t i;
+	
+	if (Param->Constraints)
+	{
+		for (i = 0; i < *Param->ConstraintsCnt; i++)
+		{
+			if (Param->Constraints[i].CheckCondition())
+			{
+				Param->Constraints[i].GetValidValue(Param->Value);
+			}
+		}
+	}
 	return -1;
 }
 
@@ -402,8 +433,7 @@ int32_t __PROFILE_GetParamByIndex(const PROFILE_T *Profile, uint8_t SectionIndex
 
 int32_t __PROFILE_SetParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, PROFILE_VALUE_T *Value)
 {
-	uint32_t i, j, k;
-	uint32_t enum_errs, type_errs;
+	uint32_t i, j;
 	
 	if (__PROFILE_CheckParamValueLimits(Profile, Param, Value))
 		return -1;
@@ -412,9 +442,6 @@ int32_t __PROFILE_SetParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T 
 	if (__PROFILE_WriteParamValue(Profile, Param, Value))
 		return -1;
 	
-	type_errs = 0;
-	enum_errs = 0;
-	/*todo: Check other parameters constraints*/
 	for (i = 0; i < Profile->SectionsCnt; i++)
 	{
 		if (Profile->Sections[i]->Index == 3)
@@ -425,20 +452,8 @@ config_check:
 				if ((__PROFILE_CheckParamValueLimits(Profile, Profile->Sections[i]->Params[j], Profile->Sections[i]->Params[j]->Value) || 
 					__PROFILE_CheckParamValueConstraint(Profile, Profile->Sections[i]->Params[j], Profile->Sections[i]->Params[j]->Value)))
 				{
-					if ((Profile->Sections[i]->Params[j]->Type > PROFILE_TYPE_ENUM) &&
-						(Profile->Sections[i]->Params[j]->Type < (PROFILE_TYPE_ENUM + 1024)))
-					{
-						for (k = 0; k < Profile->Sections[i]->Params[j]->Enum->ValuesCnt; k++)
-						{
-							if (__PROFILE_CheckParamValueConstraint(Profile, Profile->Sections[i]->Params[j], (void*)&Profile->Sections[i]->Params[j]->Enum->Values[k].Number) == 0)
-							{
-								__PROFILE_WriteParamValue(Profile, Profile->Sections[i]->Params[j], (void*)&Profile->Sections[i]->Params[j]->Enum->Values[k].Number);
-								goto config_check;
-							}
-						}
-						enum_errs++;
-					}
-					type_errs++;
+					__PROFILE_WriteParamValidValue(Profile, Profile->Sections[i]->Params[j]);
+					goto config_check;
 				}
 			}
 		}
@@ -455,7 +470,17 @@ int32_t __PROFILE_GetParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T 
 
 int32_t __PROFILE_GetParamAdminState(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, int32_t *AdminState)
 {
-	*AdminState = Param->GetAdminState();
+	uint32_t i;
+	
+	for (i = 0; i < *Param->AdminStatesCnt; i++)
+	{	
+		if (Param->AdminStates[i].CheckCondition())
+		{
+			*AdminState = Param->AdminStates[i].GetValue();
+			return 0;
+		}
+	}
+	*AdminState = 0;
 	return 0;
 }
 

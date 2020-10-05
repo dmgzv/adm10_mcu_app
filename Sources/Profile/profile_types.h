@@ -89,14 +89,22 @@ typedef struct profile_colors {
 typedef struct profile_param PROFILE_PARAM_T;
 
 typedef struct profile_thrs {
-	const PROFILE_PARAM_T *HMin;
 	const PROFILE_PARAM_T *FMin;
 	const PROFILE_PARAM_T *DMin;
 	const PROFILE_PARAM_T *DMax;
 	const PROFILE_PARAM_T *FMax;
-	const PROFILE_PARAM_T *HMax;
-	const PROFILE_PARAM_T *HStep;
 } PROFILE_THRS_T;
+
+typedef struct profile_constraint {
+	bool (*CheckCondition)(void);
+	bool (*CheckValue)(void *Value);
+	void (*GetValidValue)(void* Value);
+} PROFILE_CONSTRAINT_T;
+
+typedef struct profile_admin_state {
+	bool (*CheckCondition)(void);
+	int32_t (*GetValue)(void);
+} PROFILE_ADMIN_STATE_T;
 
 struct profile_param {
 	const char *Name;
@@ -110,8 +118,10 @@ struct profile_param {
 	const PROFILE_BITMSK_T *Bitmsk;
 	const PROFILE_COLORS_T *Colors;
 	const PROFILE_THRS_T *Thrs;
-	bool (*CheckConstraint)(void *Value);
-	int32_t (*GetAdminState)(void);
+	const PROFILE_CONSTRAINT_T *Constraints;
+	const uint32_t *ConstraintsCnt;
+	const PROFILE_ADMIN_STATE_T *AdminStates;
+	const uint32_t *AdminStatesCnt;
 };
 
 typedef struct profile_section {
