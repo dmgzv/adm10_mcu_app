@@ -1,4 +1,4 @@
-#include "profile_adm10.h"
+﻿#include "profile_adm10.h"
 
 const PROFILE_PARAM_T PROFILE_ADM10_Vendor = {
 	.Name = "Vendor",

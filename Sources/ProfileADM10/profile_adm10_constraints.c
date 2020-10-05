@@ -5314,99 +5314,99 @@ bool PROFILE_ADM10_Ln_4_Rx_OCh_SetDirection_Constraint_1_CheckValue(void* Value)
 }
 bool PROFILE_ADM10_Ln_1_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Ln_1_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Ln_1_Rx_OCh_SetFreq_Constraint_3_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.41);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.41 * 100)));
 }
 bool PROFILE_ADM10_Ln_1_Rx_OCh_SetFreq_Constraint_4_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.41);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.41 * 100)));
 }
 bool PROFILE_ADM10_Ln_1_Rx_OCh_SetFreq_Constraint_5_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.10);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.10 * 100)));
 }
 bool PROFILE_ADM10_Ln_1_Rx_OCh_SetFreq_Constraint_6_CheckValue(void* Value)
 {
-	return ((*((float*)Value) >= 191.50) && (*((float*)Value) <= 196.15) && (((int)(*((float*)Value) * 100) % 5) == 0));
+	return (((uint32_t)(*(float*)Value * 100) >= ((uint32_t)(191.50 * 100))) && ((uint32_t)(*(float*)Value * 100) <= ((uint32_t)(196.15 * 100))) && (((uint32_t)(*(float*)Value * 100) % ((uint32_t)(0.05 * 100))) == 0));
 }
 bool PROFILE_ADM10_Ln_2_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Ln_2_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Ln_2_Rx_OCh_SetFreq_Constraint_3_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.41);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.41 * 100)));
 }
 bool PROFILE_ADM10_Ln_2_Rx_OCh_SetFreq_Constraint_4_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.41);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.41 * 100)));
 }
 bool PROFILE_ADM10_Ln_2_Rx_OCh_SetFreq_Constraint_5_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.10);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.10 * 100)));
 }
 bool PROFILE_ADM10_Ln_2_Rx_OCh_SetFreq_Constraint_6_CheckValue(void* Value)
 {
-	return ((*((float*)Value) >= 191.50) && (*((float*)Value) <= 196.15) && (((int)(*((float*)Value) * 100) % 5) == 0));
+	return (((uint32_t)(*(float*)Value * 100) >= ((uint32_t)(191.50 * 100))) && ((uint32_t)(*(float*)Value * 100) <= ((uint32_t)(196.15 * 100))) && (((uint32_t)(*(float*)Value * 100) % ((uint32_t)(0.05 * 100))) == 0));
 }
 bool PROFILE_ADM10_Ln_3_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Ln_3_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Ln_3_Rx_OCh_SetFreq_Constraint_3_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.41);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.41 * 100)));
 }
 bool PROFILE_ADM10_Ln_3_Rx_OCh_SetFreq_Constraint_4_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.41);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.41 * 100)));
 }
 bool PROFILE_ADM10_Ln_3_Rx_OCh_SetFreq_Constraint_5_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.10);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.10 * 100)));
 }
 bool PROFILE_ADM10_Ln_3_Rx_OCh_SetFreq_Constraint_6_CheckValue(void* Value)
 {
-	return ((*((float*)Value) >= 191.50) && (*((float*)Value) <= 196.15) && (((int)(*((float*)Value) * 100) % 5) == 0));
+	return (((uint32_t)(*(float*)Value * 100) >= ((uint32_t)(191.50 * 100))) && ((uint32_t)(*(float*)Value * 100) <= ((uint32_t)(196.15 * 100))) && (((uint32_t)(*(float*)Value * 100) % ((uint32_t)(0.05 * 100))) == 0));
 }
 bool PROFILE_ADM10_Ln_4_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Ln_4_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Ln_4_Rx_OCh_SetFreq_Constraint_3_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.41);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.41 * 100)));
 }
 bool PROFILE_ADM10_Ln_4_Rx_OCh_SetFreq_Constraint_4_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.41);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.41 * 100)));
 }
 bool PROFILE_ADM10_Ln_4_Rx_OCh_SetFreq_Constraint_5_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 193.10);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(193.10 * 100)));
 }
 bool PROFILE_ADM10_Ln_4_Rx_OCh_SetFreq_Constraint_6_CheckValue(void* Value)
 {
-	return ((*((float*)Value) >= 191.50) && (*((float*)Value) <= 196.15) && (((int)(*((float*)Value) * 100) % 5) == 0));
+	return (((uint32_t)(*(float*)Value * 100) >= ((uint32_t)(191.50 * 100))) && ((uint32_t)(*(float*)Value * 100) <= ((uint32_t)(196.15 * 100))) && (((uint32_t)(*(float*)Value * 100) % ((uint32_t)(0.05 * 100))) == 0));
 }
 bool PROFILE_ADM10_Ln_1_Rx_OCh_SetModulation_Constraint_1_CheckValue(void* Value)
 {
@@ -5538,19 +5538,19 @@ bool PROFILE_ADM10_Ln_4_Tx_OCh_SetDirection_Constraint_1_CheckValue(void* Value)
 }
 bool PROFILE_ADM10_Ln_1_Tx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == PROFILE_ADM10_ConfigValues.Ln_1_Rx_OCh_SetFreq);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(PROFILE_ADM10_ConfigValues.Ln_1_Rx_OCh_SetFreq * 100)));
 }
 bool PROFILE_ADM10_Ln_2_Tx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == PROFILE_ADM10_ConfigValues.Ln_2_Rx_OCh_SetFreq);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(PROFILE_ADM10_ConfigValues.Ln_2_Rx_OCh_SetFreq * 100)));
 }
 bool PROFILE_ADM10_Ln_3_Tx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == PROFILE_ADM10_ConfigValues.Ln_3_Rx_OCh_SetFreq);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(PROFILE_ADM10_ConfigValues.Ln_3_Rx_OCh_SetFreq * 100)));
 }
 bool PROFILE_ADM10_Ln_4_Tx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == PROFILE_ADM10_ConfigValues.Ln_4_Rx_OCh_SetFreq);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(PROFILE_ADM10_ConfigValues.Ln_4_Rx_OCh_SetFreq * 100)));
 }
 bool PROFILE_ADM10_Ln_1_Tx_OCh_SetModulation_Constraint_1_CheckValue(void* Value)
 {
@@ -7442,131 +7442,131 @@ bool PROFILE_ADM10_Cl_16_Rx_OCh_SetDirection_Constraint_1_CheckValue(void* Value
 }
 bool PROFILE_ADM10_Cl_1_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_1_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_2_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_2_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_3_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_3_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_4_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_4_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_5_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_5_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_6_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_6_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_7_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_7_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_8_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_8_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_9_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_9_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_10_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_10_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_11_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_11_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_12_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_12_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_13_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_13_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_14_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_14_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_15_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_15_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_16_Rx_OCh_SetFreq_Constraint_1_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 352.70);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(352.70 * 100)));
 }
 bool PROFILE_ADM10_Cl_16_Rx_OCh_SetFreq_Constraint_2_CheckValue(void* Value)
 {
-	return (*((float*)Value) == 228.85);
+	return ((uint32_t)(*(float*)Value * 100) == ((uint32_t)(228.85 * 100)));
 }
 bool PROFILE_ADM10_Cl_1_Rx_OCh_SetModulation_Constraint_1_CheckValue(void* Value)
 {

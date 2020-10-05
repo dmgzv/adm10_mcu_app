@@ -1,4 +1,4 @@
-#include "profile_adm10_adminstates.h"
+﻿#include "profile_adm10_adminstates.h"
 
 bool PROFILE_ADM10_Vendor_AdminState_1_CheckCondition(void)
 {
