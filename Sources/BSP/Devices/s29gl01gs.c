@@ -296,7 +296,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 		goto error;
 	
 	/* Test the NOR ID correctness */
-  if((Dev->Id.Manufacturer_Code != (uint16_t)S29GL01GS_MANUFACTURER_CODE) ||
+  if(/*(Dev->Id.Manufacturer_Code != (uint16_t)S29GL01GS_MANUFACTURER_CODE) ||*/
      (Dev->Id.Device_Code1 != (uint16_t)S29GL01GS_DEVICE_CODE1) ||
      (Dev->Id.Device_Code2 != (uint16_t)S29GL01GS_DEVICE_CODE2) ||
      (Dev->Id.Device_Code3 != (uint16_t)S29GL01GS_DEVICE_CODE3))
@@ -359,7 +359,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 		goto error;
 	
 	/* Test the NOR ID correctness */
-  if((Dev->Id.Manufacturer_Code != (uint16_t)S29GL01GS_MANUFACTURER_CODE) ||
+  if(/*(Dev->Id.Manufacturer_Code != (uint16_t)S29GL01GS_MANUFACTURER_CODE) ||*/
      (Dev->Id.Device_Code1 != (uint16_t)S29GL01GS_DEVICE_CODE1) ||
      (Dev->Id.Device_Code2 != (uint16_t)S29GL01GS_DEVICE_CODE2) ||
      (Dev->Id.Device_Code3 != (uint16_t)S29GL01GS_DEVICE_CODE3))
