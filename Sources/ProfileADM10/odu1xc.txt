@@ -1,0 +1,170 @@
+ODU1XC_<odu1xc_idx>.SetSrc;SetAdminState == 0;Value == 0;0
+ODU1XC_<odu1xc_idx>.SetSrc;(SetAdminState != 0) && (SetMode == 0);\
+(Value == 0) ||\
+(\
+	(\
+		((Value == 247) && (Ln_1.OTU2.ODU2.ODU1_1.SetAdminState != 0)) ||\
+		((Value == 248) && (Ln_1.OTU2.ODU2.ODU1_2.SetAdminState != 0)) ||\
+		((Value == 249) && (Ln_1.OTU2.ODU2.ODU1_3.SetAdminState != 0)) ||\
+		((Value == 250) && (Ln_1.OTU2.ODU2.ODU1_4.SetAdminState != 0)) ||\
+		((Value == 251) && (Ln_2.OTU2.ODU2.ODU1_1.SetAdminState != 0)) ||\
+		((Value == 252) && (Ln_2.OTU2.ODU2.ODU1_2.SetAdminState != 0)) ||\
+		((Value == 253) && (Ln_2.OTU2.ODU2.ODU1_3.SetAdminState != 0)) ||\
+		((Value == 254) && (Ln_2.OTU2.ODU2.ODU1_4.SetAdminState != 0)) ||\
+		((Value == 279) && (Cl_1.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 281) && (Cl_3.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 283) && (Cl_5.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 285) && (Cl_7.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 287) && (Cl_9.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 289) && (Cl_11.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 291) && (Cl_13.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 293) && (Cl_15.STM16.ODU1.SetAdminState != 0))\
+	) &&\
+	((<odu1xc_idx> == 1) || (ODU1XC_1.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 2) || (ODU1XC_2.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 3) || (ODU1XC_3.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 4) || (ODU1XC_4.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 5) || (ODU1XC_5.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 6) || (ODU1XC_6.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 7) || (ODU1XC_7.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 8) || (ODU1XC_8.SetSrc != Value)) &&\
+	(ODU1XC_1.SetDst != Value) &&\
+	(ODU1XC_2.SetDst != Value) &&\
+	(ODU1XC_3.SetDst != Value) &&\
+	(ODU1XC_4.SetDst != Value) &&\
+	(ODU1XC_5.SetDst != Value) &&\
+	(ODU1XC_6.SetDst != Value) &&\
+	(ODU1XC_7.SetDst != Value) &&\
+	(ODU1XC_8.SetDst != Value)\
+)\
+;0
+ODU1XC_1.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Cl_1.STM16.ODU1.SetAdminState == 0);Value == 0;0
+ODU1XC_1.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Cl_1.STM16.ODU1.SetAdminState != 0);Value == 279;279
+ODU1XC_2.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Cl_3.STM16.ODU1.SetAdminState == 0);Value == 0;0
+ODU1XC_2.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Cl_3.STM16.ODU1.SetAdminState != 0);Value == 281;281
+ODU1XC_3.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Cl_5.STM16.ODU1.SetAdminState == 0);Value == 0;0
+ODU1XC_3.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Cl_5.STM16.ODU1.SetAdminState != 0);Value == 283;283
+ODU1XC_4.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Cl_7.STM16.ODU1.SetAdminState == 0);Value == 0;0
+ODU1XC_4.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Cl_7.STM16.ODU1.SetAdminState != 0);Value == 285;285
+ODU1XC_5.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Cl_9.STM16.ODU1.SetAdminState == 0);Value == 0;0
+ODU1XC_5.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Cl_9.STM16.ODU1.SetAdminState != 0);Value == 287;287
+ODU1XC_6.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Cl_11.STM16.ODU1.SetAdminState == 0);Value == 0;0
+ODU1XC_6.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Cl_11.STM16.ODU1.SetAdminState != 0);Value == 289;289
+ODU1XC_7.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Cl_13.STM16.ODU1.SetAdminState == 0);Value == 0;0
+ODU1XC_7.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Cl_13.STM16.ODU1.SetAdminState != 0);Value == 291;291
+ODU1XC_8.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Cl_15.STM16.ODU1.SetAdminState == 0);Value == 0;0
+ODU1XC_8.SetSrc;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Cl_15.STM16.ODU1.SetAdminState != 0);Value == 293;293
+ODU1XC_<odu1xc_idx>.SetSrc;\
+(SetAdminState != 0) &&\
+(SetMode == 3) &&\
+(<odu1xc_idx> == 5) &&\
+(<odu1xc_idx> == 6) &&\
+(<odu1xc_idx> == 7) &&\
+(<odu1xc_idx> == 8);\
+(Value == 0) ||\
+(\
+	(\
+		((Value == 288) && (Cl_10.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 290) && (Cl_12.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 292) && (Cl_14.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 294) && (Cl_16.STM16.ODU1.SetAdminState != 0))\
+	) && \
+	((<odu1xc_idx> == 1) || (ODU1XC_1.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 2) || (ODU1XC_2.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 3) || (ODU1XC_3.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 4) || (ODU1XC_4.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 5) || (ODU1XC_5.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 6) || (ODU1XC_6.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 7) || (ODU1XC_7.SetSrc != Value)) &&\
+	((<odu1xc_idx> == 8) || (ODU1XC_8.SetSrc != Value)) &&\
+	(ODU1XC_1.SetDst != Value) &&\
+	(ODU1XC_2.SetDst != Value) &&\
+	(ODU1XC_3.SetDst != Value) &&\
+	(ODU1XC_4.SetDst != Value) &&\
+	(ODU1XC_5.SetDst != Value) &&\
+	(ODU1XC_6.SetDst != Value) &&\
+	(ODU1XC_7.SetDst != Value) &&\
+	(ODU1XC_8.SetDst != Value)\
+);Value == 0;0
+
+
+ODU1XC_<odu1xc_idx>.SetDst;SetAdminState == 0;Value == 0;0
+ODU1XC_<odu1xc_idx>.SetDst;(SetAdminState != 0) && (SetMode == 0);\
+(Value == 0) ||\
+(\
+	(\
+		((Value == 247) && (Ln_1.OTU2.ODU2.ODU1_1.SetAdminState != 0)) ||\
+		((Value == 248) && (Ln_1.OTU2.ODU2.ODU1_2.SetAdminState != 0)) ||\
+		((Value == 249) && (Ln_1.OTU2.ODU2.ODU1_3.SetAdminState != 0)) ||\
+		((Value == 250) && (Ln_1.OTU2.ODU2.ODU1_4.SetAdminState != 0)) ||\
+		((Value == 251) && (Ln_2.OTU2.ODU2.ODU1_1.SetAdminState != 0)) ||\
+		((Value == 252) && (Ln_2.OTU2.ODU2.ODU1_2.SetAdminState != 0)) ||\
+		((Value == 253) && (Ln_2.OTU2.ODU2.ODU1_3.SetAdminState != 0)) ||\
+		((Value == 254) && (Ln_2.OTU2.ODU2.ODU1_4.SetAdminState != 0))\
+	) &&\
+	(ODU1XC_1.SetSrc != Value) &&\
+	(ODU1XC_2.SetSrc != Value) &&\
+	(ODU1XC_3.SetSrc != Value) &&\
+	(ODU1XC_4.SetSrc != Value) &&\
+	(ODU1XC_5.SetSrc != Value) &&\
+	(ODU1XC_6.SetSrc != Value) &&\
+	(ODU1XC_7.SetSrc != Value) &&\
+	(ODU1XC_8.SetSrc != Value) &&\
+	((<odu1xc_idx> == 1) || (ODU1XC_1.SetDst != Value)) &&\
+	((<odu1xc_idx> == 2) || (ODU1XC_2.SetDst != Value)) &&\
+	((<odu1xc_idx> == 3) || (ODU1XC_3.SetDst != Value)) &&\
+	((<odu1xc_idx> == 4) || (ODU1XC_4.SetDst != Value)) &&\
+	((<odu1xc_idx> == 5) || (ODU1XC_5.SetDst != Value)) &&\
+	((<odu1xc_idx> == 6) || (ODU1XC_6.SetDst != Value)) &&\
+	((<odu1xc_idx> == 7) || (ODU1XC_7.SetDst != Value)) &&\
+	((<odu1xc_idx> == 8) || (ODU1XC_8.SetDst != Value))\
+)\
+;0
+ODU1XC_1.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Ln_1.OTU2.ODU2.ODU1_1.SetAdminState == 0);Value == 0;0
+ODU1XC_1.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Ln_1.OTU2.ODU2.ODU1_1.SetAdminState != 0);Value == 247;247
+ODU1XC_2.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Ln_1.OTU2.ODU2.ODU1_2.SetAdminState == 0);Value == 0;0
+ODU1XC_2.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Ln_1.OTU2.ODU2.ODU1_2.SetAdminState != 0);Value == 248;248
+ODU1XC_3.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Ln_1.OTU2.ODU2.ODU1_3.SetAdminState == 0);Value == 0;0
+ODU1XC_3.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Ln_1.OTU2.ODU2.ODU1_3.SetAdminState != 0);Value == 249;249
+ODU1XC_4.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Ln_1.OTU2.ODU2.ODU1_4.SetAdminState == 0);Value == 0;0
+ODU1XC_4.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2) || (SetMode == 3)) && (Ln_1.OTU2.ODU2.ODU1_4.SetAdminState != 0);Value == 250;250
+ODU1XC_5.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Ln_2.OTU2.ODU2.ODU1_1.SetAdminState == 0);Value == 0;0
+ODU1XC_5.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Ln_2.OTU2.ODU2.ODU1_1.SetAdminState != 0);Value == 251;251
+ODU1XC_6.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Ln_2.OTU2.ODU2.ODU1_2.SetAdminState == 0);Value == 0;0
+ODU1XC_6.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Ln_2.OTU2.ODU2.ODU1_2.SetAdminState != 0);Value == 252;252
+ODU1XC_7.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Ln_2.OTU2.ODU2.ODU1_3.SetAdminState == 0);Value == 0;0
+ODU1XC_7.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Ln_2.OTU2.ODU2.ODU1_3.SetAdminState != 0);Value == 253;253
+ODU1XC_8.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Ln_2.OTU2.ODU2.ODU1_4.SetAdminState == 0);Value == 0;0
+ODU1XC_8.SetDst;(SetAdminState != 0) && ((SetMode == 1) || (SetMode == 2)) && (Ln_2.OTU2.ODU2.ODU1_4.SetAdminState != 0);Value == 254;254
+ODU1XC_<odu1xc_idx>.SetDst;\
+(SetAdminState != 0) &&\
+(SetMode == 3) &&\
+(<odu1xc_idx> == 5) &&\
+(<odu1xc_idx> == 6) &&\
+(<odu1xc_idx> == 7) &&\
+(<odu1xc_idx> == 8);\
+(Value == 0) ||\
+(\
+	(\
+		((Value == 287) && (Cl_9.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 289) && (Cl_11.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 291) && (Cl_13.STM16.ODU1.SetAdminState != 0)) ||\
+		((Value == 293) && (Cl_15.STM16.ODU1.SetAdminState != 0))\
+	) && \
+	(ODU1XC_1.SetSrc != Value) &&\
+	(ODU1XC_2.SetSrc != Value) &&\
+	(ODU1XC_3.SetSrc != Value) &&\
+	(ODU1XC_4.SetSrc != Value) &&\
+	(ODU1XC_5.SetSrc != Value) &&\
+	(ODU1XC_6.SetSrc != Value) &&\
+	(ODU1XC_7.SetSrc != Value) &&\
+	(ODU1XC_8.SetSrc != Value) &&\
+	((<odu1xc_idx> == 1) || (ODU1XC_1.SetDst != Value)) &&\
+	((<odu1xc_idx> == 2) || (ODU1XC_2.SetDst != Value)) &&\
+	((<odu1xc_idx> == 3) || (ODU1XC_3.SetDst != Value)) &&\
+	((<odu1xc_idx> == 4) || (ODU1XC_4.SetDst != Value)) &&\
+	((<odu1xc_idx> == 5) || (ODU1XC_5.SetDst != Value)) &&\
+	((<odu1xc_idx> == 6) || (ODU1XC_6.SetDst != Value)) &&\
+	((<odu1xc_idx> == 7) || (ODU1XC_7.SetDst != Value)) &&\
+	((<odu1xc_idx> == 8) || (ODU1XC_8.SetDst != Value))\
+);Value == 0;0
