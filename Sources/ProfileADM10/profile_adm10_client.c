@@ -2608,7 +2608,7 @@ static void PROFILE_ADM10_CLIENT_UpdateEthPerfValues(PROFILE_T *Profile, uint32_
 			TxOcts = fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].EthTxOcts;
 			TxErrs = fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].EthTxErrs;
 		}
-		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) || \
+		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && \
 			(fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && \
 			(BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx / 8]) == BSP_DEV_STATE_OK))
 		{
