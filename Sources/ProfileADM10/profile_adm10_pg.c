@@ -1997,12 +1997,12 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 							return;
 						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[j], &ODU1XCDst))
 							return;
-						if (ODU1XCSrc == PROFILE_ADM10_XC_CLIENT_ODU1(8 + PrimaryLineIdx))
+						if (ODU1XCSrc == PROFILE_ADM10_XC_CLIENT_ODU1(8 + (PrimaryLineIdx * 2)))
 						{
 							Target = ODU1XCDst;
 							break;
 						}
-						if (ODU1XCDst == PROFILE_ADM10_XC_CLIENT_ODU1(8 + PrimaryLineIdx))
+						if (ODU1XCDst == PROFILE_ADM10_XC_CLIENT_ODU1(8 + (PrimaryLineIdx * 2)))
 						{
 							Target = ODU1XCSrc;
 							break;
@@ -2621,12 +2621,12 @@ static void PROFILE_ADM10_ODU1PG_UpdateValues(PROFILE_T *Profile)
 							return;
 						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[j], &ODU1XCDst))
 							return;
-						if (ODU1XCSrc == PROFILE_ADM10_XC_CLIENT_ODU1(8 + PrimaryLineIdx))
+						if (ODU1XCSrc == PROFILE_ADM10_XC_CLIENT_ODU1(8 + (PrimaryLineIdx * 2)))
 						{
 							Target = ODU1XCDst;
 							break;
 						}
-						if (ODU1XCDst == PROFILE_ADM10_XC_CLIENT_ODU1(8 + PrimaryLineIdx))
+						if (ODU1XCDst == PROFILE_ADM10_XC_CLIENT_ODU1(8 + (PrimaryLineIdx * 2)))
 						{
 							Target = ODU1XCSrc;
 							break;
