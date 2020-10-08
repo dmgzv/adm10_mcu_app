@@ -1006,7 +1006,7 @@ void http_server_serve_get_api_v1_profile_section_values(struct netconn *conn, H
 				__PROFILE_GetParamValue(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &Value);
 				__PROFILE_GetParamColor(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &Color);
 				__PROFILE_GetParamAdminState(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &AdminState);
-				__PROFILE_ParamValueToString(PROFILE_ADM10.Sections[i]->Params[j]->Type, &Value, &RESPONCE_BODY[RESPONCE_BODY_LEN], &Len);
+				PROFILE_ParamValueToString(PROFILE_ADM10.Sections[i]->Params[j]->Type, &Value, &RESPONCE_BODY[RESPONCE_BODY_LEN], &Len);
 				RESPONCE_BODY_LEN += Len;
 				RESPONCE_BODY_LEN += sprintf(&RESPONCE_BODY[RESPONCE_BODY_LEN], "@%d", AdminState);
 				if (Color != PROFILE_COLOR_NA)
@@ -1169,9 +1169,9 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	}
 	
 	/*Prepare request*/
-	if (__PROFILE_GetParamByIndex(&PROFILE_ADM10, section_idx, param_idx, &Param))
+	if (PROFILE_GetParamByIndex(&PROFILE_ADM10, section_idx, param_idx, &Param))
 		goto error;
-	if (__PROFILE_StringToParamValue(Param->Type, &Value, data, datalen))
+	if (PROFILE_StringToParamValue(Param->Type, &Value, data, datalen))
 		goto error;	
 	PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
 	if (__PROFILE_SetParamValue(&PROFILE_ADM10, Param, &Value))
@@ -1236,7 +1236,7 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 	}
 	
 	/*Prepare request*/
-	if (__PROFILE_GetParamByIndex(&PROFILE_ADM10, section_idx, param_idx, &Param))
+	if (PROFILE_GetParamByIndex(&PROFILE_ADM10, section_idx, param_idx, &Param))
 		goto error;
 	Normal = strtoul(data, &data, 10);
 	if (*data != ';')

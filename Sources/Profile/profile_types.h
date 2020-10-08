@@ -48,9 +48,9 @@ do {\
 #define PROFILE_COLOR_TYPE_DEGRADE	1
 #define PROFILE_COLOR_TYPE_FAILURE	2
 
-#define	PROFILE_ADMINSTATE_OOS	0
-#define	PROFILE_ADMINSTATE_MT		1
-#define	PROFILE_ADMINSTATE_IS		2
+#define	PROFILE_ADMIN_STATE_OOS	0
+#define	PROFILE_ADMIN_STATE_MT		1
+#define	PROFILE_ADMIN_STATE_IS		2
 
 #define PROFILE_ACCESS_NONE				(0)
 #define PROFILE_ACCESS_READ				(1 << 0)
@@ -87,6 +87,7 @@ typedef struct profile_colors {
 } PROFILE_COLORS_T;
 
 typedef struct profile_param PROFILE_PARAM_T;
+typedef struct profile PROFILE_T;
 
 typedef struct profile_thrs {
 	const PROFILE_PARAM_T *FMin;
@@ -106,6 +107,17 @@ typedef struct profile_admin_state {
 	int32_t (*GetValue)(void);
 } PROFILE_ADMIN_STATE_T;
 
+typedef union profile_value {
+	int32_t i32;
+	int64_t i64;
+	uint32_t u32;
+	uint64_t u64;
+	float f32;
+	char s16[16];
+	char s32[32];
+	char s64[64];
+} PROFILE_VALUE_T;
+
 struct profile_param {
 	const char *Name;
 	const uint8_t Section;
@@ -122,6 +134,7 @@ struct profile_param {
 	const uint32_t *ConstraintsCnt;
 	const PROFILE_ADMIN_STATE_T *AdminStates;
 	const uint32_t *AdminStatesCnt;
+	bool (*SetCallback)(PROFILE_T *Profile, PROFILE_PARAM_T *Param, PROFILE_VALUE_T *Value);
 };
 
 typedef struct profile_section {
@@ -136,18 +149,7 @@ typedef struct profile_values {
 	const uint32_t ValuesSize;
 } PROFILE_VALUES_T;
 
-typedef union profile_value {
-	int32_t i32;
-	int64_t i64;
-	uint32_t u32;
-	uint64_t u64;
-	float f32;
-	char s16[16];
-	char s32[32];
-	char s64[64];
-} PROFILE_VALUE_T;
-
-typedef struct profile {
+struct profile {
 	PROFILE_MUTEX_T *Mutex;
 	const char **Lines;
 	const uint32_t* LinesCnt;
@@ -156,6 +158,6 @@ typedef struct profile {
 	const PROFILE_VALUES_T *State;
 	const PROFILE_VALUES_T *Config;
 	const PROFILE_VALUES_T *Calib;
-} PROFILE_T;
+};
 
 #endif /* __PROFILE_TYPES_H */

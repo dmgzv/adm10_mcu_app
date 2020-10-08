@@ -9,8 +9,6 @@
 #define BSP_SW_TIME			__TIME__
 #define BSP_MCU_SW_VERSION	"1.0.0.38"
 
-#define BSP_CONFIG_PROFILES_CNT	1
-
 #define BSP_CONFIG_USE_FREERTOS
 
 #define BSP_CONFIG_USE_LOG

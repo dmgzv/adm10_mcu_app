@@ -197,7 +197,7 @@ static int32_t __PROFILE_ReadParamValue(const PROFILE_T *Profile, const PROFILE_
 	return -1;
 }
 
-int32_t __PROFILE_StringToParamValue(uint16_t Type, PROFILE_VALUE_T *Value, char *String, uint32_t Len)
+int32_t PROFILE_StringToParamValue(uint16_t Type, PROFILE_VALUE_T *Value, char *String, uint32_t Len)
 {	
 	char *c;
 	
@@ -323,7 +323,7 @@ int32_t __PROFILE_StringToParamValue(uint16_t Type, PROFILE_VALUE_T *Value, char
 	return 0;
 }
 
-int32_t __PROFILE_ParamValueToString(uint16_t Type, PROFILE_VALUE_T *Value, char *String, uint32_t *Len)
+int32_t PROFILE_ParamValueToString(uint16_t Type, PROFILE_VALUE_T *Value, char *String, uint32_t *Len)
 {	
 	if (Type == PROFILE_TYPE_NONE)
 	{
@@ -412,7 +412,96 @@ int32_t __PROFILE_ParamValueToString(uint16_t Type, PROFILE_VALUE_T *Value, char
 	return 0;
 }
 
-int32_t __PROFILE_GetParamByIndex(const PROFILE_T *Profile, uint8_t SectionIndex, uint32_t ParamIndex, PROFILE_PARAM_T** Param)
+int32_t PROFILE_GetParamValueSize(uint16_t Type, uint8_t *ValueSize)
+{
+	if (Type == PROFILE_TYPE_NONE)
+	{
+		*ValueSize = 0;
+	}
+	else if (Type == PROFILE_TYPE_INT32)
+	{
+		*ValueSize = sizeof(int32_t);
+	}
+	else if (Type == PROFILE_TYPE_INT64)
+	{
+		*ValueSize = sizeof(int64_t);
+	}
+	else if (Type == PROFILE_TYPE_UINT32)
+	{
+		*ValueSize = sizeof(uint32_t);
+	}
+	else if (Type == PROFILE_TYPE_HEX32)
+	{
+		*ValueSize = sizeof(uint32_t);
+	}
+	else if (Type == PROFILE_TYPE_UINT64)
+	{
+		*ValueSize = sizeof(uint64_t);
+	}
+	else if (Type == PROFILE_TYPE_HEX64)
+	{
+		*ValueSize = sizeof(uint64_t);
+	}
+	else if (Type == PROFILE_TYPE_FLOAT_1)
+	{
+		*ValueSize = sizeof(float);
+	}
+	else if (Type == PROFILE_TYPE_FLOAT_2)
+	{
+		*ValueSize = sizeof(float);
+	}
+	else if (Type == PROFILE_TYPE_FLOAT_3)
+	{
+		*ValueSize = sizeof(float);
+	}
+	else if (Type == PROFILE_TYPE_FLOAT_4)
+	{
+		*ValueSize = sizeof(float);
+	}
+	else if (Type == PROFILE_TYPE_FLOAT_E1)
+	{
+		*ValueSize = sizeof(float);
+	}
+	else if (Type == PROFILE_TYPE_FLOAT_E2)
+	{
+		*ValueSize = sizeof(float);
+	}
+	else if (Type == PROFILE_TYPE_FLOAT_E3)
+	{
+		*ValueSize = sizeof(float);
+	}
+	else if (Type == PROFILE_TYPE_FLOAT_E4)
+	{
+		*ValueSize = sizeof(float);
+	}
+	else if ((Type > PROFILE_TYPE_ENUM) && (Type < (PROFILE_TYPE_ENUM + 1024)))
+	{
+		*ValueSize = sizeof(int32_t);
+	}
+	else if ((Type > PROFILE_TYPE_BITMSK) && (Type < (PROFILE_TYPE_BITMSK+1024)))
+	{
+		*ValueSize = sizeof(uint32_t);
+	}
+	else if (Type == PROFILE_TYPE_STRING16)
+	{
+		*ValueSize = 16;
+	}
+	else if (Type == PROFILE_TYPE_STRING32)
+	{
+		*ValueSize = 32;
+	}
+	else if (Type == PROFILE_TYPE_STRING64)
+	{
+		*ValueSize = 64;
+	}
+	else
+	{
+		return -1;
+	}
+	return 0;
+}
+
+int32_t PROFILE_GetParamByIndex(const PROFILE_T *Profile, uint8_t SectionIndex, uint32_t ParamIndex, PROFILE_PARAM_T** Param)
 {
 	uint32_t i;
 	
@@ -439,6 +528,13 @@ int32_t __PROFILE_SetParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T 
 		return -1;
 	if (__PROFILE_CheckParamValueConstraint(Profile, Param, Value))
 		return -1;
+	
+	if (Param->SetCallback)
+	{
+		if (!Param->SetCallback((PROFILE_T*)Profile, (PROFILE_PARAM_T*)Param, Value))
+			return -1;
+	}
+	
 	if (__PROFILE_WriteParamValue(Profile, Param, Value))
 		return -1;
 	
@@ -730,6 +826,19 @@ int32_t __PROFILE_GetParamColors(const PROFILE_T *Profile, const PROFILE_PARAM_T
 	*Degrade = *Param->Colors->Degrade;
 	*Failure = *Param->Colors->Failure;
 	return 0;	
+}
+
+int32_t PROFILE_IsCalibParam(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param)
+{
+	if ((!Param->SetCallback) && ((Param->Access == 192) || (Param->Access == 208) || (Param->Access == 212) || (Param->Access == 213)))
+		return 0;
+	return -1;
+}
+int32_t PROFILE_IsConfigParam(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param)
+{
+	if ((!Param->SetCallback) && ((Param->Access == 240) || (Param->Access == 244) || (Param->Access == 245) || (Param->Access == 252) || (Param->Access == 253) || (Param->Access == 255)))
+		return 0;
+	return -1;
 }
 
 void PROFILE_Init(const PROFILE_T *Profile)

@@ -1,4 +1,4 @@
-#include "profile_adm10_constraints.h"
+﻿#include "profile_adm10_constraints.h"
 
 bool PROFILE_ADM10_SetMode_Constraint_1_CheckCondition(void)
 {

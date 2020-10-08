@@ -11,6 +11,7 @@
 #include "profile_adm10_colors.h"
 #include "profile_adm10_constraints.h"
 #include "profile_adm10_adminstates.h"
+#include "profile_adm10_set_callbacks.h"
 
 extern const PROFILE_PARAM_T PROFILE_ADM10_Vendor;
 extern const PROFILE_PARAM_T PROFILE_ADM10_PtNumber;

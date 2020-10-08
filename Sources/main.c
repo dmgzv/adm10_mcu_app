@@ -3,9 +3,7 @@
 #include "cmsis_os.h"
 #include "bsp.h"
 #include "profile.h"
-//#include "profile_iface.h"
-//#include "profile_types.h"
-//#include "profile_protocol.h"
+#include "profile_flash.h"
 #include "profile_adm10.h"
 #include "shell_cmd.h"
 #include "shell_uart.h"
@@ -34,6 +32,8 @@ const SHELL_IFACE_T ShellTelnetIface =
 	&SHELL_TELNET_Disconnect,
 	&ShellTelnetPriv
 };
+
+PROFILE_FLASH_T ProfileFlash;
 
 BOOTLOADER_T /*__attribute__((section ("CCM_DATA")))*/ Bootloader;
 const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= {
@@ -136,7 +136,7 @@ static void System_Thread(void const *argument)
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Flash*/
-	//PROFILE_FLASH_Init(&ProfileFlash, "Profile FLASH", &Profile);
+	PROFILE_FLASH_Init(&ProfileFlash, "Profile FLASH", &PROFILE_ADM10);
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Protocol*/
