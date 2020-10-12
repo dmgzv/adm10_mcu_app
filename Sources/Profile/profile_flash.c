@@ -47,12 +47,17 @@ typedef struct {
 	uint16_t Crc16;
 }PROFILE_FLASH_LANGPACK_RECORD_HEADER_T;
 
+#define PROFILE_FLASH_DATA_TYPE_VALUE		0
+#define PROFILE_FLASH_DATA_TYPE_NCOLOR	1
+#define PROFILE_FLASH_DATA_TYPE_DCOLOR	2
+#define PROFILE_FLASH_DATA_TYPE_FCOLOR	3
+
 int32_t PROFILE_FLASH_CheckCalibsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *RestoreValues)
 {
 	PROFILE_FLASH_CALIB_MAP_HEADER_T Header;
 	char Page[BSP_FLASH_PAGE_SIZE];
 	uint32_t i, j, Addr, Size, Pages;
-	uint8_t Len, NameLen, Section, ValueSize;
+	uint8_t Len, NameLen, Section, DataType, DataSize;
 	uint16_t Crc16;
 	
 	if (BSP_FLASH_WaitReady())
@@ -96,25 +101,30 @@ int32_t PROFILE_FLASH_CheckCalibsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *Re
 	{
 		for (j = 0; j < ProfileFlash->Profile->Sections[i]->ParamsCnt; j++)
 		{
-			if (!PROFILE_IsCalibParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
+			if (PROFILE_IsCalibParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
 				continue;
-			if (!PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &ValueSize))
-				goto error;
 			NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
 			Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
+			DataType = PROFILE_FLASH_DATA_TYPE_VALUE;
+			if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &DataSize))
+				goto error;
 			if (BSP_FLASH_Read(Addr + Size, (char*)&Len, sizeof(Len)))
 				goto error;
-			if (Len != NameLen + sizeof(Section) + sizeof(ValueSize))
+			if (Len != sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize))
 				goto mismatch;
 			Size += sizeof(Len);
 			
 			if (BSP_FLASH_Read(Addr + Size, (char*)&Page, Len))
 				goto error;
-			if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j]->Name, Page, NameLen))
+			if (memcmp(&NameLen, Page, sizeof(NameLen)))
 				goto mismatch;
-			if (memcmp(&Section, &Page[NameLen], sizeof(Section)))
+			if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j]->Name, &Page[sizeof(NameLen)], NameLen))
 				goto mismatch;
-			if (memcmp(&ValueSize, &Page[NameLen + sizeof(Section)], sizeof(ValueSize)))
+			if (memcmp(&Section, &Page[sizeof(NameLen) + NameLen], sizeof(Section)))
+				goto mismatch;
+			if (memcmp(&DataType, &Page[sizeof(NameLen) + NameLen + sizeof(Section)], sizeof(DataType)))
+				goto mismatch;
+			if (memcmp(&DataSize, &Page[sizeof(NameLen) + NameLen + sizeof(Section)+ sizeof(DataType)], sizeof(DataSize)))
 				goto mismatch;
 			Size += Len;
 		}
@@ -143,7 +153,7 @@ int32_t PROFILE_FLASH_SaveCalibsMap(PROFILE_FLASH_T *ProfileFlash)
 	PROFILE_FLASH_CALIB_MAP_HEADER_T Header;
 	char Page[BSP_FLASH_PAGE_SIZE];
 	uint32_t i, j, k, Addr, Size, PageIdx;
-	uint8_t Len, NameLen, Section, ValueSize;
+	uint8_t Len, NameLen, Section, DataType, DataSize;
 	uint16_t Crc16;
 	
 	Addr = PROFILE_FLASH_CALIB_MAP_BODY_ADDR;
@@ -155,23 +165,28 @@ int32_t PROFILE_FLASH_SaveCalibsMap(PROFILE_FLASH_T *ProfileFlash)
 	{
 		for (j = 0; j < ProfileFlash->Profile->Sections[i]->ParamsCnt; j++)
 		{
-			if (!PROFILE_IsCalibParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
+			if (PROFILE_IsCalibParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
 				continue;
-			if (!PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &ValueSize))
-				goto error;
 			NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
 			Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
-			Len = NameLen + sizeof(Section) + sizeof(ValueSize);			
-			for (k = 0; k < (sizeof(Len) + NameLen + sizeof(Section) + sizeof(ValueSize)); k++)
+			DataType = PROFILE_FLASH_DATA_TYPE_VALUE;
+			if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &DataSize))
+				goto error;
+			Len = sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize);			
+			for (k = 0; k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize)); k++)
 			{
 				if (k < sizeof(Len))
 					Page[PageIdx++] = ((uint8_t*)&Len)[k];
-				else if ((k >= sizeof(Len)) && (k < (sizeof(Len) + NameLen)))
+				else if ((k >= sizeof(Len)) && (k < (sizeof(Len) + sizeof(NameLen))))
 					Page[PageIdx++] = ProfileFlash->Profile->Sections[i]->Params[j]->Name[k - sizeof(Len)];
-				else if ((k >= (sizeof(Len) + NameLen)) && (k < (sizeof(Len) + NameLen + sizeof(Section))))
-					Page[PageIdx++] = ((uint8_t*)&Section)[k - sizeof(Len) - NameLen];
+				else if ((k >= (sizeof(Len) + sizeof(NameLen))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen)))
+					Page[PageIdx++] = ProfileFlash->Profile->Sections[i]->Params[j]->Name[k - sizeof(Len) - sizeof(NameLen)];
+				else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen)) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))))
+					Page[PageIdx++] = ((uint8_t*)&Section)[k - sizeof(Len) - sizeof(NameLen) - NameLen];
+				else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType))))
+					Page[PageIdx++] = ((uint8_t*)&DataType)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section)];
 				else
-					Page[PageIdx++] = ((uint8_t*)&ValueSize)[k - sizeof(Len) - NameLen - sizeof(Section)];
+					Page[PageIdx++] = ((uint8_t*)&DataSize)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section) - sizeof(DataType)];
 				if (PageIdx == BSP_FLASH_PAGE_SIZE)
 				{
 					if (BSP_FLASH_WaitReady())
@@ -287,10 +302,11 @@ error:
 void PROFILE_FLASH_RestoreCalibsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t CalibsValuesIdx)
 {
 	PROFILE_FLASH_CALIB_MAP_HEADER_T CalibMapHeader;
-	uint32_t i, Len, MapAddr, ValAddr, RestoredParamsCnt;
-	char Map[BSP_FLASH_PAGE_SIZE];
-	char Value[64];
-#if 0	
+	uint32_t i, j, MapAddr, __MapAddr, ValAddr, RestoredParamsCnt;
+	uint8_t Len, NameLen, Section, DataType, DataSize, __DataSize;
+	char Name[BSP_FLASH_PAGE_SIZE];
+	PROFILE_VALUE_T Value;
+	
 	if (BSP_FLASH_WaitReady())
 		goto exit;
 	
@@ -303,173 +319,69 @@ void PROFILE_FLASH_RestoreCalibsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t C
 	MapAddr = PROFILE_FLASH_CALIB_MAP_BODY_ADDR;
 	ValAddr = PROFILE_FLASH_CALIB_RECORD_BODY_ADDR(CalibsValuesIdx % PROFILE_FLASH_CALIB_RECORDS_CNT);
 	
-	while (MapAddr < (PROFILE_FLASH_CALIB_MAP_BODY_ADDR + CalibMapHeader.CalibsMapSize)) {
-		if (BSP_FLASH_Read(MapAddr, Map, sizeof(Map)))
+	PROFILE_MUTEX_LOCK(ProfileFlash->Profile);
+	while (MapAddr < (PROFILE_FLASH_CALIB_MAP_BODY_ADDR + CalibMapHeader.CalibsMapSize))
+	{
+		if (BSP_FLASH_Read(MapAddr, (char*)&Len, sizeof(Len)))
 			goto exit;
-		if (BSP_FLASH_Read(ValAddr, Value, sizeof(Value)))
+		if ((Len == 0) || (Len == 0xFF))
 			goto exit;
+		MapAddr += sizeof(Len);
+		__MapAddr = MapAddr + sizeof(Len) + Len;
 		
-		Len = 0;
-		for (i = 0; i < sizeof(Map); i++)
+		if (BSP_FLASH_Read(MapAddr, (char*)&NameLen, sizeof(NameLen)))
+			goto exit;
+		if ((NameLen == 0) || (NameLen == 0xFF))
+			goto exit;
+		MapAddr += sizeof(NameLen);
+		
+		if (BSP_FLASH_Read(MapAddr, (char*)&Name, NameLen))
+			goto exit;
+		MapAddr += NameLen;
+		
+		if (BSP_FLASH_Read(MapAddr, (char*)&Section, sizeof(Section)))
+			goto exit;
+		MapAddr += sizeof(Section);
+		
+		if (BSP_FLASH_Read(MapAddr, (char*)&DataType, sizeof(DataType)))
+			goto exit;
+		MapAddr += sizeof(DataType);
+		
+		if (BSP_FLASH_Read(MapAddr, (char*)&DataSize, sizeof(DataSize)))
+			goto exit;
+		MapAddr += sizeof(DataSize);
+		
+		if (BSP_FLASH_Read(ValAddr, (char*)&Value, DataSize))
+			goto exit;
+		ValAddr += DataSize;
+		
+		
+		for (i = 0; i < ProfileFlash->Profile->SectionsCnt; i++)
 		{
-			if (Map[i] == 0)
+			if (ProfileFlash->Profile->Sections[i]->Index != Section)
+				continue;
+			for (j = 0; j < ProfileFlash->Profile->Sections[i]->ParamsCnt; j++)
 			{
-				Len = i + 1;
-				break;
-			}			
-		}
-		
-		if ((Len == 0) || (Len > (sizeof(Map) - 2)))
-			goto exit;
-		
-
-		if (Map[Len+1] == PROFILE_TABLE_1)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table1Size; i++)
-			{
-				if (!PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_1, i+1))
+				if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j], Name, NameLen))
 					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table1[i].Name))
+				if (DataType == PROFILE_FLASH_DATA_TYPE_VALUE)
 				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table1[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						if (PROFILE_CheckValue(ProfileFlash->Profile, PROFILE_TABLE_1, i + 1, Value, 1) == 0)
-						{
-							if (PROFILE_SetValue(ProfileFlash->Profile, PROFILE_TABLE_1, i + 1, Value) == 0)
-							{
-								PROFILE_SetValueDependencies(ProfileFlash->Profile, PROFILE_TABLE_1, i + 1, Value, 1);
-								RestoredParamsCnt++;
-							}
-						}				
-					}
-				}
-			}
-		}
-		else if (Map[Len+1] == PROFILE_TABLE_2)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table2Size; i++)
-			{
-				if (!PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_2, i+1))
-					continue;
-				if (!ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table2[i].DegradeColor)
-					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table2[i].Name))
-				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table2[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						PROFILE_SetAlarmColors(ProfileFlash->Profile, PROFILE_TABLE_2, i + 1, Value[0], Value[1]);
+					if (PROFILE_IsCalibParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
+						break;
+					if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &__DataSize))
+						break;
+					if (DataSize != __DataSize)
+						break;
+					if (!__PROFILE_SetParamValue(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j], &Value))
 						RestoredParamsCnt++;
-					}
 				}
+				break;
 			}
+			break;
 		}
-		else if (Map[Len+1] == PROFILE_TABLE_3)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table3Size; i++)
-			{
-				if (!PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_3, i+1))
-					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table3[i].Name))
-				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table3[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						if (PROFILE_CheckValue(ProfileFlash->Profile, PROFILE_TABLE_3, i + 1, Value, 1) == 0)
-						{
-							if (PROFILE_SetValue(ProfileFlash->Profile, PROFILE_TABLE_3, i + 1, Value) == 0)
-							{
-								PROFILE_SetValueDependencies(ProfileFlash->Profile, PROFILE_TABLE_3, i + 1, Value, 1);
-								RestoredParamsCnt++;
-							}
-						}
-					}
-				}
-			}
-		}
-		else if (Map[Len+1] == PROFILE_TABLE_4)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table4Size; i++)
-			{
-				if (!PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_4, i+1))
-					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table4[i].Name))
-				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table4[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						if (PROFILE_CheckValue(ProfileFlash->Profile, PROFILE_TABLE_4, i + 1, Value, 1) == 0)
-						{
-							if (PROFILE_SetValue(ProfileFlash->Profile, PROFILE_TABLE_4, i + 1, Value) == 0)
-							{
-								PROFILE_SetValueDependencies(ProfileFlash->Profile, PROFILE_TABLE_4, i + 1, Value, 1);
-								RestoredParamsCnt++;
-							}
-						}
-					}
-				}
-			}
-		}
-		else if (Map[Len+1] == PROFILE_TABLE_103)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table103Size; i++)
-			{
-				if (!PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_103, i+1))
-					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table103[i].Name))
-				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table103[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						if (PROFILE_CheckValue(ProfileFlash->Profile, PROFILE_TABLE_103, i + 1, Value, 1) == 0)
-						{
-							if (PROFILE_SetValue(ProfileFlash->Profile, PROFILE_TABLE_103, i + 1, Value) == 0)
-							{
-								PROFILE_SetValueDependencies(ProfileFlash->Profile, PROFILE_TABLE_103, i + 1, Value, 1);
-								RestoredParamsCnt++;
-							}
-						}
-					}
-				}
-			}
-		}
-		MapAddr += Len + 2;
-		if (Map[Len + 1] == PROFILE_TABLE_2)
-		{
-			ValAddr += 2;
-		}
-		else
-		{
-			switch( Map[Len] )
-			{
-				case PROFILE_TYPE_BOOL:
-				case PROFILE_TYPE_UINT32:
-				case PROFILE_TYPE_CNT:
-				case PROFILE_TYPE_BITMSK:
-				case PROFILE_TYPE_HEX32:
-				case PROFILE_TYPE_IP:
-				case PROFILE_TYPE_ENUM:
-				case PROFILE_TYPE_INT32:
-				case PROFILE_TYPE_FLOAT_1:
-				case PROFILE_TYPE_FLOAT_2:
-				case PROFILE_TYPE_FLOAT_3:
-				case PROFILE_TYPE_FLOAT_E:
-					ValAddr += 4;
-					break;
-				case PROFILE_TYPE_UINT64:
-					ValAddr += 8;
-					break;
-				case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-				case PROFILE_TYPE_STRING:// произвольная строка
-					ValAddr += PROFILE_STRING_MAX_LEN;
-					break;
-				default:
-					goto exit;
-			}
-		}
+		MapAddr = __MapAddr;
 	}
-#endif
+	PROFILE_MUTEX_UNLOCK(ProfileFlash->Profile);
 exit:
 	LOG_Info("PROFILE_FLASH", "",  "", "Restore Calibs Values: %d params", RestoredParamsCnt);
 }
@@ -667,7 +579,7 @@ int32_t PROFILE_FLASH_CheckConfigsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *R
 	PROFILE_FLASH_CONFIG_MAP_HEADER_T Header;
 	char Page[BSP_FLASH_PAGE_SIZE];
 	uint32_t i, j, Addr, Size, Pages;
-	uint8_t Len, NameLen, Section, ValueSize;
+	uint8_t Len, NameLen, Section, DataType, DataSize;
 	uint16_t Crc16;
 	
 	if (BSP_FLASH_WaitReady())
@@ -711,25 +623,114 @@ int32_t PROFILE_FLASH_CheckConfigsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *R
 	{
 		for (j = 0; j < ProfileFlash->Profile->Sections[i]->ParamsCnt; j++)
 		{
-			if (!PROFILE_IsConfigParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
-				continue;
-			if (!PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &ValueSize))
-				goto error;
+			if (ProfileFlash->Profile->Sections[i]->Params[j]->Colors)
+			{
+				if (ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Normal)
+				{
+					NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
+					Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
+					DataType = PROFILE_FLASH_DATA_TYPE_NCOLOR;
+					if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &DataSize))
+						goto error;
+					if (BSP_FLASH_Read(Addr + Size, (char*)&Len, sizeof(Len)))
+						goto error;
+					if (Len != sizeof(NameLen)+ NameLen + sizeof(Section)+ sizeof(DataType) + sizeof(DataSize))
+						goto mismatch;
+					Size += sizeof(Len);
+					
+					if (BSP_FLASH_Read(Addr + Size, (char*)&Page, Len))
+						goto error;
+					if (memcmp(&NameLen, Page, sizeof(NameLen)))
+						goto mismatch;
+					if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j]->Name, &Page[sizeof(NameLen)], NameLen))
+						goto mismatch;
+					if (memcmp(&Section, &Page[sizeof(NameLen) + NameLen], sizeof(Section)))
+						goto mismatch;
+					if (memcmp(&DataType, &Page[sizeof(NameLen) + NameLen + sizeof(Section)], sizeof(DataType)))
+						goto mismatch;
+					if (memcmp(&DataSize, &Page[sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType)], sizeof(DataSize)))
+						goto mismatch;
+					Size += Len;
+				}
+				if (ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Degrade)
+				{
+					NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
+					Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
+					DataType = PROFILE_FLASH_DATA_TYPE_DCOLOR;
+					if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &DataSize))
+						goto error;
+					if (BSP_FLASH_Read(Addr + Size, (char*)&Len, sizeof(Len)))
+						goto error;
+					if (Len != sizeof(NameLen)+ NameLen + sizeof(Section)+ sizeof(DataType) + sizeof(DataSize))
+						goto mismatch;
+					Size += sizeof(Len);
+					
+					if (BSP_FLASH_Read(Addr + Size, (char*)&Page, Len))
+						goto error;
+					if (memcmp(&NameLen, Page, sizeof(NameLen)))
+						goto mismatch;
+					if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j]->Name, &Page[sizeof(NameLen)], NameLen))
+						goto mismatch;
+					if (memcmp(&Section, &Page[sizeof(NameLen) + NameLen], sizeof(Section)))
+						goto mismatch;
+					if (memcmp(&DataType, &Page[sizeof(NameLen) + NameLen + sizeof(Section)], sizeof(DataType)))
+						goto mismatch;
+					if (memcmp(&DataSize, &Page[sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType)], sizeof(DataSize)))
+						goto mismatch;
+					Size += Len;
+				}
+				if (ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Failure)
+				{
+					NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
+					Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
+					DataType = PROFILE_FLASH_DATA_TYPE_FCOLOR;
+					if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &DataSize))
+						goto error;
+					if (BSP_FLASH_Read(Addr + Size, (char*)&Len, sizeof(Len)))
+						goto error;
+					if (Len != sizeof(NameLen)+ NameLen + sizeof(Section)+ sizeof(DataType) + sizeof(DataSize))
+						goto mismatch;
+					Size += sizeof(Len);
+					
+					if (BSP_FLASH_Read(Addr + Size, (char*)&Page, Len))
+						goto error;
+					if (memcmp(&NameLen, Page, sizeof(NameLen)))
+						goto mismatch;
+					if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j]->Name, &Page[sizeof(NameLen)], NameLen))
+						goto mismatch;
+					if (memcmp(&Section, &Page[sizeof(NameLen) + NameLen], sizeof(Section)))
+						goto mismatch;
+					if (memcmp(&DataType, &Page[sizeof(NameLen) + NameLen + sizeof(Section)], sizeof(DataType)))
+						goto mismatch;
+					if (memcmp(&DataSize, &Page[sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType)], sizeof(DataSize)))
+						goto mismatch;
+					Size += Len;
+				}
+			}			
+			if (PROFILE_IsConfigParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
+				continue;			
 			NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
 			Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
+			DataType = PROFILE_FLASH_DATA_TYPE_VALUE;
+			if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &DataSize))
+				goto error;
 			if (BSP_FLASH_Read(Addr + Size, (char*)&Len, sizeof(Len)))
 				goto error;
-			if (Len != NameLen + sizeof(Section) + sizeof(ValueSize))
+			if (Len != sizeof(NameLen)+ NameLen + sizeof(Section)+ sizeof(DataType) + sizeof(DataSize))
 				goto mismatch;
 			Size += sizeof(Len);
 			
 			if (BSP_FLASH_Read(Addr + Size, (char*)&Page, Len))
 				goto error;
-			if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j]->Name, Page, NameLen))
+			if (memcmp(&NameLen, Page, sizeof(NameLen)))
 				goto mismatch;
-			if (memcmp(&Section, &Page[NameLen], sizeof(Section)))
+			if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j]->Name, &Page[sizeof(NameLen)], NameLen))
 				goto mismatch;
-			if (memcmp(&ValueSize, &Page[NameLen + sizeof(Section)], sizeof(ValueSize)))
+			if (memcmp(&Section, &Page[sizeof(NameLen) + NameLen], sizeof(Section)))
+				goto mismatch;
+			if (memcmp(&DataType, &Page[sizeof(NameLen) + NameLen + sizeof(Section)], sizeof(DataType)))
+				goto mismatch;
+			if (memcmp(&DataSize, &Page[sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType)], sizeof(DataSize)))
 				goto mismatch;
 			Size += Len;
 		}
@@ -758,7 +759,7 @@ int32_t PROFILE_FLASH_SaveConfigsMap(PROFILE_FLASH_T *ProfileFlash)
 	PROFILE_FLASH_CONFIG_MAP_HEADER_T Header;
 	char Page[BSP_FLASH_PAGE_SIZE];
 	uint32_t i, j, k, Addr, Size, PageIdx;
-	uint8_t Len, NameLen, Section, ValueSize;
+	uint8_t Len, NameLen, Section, DataType, DataSize;
 	uint16_t Crc16;
 	
 	Addr = PROFILE_FLASH_CONFIG_MAP_BODY_ADDR;
@@ -769,23 +770,130 @@ int32_t PROFILE_FLASH_SaveConfigsMap(PROFILE_FLASH_T *ProfileFlash)
 	{
 		for (j = 0; j < ProfileFlash->Profile->Sections[i]->ParamsCnt; j++)
 		{
-			if (!PROFILE_IsCalibParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
+			if (ProfileFlash->Profile->Sections[i]->Params[j]->Colors)
+			{
+				if (ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Normal)
+				{
+					NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
+					Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
+					DataType = PROFILE_FLASH_DATA_TYPE_NCOLOR;
+					DataSize = sizeof(uint8_t);
+					Len = sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize);			
+					for (k = 0; k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize)); k++)
+					{
+						if (k < sizeof(Len))
+							Page[PageIdx++] = ((uint8_t*)&Len)[k];
+						else if ((k >= sizeof(Len)) && (k < (sizeof(Len) + sizeof(NameLen))))
+							Page[PageIdx++] = ((uint8_t*)&NameLen)[k - sizeof(Len) - sizeof(NameLen)];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen)))
+							Page[PageIdx++] = ProfileFlash->Profile->Sections[i]->Params[j]->Name[k - sizeof(Len) - sizeof(NameLen)];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen)) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))))
+							Page[PageIdx++] = ((uint8_t*)&Section)[k - sizeof(Len) - sizeof(NameLen) - NameLen];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType))))
+							Page[PageIdx++] = ((uint8_t*)&DataType)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section)];
+						else
+							Page[PageIdx++] = ((uint8_t*)&DataSize)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section) - sizeof(DataType)];
+						if (PageIdx == BSP_FLASH_PAGE_SIZE)
+						{
+							if (BSP_FLASH_WaitReady())
+								goto error;
+							if (BSP_FLASH_ProgramPage(Addr + Size, Page, PageIdx))
+								goto error;
+							Size += PageIdx;
+							Crc16 = Calc_CRC16(Page, PageIdx, Crc16);
+							PageIdx = 0;
+						}
+					}
+				}
+				if (ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Degrade)
+				{
+					NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
+					Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
+					DataType = PROFILE_FLASH_DATA_TYPE_DCOLOR;
+					DataSize = sizeof(uint8_t);
+					Len = sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize);			
+					for (k = 0; k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize)); k++)
+					{
+						if (k < sizeof(Len))
+							Page[PageIdx++] = ((uint8_t*)&Len)[k];
+						else if ((k >= sizeof(Len)) && (k < (sizeof(Len) + sizeof(NameLen))))
+							Page[PageIdx++] = ((uint8_t*)&NameLen)[k - sizeof(Len) - sizeof(NameLen)];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen)))
+							Page[PageIdx++] = ProfileFlash->Profile->Sections[i]->Params[j]->Name[k - sizeof(Len) - sizeof(NameLen)];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen)) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))))
+							Page[PageIdx++] = ((uint8_t*)&Section)[k - sizeof(Len) - sizeof(NameLen) - NameLen];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType))))
+							Page[PageIdx++] = ((uint8_t*)&DataType)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section)];
+						else
+							Page[PageIdx++] = ((uint8_t*)&DataSize)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section) - sizeof(DataType)];
+						if (PageIdx == BSP_FLASH_PAGE_SIZE)
+						{
+							if (BSP_FLASH_WaitReady())
+								goto error;
+							if (BSP_FLASH_ProgramPage(Addr + Size, Page, PageIdx))
+								goto error;
+							Size += PageIdx;
+							Crc16 = Calc_CRC16(Page, PageIdx, Crc16);
+							PageIdx = 0;
+						}
+					}
+				}
+				if (ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Failure)
+				{
+					NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
+					Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
+					DataType = PROFILE_FLASH_DATA_TYPE_FCOLOR;
+					DataSize = sizeof(uint8_t);
+					Len = sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize);			
+					for (k = 0; k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize)); k++)
+					{
+						if (k < sizeof(Len))
+							Page[PageIdx++] = ((uint8_t*)&Len)[k];
+						else if ((k >= sizeof(Len)) && (k < (sizeof(Len) + sizeof(NameLen))))
+							Page[PageIdx++] = ((uint8_t*)&NameLen)[k - sizeof(Len) - sizeof(NameLen)];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen)))
+							Page[PageIdx++] = ProfileFlash->Profile->Sections[i]->Params[j]->Name[k - sizeof(Len) - sizeof(NameLen)];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen)) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))))
+							Page[PageIdx++] = ((uint8_t*)&Section)[k - sizeof(Len) - sizeof(NameLen) - NameLen];
+						else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType))))
+							Page[PageIdx++] = ((uint8_t*)&DataType)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section)];
+						else
+							Page[PageIdx++] = ((uint8_t*)&DataSize)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section) - sizeof(DataType)];
+						if (PageIdx == BSP_FLASH_PAGE_SIZE)
+						{
+							if (BSP_FLASH_WaitReady())
+								goto error;
+							if (BSP_FLASH_ProgramPage(Addr + Size, Page, PageIdx))
+								goto error;
+							Size += PageIdx;
+							Crc16 = Calc_CRC16(Page, PageIdx, Crc16);
+							PageIdx = 0;
+						}
+					}
+				}
+			}
+			if (PROFILE_IsConfigParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
 				continue;
-			if (!PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &ValueSize))
-				goto error;
 			NameLen = strlen(ProfileFlash->Profile->Sections[i]->Params[j]->Name) + 1;
 			Section = ProfileFlash->Profile->Sections[i]->Params[j]->Section;
-			Len = NameLen + sizeof(Section) + sizeof(ValueSize);			
-			for (k = 0; k < (sizeof(Len) + NameLen + sizeof(Section) + sizeof(ValueSize)); k++)
+			DataType = PROFILE_FLASH_DATA_TYPE_VALUE;
+			if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &DataSize))
+				goto error;
+			Len = sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize);			
+			for (k = 0; k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType) + sizeof(DataSize)); k++)
 			{
 				if (k < sizeof(Len))
 					Page[PageIdx++] = ((uint8_t*)&Len)[k];
-				else if ((k >= sizeof(Len)) && (k < (sizeof(Len) + NameLen)))
-					Page[PageIdx++] = ProfileFlash->Profile->Sections[i]->Params[j]->Name[k - sizeof(Len)];
-				else if ((k >= (sizeof(Len) + NameLen)) && (k < (sizeof(Len) + NameLen + sizeof(Section))))
-					Page[PageIdx++] = ((uint8_t*)&Section)[k - sizeof(Len) - NameLen];
+				else if ((k >= sizeof(Len)) && (k < (sizeof(Len) + sizeof(NameLen))))
+					Page[PageIdx++] = ((uint8_t*)&NameLen)[k - sizeof(Len) - sizeof(NameLen)];
+				else if ((k >= (sizeof(Len) + sizeof(NameLen))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen)))
+					Page[PageIdx++] = ProfileFlash->Profile->Sections[i]->Params[j]->Name[k - sizeof(Len) - sizeof(NameLen)];
+				else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen)) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))))
+					Page[PageIdx++] = ((uint8_t*)&Section)[k - sizeof(Len) - sizeof(NameLen) - NameLen];
+				else if ((k >= (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section))) && (k < (sizeof(Len) + sizeof(NameLen) + NameLen + sizeof(Section) + sizeof(DataType))))
+					Page[PageIdx++] = ((uint8_t*)&DataType)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section)];
 				else
-					Page[PageIdx++] = ((uint8_t*)&ValueSize)[k - sizeof(Len) - NameLen - sizeof(Section)];
+					Page[PageIdx++] = ((uint8_t*)&DataSize)[k - sizeof(Len) - sizeof(NameLen) - NameLen - sizeof(Section) - sizeof(DataType)];
 				if (PageIdx == BSP_FLASH_PAGE_SIZE)
 				{
 					if (BSP_FLASH_WaitReady())
@@ -901,187 +1009,122 @@ error:
 void PROFILE_FLASH_RestoreConfigsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t ConfigsValuesIdx)
 {
 	PROFILE_FLASH_CONFIG_MAP_HEADER_T ConfigMapHeader;
-	uint32_t i, Len, MapAddr, ValAddr, RestoredParamsCnt;
-	char Map[BSP_FLASH_PAGE_SIZE];
-	char Value[64];
-#if 0	
+	uint32_t i, j, MapAddr, __MapAddr, ValAddr, RestoredParamsCnt;
+	uint8_t Len, NameLen, Section, DataType, DataSize, __DataSize;
+	char Name[BSP_FLASH_PAGE_SIZE];
+	PROFILE_VALUE_T Value;
+	
 	if (BSP_FLASH_WaitReady())
 		goto exit;
 	
 	RestoredParamsCnt = 0;
 	
-	MapAddr = PROFILE_FLASH_CONFIG_MAP_HEADER_ADDR(ProfileFlash->Profile->Idx);
+	MapAddr = PROFILE_FLASH_CONFIG_MAP_HEADER_ADDR;
 	if (BSP_FLASH_Read(MapAddr, (char*)&ConfigMapHeader, sizeof(ConfigMapHeader)))
 		goto exit;
 	
-	MapAddr = PROFILE_FLASH_CONFIG_MAP_BODY_ADDR(ProfileFlash->Profile->Idx);
-	ValAddr = PROFILE_FLASH_CONFIG_RECORD_BODY_ADDR(ProfileFlash->Profile->Idx, ConfigsValuesIdx % PROFILE_FLASH_CONFIG_RECORDS_CNT);
+	MapAddr = PROFILE_FLASH_CONFIG_MAP_BODY_ADDR;
+	ValAddr = PROFILE_FLASH_CONFIG_RECORD_BODY_ADDR(ConfigsValuesIdx % PROFILE_FLASH_CONFIG_RECORDS_CNT);
 	
-	while (MapAddr < (PROFILE_FLASH_CONFIG_MAP_BODY_ADDR(ProfileFlash->Profile->Idx) + ConfigMapHeader.ConfigsMapSize)) {
-		if (BSP_FLASH_Read(MapAddr, Map, sizeof(Map)))
+	PROFILE_MUTEX_LOCK(ProfileFlash->Profile);
+	while (MapAddr < (PROFILE_FLASH_CONFIG_MAP_BODY_ADDR + ConfigMapHeader.ConfigsMapSize))
+	{
+		if (BSP_FLASH_Read(MapAddr, (char*)&Len, sizeof(Len)))
 			goto exit;
-		if (BSP_FLASH_Read(ValAddr, Value, sizeof(Value)))
+		if ((Len == 0) || (Len == 0xFF))
 			goto exit;
+		MapAddr += sizeof(Len);
+		__MapAddr = MapAddr + sizeof(Len) + Len;
 		
-		Len = 0;
-		for (i = 0; i < sizeof(Map); i++)
-		{
-			if (Map[i] == 0)
-			{
-				Len = i + 1;
-				break;
-			}			
-		}
-		
-		if ((Len == 0) || (Len > (sizeof(Map) - 2)))
+		if (BSP_FLASH_Read(MapAddr, (char*)&NameLen, sizeof(NameLen)))
 			goto exit;
-		if (Map[Len+1] == PROFILE_TABLE_1)
+		if ((NameLen == 0) || (NameLen == 0xFF))
+			goto exit;
+		MapAddr += sizeof(NameLen);
+		
+		if (BSP_FLASH_Read(MapAddr, (char*)&Name, NameLen))
+			goto exit;
+		MapAddr += NameLen;
+		
+		if (BSP_FLASH_Read(MapAddr, (char*)&Section, sizeof(Section)))
+			goto exit;
+		MapAddr += sizeof(Section);
+		
+		if (BSP_FLASH_Read(MapAddr, (char*)&DataType, sizeof(DataType)))
+			goto exit;
+		MapAddr += sizeof(DataType);
+		
+		if (BSP_FLASH_Read(MapAddr, (char*)&DataSize, sizeof(DataSize)))
+			goto exit;
+		MapAddr += sizeof(DataSize);
+		
+		if (BSP_FLASH_Read(ValAddr, (char*)&Value, DataSize))
+			goto exit;
+		ValAddr += DataSize;
+		
+		
+		for (i = 0; i < ProfileFlash->Profile->SectionsCnt; i++)
 		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table1Size; i++)
+			if (ProfileFlash->Profile->Sections[i]->Index != Section)
+				continue;
+			for (j = 0; j < ProfileFlash->Profile->Sections[i]->ParamsCnt; j++)
 			{
-				if (PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_1, i+1))
+				if (memcmp(ProfileFlash->Profile->Sections[i]->Params[j], Name, NameLen))
 					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table1[i].Name))
+				if (DataType == PROFILE_FLASH_DATA_TYPE_VALUE)
 				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table1[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						if (PROFILE_CheckValue(ProfileFlash->Profile, PROFILE_TABLE_1, i + 1, Value, 1) == 0)
-						{
-							if (PROFILE_SetValue(ProfileFlash->Profile, PROFILE_TABLE_1, i + 1, Value) == 0)
-							{
-								PROFILE_SetValueDependencies(ProfileFlash->Profile, PROFILE_TABLE_1, i + 1, Value, 1);
-								RestoredParamsCnt++;
-							}
-						}				
-					}
-				}
-			}
-		}
-		else if (Map[Len+1] == PROFILE_TABLE_2)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table2Size; i++)
-			{
-				if (PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_2, i+1))
-					continue;
-				if (!ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table2[i].DegradeColor)
-					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table2[i].Name))
-				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table2[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						PROFILE_SetAlarmColors(ProfileFlash->Profile, PROFILE_TABLE_2, i + 1, Value[0], Value[1]);
+					if (PROFILE_IsConfigParam(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j]))
+						break;
+					if (PROFILE_GetParamValueSize(ProfileFlash->Profile->Sections[i]->Params[j]->Type, &__DataSize))
+						break;
+					if (DataSize != __DataSize)
+						break;
+					if (!__PROFILE_SetParamValue(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j], &Value))
 						RestoredParamsCnt++;
-					}
 				}
-			}
-		}
-		else if (Map[Len+1] == PROFILE_TABLE_3)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table3Size; i++)
-			{
-				if (PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_3, i+1))
-					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table3[i].Name))
+				else if (DataType == PROFILE_FLASH_DATA_TYPE_NCOLOR)
 				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table3[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						if (PROFILE_CheckValue(ProfileFlash->Profile, PROFILE_TABLE_3, i + 1, Value, 1) == 0)
-						{
-							if (PROFILE_SetValue(ProfileFlash->Profile, PROFILE_TABLE_3, i + 1, Value) == 0)
-							{
-								PROFILE_SetValueDependencies(ProfileFlash->Profile, PROFILE_TABLE_3, i + 1, Value, 1);
-								RestoredParamsCnt++;
-							}
-						}
-					}
+					if (!ProfileFlash->Profile->Sections[i]->Params[j]->Colors)
+						break;
+					if (DataSize != sizeof(uint8_t))
+						break;
+					if (!__PROFILE_SetParamColors(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j],
+							Value.s64[0],
+							*ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Degrade,
+							*ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Failure))
+						RestoredParamsCnt++;
 				}
-			}
-		}
-		else if (Map[Len+1] == PROFILE_TABLE_4)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table4Size; i++)
-			{
-				if (PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_4, i+1))
-					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table4[i].Name))
+				else if (DataType == PROFILE_FLASH_DATA_TYPE_DCOLOR)
 				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table4[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						if (PROFILE_CheckValue(ProfileFlash->Profile, PROFILE_TABLE_4, i + 1, Value, 1) == 0)
-						{
-							if (PROFILE_SetValue(ProfileFlash->Profile, PROFILE_TABLE_4, i + 1, Value) == 0)
-							{
-								PROFILE_SetValueDependencies(ProfileFlash->Profile, PROFILE_TABLE_4, i + 1, Value, 1);
-								RestoredParamsCnt++;
-							}
-						}
-					}
+					if (!ProfileFlash->Profile->Sections[i]->Params[j]->Colors)
+						break;
+					if (DataSize != sizeof(uint8_t))
+						break;
+					if (!__PROFILE_SetParamColors(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j],
+							*ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Normal,
+							Value.s64[0],
+							*ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Failure))
+						RestoredParamsCnt++;
 				}
-			}
-		}
-		else if (Map[Len+1] == PROFILE_TABLE_103)
-		{
-			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table103Size; i++)
-			{
-				if (PROFILE_IsCalibParam(ProfileFlash->Profile, PROFILE_TABLE_103, i+1))
-					continue;
-				if (!strcmp(Map, ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table103[i].Name))
+				else if (DataType == PROFILE_FLASH_DATA_TYPE_FCOLOR)
 				{
-					if (Map[Len] == ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table103[i].Type)
-					{
-						/*Set Param value with checks and dependencies*/
-						if (PROFILE_CheckValue(ProfileFlash->Profile, PROFILE_TABLE_103, i + 1, Value, 1) == 0)
-						{
-							if (PROFILE_SetValue(ProfileFlash->Profile, PROFILE_TABLE_103, i + 1, Value) == 0)
-							{
-								PROFILE_SetValueDependencies(ProfileFlash->Profile, PROFILE_TABLE_103, i + 1, Value, 1);
-								RestoredParamsCnt++;
-							}
-						}
-					}
+					if (!ProfileFlash->Profile->Sections[i]->Params[j]->Colors)
+						break;
+					if (DataSize != sizeof(uint8_t))
+						break;
+					if (!__PROFILE_SetParamColors(ProfileFlash->Profile, ProfileFlash->Profile->Sections[i]->Params[j],
+							*ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Normal,
+							*ProfileFlash->Profile->Sections[i]->Params[j]->Colors->Degrade,
+							Value.s64[0]))
+						RestoredParamsCnt++;
 				}
+				break;
 			}
+			break;
 		}
-		MapAddr += Len + 2;
-		if (Map[Len + 1] == PROFILE_TABLE_2)
-		{
-			ValAddr += 2;
-		}
-		else
-		{
-			switch( Map[Len] )
-			{
-				case PROFILE_TYPE_BOOL:
-				case PROFILE_TYPE_UINT32:
-				case PROFILE_TYPE_CNT:
-				case PROFILE_TYPE_BITMSK:
-				case PROFILE_TYPE_HEX32:
-				case PROFILE_TYPE_IP:
-				case PROFILE_TYPE_ENUM:
-				case PROFILE_TYPE_INT32:
-				case PROFILE_TYPE_FLOAT_1:
-				case PROFILE_TYPE_FLOAT_2:
-				case PROFILE_TYPE_FLOAT_3:
-				case PROFILE_TYPE_FLOAT_E:
-					ValAddr += 4;
-					break;
-				case PROFILE_TYPE_UINT64:
-					ValAddr += 8;
-					break;
-				case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-				case PROFILE_TYPE_STRING:// произвольная строка
-					ValAddr += PROFILE_STRING_MAX_LEN;
-					break;
-				default:
-					goto exit;
-			}
-		}
+		MapAddr = __MapAddr;
 	}
-#endif
+	PROFILE_MUTEX_UNLOCK(ProfileFlash->Profile);
 exit:
 	LOG_Info("PROFILE_FLASH", "",  "", "Restore Configs Values: %d params", RestoredParamsCnt);
 }

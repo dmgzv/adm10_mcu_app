@@ -1,4 +1,4 @@
-﻿#include "profile_adm10_set_callbacks.h"
+#include "profile_adm10_set_callbacks.h"
 
 __weak bool PROFILE_ADM10_SetFactory_SetCallback(PROFILE_T *Profile, PROFILE_PARAM_T *Param, PROFILE_VALUE_T *Value)
 {
