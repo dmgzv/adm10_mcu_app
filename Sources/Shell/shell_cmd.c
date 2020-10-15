@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cmsis_os.h"
-#include "stdio.h"
 #include "bsp.h"
 #include "log.h"
 //#include "profile_iface.h"
