@@ -4,12 +4,15 @@
 #include "cmsis_os.h"
 #include "profile.h"
 #include "profile_adm10.h"
+#include "profile_flash.h"
 #include "bootloader.h"
+#include "tftp_bootloader.h"
 #include "bsp.h"
 #include "crc.h"
 #include "log.h"
-#include <stdio.h>
-#include "tftp_bootloader.h"
+#include <string.h>
+#include <stdlib.h>
+
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct {	
@@ -67,6 +70,7 @@ typedef struct {
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern BOOTLOADER_T Bootloader;
+extern PROFILE_FLASH_T ProfileFlash;
 
 static char REQUEST_BODY[512];
 static uint32_t REQUEST_BODY_LEN;
@@ -350,7 +354,7 @@ error_405:
 	http_server_write_header(conn, &RspHeader);
 	return;
 }
-#if 0
+
 /**
   * @brief  Get profile langpack. 
   * @param  conn pointer on connection structure 
@@ -472,7 +476,7 @@ write_data:
 error:
 	http_server_write_400_error(conn);
 }
-
+#if 0
 /**
   * @brief  Head profile config. 
   * @param  conn pointer on connection structure 
@@ -914,7 +918,7 @@ error:
 void http_server_serve_get_api_v1_profile(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {
 	uint32_t i;
-	uint32_t len;
+	uint32_t len, shift;
 	char chunk_size[16];
 	HTTP_RESPONCE_HEADER_T RspHeader;
   
@@ -934,16 +938,33 @@ void http_server_serve_get_api_v1_profile(struct netconn *conn, HTTP_REQUEST_HEA
 	RESPONCE_BODY_LEN = 0;	
 	for (i = 0; i < *PROFILE_ADM10.LinesCnt; i++)
 	{
-		len = strlen(PROFILE_ADM10.Lines[i]);		
-		memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], PROFILE_ADM10.Lines[i], len);
+		len = strlen(PROFILE_ADM10.Lines[i]);
+		if (len > sizeof(RESPONCE_BODY))
+			len = len;
+		shift = 0;
+		while((len + RESPONCE_BODY_LEN) >= 1024)
+		{
+			memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], &PROFILE_ADM10.Lines[i][shift], 1024 - RESPONCE_BODY_LEN);
+			snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", 1024);
+			if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+				return;
+			RESPONCE_BODY[1024] = '\r';
+			RESPONCE_BODY[1025] = '\n';
+			if (http_server_write(conn, RESPONCE_BODY, 1026, NETCONN_COPY | NETCONN_MORE))
+				return;
+			len -= 1024 - RESPONCE_BODY_LEN;
+			shift += 1024 - RESPONCE_BODY_LEN;
+			RESPONCE_BODY_LEN = 0;
+		}
+		memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], &PROFILE_ADM10.Lines[i][shift], len);
 		RESPONCE_BODY_LEN += len;
 		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
 		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
-		if (RESPONCE_BODY_LEN > 1024)
+		if (RESPONCE_BODY_LEN >= 1024)
 		{
 			snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
 			if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
-				return;
+				return;	
 			RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
 			RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
 			if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
@@ -1815,7 +1836,7 @@ static void http_server_serve_get_api_v1_log(struct netconn *conn, HTTP_REQUEST_
 		return;
 	
 	LinesCnt = LOG_GetLinesCnt();
-	RESPONCE_BODY_LEN += snprintf (RESPONCE_BODY, sizeof(RESPONCE_BODY), "{\r\n\t\"max-records-cnt\" : \"%d\",\r\n\t\"records-cnt\" : \"%d\",\r\n\t\"records\" : [\r\n", LOG_LINES_CNT, LinesCnt);
+	RESPONCE_BODY_LEN = snprintf (RESPONCE_BODY, sizeof(RESPONCE_BODY), "{\r\n\t\"max-records-cnt\" : \"%d\",\r\n\t\"records-cnt\" : \"%d\",\r\n\t\"records\" : [\r\n", LOG_LINES_CNT, LinesCnt);
 	for (i = 0; i < LinesCnt; i++)
 	{
 		LOG_GetLine(i, &LogLine);
@@ -2469,7 +2490,8 @@ receive:
 		}
 		else if (strncmp(req_header.Url, "/api/v1/profile/sections/", sizeof("/api/v1/profile/sections/") - 1) == 0)
 		{
-			section_idx = strtoul(&req_header.Url[sizeof("/api/v1/profile/sections/") - 1], &c, 10);
+			c = &req_header.Url[sizeof("/api/v1/profile/sections/") - 1];
+			section_idx = strtoul(c, &c, 10);
 			if (strncmp(c, "/params/", sizeof("/params/") - 1) == 0)
 			{
 				param_idx = strtoul(&c[sizeof("/params/") - 1], &c, 10);
