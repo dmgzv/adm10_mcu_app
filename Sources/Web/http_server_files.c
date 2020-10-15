@@ -172,13 +172,13 @@ void HTTP_SERVER_FILES_Init(void)
 		if (__HTTP_SERVER_FILES_ReadRecordHeader(Idx))
 			continue;
 		HTTP_SERVER_FILES_RecordIdx = Idx;
-		LOG_Info("HTTP_SERVER_FILES", "",  "", "Init Files %d: Ok", Idx);
+		LOG_Info("HTTP_SERVER_FILES", "",  "", "Init Files %d: Ok", HTTP_SERVER_FILES_RecordIdx);
 		return;
 	}
 	
 	HTTP_SERVER_FILES_RecordIdx = 0;
 	__HTTP_SERVER_FILES_WriteRecordHeader(0);
-	LOG_Info("HTTP_SERVER_FILES", "",  "", "Init Files %d: Ok", Idx);
+	LOG_Info("HTTP_SERVER_FILES", "",  "", "Init Files %d: Ok", HTTP_SERVER_FILES_RecordIdx);
 }
 
 int32_t HTTP_SERVER_FILES_FindByName(char *Name, uint32_t NameLen, uint32_t *DataAddr, uint32_t *DataSize, uint32_t *DataType)
