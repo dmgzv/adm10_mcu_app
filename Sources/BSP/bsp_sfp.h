@@ -26,9 +26,9 @@
 #define BSP_SFP_19_ID	"LN3"
 #define BSP_SFP_20_ID	"LN4"
 
-#define BSP_SFP_I2C	I2C2
-#ifndef BSP_CONFIG_USE_I2C2
-	#error	Define BSP_CONFIG_USE_I2C2 in bsp_config.h for BSP_SFP
+#define BSP_SFP_I2C	I2C3
+#ifndef BSP_CONFIG_USE_I2C3
+	#error	Define BSP_CONFIG_USE_I2C3 in bsp_config.h for BSP_SFP
 #endif
 
 #define BSP_SFP_LINE_IDX(Idx) 	(Idx + 16)

@@ -6,19 +6,19 @@
 #define	BSP_PCA9548A_CNT	3
 
 #define BSP_PCA9548A_1_ID			"D72"
-#define BSP_PCA9548A_1_I2C		I2C2
+#define BSP_PCA9548A_1_I2C		I2C3
 #define BSP_PCA9548A_1_ADDR		(0x70 << 1)
 
 #define BSP_PCA9548A_2_ID			"D73"
-#define BSP_PCA9548A_2_I2C		I2C2
+#define BSP_PCA9548A_2_I2C		I2C3
 #define BSP_PCA9548A_2_ADDR		(0x72 << 1)
 
 #define BSP_PCA9548A_3_ID			"D74"
-#define BSP_PCA9548A_3_I2C		I2C2
+#define BSP_PCA9548A_3_I2C		I2C3
 #define BSP_PCA9548A_3_ADDR		(0x74 << 1)
 
-#ifndef BSP_CONFIG_USE_I2C2
-	#error	Define BSP_CONFIG_USE_I2C2 in bsp_config.h for BSP_SFP_I2C_SWITCH
+#ifndef BSP_CONFIG_USE_I2C3
+	#error	Define BSP_CONFIG_USE_I2C3 in bsp_config.h for BSP_SFP_I2C_SWITCH
 #endif
 	
 #define BSP_SFP_I2C_SWITCH_RESET_GPIO_PIN          		GPIO_PIN_4
