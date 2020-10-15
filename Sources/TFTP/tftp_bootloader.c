@@ -1,5 +1,5 @@
 #include "tftp_bootloader.h"
-//#include "tftp_bootloader_mcu.h"
+#include "tftp_bootloader_mcu.h"
 #include "tftp_bootloader_fpga.h"
 #include "tftp_client.h"
 #include "bsp.h"
@@ -21,7 +21,7 @@ char TFTP_BOOTLOADER_InfoData[512];
 
 TFTP_BOOTLOADER_COMPONENT_T *TFTP_BOOTLOADER_COMPONENTS[] = 
 {
-	//&TFTP_BOOTLOADER_MCU,
+	&TFTP_BOOTLOADER_MCU,
 	&TFTP_BOOTLOADER_FPGA,
 };
 

@@ -1,4 +1,4 @@
-﻿#include "profile_adm10_values.h"
+#include "profile_adm10_values.h"
 
 const PROFILE_ADM10_STATE_VALUES_T PROFILE_ADM10_StateDefaultValues = {
 	.Vendor = "IPG Photonics",
@@ -602,7 +602,7 @@ const PROFILE_ADM10_STATE_VALUES_T PROFILE_ADM10_StateDefaultValues = {
 	.Cl_15_Tx_EnableLaserLed = 0,
 	.Cl_16_Tx_EnableLaserLed = 0,
 	.SI5332_1_AdjCapCalib = 8,
-	.SI5332_2_AdjCapCalib = 11,
+	.SI5332_2_AdjCapCalib = 10,
 	.Ln_1_OTU2_EB = 0,
 	.Ln_2_OTU2_EB = 0,
 	.Ln_3_OTU2_EB = 0,
@@ -3815,7 +3815,7 @@ const PROFILE_ADM10_CONFIG_VALUES_T PROFILE_ADM10_ConfigDefaultValues = {
 const PROFILE_ADM10_CALIB_VALUES_T PROFILE_ADM10_CalibDefaultValues = {
 	.SrNumberCalibVal = "0000-0000-0000",
 	.SI5332_1_AdjCapCalibVal = 8,
-	.SI5332_2_AdjCapCalibVal = 11,
+	.SI5332_2_AdjCapCalibVal = 10,
 };
 
 PROFILE_ADM10_STATE_VALUES_T PROFILE_ADM10_StateValues;

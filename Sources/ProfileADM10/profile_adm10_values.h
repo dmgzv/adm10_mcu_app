@@ -1,4 +1,4 @@
-﻿#ifndef __PROFILE_ADM10_VALUES_H
+#ifndef __PROFILE_ADM10_VALUES_H
 #define __PROFILE_ADM10_VALUES_H
 
 #include <stdint.h>

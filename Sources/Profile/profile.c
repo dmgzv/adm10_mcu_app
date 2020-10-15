@@ -809,7 +809,19 @@ color_na:
 int32_t __PROFILE_SetParamColors(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, uint8_t Normal, uint8_t Degrade, uint8_t Failure)
 {
 	if (!Param->Colors)
+		return -1;	
+	if ((!Param->Colors->Normal) || (!Param->Colors->Degrade) || (!Param->Colors->Failure))
 		return -1;
+	
+	if ((Normal != PROFILE_COLOR_NA) && (Normal != PROFILE_COLOR_NO) && (Normal != PROFILE_COLOR_INFO) && (Normal != PROFILE_COLOR_NORMAL) &&
+		(Normal != PROFILE_COLOR_WARNING) && (Normal != PROFILE_COLOR_MINOR) && (Normal != PROFILE_COLOR_MAJOR) && (Normal != PROFILE_COLOR_CRITICAL))
+		return -1;
+	if ((Degrade != PROFILE_COLOR_NA) && (Degrade != PROFILE_COLOR_NO) && (Degrade != PROFILE_COLOR_INFO) && (Degrade != PROFILE_COLOR_NORMAL) &&
+		(Degrade != PROFILE_COLOR_WARNING) && (Degrade != PROFILE_COLOR_MINOR) && (Degrade != PROFILE_COLOR_MAJOR) && (Degrade != PROFILE_COLOR_CRITICAL))
+		return -1;
+	if ((Failure != PROFILE_COLOR_NA) && (Failure != PROFILE_COLOR_NO) && (Failure != PROFILE_COLOR_INFO) && (Failure != PROFILE_COLOR_NORMAL) &&
+		(Failure != PROFILE_COLOR_WARNING) && (Failure != PROFILE_COLOR_MINOR) && (Failure != PROFILE_COLOR_MAJOR) && (Failure != PROFILE_COLOR_CRITICAL))
+		return -1;	
 	
 	*Param->Colors->Normal = Normal;
 	*Param->Colors->Degrade = Degrade;

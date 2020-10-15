@@ -1927,7 +1927,7 @@ Cl_16.Tx.EnableLaserLed;82;1;4;85;;0; Client 16 transmitter enable laser
 [6]
 SetDefault;1;0;0;192;;0;Set default
 SI5332_1.AdjCapCalib;2;0;1128;192;pF;8;SI5332 1 adjusted capacitance calibration
-SI5332_2.AdjCapCalib;3;0;1129;192;pF;11;SI5332 2 adjusted capacitance calibration
+SI5332_2.AdjCapCalib;3;0;1129;192;pF;10;SI5332 2 adjusted capacitance calibration
 [7]
 SrNumberCalibVal;1;1;34;192;;0000-0000-0000;Serial number calibration value
 SI5332_1.AdjCapCalibVal;2;1;1130;192;pF;8;SI5332 1 adjusted capacitance calibration value
