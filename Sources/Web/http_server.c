@@ -128,9 +128,29 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 		Header->ConnectionKeepAlive = 0;
 	}
 	
+	Header->Connection = strstr(data, "connection: ");
+	if (Header->Connection)
+	{
+		Header->Connection += sizeof("connection: ") - 1;
+		/*
+		if (strncmp(Header->Connection, HTTP_CONNECTION_KEEP_ALIVE, sizeof(HTTP_CONNECTION_KEEP_ALIVE) - 1) == 0)
+			Header->ConnectionKeepAlive = 1;
+		else
+		*/
+			Header->ConnectionKeepAlive = 0;
+	}
+	else
+	{
+		Header->ConnectionKeepAlive = 0;
+	}
+	
 	Header->ContentType = strstr(data, "Content-Type: ");
 	if (Header->ContentType)
 		Header->ContentType += sizeof("Content-Type: ") - 1;
+	
+	Header->ContentType = strstr(data, "content-type: ");
+	if (Header->ContentType)
+		Header->ContentType += sizeof("content-type: ") - 1;
 	
 	Header->Charset = strstr(data, "charset=");
 	if (Header->Charset)
@@ -139,6 +159,12 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 	p = strstr(data, "Content-Length: ");
 	if (p)
 		Header->ContentLength = strtoul(p + sizeof("Content-Length: ") - 1, &p, 10);
+	else
+		Header->ContentLength = 0;
+	
+	p = strstr(data, "content-length: ");
+	if (p)
+		Header->ContentLength = strtoul(p + sizeof("content-length: ") - 1, &p, 10);
 	else
 		Header->ContentLength = 0;
 	
@@ -1201,6 +1227,7 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 		goto error;
 	}
 	PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+	
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;

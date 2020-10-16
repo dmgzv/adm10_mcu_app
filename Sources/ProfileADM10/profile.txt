@@ -135,10 +135,10 @@ Ln_1.Rx.OCh.Pwr;17;1;9;85;dBm;0;Line 1 receiver OCh power
 Ln_2.Rx.OCh.Pwr;18;1;9;85;dBm;0;Line 2 receiver OCh power
 Ln_3.Rx.OCh.Pwr;19;1;9;85;dBm;0;Line 3 receiver OCh power
 Ln_4.Rx.OCh.Pwr;20;1;9;85;dBm;0;Line 4 receiver OCh power
-Ln_1.Tx.ALSState;21;1;1028;85;;0;<Interface> ALS state
-Ln_2.Tx.ALSState;22;1;1028;85;;0;<Interface> ALS state
-Ln_3.Tx.ALSState;23;1;1028;85;;0;<Interface> ALS state
-Ln_4.Tx.ALSState;24;1;1028;85;;0;<Interface> ALS state
+Ln_1.Tx.ALSState;21;1;1028;85;;0;Line 1 ALS state
+Ln_2.Tx.ALSState;22;1;1028;85;;0;Line 2 ALS state
+Ln_3.Tx.ALSState;23;1;1028;85;;0;Line 3 ALS state
+Ln_4.Tx.ALSState;24;1;1028;85;;0;Line 4 ALS state
 Ln_1.Tx.OCh.Pwr;25;1;9;85;dBm;0;Line 1 transmitter OCh power
 Ln_2.Tx.OCh.Pwr;26;1;9;85;dBm;0;Line 2 transmitter OCh power
 Ln_3.Tx.OCh.Pwr;27;1;9;85;dBm;0;Line 3 transmitter OCh power
@@ -251,22 +251,22 @@ Cl_13.Rx.OCh.Pwr;133;1;9;85;dBm;0;Client 13 receiver OCh power
 Cl_14.Rx.OCh.Pwr;134;1;9;85;dBm;0;Client 14 receiver OCh power
 Cl_15.Rx.OCh.Pwr;135;1;9;85;dBm;0;Client 15 receiver OCh power
 Cl_16.Rx.OCh.Pwr;136;1;9;85;dBm;0;Client 16 receiver OCh power
-Cl_1.Tx.ALSState;137;1;1030;85;;0;<Interface> ALS state
-Cl_2.Tx.ALSState;138;1;1030;85;;0;<Interface> ALS state
-Cl_3.Tx.ALSState;139;1;1030;85;;0;<Interface> ALS state
-Cl_4.Tx.ALSState;140;1;1030;85;;0;<Interface> ALS state
-Cl_5.Tx.ALSState;141;1;1030;85;;0;<Interface> ALS state
-Cl_6.Tx.ALSState;142;1;1030;85;;0;<Interface> ALS state
-Cl_7.Tx.ALSState;143;1;1030;85;;0;<Interface> ALS state
-Cl_8.Tx.ALSState;144;1;1030;85;;0;<Interface> ALS state
-Cl_9.Tx.ALSState;145;1;1030;85;;0;<Interface> ALS state
-Cl_10.Tx.ALSState;146;1;1030;85;;0;<Interface> ALS state
-Cl_11.Tx.ALSState;147;1;1030;85;;0;<Interface> ALS state
-Cl_12.Tx.ALSState;148;1;1030;85;;0;<Interface> ALS state
-Cl_13.Tx.ALSState;149;1;1030;85;;0;<Interface> ALS state
-Cl_14.Tx.ALSState;150;1;1030;85;;0;<Interface> ALS state
-Cl_15.Tx.ALSState;151;1;1030;85;;0;<Interface> ALS state
-Cl_16.Tx.ALSState;152;1;1030;85;;0;<Interface> ALS state
+Cl_1.Tx.ALSState;137;1;1030;85;;0;Client 1 ALS state
+Cl_2.Tx.ALSState;138;1;1030;85;;0;Client 2 ALS state
+Cl_3.Tx.ALSState;139;1;1030;85;;0;Client 3 ALS state
+Cl_4.Tx.ALSState;140;1;1030;85;;0;Client 4 ALS state
+Cl_5.Tx.ALSState;141;1;1030;85;;0;Client 5 ALS state
+Cl_6.Tx.ALSState;142;1;1030;85;;0;Client 6 ALS state
+Cl_7.Tx.ALSState;143;1;1030;85;;0;Client 7 ALS state
+Cl_8.Tx.ALSState;144;1;1030;85;;0;Client 8 ALS state
+Cl_9.Tx.ALSState;145;1;1030;85;;0;Client 9 ALS state
+Cl_10.Tx.ALSState;146;1;1030;85;;0;Client 10 ALS state
+Cl_11.Tx.ALSState;147;1;1030;85;;0;Client 11 ALS state
+Cl_12.Tx.ALSState;148;1;1030;85;;0;Client 12 ALS state
+Cl_13.Tx.ALSState;149;1;1030;85;;0;Client 13 ALS state
+Cl_14.Tx.ALSState;150;1;1030;85;;0;Client 14 ALS state
+Cl_15.Tx.ALSState;151;1;1030;85;;0;Client 15 ALS state
+Cl_16.Tx.ALSState;152;1;1030;85;;0;Client 16 ALS state
 Cl_1.Tx.OCh.Pwr;153;1;9;85;dBm;0;Client 1 transmitter OCh power
 Cl_2.Tx.OCh.Pwr;154;1;9;85;dBm;0;Client 2 transmitter OCh power
 Cl_3.Tx.OCh.Pwr;155;1;9;85;dBm;0;Client 3 transmitter OCh power
@@ -1931,7 +1931,7 @@ SI5332_2.AdjCapCalib;3;0;1129;192;pF;10;SI5332 2 adjusted capacitance calibratio
 [7]
 SrNumberCalibVal;1;1;34;192;;0000-0000-0000;Serial number calibration value
 SI5332_1.AdjCapCalibVal;2;1;1130;192;pF;8;SI5332 1 adjusted capacitance calibration value
-SI5332_2.AdjCapCalibVal;3;1;1131;192;pF;11;SI5332 2 adjusted capacitance calibration value
+SI5332_2.AdjCapCalibVal;3;1;1131;192;pF;10;SI5332 2 adjusted capacitance calibration value
 [8]
 Ln_1.OTU2.EB;1;1;6;85;;0;Line 1 OTU2 errored blocks
 Ln_2.OTU2.EB;2;1;6;85;;0;Line 2 OTU2 errored blocks
