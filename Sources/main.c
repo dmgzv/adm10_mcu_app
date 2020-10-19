@@ -33,6 +33,7 @@ const SHELL_IFACE_T ShellTelnetIface =
 	&ShellTelnetPriv
 };
 
+const PROFILE_T *Profile = &PROFILE_ADM10;
 PROFILE_FLASH_T ProfileFlash;
 
 BOOTLOADER_T /*__attribute__((section ("CCM_DATA")))*/ Bootloader;
@@ -132,11 +133,11 @@ static void System_Thread(void const *argument)
 	WATCHDOG_Refresh();
 	
 	/* Init Profile*/
-	PROFILE_Init(&PROFILE_ADM10);
+	PROFILE_Init(Profile);
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Flash*/
-	PROFILE_FLASH_Init(&ProfileFlash, "Profile FLASH", &PROFILE_ADM10);
+	PROFILE_FLASH_Init(&ProfileFlash, "Profile FLASH", Profile);
 	WATCHDOG_Refresh();
 	
 	/* Init Profile Protocol*/

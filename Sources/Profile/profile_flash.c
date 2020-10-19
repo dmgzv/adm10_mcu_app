@@ -1613,6 +1613,19 @@ void PROFILE_FLASH_SaveConfigs(PROFILE_FLASH_T *ProfileFlash)
 	osMessagePut(ProfileFlash->MessageQId, 1, 0);	
 }
 
+void PROFILE_FLASH_SaveParamValue(PROFILE_FLASH_T *ProfileFlash, PROFILE_PARAM_T *Param)
+{
+	if (!PROFILE_IsCalibParam(ProfileFlash->Profile, Param))
+		PROFILE_FLASH_SaveCalibs(ProfileFlash);
+	else if (!PROFILE_IsConfigParam(ProfileFlash->Profile, Param))
+		PROFILE_FLASH_SaveConfigs(ProfileFlash);
+}
+
+void PROFILE_FLASH_SaveParamColors(PROFILE_FLASH_T *ProfileFlash, PROFILE_PARAM_T *Param)
+{
+	PROFILE_FLASH_SaveConfigs(ProfileFlash);
+}
+
 int32_t PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t *LangpackBlocks, uint32_t *LangpackType)
 {
 	return __PROFILE_FLASH_LoadLangpackHeader(ProfileFlash, ProfileFlash->LangpackIdx % PROFILE_FLASH_LANG_RECORDS_CNT, LangpackBlocks, LangpackType);

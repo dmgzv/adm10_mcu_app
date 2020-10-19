@@ -120,6 +120,9 @@ void PROFILE_FLASH_SaveCalibs(PROFILE_FLASH_T *ProfileFlash);
 int32_t PROFILE_FLASH_InitConfigs(PROFILE_FLASH_T *ProfileFlash);
 void PROFILE_FLASH_SaveConfigs(PROFILE_FLASH_T *ProfileFlash);
 
+void PROFILE_FLASH_SaveParamValue(PROFILE_FLASH_T *ProfileFlash, PROFILE_PARAM_T *Param);
+void PROFILE_FLASH_SaveParamColors(PROFILE_FLASH_T *ProfileFlash, PROFILE_PARAM_T *Param);
+
 int32_t PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t *LangpackBlocks, uint32_t *LangpackType);
 int32_t PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t LangpackBlocks, uint32_t LangpackType);
 int32_t PROFILE_FLASH_LoadLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize);

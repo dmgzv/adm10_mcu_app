@@ -3,7 +3,6 @@
 #include "string.h"
 #include "cmsis_os.h"
 #include "profile.h"
-#include "profile_adm10.h"
 #include "profile_flash.h"
 #include "bootloader.h"
 #include "tftp_bootloader.h"
@@ -70,6 +69,7 @@ typedef struct {
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern BOOTLOADER_T Bootloader;
+extern const PROFILE_T *Profile;
 extern PROFILE_FLASH_T ProfileFlash;
 
 static char REQUEST_BODY[512];
@@ -97,7 +97,7 @@ static int32_t http_server_write(struct netconn *conn, const void *dataptr, size
 
 static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQUEST_HEADER_T *Header, char **body, uint16_t *bodylen)
 {
-	char *p;
+	char *p1, *p2;
 	
 	Header->Type = data;
 	
@@ -112,8 +112,9 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 	else
 		return -1;
 	
-	Header->Connection = strstr(data, "Connection: ");
-	if (Header->Connection)
+	p1 = strstr(data, "Connection: ");
+	p2 = strstr(data, "connection: ");
+	if (p1)
 	{
 		Header->Connection += sizeof("Connection: ") - 1;
 		/*
@@ -123,13 +124,7 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 		*/
 			Header->ConnectionKeepAlive = 0;
 	}
-	else
-	{
-		Header->ConnectionKeepAlive = 0;
-	}
-	
-	Header->Connection = strstr(data, "connection: ");
-	if (Header->Connection)
+	else if (p2)
 	{
 		Header->Connection += sizeof("connection: ") - 1;
 		/*
@@ -144,27 +139,25 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 		Header->ConnectionKeepAlive = 0;
 	}
 	
-	Header->ContentType = strstr(data, "Content-Type: ");
-	if (Header->ContentType)
+	p1 = strstr(data, "Content-Type: ");
+	p2 = strstr(data, "content-type: ");
+	if (p1)
 		Header->ContentType += sizeof("Content-Type: ") - 1;
-	
-	Header->ContentType = strstr(data, "content-type: ");
-	if (Header->ContentType)
+	else if (p2)
 		Header->ContentType += sizeof("content-type: ") - 1;
+	else
+		Header->ContentType = NULL;
 	
 	Header->Charset = strstr(data, "charset=");
 	if (Header->Charset)
 		Header->Charset += sizeof("charset=") - 1;
 	
-	p = strstr(data, "Content-Length: ");
-	if (p)
-		Header->ContentLength = strtoul(p + sizeof("Content-Length: ") - 1, &p, 10);
-	else
-		Header->ContentLength = 0;
-	
-	p = strstr(data, "content-length: ");
-	if (p)
-		Header->ContentLength = strtoul(p + sizeof("content-length: ") - 1, &p, 10);
+	p1 = strstr(data, "Content-Length: ");
+	p2 = strstr(data, "content-length: ");
+	if (p1)
+		Header->ContentLength = strtoul(p1 + sizeof("Content-Length: ") - 1, &p1, 10);
+	else if (p2)
+		Header->ContentLength = strtoul(p2 + sizeof("content-length: ") - 1, &p2, 10);
 	else
 		Header->ContentLength = 0;
 	
@@ -904,13 +897,13 @@ error:
 void http_server_serve_get_api_v1_profile_line(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen, uint32_t line_idx)
 {
 	HTTP_RESPONCE_HEADER_T RspHeader;
-	if (line_idx >= *PROFILE_ADM10.LinesCnt)
+	if (line_idx >= *Profile->LinesCnt)
 		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_WINDOWS_1251;
-	RspHeader.ContentLength = strlen(PROFILE_ADM10.Lines[line_idx]) + 2;
+	RspHeader.ContentLength = strlen(Profile->Lines[line_idx]) + 2;
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
@@ -920,9 +913,9 @@ void http_server_serve_get_api_v1_profile_line(struct netconn *conn, HTTP_REQUES
 	if (http_server_write_header(conn, &RspHeader))
 		return;
 	
-	RESPONCE_BODY_LEN = strlen(PROFILE_ADM10.Lines[line_idx]);
+	RESPONCE_BODY_LEN = strlen(Profile->Lines[line_idx]);
 	
-	memcpy(RESPONCE_BODY, PROFILE_ADM10.Lines[line_idx], RESPONCE_BODY_LEN);
+	memcpy(RESPONCE_BODY, Profile->Lines[line_idx], RESPONCE_BODY_LEN);
 	RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
 	RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
 
@@ -962,15 +955,15 @@ void http_server_serve_get_api_v1_profile(struct netconn *conn, HTTP_REQUEST_HEA
 		return;
 	
 	RESPONCE_BODY_LEN = 0;	
-	for (i = 0; i < *PROFILE_ADM10.LinesCnt; i++)
+	for (i = 0; i < *Profile->LinesCnt; i++)
 	{
-		len = strlen(PROFILE_ADM10.Lines[i]);
+		len = strlen(Profile->Lines[i]);
 		if (len > sizeof(RESPONCE_BODY))
 			len = len;
 		shift = 0;
 		while((len + RESPONCE_BODY_LEN) >= 1024)
 		{
-			memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], &PROFILE_ADM10.Lines[i][shift], 1024 - RESPONCE_BODY_LEN);
+			memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], &Profile->Lines[i][shift], 1024 - RESPONCE_BODY_LEN);
 			snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", 1024);
 			if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
 				return;
@@ -982,7 +975,7 @@ void http_server_serve_get_api_v1_profile(struct netconn *conn, HTTP_REQUEST_HEA
 			shift += 1024 - RESPONCE_BODY_LEN;
 			RESPONCE_BODY_LEN = 0;
 		}
-		memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], &PROFILE_ADM10.Lines[i][shift], len);
+		memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], &Profile->Lines[i][shift], len);
 		RESPONCE_BODY_LEN += len;
 		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
 		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
@@ -1029,9 +1022,9 @@ void http_server_serve_get_api_v1_profile_section_values(struct netconn *conn, H
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	/*Prepare request*/
-	for (i = 0; i < PROFILE_ADM10.SectionsCnt; i++)
+	for (i = 0; i < Profile->SectionsCnt; i++)
 	{
-		if (PROFILE_ADM10.Sections[i]->Index == section_idx)
+		if (Profile->Sections[i]->Index == section_idx)
 		{
 			RspHeader.Code = HTTP_RESPONCE_200_OK;
 			RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
@@ -1047,38 +1040,38 @@ void http_server_serve_get_api_v1_profile_section_values(struct netconn *conn, H
 				return;
 			
 			RESPONCE_BODY_LEN = 0;
-			PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
-			for (j = 0; j < PROFILE_ADM10.Sections[i]->ParamsCnt; j++)
+			PROFILE_MUTEX_LOCK(Profile);
+			for (j = 0; j < Profile->Sections[i]->ParamsCnt; j++)
 			{
-				__PROFILE_GetParamValue(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &Value);
-				__PROFILE_GetParamColor(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &Color);
-				__PROFILE_GetParamAdminState(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &AdminState);
-				PROFILE_ParamValueToString(PROFILE_ADM10.Sections[i]->Params[j]->Type, &Value, &RESPONCE_BODY[RESPONCE_BODY_LEN], &Len);
+				__PROFILE_GetParamValue(Profile, Profile->Sections[i]->Params[j], &Value);
+				__PROFILE_GetParamColor(Profile, Profile->Sections[i]->Params[j], &Color);
+				__PROFILE_GetParamAdminState(Profile, Profile->Sections[i]->Params[j], &AdminState);
+				PROFILE_ParamValueToString(Profile->Sections[i]->Params[j]->Type, &Value, &RESPONCE_BODY[RESPONCE_BODY_LEN], &Len);
 				RESPONCE_BODY_LEN += Len;
 				RESPONCE_BODY_LEN += sprintf(&RESPONCE_BODY[RESPONCE_BODY_LEN], "@%d", AdminState);
 				if (Color != PROFILE_COLOR_NA)
 					RESPONCE_BODY_LEN += sprintf(&RESPONCE_BODY[RESPONCE_BODY_LEN], "@%u", Color);
-				if (j != PROFILE_ADM10.Sections[i]->ParamsCnt - 1)
+				if (j != Profile->Sections[i]->ParamsCnt - 1)
 					RESPONCE_BODY[RESPONCE_BODY_LEN++] = ';';
 				if (RESPONCE_BODY_LEN > 1024)
 				{
 					snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
 					if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
 					{
-						PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+						PROFILE_MUTEX_UNLOCK(Profile);
 						return;
 					}
 					RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
 					RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
 					if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
 					{
-						PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+						PROFILE_MUTEX_UNLOCK(Profile);
 						return;
 					}
 					RESPONCE_BODY_LEN = 0;
 				}
 			}
-			PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+			PROFILE_MUTEX_UNLOCK(Profile);
 			if (RESPONCE_BODY_LEN)
 			{
 				snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
@@ -1112,9 +1105,9 @@ void http_server_serve_get_api_v1_profile_section_colors(struct netconn *conn, H
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	/*Prepare request*/
-	for (i = 0; i < PROFILE_ADM10.SectionsCnt; i++)
+	for (i = 0; i < Profile->SectionsCnt; i++)
 	{
-		if (PROFILE_ADM10.Sections[i]->Index == section_idx)
+		if (Profile->Sections[i]->Index == section_idx)
 		{
 			RspHeader.Code = HTTP_RESPONCE_200_OK;
 			RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
@@ -1130,34 +1123,34 @@ void http_server_serve_get_api_v1_profile_section_colors(struct netconn *conn, H
 				return;
 			
 			RESPONCE_BODY_LEN = 0;
-			PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
-			for (j = 0; j < PROFILE_ADM10.Sections[i]->ParamsCnt; j++)
+			PROFILE_MUTEX_LOCK(Profile);
+			for (j = 0; j < Profile->Sections[i]->ParamsCnt; j++)
 			{
-				if (!__PROFILE_GetParamColors(&PROFILE_ADM10, PROFILE_ADM10.Sections[i]->Params[j], &Normal, &Degrade, &Failure))
+				if (!__PROFILE_GetParamColors(Profile, Profile->Sections[i]->Params[j], &Normal, &Degrade, &Failure))
 				{
 					RESPONCE_BODY_LEN += sprintf(&RESPONCE_BODY[RESPONCE_BODY_LEN], "%d@%d@%d", Normal, Degrade, Failure);
 				}
-				if (j != PROFILE_ADM10.Sections[i]->ParamsCnt - 1)
+				if (j != Profile->Sections[i]->ParamsCnt - 1)
 					RESPONCE_BODY[RESPONCE_BODY_LEN++] = ';';
 				if (RESPONCE_BODY_LEN > 1024)
 				{
 					snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
 					if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
 					{
-						PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+						PROFILE_MUTEX_UNLOCK(Profile);
 						return;
 					}
 					RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
 					RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
 					if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
 					{
-						PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+						PROFILE_MUTEX_UNLOCK(Profile);
 						return;
 					}
 					RESPONCE_BODY_LEN = 0;
 				}
 			}
-			PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+			PROFILE_MUTEX_UNLOCK(Profile);
 			if (RESPONCE_BODY_LEN)
 			{
 				snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
@@ -1216,18 +1209,18 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	}
 	
 	/*Prepare request*/
-	if (PROFILE_GetParamByIndex(&PROFILE_ADM10, section_idx, param_idx, &Param))
+	if (PROFILE_GetParamByIndex(Profile, section_idx, param_idx, &Param))
 		goto error;
 	if (PROFILE_StringToParamValue(Param->Type, &Value, data, datalen))
 		goto error;	
-	PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
-	if (__PROFILE_SetParamValue(&PROFILE_ADM10, Param, &Value))
+	PROFILE_MUTEX_LOCK(Profile);
+	if (__PROFILE_SetParamValue(Profile, Param, &Value))
 	{
-		PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+		PROFILE_MUTEX_UNLOCK(Profile);
 		goto error;
 	}
-	PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
-	
+	PROFILE_MUTEX_UNLOCK(Profile);
+	PROFILE_FLASH_SaveParamValue(&ProfileFlash, Param);
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -1284,7 +1277,7 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 	}
 	
 	/*Prepare request*/
-	if (PROFILE_GetParamByIndex(&PROFILE_ADM10, section_idx, param_idx, &Param))
+	if (PROFILE_GetParamByIndex(Profile, section_idx, param_idx, &Param))
 		goto error;
 	Normal = strtoul(data, &data, 10);
 	if (*data != ';')
@@ -1295,13 +1288,14 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 		goto error;
 	data++;
 	Failure = strtoul(data, &data, 10);
-	PROFILE_MUTEX_LOCK(&PROFILE_ADM10);
-	if (__PROFILE_SetParamColors(&PROFILE_ADM10, Param, Normal, Degrade, Failure))
+	PROFILE_MUTEX_LOCK(Profile);
+	if (__PROFILE_SetParamColors(Profile, Param, Normal, Degrade, Failure))
 	{
-		PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+		PROFILE_MUTEX_UNLOCK(Profile);
 		goto error;
 	}
-	PROFILE_MUTEX_UNLOCK(&PROFILE_ADM10);
+	PROFILE_MUTEX_UNLOCK(Profile);
+	PROFILE_FLASH_SaveParamColors(&ProfileFlash, Param);
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
