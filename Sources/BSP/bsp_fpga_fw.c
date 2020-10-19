@@ -92,7 +92,7 @@ static int32_t BSP_FPGA_FW_CheckConditions(void)
 		return -1;
 	for (i = 0; i < BSP_CLK_SI5332_CNT; i++)
 	{
-		if (BSP_DEV_GET_STATE(&si5332[i]) != BSP_DEV_STATE_OK)
+		if ((BSP_DEV_GET_STATE(&si5332[i]) != BSP_DEV_STATE_OK) || (si5332[i].Status != SI5332_STATUS_ACTIVE))
 			return -1;
 	}
 	if (BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK)

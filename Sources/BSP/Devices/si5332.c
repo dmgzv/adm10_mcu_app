@@ -32,12 +32,45 @@ int32_t SI5332_Init(SI5332_T *Dev, const SI5332_CFG_T *Config, const uint32_t Co
 	if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Reg, 1, (char*)&Data, 1))
 		goto error;
 	
+	Reg = 0x07;
+	Dev->Status = SI5332_STATUS_READY;
+	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Reg, 1, (char*)&Data, 1))
+		goto error;
+	Dev->Status = Data;
+	
 	BSP_DEV_INIT_OK(Dev);
 	return 0;
 	
 error:
 	BSP_DEV_INIT_FAIL(Dev);
 	return -1;
+}
+
+int32_t SI5332_Update(SI5332_T *Dev)
+{
+	uint8_t Reg;
+	uint8_t Data;
+	
+	if (!Dev)
+		return -1;
+	
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;	
+	
+	BSP_DEV_UPDATE(Dev);
+	
+	Reg = 0x07;
+	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Reg, 1, (char*)&Data, 1))
+		goto error;
+	Dev->Status = Data;
+	
+	BSP_DEV_UPDATE_OK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UPDATE_FAIL(Dev);
+	return -1;
+	
 }
 
 void SI5332_Deinit(SI5332_T *Dev)

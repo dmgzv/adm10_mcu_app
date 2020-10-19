@@ -259,6 +259,14 @@ void BSP_CLK_Process(void)
 						break;
 				}
 			}
+			else
+			{
+				if (!BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_SI5332_CH(i)))
+				{
+					SI5332_Update(&si5332[i]);
+					BSP_SFP_I2C_SWITCH_SelectChannel(BSP_SFP_I2C_SWITCH_CH_NO);
+				}
+			}
 		}
 	}
 }
