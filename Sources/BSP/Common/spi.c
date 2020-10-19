@@ -181,7 +181,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin       = SPI1_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull      = GPIO_PULLUP;
-		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+		GPIO_InitStruct.Speed     = GPIO_SPEED_MEDIUM;
 		GPIO_InitStruct.Alternate = SPI1_SCK_AF;		
 		HAL_GPIO_Init(SPI1_SCK_GPIO_PORT, &GPIO_InitStruct);			
 		/* SPI MISO GPIO pin configuration  */
@@ -211,7 +211,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin       = SPI2_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull      = GPIO_PULLUP;
-		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+		GPIO_InitStruct.Speed     = GPIO_SPEED_MEDIUM;
 		GPIO_InitStruct.Alternate = SPI2_SCK_AF;		
 		HAL_GPIO_Init(SPI2_SCK_GPIO_PORT, &GPIO_InitStruct);			
 		/* SPI MISO GPIO pin configuration  */
@@ -241,7 +241,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin       = SPI3_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull      = GPIO_PULLUP;
-		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+		GPIO_InitStruct.Speed     = GPIO_SPEED_MEDIUM;
 		GPIO_InitStruct.Alternate = SPI3_SCK_AF;		
 		HAL_GPIO_Init(SPI3_SCK_GPIO_PORT, &GPIO_InitStruct);			
 		/* SPI MISO GPIO pin configuration  */
@@ -271,7 +271,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin       = SPI4_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull      = GPIO_PULLUP;
-		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+		GPIO_InitStruct.Speed     = GPIO_SPEED_MEDIUM;
 		GPIO_InitStruct.Alternate = SPI4_SCK_AF;		
 		HAL_GPIO_Init(SPI4_SCK_GPIO_PORT, &GPIO_InitStruct);			
 		/* SPI MISO GPIO pin configuration  */
@@ -303,7 +303,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin       = SPI5_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull      = GPIO_PULLUP;
-		GPIO_InitStruct.Speed     = GPIO_SPEED_FAST;
+		GPIO_InitStruct.Speed     = GPIO_SPEED_MEDIUM;
 		GPIO_InitStruct.Alternate = SPI5_SCK_AF;		
 		HAL_GPIO_Init(SPI5_SCK_GPIO_PORT, &GPIO_InitStruct);			
 		/* SPI MISO GPIO pin configuration  */
