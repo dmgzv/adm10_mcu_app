@@ -15,200 +15,35 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_SFP_HwStateColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_SFP_HwStateDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_SFP_HwStateFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_HwStateFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_SFP_TempColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_SFP_TempNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_SFP_TempDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_TempFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_Rx_OCh_PwrColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_Rx_OCh_PwrNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_Rx_OCh_PwrDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_Rx_OCh_PwrFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_Rx_OCh_PwrFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_Tx_OCh_PwrColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_Tx_OCh_PwrNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_Tx_OCh_PwrDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_Tx_OCh_PwrFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_AlarmsFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_AlarmsFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_AlarmsFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_AlarmsFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_1_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_3_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_3_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_3_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_2_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_3_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_4_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_1_ODU0_1_AlarmsNormalColor,
@@ -220,6 +55,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsColors =
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsDegradeColor,
@@ -229,6 +69,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsColors =
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_3_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsNormalColor,
@@ -240,6 +85,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsColors =
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsDegradeColor,
@@ -249,6 +99,41 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_1_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsColors =
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_1_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_ODU0_1_AlarmsNormalColor,
@@ -260,6 +145,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsColors =
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsDegradeColor,
@@ -269,6 +159,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsColors =
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_3_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsNormalColor,
@@ -280,6 +175,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsColors =
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsDegradeColor,
@@ -289,6 +189,41 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_2_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsColors =
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_2_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_ODU0_1_AlarmsNormalColor,
@@ -300,6 +235,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsColors =
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsDegradeColor,
@@ -309,6 +249,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsColors =
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_3_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsNormalColor,
@@ -320,6 +265,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsColors =
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsDegradeColor,
@@ -329,6 +279,41 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_3_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsColors =
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_3_OTU2_ODU2_ODU1_4_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_ODU0_1_AlarmsNormalColor,
@@ -340,6 +325,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsColors =
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_2_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_ODU0_1_AlarmsDegradeColor,
@@ -350,6 +340,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsColors =
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_2_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_3_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_ODU0_1_AlarmsDegradeColor,
@@ -359,6 +354,11 @@ const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsColors =
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_3_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_4_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Ln_4_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Ln_4_OTU2_ODU2_ODU1_4_ODU0_1_AlarmsNormalColor,
@@ -375,480 +375,30 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_SFP_HwStateColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_SFP_HwStateDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_SFP_HwStateFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_HwStateFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_SFP_HwStateColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_HwStateNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_HwStateDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_HwStateFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_SFP_TempColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_SFP_TempNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_SFP_TempDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_TempFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_SFP_TempColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_TempNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_TempDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_TempFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_Rx_OCh_PwrColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_Rx_OCh_PwrNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_Rx_OCh_PwrDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_Rx_OCh_PwrFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_Rx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_Rx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_Rx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_Rx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_Rx_OCh_PwrFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_Tx_OCh_PwrColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_Tx_OCh_PwrNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_Tx_OCh_PwrDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_Tx_OCh_PwrFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_Tx_OCh_PwrColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_Tx_OCh_PwrNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_Tx_OCh_PwrDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_Tx_OCh_PwrFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_OTU1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_AlarmsFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_OTU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_AlarmsFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_OTU1_ODU1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_ODU1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_ODU1_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_OTU1_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
@@ -860,6 +410,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_ODU0_1_AlarmsDegradeColor,
@@ -869,6 +489,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
@@ -880,6 +570,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_ODU0_1_AlarmsDegradeColor,
@@ -889,6 +649,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
@@ -900,6 +730,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_ODU0_1_AlarmsDegradeColor,
@@ -909,6 +809,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
@@ -920,6 +890,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_ODU0_1_AlarmsDegradeColor,
@@ -929,6 +969,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
@@ -940,6 +1050,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_ODU0_1_AlarmsDegradeColor,
@@ -949,6 +1129,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
@@ -960,6 +1210,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_ODU0_1_AlarmsDegradeColor,
@@ -969,6 +1289,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
@@ -980,6 +1370,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_ODU0_1_AlarmsDegradeColor,
@@ -989,6 +1449,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_ODU0_2_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
@@ -1000,6 +1530,76 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM1_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM4_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM4_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM16_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM16_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_ODU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_1GE_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_1GE_ODU0_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_ODU0_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_ODU0_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_ODU0_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_SFP_HwStateColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_HwStateNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_HwStateDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_HwStateFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_SFP_TempColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_TempNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_TempDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_SFP_TempFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_Rx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_Rx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_Rx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_Rx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_Tx_OCh_PwrColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_Tx_OCh_PwrNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_Tx_OCh_PwrDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_Tx_OCh_PwrFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_OTU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_AlarmsFailureColor,
+};
+const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_OTU1_ODU1_AlarmsColors = { 
+	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_AlarmsNormalColor,
+	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_AlarmsDegradeColor,
+	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_AlarmsFailureColor,
+};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_OTU1_ODU1_ODU0_1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_ODU0_1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_ODU0_1_AlarmsDegradeColor,
@@ -1010,640 +1610,40 @@ const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_OTU1_ODU1_ODU0_2_AlarmsColors = {
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_ODU0_2_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_OTU1_ODU1_ODU0_2_AlarmsFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_AlarmsFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_STM1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_STM1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_STM1_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_STM1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM1_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM1_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM1_ODU0_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_STM1_ODU0_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_STM1_ODU0_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_STM1_ODU0_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_STM1_ODU0_AlarmsFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM4_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_AlarmsFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_STM4_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_STM4_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_STM4_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_STM4_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM4_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM4_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM4_ODU0_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_STM4_ODU0_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_STM4_ODU0_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_STM4_ODU0_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_STM4_ODU0_AlarmsFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM16_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_AlarmsFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_STM16_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_STM16_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_STM16_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_STM16_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_STM16_ODU1_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_STM16_ODU1_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_ODU1_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_ODU1_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_STM16_ODU1_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_STM16_ODU1_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_STM16_ODU1_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_STM16_ODU1_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_STM16_ODU1_AlarmsFailureColor,
 };
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_1GE_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_AlarmsFailureColor,
-};
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_1GE_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_1GE_AlarmsNormalColor,
 	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_16_1GE_AlarmsDegradeColor,
 	.Failure = &PROFILE_ADM10_ConfigValues.Cl_16_1GE_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_1_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_1_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_2_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_2_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_3_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_3_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_4_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_4_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_5_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_5_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_6_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_6_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_7_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_7_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_8_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_8_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_9_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_9_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_10_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_10_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_11_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_11_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_12_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_12_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_13_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_13_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_14_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_14_1GE_ODU0_AlarmsFailureColor,
-};
-const PROFILE_COLORS_T PROFILE_ADM10_Cl_15_1GE_ODU0_AlarmsColors = { 
-	.Normal = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_ODU0_AlarmsNormalColor,
-	.Degrade = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_ODU0_AlarmsDegradeColor,
-	.Failure = &PROFILE_ADM10_ConfigValues.Cl_15_1GE_ODU0_AlarmsFailureColor,
 };
 const PROFILE_COLORS_T PROFILE_ADM10_Cl_16_1GE_ODU0_AlarmsColors = { 
 	.Normal = &PROFILE_ADM10_ConfigValues.Cl_16_1GE_ODU0_AlarmsNormalColor,
