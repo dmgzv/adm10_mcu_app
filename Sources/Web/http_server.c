@@ -11,61 +11,14 @@
 #include "log.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 
 /* Private typedef -----------------------------------------------------------*/
-typedef struct {	
-	char *Type;
-	char *Url;
-	char *ContentType;
-	char *Charset;
-	uint32_t ContentLength;
-	char *Connection;
-	uint32_t ConnectionKeepAlive;
-} HTTP_REQUEST_HEADER_T;
-
-typedef struct {
-	char *Code;
-	char *ContentType;
-	char *Charset;
-	uint32_t ContentLength;
-	char *Connection;
-	char *TransferEncoding;
-	char *Allowed[4];
-	uint32_t AllowedLen;
-} HTTP_RESPONCE_HEADER_T;
-
 /* Private define ------------------------------------------------------------*/
 #define HTTP_SERVER_THREAD_STACK_SIZE  ( 512 )
 #define HTTP_SERVER_THREAD_PRIO    ( osPriorityAboveNormal )
-
-#define HTTP_REQUEST_HEAD	"HEAD"
-#define HTTP_REQUEST_GET	"GET"
-#define HTTP_REQUEST_PUT	"PUT"
-#define HTTP_REQUEST_POST	"POST"
-
-#define HTTP_RESPONCE_200_OK									"HTTP/1.1 200 OK"
-#define HTTP_RESPONCE_400_BAD_REQUEST					"HTTP/1.1 400 Bad Request"
-#define HTTP_RESPONCE_404_NOT_FOUND						"HTTP/1.1 404 Not Found"
-#define HTTP_RESPONCE_405_METHOD_NOT_ALLOWED	"HTTP/1.1 405 Method Not Allowed"
-
-
-#define HTTP_CHARSET_UTF_8						"utf-8"
-#define HTTP_CHARSET_WINDOWS_1251			"windows-1251"
-
-#define HTTP_CONTENT_TYPE_TEXT_HTML		"text/html"
-#define HTTP_CONTENT_TYPE_TEXT_CSS		"text/css"
-#define HTTP_CONTENT_TYPE_TEXT_JS			"text/javascript"
-#define HTTP_CONTENT_TYPE_TEXT_PLAIN	"text/plain"
-#define HTTP_CONTENT_TYPE_APP_JSON		"application/json"
-#define HTTP_CONTENT_TYPE_APP_OCTET		"application/octet-stream"
-#define HTTP_CONTENT_TYPE_FONT_WOFF2	"font/woff2"
-
-#define HTTP_TRANSFER_ENCODING_CHUNKED	"chunked"
-
-#define HTTP_CONNECTION_CLOSE "close"
-#define HTTP_CONNECTION_KEEP_ALIVE "keep-alive"
-
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern BOOTLOADER_T Bootloader;
@@ -174,19 +127,21 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 	return 0;
 }
 
-static void http_server_write_400_error(struct netconn *conn)
+int32_t http_server_write_400_error(struct netconn *conn)
 {
 	if (http_server_write(conn, HTTP_RESPONCE_400_BAD_REQUEST"\r\n\r\n", sizeof(HTTP_RESPONCE_400_BAD_REQUEST"\r\n\r\n") - 1, NETCONN_NOCOPY))
-		return;
+		return -1;
+	return 0;
 }
  
-static void http_server_write_404_error(struct netconn *conn)
+int32_t http_server_write_404_error(struct netconn *conn)
 {
 	if (http_server_write(conn, HTTP_RESPONCE_404_NOT_FOUND"\r\n\r\n", sizeof(HTTP_RESPONCE_404_NOT_FOUND"\r\n\r\n") - 1, NETCONN_NOCOPY))
-		return;
+		return -1;
+	return 0;
 }
 
-static int32_t http_server_write_header(struct netconn *conn, HTTP_RESPONCE_HEADER_T *Header)
+int32_t http_server_write_header(struct netconn *conn, HTTP_RESPONCE_HEADER_T *Header)
 {
 	uint32_t i;
 	
@@ -231,6 +186,56 @@ static int32_t http_server_write_header(struct netconn *conn, HTTP_RESPONCE_HEAD
 
 	return http_server_write(conn, RESPONCE_HEADER, RESPONCE_HEADER_LEN, NETCONN_COPY);
 }
+
+int32_t http_server_write_body_start(struct netconn *conn)
+{
+	RESPONCE_BODY_LEN = 0;
+	return 0;
+}
+
+int32_t http_server_write_body(struct netconn *conn, char *str, ...)
+{
+	char chunk_size[16];
+	
+	va_list va;
+	va_start(va, str);
+	RESPONCE_BODY_LEN += vsnprintf(&RESPONCE_BODY[RESPONCE_BODY_LEN], sizeof(RESPONCE_BODY), str, va);
+	va_end(va);
+	if (RESPONCE_BODY_LEN >= 1024)
+	{
+		snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+		if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+			return -1;	
+		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
+		if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+			return -1;
+		RESPONCE_BODY_LEN = 0;
+	}
+  return 0;
+}
+
+int32_t http_server_write_body_finish(struct netconn *conn)
+{
+	char chunk_size[16];
+	
+	if (RESPONCE_BODY_LEN >= 1024)
+	{
+		snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+		if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+			return -1;	
+		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+		RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
+		if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+			return -1;
+		RESPONCE_BODY_LEN = 0;
+	}	
+	strncpy(chunk_size, "0\r\n\r\n", sizeof(chunk_size));
+	if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY))
+		return - 1;
+	return 0;
+}
+
 
 static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {	
@@ -495,7 +500,7 @@ write_data:
 error:
 	http_server_write_400_error(conn);
 }
-#if 0
+
 /**
   * @brief  Head profile config. 
   * @param  conn pointer on connection structure 
@@ -503,65 +508,47 @@ error:
   */
 void http_server_serve_head_api_v1_profile_config(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {
-	char *p;
-	uint32_t complete;
-	uint32_t header_len;
-	uint32_t blocks_cnt;
+	uint8_t NColor, DColor, FColor;
+	uint32_t i, j, Len;
+	PROFILE_VALUE_T Value;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
-	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;", PROFILE_PROTOCOL_CONFIG_STARTREAD);
-	header_len = REQUEST_BODY_LEN - 1;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-	
-	if (memcmp(REQUEST_BODY, RESPONCE_BODY, 2))
-		goto error;
-	
-	if (memcmp("OK;", &RESPONCE_BODY[2], sizeof("OK;") - 1))
-		goto error;
-	
-	if (memcmp(&REQUEST_BODY[2], &RESPONCE_BODY[2 + sizeof("OK;") - 1], header_len - 2))
-		goto error;
-	
-	header_len += sizeof("OK;") - 1;
-	
-	blocks_cnt = strtoul(&RESPONCE_BODY[header_len + 1], &p, 10);
-	
-	if (blocks_cnt == 0)
-		goto error;
+	RESPONCE_BODY_LEN = 0;
+	RESPONCE_BODY_LEN += sprintf(RESPONCE_BODY, "#"BSP_PT_NUMBER";"BSP_HW_VERSION";"BSP_SW_VERSION"\r\n");
+	for (i = 0; i < Profile->SectionsCnt; i++)
+	{
+		for (j = 0; j < Profile->Sections[i]->ParamsCnt; j++)
+		{
+			if (!PROFILE_IsConfigParam(Profile, Profile->Sections[i]->Params[j]))
+			{
+				RESPONCE_BODY_LEN += sprintf(RESPONCE_BODY, "%d;%s;0;", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name);
+				__PROFILE_GetParamValue(Profile, Profile->Sections[i]->Params[j], &Value);
+				PROFILE_ParamValueToString(Profile->Sections[i]->Params[j]->Type, &Value, RESPONCE_BODY, &Len);
+				RESPONCE_BODY_LEN += Len;
+				RESPONCE_BODY_LEN += sprintf(RESPONCE_BODY, "\r\n");
+			}
+			if (Profile->Sections[i]->Params[j]->Colors)
+			{
+				__PROFILE_GetParamColors(Profile, Profile->Sections[i]->Params[j], &NColor, &DColor, &FColor);
+				RESPONCE_BODY_LEN += sprintf(RESPONCE_BODY, "%d;%s;1;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, NColor);
+				RESPONCE_BODY_LEN += sprintf(RESPONCE_BODY, "%d;%s;2;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, DColor);
+				RESPONCE_BODY_LEN += sprintf(RESPONCE_BODY, "%d;%s;3;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, FColor);
+			}
+		}
+	}
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
-	RspHeader.ContentLength = blocks_cnt * 512;
+	RspHeader.ContentLength = RESPONCE_BODY_LEN;
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	http_server_write_header(conn, &RspHeader);
-	
-	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;", PROFILE_PROTOCOL_CONFIG_FINISHREAD);
-	header_len = REQUEST_BODY_LEN - 1;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);	
-	return;
-
-error:
-	http_server_write_400_error(conn);
+	if (http_server_write_header(conn, &RspHeader))
+		return;
 }
 
 /**
@@ -571,107 +558,47 @@ error:
   */
 void http_server_serve_get_api_v1_profile_config(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {
-	char *p;
-	uint32_t i;
-	uint32_t complete;
-	uint32_t header_len;
-	uint32_t blocks_cnt;
+	uint8_t NColor, DColor, FColor;
+	uint32_t i, j, Len;
+	PROFILE_VALUE_T Value;
+	char ValueString[64];
 	HTTP_RESPONCE_HEADER_T RspHeader;
-	
-	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;", PROFILE_PROTOCOL_CONFIG_STARTREAD);
-	header_len = REQUEST_BODY_LEN - 1;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-	
-	if (memcmp(REQUEST_BODY, RESPONCE_BODY, 2))
-		goto error;
-	
-	if (memcmp("OK;", &RESPONCE_BODY[2], sizeof("OK;") - 1))
-		goto error;
-	
-	if (memcmp(&REQUEST_BODY[2], &RESPONCE_BODY[2 + sizeof("OK;") - 1], header_len - 2))
-		goto error;
-	
-	header_len += sizeof("OK;") - 1;
-	
-	blocks_cnt = strtoul(&RESPONCE_BODY[header_len + 1], &p, 10);
-	
-	if (blocks_cnt == 0)
-		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
-	RspHeader.ContentLength = blocks_cnt * 512;
+	RspHeader.ContentLength = 0;
 	if (ReqHeader->ConnectionKeepAlive)
 		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 	else
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
-	RspHeader.TransferEncoding = NULL;
+	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(conn, &RspHeader))
 		return;
 	
-	for (i = 0; i < blocks_cnt; i++)
+	http_server_write_body_start(conn);	
+	http_server_write_body(conn, "#"BSP_PT_NUMBER";"BSP_HW_VERSION";"BSP_SW_VERSION"\r\n");
+	for (i = 0; i < Profile->SectionsCnt; i++)
 	{
-		/*Prepare request*/
-		REQUEST_BODY[0] = SlotAddress + 0x80;
-		REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-		REQUEST_BODY_LEN = 2;
-		REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;%d;", PROFILE_PROTOCOL_CONFIG_READBLOCK, i);
-		header_len = REQUEST_BODY_LEN - 1;
-		REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-		/*Parse request and prepare responce*/
-		RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-		
-		/*
-		if (memcmp(REQUEST_BODY, RESPONCE_BODY, 2))
-			goto error;
-		
-		if (memcmp("OK;", &RESPONCE_BODY[2], sizeof("OK;") - 1))
-			goto error;
-		
-		if (memcmp(&REQUEST_BODY[2], &RESPONCE_BODY[2 + sizeof("OK;") - 1], header_len - 2))
-			goto error;
-		*/
-		
-		header_len += sizeof("OK;") - 1;
-		
-		while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
+		for (j = 0; j < Profile->Sections[i]->ParamsCnt; j++)
 		{
-			RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-			RESPONCE_BODY_LEN--;
+			if (!PROFILE_IsConfigParam(Profile, Profile->Sections[i]->Params[j]))
+			{
+				__PROFILE_GetParamValue(Profile, Profile->Sections[i]->Params[j], &Value);
+				PROFILE_ParamValueToString(Profile->Sections[i]->Params[j]->Type, &Value, ValueString, &Len);
+				http_server_write_body(conn, "%d;%s;0;%s\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, ValueString);
+			}
+			if (Profile->Sections[i]->Params[j]->Colors)
+			{
+				__PROFILE_GetParamColors(Profile, Profile->Sections[i]->Params[j], &NColor, &DColor, &FColor);
+				http_server_write_body(conn, "%d;%s;1;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, NColor);
+				http_server_write_body(conn, "%d;%s;2;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, DColor);
+				http_server_write_body(conn, "%d;%s;3;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, FColor);
+			}
 		}
-		RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-		
-		body = &RESPONCE_BODY[header_len + 1];
-		bodylen = RESPONCE_BODY_LEN - header_len - 1;
-		
-		if (http_server_write(conn, body, bodylen, NETCONN_COPY | NETCONN_MORE))
-			break;
 	}
-	
-	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;", PROFILE_PROTOCOL_CONFIG_FINISHREAD);
-	header_len = REQUEST_BODY_LEN - 1;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);	
-	return;
-
-error:
-	http_server_write_400_error(conn);
+	http_server_write_body_finish(conn);	
 }
 
 /**
@@ -682,195 +609,155 @@ error:
 void http_server_serve_put_api_v1_profile_config(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {
 	struct netbuf *inbuf;
-	err_t recv_err;
-	char *data;
+	char *Start, *End, *Section, *Name, *Value, *Type, *data;
+	uint8_t Color;
 	uint16_t datalen;
-	uint32_t error, datashift, block_idx, header_len, complete;
-	uint32_t ContentLength;
+	uint32_t ContentLength, Error, SectionIdx, NameLen;
+	PROFILE_PARAM_T *Param;
+	PROFILE_VALUE_T ParamValue;
 	HTTP_RESPONCE_HEADER_T RspHeader;
+	err_t recv_err;
 	
-	ContentLength = ReqHeader->ContentLength;
-	
-	if ((ContentLength % 512) || (ContentLength == 0))
+	if (ReqHeader->ContentLength == 0)
 		goto error;
 	
-	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;", PROFILE_PROTOCOL_CONFIG_STARTWRITE);
-	header_len = REQUEST_BODY_LEN - 1;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-	
-	if (memcmp(REQUEST_BODY, RESPONCE_BODY, 2))
-		goto error;
-	
-	if (memcmp("OK;", &RESPONCE_BODY[2], sizeof("OK;") - 1))
-		goto error;
-	
-	if (memcmp(&REQUEST_BODY[2], &RESPONCE_BODY[2 + sizeof("OK;") - 1], header_len - 2))
-		goto error;
-	
-	header_len += sizeof("OK;") - 1;
-	
-	error = 0;
-	datashift = 0;
-	block_idx = 0;
-	inbuf = NULL;
+	RESPONCE_BODY_LEN = 0;
+	Error = 0;
+	PROFILE_MUTEX_LOCK(Profile);
 	if ((body) && (bodylen))
 	{
+		inbuf = NULL;
 		data = body;
-		datalen = bodylen;		
-		goto write_data;
+		datalen = bodylen;
+		Start = data;
+		goto parse_body;
 	}
-	
-	while(ContentLength) {
+	while(ContentLength)
+	{
 		recv_err = netconn_recv(conn, &inbuf);
 		if (recv_err == ERR_OK)
 		{
 			netbuf_data(inbuf, (void**)&data, &datalen);
-write_data:
-			ContentLength -= datalen;
-			while((datalen) && (!error))
+			Start = data;
+parse_body:
+			for (End = Start; (End < (data + datalen - 1)) && (!Error); End++)
 			{
-				if (datashift != 0)
+				if (*End == '\n')
 				{
-					if ((datashift + datalen) >= 512)
-					{						
-						/*Continue preparing request*/
-						memcpy(&REQUEST_BODY[REQUEST_BODY_LEN  + datashift], data, 512 - datashift);
-						REQUEST_BODY_LEN += 512;
-						REQUEST_BODY[REQUEST_BODY_LEN] = ';';
-						REQUEST_BODY_LEN++;
-						REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-					
-						/*Parse request and prepare responce*/
-						RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-						
-						if (memcmp(REQUEST_BODY, RESPONCE_BODY, 2))
+					if (RESPONCE_BODY[RESPONCE_BODY_LEN - 1] == '\r')
+					{
+						Section = RESPONCE_BODY;
+						if (*Section == '#')
 						{
-							error = 1;
-							break;
+							if (memcmp(Section, "#"BSP_PT_NUMBER";"BSP_HW_VERSION";"BSP_SW_VERSION"\r", sizeof("#"BSP_PT_NUMBER";"BSP_HW_VERSION";"BSP_SW_VERSION"\r") - 1))
+							{
+								Error = 1;
+							}
 						}
-						
-						if (memcmp("OK;", &RESPONCE_BODY[2], sizeof("OK;") - 1))
+						else
 						{
-							error = 1;
-							break;
+							SectionIdx = strtoul(Section, &Name, 10);
+							if ((Name == Section) || (Name == NULL) || (*Name != ';'))
+							{
+								Error = 1;
+							}
+							else
+							{
+								Name++;
+								NameLen = 0;
+								for (Type = Name; Type < &RESPONCE_BODY[RESPONCE_BODY_LEN]; Type++)
+								{
+									if (*Type == ';')
+									{
+										NameLen = Value - Name - 1;
+									}
+								}
+								if ((Type == Name) || (*Type != ';'))
+								{
+									Error = 1;
+								}
+								else
+								{
+									Type++;
+									Value = Type + 1;
+									if (*Value != ';')
+									{
+										Error = 1;
+									}
+									else
+									{
+										Value++;
+										if (*Type == '0')
+										{
+											if (PROFILE_GetParamByName(Profile, SectionIdx, Name, NameLen, &Param))
+												Error = 1;
+											if ((!Error) && (PROFILE_IsCalibParam(Profile,Param)))
+												Error = 1;
+											if ((!Error) && (PROFILE_StringToParamValue(Param->Type, &ParamValue, Value, &RESPONCE_BODY[RESPONCE_BODY_LEN] - Value)))
+												Error = 1;
+											if ((!Error) && (__PROFILE_SetParamValue(Profile, Param, &ParamValue)))
+												Error = 1;
+										}
+										else if (*Type == '1')
+										{
+											if (PROFILE_GetParamByName(Profile, SectionIdx, Name, NameLen, &Param))
+												Error = 1;
+											if ((!Error) && (!Param->Colors))
+												Error = 1;
+											if (!Error)
+												Color = strtoul(Value, NULL, 10);
+											if ((!Error) && (__PROFILE_SetParamColors(Profile, Param, Color, *Param->Colors->Degrade, *Param->Colors->Failure)))
+												Error = 1;
+										}
+										else if (*Type == '2')
+										{
+											if (PROFILE_GetParamByName(Profile, SectionIdx, Name, NameLen, &Param))
+												Error = 1;
+											if ((!Error) && (!Param->Colors))
+												Error = 1;
+											if (!Error)
+												Color = strtoul(Value, NULL, 10);
+											if ((!Error) && (__PROFILE_SetParamColors(Profile, Param, *Param->Colors->Normal, Color, *Param->Colors->Failure)))
+												Error = 1;
+										}
+										else if (*Type == '3')
+										{
+											if (PROFILE_GetParamByName(Profile, SectionIdx, Name, NameLen, &Param))
+												Error = 1;
+											if ((!Error) && (!Param->Colors))
+												Error = 1;
+											if (!Error)
+												Color = strtoul(Value, NULL, 10);
+											if ((!Error) && (__PROFILE_SetParamColors(Profile, Param, *Param->Colors->Normal, *Param->Colors->Degrade, Color)))
+												Error = 1;
+										}
+									}
+								}
+							}
 						}
-						
-						if (memcmp(&REQUEST_BODY[2], &RESPONCE_BODY[2 + sizeof("OK;") - 1], header_len - 2))
-						{
-							error = 1;
-							break;
-						}
-						
-						header_len += sizeof("OK;") - 1;
-						
-						block_idx++;
-						datalen -= 512 - datashift;
-						data += 512 - datashift;
-						datashift = 0;
 					}
 					else
 					{
-						/*Continue preparing request*/
-						memcpy(&REQUEST_BODY[REQUEST_BODY_LEN  + datashift], data, datalen);
-						datashift += datalen;
-						data += datalen;
-						datalen = 0;
+						Error = 1;
 					}
+					RESPONCE_BODY_LEN = 0;
 				}
 				else
 				{
-					if (datalen >= 512)
-					{
-						/*Prepare request*/
-						REQUEST_BODY[0] = SlotAddress + 0x80;
-						REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-						REQUEST_BODY_LEN = 2;
-						REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;%d;", PROFILE_PROTOCOL_CONFIG_WRITEBLOCK, block_idx);
-						header_len = REQUEST_BODY_LEN - 1;
-						memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, 512);
-						REQUEST_BODY_LEN += 512;
-						REQUEST_BODY[REQUEST_BODY_LEN] = ';';
-						REQUEST_BODY_LEN++;
-						REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-					
-						/*Parse request and prepare responce*/
-						RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
-						
-						if (memcmp(REQUEST_BODY, RESPONCE_BODY, 2))
-						{
-							error = 1;
-							break;
-						}
-						
-						if (memcmp("OK;", &RESPONCE_BODY[2], sizeof("OK;") - 1))
-						{
-							error = 1;
-							break;
-						}
-						
-						if (memcmp(&REQUEST_BODY[2], &RESPONCE_BODY[2 + sizeof("OK;") - 1], header_len - 2))
-						{
-							error = 1;
-							break;
-						}
-						
-						header_len += sizeof("OK;") - 1;
-						
-						block_idx++;
-						data += 512;
-						datalen -= 512;						
-					}
-					else
-					{
-						/*Start preparing request*/
-						REQUEST_BODY[0] = SlotAddress + 0x80;
-						REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-						REQUEST_BODY_LEN = 2;
-						REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;%d;", PROFILE_PROTOCOL_CONFIG_WRITEBLOCK, block_idx);
-						header_len = REQUEST_BODY_LEN - 1;
-						memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, datalen);
-						datashift = datalen;
-						data += datalen;
-						datalen = 0;
-					}
+					RESPONCE_BODY[RESPONCE_BODY_LEN++] = *End;
+					if (RESPONCE_BODY_LEN >= 1024)
+						Error = 1;
 				}
 			}
-			netbuf_delete(inbuf);
+			ContentLength -= datalen;
 		}
 		else
 		{
-			break;
+			goto error;
 		}
 	}
-	
-	/*Prepare request*/
-	REQUEST_BODY[0] = SlotAddress + 0x80;
-	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_CONFIG;
-	REQUEST_BODY_LEN = 2;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%s;", PROFILE_PROTOCOL_CONFIG_FINISHWRITE);
-	header_len = REQUEST_BODY_LEN - 1;
-	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
-	
-	/*Parse request and prepare responce*/
-	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);	
-	
-	if (memcmp(REQUEST_BODY, RESPONCE_BODY, 2))
-		goto error;
-	
-	if (memcmp("OK;", &RESPONCE_BODY[2], sizeof("OK;") - 1))
-		goto error;
-	
-	if (memcmp(&REQUEST_BODY[2], &RESPONCE_BODY[2 + sizeof("OK;") - 1], header_len - 2))
-		goto error;
-	
-	header_len += sizeof("OK;") - 1;
+	PROFILE_MUTEX_UNLOCK(Profile);
+	PROFILE_FLASH_SaveParamValue(&ProfileFlash, Param);
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -884,11 +771,10 @@ write_data:
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(conn, &RspHeader);
 	return;
-	
+
 error:
 	http_server_write_400_error(conn);
 }
-#endif
 /**
   * @brief  Send profile line. 
   * @param  conn pointer on connection structure 
@@ -2614,7 +2500,6 @@ receive:
 				http_server_write_404_error(conn);
 			}
 		}
-#if 0
 		else if (strncmp(req_header.Url, "/api/v1/profile/config ", sizeof("/api/v1/profile/config ") - 1) == 0)
 		{
 			if (strncmp(req_header.Type, HTTP_REQUEST_HEAD" ", sizeof(HTTP_REQUEST_HEAD)) == 0)
@@ -2674,7 +2559,6 @@ receive:
 				http_server_write_header(conn, &rsp_header);
 			}
 		}
-#endif
 		else if (strncmp(req_header.Url, "/api/v1/system/update/mcu/software ", sizeof("/api/v1/system/update/mcu/software ") - 1) == 0)
 		{
 			if (strncmp(req_header.Type, HTTP_REQUEST_POST" ", sizeof(HTTP_REQUEST_POST)) == 0)

@@ -13,6 +13,7 @@ int32_t PROFILE_StringToParamValue(uint16_t Type, PROFILE_VALUE_T *Value, char *
 int32_t PROFILE_GetParamValueSize(uint16_t Type, uint8_t *ValueSize);
 
 int32_t PROFILE_GetParamByIndex(const PROFILE_T *Profile, uint8_t SectionIndex, uint32_t ParamIndex, PROFILE_PARAM_T** Param);
+int32_t PROFILE_GetParamByName(const PROFILE_T *Profile, uint8_t SectionIndex, char* Name, uint32_t NameLen, PROFILE_PARAM_T** Param);
 
 /* ==== These functions are not thread safe. Use external profile mutex ===============*/
 int32_t __PROFILE_SetParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, PROFILE_VALUE_T *Value);

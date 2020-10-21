@@ -517,7 +517,30 @@ int32_t PROFILE_GetParamByIndex(const PROFILE_T *Profile, uint8_t SectionIndex, 
 			break;
 		}
 	}
-	return NULL;
+	return -1;
+}
+
+int32_t PROFILE_GetParamByName(const PROFILE_T *Profile, uint8_t SectionIndex, char* Name, uint32_t NameLen, PROFILE_PARAM_T** Param)
+{
+	uint32_t i, j, Len;
+	
+	for (i = 0; i < Profile->SectionsCnt; i++)
+	{
+		if (Profile->Sections[i]->Index == SectionIndex)
+		{
+			for (j = 0; j < Profile->Sections[i]->ParamsCnt; j++)
+			{
+				Len = strlen(Profile->Sections[i]->Params[j]->Name);
+				if ((Len == NameLen) && (!memcmp(Profile->Sections[i]->Params[j]->Name, Name, NameLen)))
+				{
+					*Param = (PROFILE_PARAM_T*)Profile->Sections[i]->Params[j];
+					return 0;
+				}
+			}
+			break;
+		}
+	}
+	return -1;
 }
 
 int32_t __PROFILE_SetParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, PROFILE_VALUE_T *Value)
