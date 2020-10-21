@@ -603,6 +603,25 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 
 int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
 {
+	uint32_t Mode;
+	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+		return -1;
+	
+	if (Idx == PROFILE_ADM10_SI5332_1_SETADJCAP_IDX)
+	{
+		if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC)
+		{
+			if ((*(uint32_t*)Value) != PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_11_5)
+				return -1;
+		}
+		else
+		{
+			if ((*(uint32_t*)Value) != PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_10_0)
+				return -1;
+		}
+	}	
+	
 	if (PROFILE_ADM10_LINE_CheckConfigValue(Profile, Table, Idx, Value))
 		return -1;
 	if (PROFILE_ADM10_CLIENT_CheckConfigValue(Profile, Table, Idx, Value))
@@ -617,6 +636,24 @@ int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16
 
 int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
 {
+	uint32_t SI5332_1_SetAdjCap;
+	
+	if (Idx == PROFILE_ADM10_SETMODE_IDX)
+	{
+		if ((*(uint32_t*)Value) == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC)
+		{
+			SI5332_1_SetAdjCap = PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_11_5;
+			if (PROFILE_SetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))
+				return - 1;
+		}
+		else
+		{
+			SI5332_1_SetAdjCap = PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_10_0;
+			if (PROFILE_SetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))
+				return - 1;
+		}
+	}
+	
 	if (Idx == PROFILE_ADM10_SETDEFAULT_IDX)
 		PROFILE_SetDefault(Profile);
 	
@@ -695,6 +732,10 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	if (SI5332_1_SetAdjCap == PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_10_0)
 	{
 		si5332_cfg[0] = BSP_CLK_SI5332_10P0_CFG;
+	}
+	else if (SI5332_1_SetAdjCap == PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_11_5)
+	{
+		si5332_cfg[0] = BSP_CLK_SI5332_11P5_CFG;
 	}
 	
 	PROFILE_ADM10_UpdateConfigsStage++;

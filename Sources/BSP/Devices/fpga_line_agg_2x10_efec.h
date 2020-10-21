@@ -28,6 +28,8 @@
 #define FPGA_LINE_AGG_2X10_EFEC_LINE_STATUS_LOF_MASK						(1 << 1)
 #define FPGA_LINE_AGG_2X10_EFEC_LINE_STATUS_AIS_MASK						(1 << 3)
 
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_CTRL_CNTR_EN_MASK			(1 << 0)
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_CTRL_CNTR_RST_MASK			(1 << 1)
 #define FPGA_LINE_AGG_2X10_EFEC_LINE_CTRL_FEC_DISABLED_MASK	(1 << 7)
 #define FPGA_LINE_AGG_2X10_EFEC_LINE_CTRL_SET(Dev, LineIdx, __Ctrl)  \
 	((LineIdx) >= FPGA_LINE_AGG_2X10_EFEC_LINE_CNT) ? \
@@ -39,7 +41,16 @@ typedef struct {
 	uint8_t __PMAStatus;
 	uint8_t Ctrl;
 	uint8_t __Ctrl;
-	uint8_t __Status;
+	uint16_t __OTU2Alarms;
+	uint16_t OTU2BIP;
+	uint16_t __OTU2BIP;
+	uint32_t OTU2FECCorr;
+	uint32_t __OTU2FECCorr;
+	uint16_t OTU2FECUncorr;
+	uint16_t __OTU2FECUncorr;
+	uint16_t __ODU2Alarms;
+	uint16_t ODU2BIP;
+	uint16_t __ODU2BIP;
 } FPGA_LINE_AGG_2X10_EFEC_LINE_T;
 
 typedef struct {

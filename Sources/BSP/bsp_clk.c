@@ -94,10 +94,10 @@ static const SI5332_CFG_T* bsp_clk_si5332_efec_cfg[BSP_CLK_SI5332_CNT][BSP_CLK_S
 		NULL,
 		NULL,
 		NULL,
-		bsp_clk_1_10p0_efec_cfg,
 		NULL,
 		NULL,
 		NULL,
+		bsp_clk_1_11p5_efec_cfg,
 		NULL,
 	},
 	{
@@ -126,10 +126,10 @@ static const uint32_t bsp_clk_si5332_cfg_efec_size[BSP_CLK_SI5332_CNT][BSP_CLK_S
 		0,
 		0,
 		0,
-		sizeof(bsp_clk_1_10p0_efec_cfg) / sizeof(bsp_clk_1_10p0_efec_cfg[0]),
 		0,
 		0,
 		0,
+		sizeof(bsp_clk_1_11p5_efec_cfg) / sizeof(bsp_clk_1_11p5_efec_cfg[0]),
 		0,
 	},
 	{

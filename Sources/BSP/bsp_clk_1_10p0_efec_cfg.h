@@ -22,9 +22,9 @@
 
 #include "si5332.h"
 
-#define BSP_CLK_1_10P0_EFEC_CFG_NUM_REGS				89
+#define BSP_CLK_1_11P5_EFEC_CFG_NUM_REGS				89
 
-const SI5332_CFG_T bsp_clk_1_10p0_efec_cfg[BSP_CLK_1_10P0_EFEC_CFG_NUM_REGS] =
+const SI5332_CFG_T bsp_clk_1_11p5_efec_cfg[BSP_CLK_1_11P5_EFEC_CFG_NUM_REGS] =
 {
 	{ 0x0017, 0x41 },
 	{ 0x0018, 0x44 },

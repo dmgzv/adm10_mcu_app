@@ -10,14 +10,16 @@
 #define FPGA_LINE_AGG_2X10_EFEC_CMD_OPT3_ADDR(Dev)				(FPGA_LINE_AGG_2X10_EFEC_ADDR(Dev) + 0x0B)
 #define FPGA_LINE_AGG_2X10_EFEC_STATUS_ADDR(Dev)					(FPGA_LINE_AGG_2X10_EFEC_ADDR(Dev) + 0x0C)
 #define FPGA_LINE_AGG_2X10_EFEC_STATUS_OPT_ADDR(Dev)			(FPGA_LINE_AGG_2X10_EFEC_ADDR(Dev) + 0x0D)
-#define FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) (FPGA_LINE_AGG_2X10_EFEC_ADDR(Dev) + ((LineIdx) * 0x100) + 0x100)
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) 	(FPGA_LINE_AGG_2X10_EFEC_ADDR(Dev) + ((LineIdx) * 0x100) + 0x100)
 
-#define FPGA_LINE_AGG_2X10_EFEC_LINE_STATUS_ADDR(Dev, LineIdx)   	(FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x00)
-
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_ALARMS_ADDR(Dev, LineIdx)   	(FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x00)
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_BIP_ADDR(Dev, LineIdx)   			(FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x02)
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_FEC_CORR_ADDR(Dev, LineIdx)  	(FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x04)
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_FEC_UNCORR_ADDR(Dev, LineIdx)	(FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x08)
 #define FPGA_LINE_AGG_2X10_EFEC_LINE_CTRL_ADDR(Dev, LineIdx)   	(FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x0C)
-
 #define FPGA_LINE_AGG_2X10_EFEC_LINE_PMASTATUS_ADDR(Dev, LineIdx)   (FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x0E)
-
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_ODU2_ALARMS_ADDR(Dev, LineIdx) (FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x10)
+#define FPGA_LINE_AGG_2X10_EFEC_LINE_ODU2_BIP_ADDR(Dev, LineIdx)   	(FPGA_LINE_AGG_2X10_EFEC_LINE_ADDR(Dev, LineIdx) + 0x10 + 0x02)
 
 static void FPGA_LINE_AGG_2X10_EFEC_WriteByte(FPGA_LINE_AGG_2X10_EFEC_T *Dev, uint32_t Addr, uint8_t Data)
 {
@@ -59,7 +61,21 @@ int32_t FPGA_LINE_AGG_2X10_EFEC_Init(FPGA_LINE_AGG_2X10_EFEC_T *Dev)
 		Dev->Line[i].PMAStatus = Dev->Line[i].__PMAStatus = *((uint8_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_PMASTATUS_ADDR(Dev, i)));
 		Dev->Line[i].Ctrl = Dev->Line[i].__Ctrl = *((uint8_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_CTRL_ADDR(Dev, i)));
 		
-		Dev->Line[i].__Status = *((uint16_t*)FPGA_LINE_AGG_2X10_EFEC_LINE_STATUS_ADDR(Dev, i));
+		Dev->Line[i].__OTU2Alarms = *((uint16_t*)FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_ALARMS_ADDR(Dev, i));
+		
+		Dev->Line[i].__OTU2BIP = *((uint16_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_BIP_ADDR(Dev, i)));
+		Dev->Line[i].OTU2BIP = 0;
+		
+		Dev->Line[i].__OTU2FECCorr = *((uint32_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_FEC_CORR_ADDR(Dev, i)));
+		Dev->Line[i].OTU2FECCorr = 0;
+		
+		Dev->Line[i].__OTU2FECUncorr = *((uint16_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_FEC_UNCORR_ADDR(Dev, i)));
+		Dev->Line[i].OTU2FECUncorr = 0;
+		
+		Dev->Line[i].__ODU2Alarms = *((uint16_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_ODU2_ALARMS_ADDR(Dev, i)));	
+			
+		Dev->Line[i].__ODU2BIP = *((uint16_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_ODU2_BIP_ADDR(Dev, i)));
+		Dev->Line[i].ODU2BIP = 0;
 	}
 	
 	BSP_DEV_INIT_OK(Dev);
@@ -74,7 +90,8 @@ int32_t FPGA_LINE_AGG_2X10_EFEC_Update(FPGA_LINE_AGG_2X10_EFEC_T *Dev)
 {
 	uint32_t i;
 	uint8_t Status;
-	uint16_t Temp;
+	uint16_t Temp, OTU2BIP, OTU2FECUncorr, ODU2BIP;
+	uint32_t OTU2FECCorr;
 	
 	if (!Dev)
 		return -1;	
@@ -89,9 +106,27 @@ int32_t FPGA_LINE_AGG_2X10_EFEC_Update(FPGA_LINE_AGG_2X10_EFEC_T *Dev)
 	for (i = 0; i < FPGA_LINE_AGG_2X10_EFEC_LINE_CNT; i++)
 	{
 		
-		Dev->Line[i].__Status = *((uint16_t*)FPGA_LINE_AGG_2X10_EFEC_LINE_STATUS_ADDR(Dev, i));
+		Dev->Line[i].__OTU2Alarms = *((uint16_t*)FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_ALARMS_ADDR(Dev, i));
 		Dev->Line[i].__PMAStatus = *((uint8_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_PMASTATUS_ADDR(Dev, i)));
 		Dev->Line[i].__Ctrl = *((uint8_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_CTRL_ADDR(Dev, i)));
+		
+		OTU2BIP = *((uint16_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_BIP_ADDR(Dev, i)));
+		Dev->Line[i].OTU2BIP = OTU2BIP - Dev->Line[i].__OTU2BIP;
+		Dev->Line[i].__OTU2BIP = OTU2BIP;
+		
+		OTU2FECCorr = *((uint32_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_FEC_CORR_ADDR(Dev, i)));
+		Dev->Line[i].OTU2FECCorr = OTU2FECCorr - Dev->Line[i].__OTU2FECCorr;
+		Dev->Line[i].__OTU2FECCorr = OTU2FECCorr;
+		
+		OTU2FECUncorr = *((uint16_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_OTU2_FEC_UNCORR_ADDR(Dev, i)));
+		Dev->Line[i].OTU2FECUncorr = OTU2FECUncorr - Dev->Line[i].__OTU2FECUncorr;
+		Dev->Line[i].__OTU2FECUncorr = OTU2FECUncorr;
+		
+		Dev->Line[i].__ODU2Alarms = *((uint16_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_ODU2_ALARMS_ADDR(Dev, i)));
+		
+		ODU2BIP = *((uint16_t*)(FPGA_LINE_AGG_2X10_EFEC_LINE_ODU2_BIP_ADDR(Dev, i)));
+		Dev->Line[i].ODU2BIP = ODU2BIP - Dev->Line[i].__ODU2BIP;
+		Dev->Line[i].__ODU2BIP = ODU2BIP;
 		
 		if ( Dev->Line[i].Ctrl != Dev->Line[i].__Ctrl )
 		{
