@@ -52,7 +52,7 @@ typedef struct {
 #define PROFILE_FLASH_DATA_TYPE_DCOLOR	2
 #define PROFILE_FLASH_DATA_TYPE_FCOLOR	3
 
-int32_t PROFILE_FLASH_CheckCalibsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *RestoreValues)
+static int32_t PROFILE_FLASH_CheckCalibsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *RestoreValues)
 {
 	PROFILE_FLASH_CALIB_MAP_HEADER_T Header;
 	char Page[BSP_FLASH_PAGE_SIZE];
@@ -151,7 +151,7 @@ mismatch:
 	return -1;
 }
 
-int32_t PROFILE_FLASH_SaveCalibsMap(PROFILE_FLASH_T *ProfileFlash)
+static int32_t PROFILE_FLASH_SaveCalibsMap(PROFILE_FLASH_T *ProfileFlash)
 {
 	PROFILE_FLASH_CALIB_MAP_HEADER_T Header;
 	char Page[BSP_FLASH_PAGE_SIZE];
@@ -238,7 +238,7 @@ error:
 	return -1;	
 }
 
-int32_t PROFILE_FLASH_GetCalibsValuesIdx(PROFILE_FLASH_T *ProfileFlash, uint32_t *CalibsValuesIdx)
+static int32_t PROFILE_FLASH_GetCalibsValuesIdx(PROFILE_FLASH_T *ProfileFlash, uint32_t *CalibsValuesIdx)
 {
 	PROFILE_FLASH_CALIB_RECORD_HEADER_T CalibRecordHeader;
 	char Page[BSP_FLASH_PAGE_SIZE];
@@ -305,7 +305,7 @@ error:
 	return -1;
 }
 
-void PROFILE_FLASH_RestoreCalibsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t CalibsValuesIdx)
+static void PROFILE_FLASH_RestoreCalibsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t CalibsValuesIdx)
 {
 	PROFILE_FLASH_CALIB_MAP_HEADER_T CalibMapHeader;
 	uint32_t i, j, MapAddr, __MapAddr, DataAddr, ValAddr, RestoredParamsCnt;
@@ -439,7 +439,7 @@ error:
 	return -1;
 }
 
-int32_t PROFILE_FLASH_SaveCalibsValues(PROFILE_FLASH_T *ProfileFlash)
+static int32_t PROFILE_FLASH_SaveCalibsValues(PROFILE_FLASH_T *ProfileFlash)
 {
 	PROFILE_FLASH_CALIB_RECORD_HEADER_T Header;
 	char *p;
@@ -532,7 +532,7 @@ error:
 	return -1;
 }
 
-int32_t PROFILE_FLASH_InitCalibsValues(PROFILE_FLASH_T *ProfileFlash)
+static int32_t PROFILE_FLASH_InitCalibsValues(PROFILE_FLASH_T *ProfileFlash)
 {
 	uint32_t i, CalibsValuesIdx, CalibsValuesIdxSave, CalibsValuesLoaded;
 	
@@ -566,7 +566,7 @@ error:
 	return PROFILE_FLASH_SaveCalibsValues(ProfileFlash);
 }
 
-int32_t PROFILE_FLASH_InitCalibs(PROFILE_FLASH_T *ProfileFlash)
+static int32_t PROFILE_FLASH_InitCalibs(PROFILE_FLASH_T *ProfileFlash)
 {
 	uint32_t CalibsValuesIdx, RestoreValues;
 	
@@ -584,7 +584,7 @@ int32_t PROFILE_FLASH_InitCalibs(PROFILE_FLASH_T *ProfileFlash)
 	return PROFILE_FLASH_InitCalibsValues(ProfileFlash);
 }
 
-int32_t PROFILE_FLASH_CheckConfigsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *RestoreValues)
+static int32_t PROFILE_FLASH_CheckConfigsMap(PROFILE_FLASH_T *ProfileFlash, uint32_t *RestoreValues)
 {
 	PROFILE_FLASH_CONFIG_MAP_HEADER_T Header;
 	char Page[BSP_FLASH_PAGE_SIZE];
@@ -773,7 +773,7 @@ mismatch:
 	return -1;
 }
 
-int32_t PROFILE_FLASH_SaveConfigsMap(PROFILE_FLASH_T *ProfileFlash)
+static int32_t PROFILE_FLASH_SaveConfigsMap(PROFILE_FLASH_T *ProfileFlash)
 {
 	PROFILE_FLASH_CONFIG_MAP_HEADER_T Header;
 	char Page[BSP_FLASH_PAGE_SIZE];
@@ -976,7 +976,7 @@ error:
 	return -1;	
 }
 
-int32_t PROFILE_FLASH_GetConfigsValuesIdx(PROFILE_FLASH_T *ProfileFlash, uint32_t *ConfigsValuesIdx)
+static int32_t PROFILE_FLASH_GetConfigsValuesIdx(PROFILE_FLASH_T *ProfileFlash, uint32_t *ConfigsValuesIdx)
 {
 	PROFILE_FLASH_CONFIG_RECORD_HEADER_T ConfigRecordHeader;
 	char Page[BSP_FLASH_PAGE_SIZE];
@@ -1043,7 +1043,7 @@ error:
 	return -1;
 }
 
-void PROFILE_FLASH_RestoreConfigsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t ConfigsValuesIdx)
+static void PROFILE_FLASH_RestoreConfigsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t ConfigsValuesIdx)
 {
 	PROFILE_FLASH_CONFIG_MAP_HEADER_T ConfigMapHeader;
 	uint32_t i, j, MapAddr, __MapAddr, DataAddr, ValAddr, RestoredParamsCnt;
@@ -1213,7 +1213,7 @@ error:
 	return -1;
 }
 
-int32_t PROFILE_FLASH_SaveConfigsValues(PROFILE_FLASH_T *ProfileFlash)
+static int32_t PROFILE_FLASH_SaveConfigsValues(PROFILE_FLASH_T *ProfileFlash)
 {
 	PROFILE_FLASH_CONFIG_RECORD_HEADER_T Header;
 	char *p;
@@ -1304,7 +1304,7 @@ error:
 	return -1;	
 }
 
-int32_t PROFILE_FLASH_InitConfigsValues(PROFILE_FLASH_T *ProfileFlash)
+static int32_t PROFILE_FLASH_InitConfigsValues(PROFILE_FLASH_T *ProfileFlash)
 {
 	uint32_t i, ConfigsValuesIdx, ConfigsValuesIdxSave, ConfigsValuesLoaded;
 	
@@ -1338,7 +1338,7 @@ error:
 	return PROFILE_FLASH_SaveConfigsValues(ProfileFlash);
 }
 
-int32_t PROFILE_FLASH_InitConfigs(PROFILE_FLASH_T *ProfileFlash)
+static int32_t PROFILE_FLASH_InitConfigs(PROFILE_FLASH_T *ProfileFlash)
 {
 	uint32_t ConfigsValuesIdx, RestoreValues;
 	
@@ -1356,7 +1356,7 @@ int32_t PROFILE_FLASH_InitConfigs(PROFILE_FLASH_T *ProfileFlash)
 	return PROFILE_FLASH_InitConfigsValues(ProfileFlash);
 }
 
-int32_t __PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t *LangpackBlocks, uint32_t *LangpackType)
+static int32_t __PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t *LangpackBlocks, uint32_t *LangpackType)
 {
 	PROFILE_FLASH_LANGPACK_RECORD_HEADER_T Header;
 	uint32_t Addr;
@@ -1392,7 +1392,7 @@ error:
 	return -1;
 }
 
-int32_t __PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t LangpackBlocks, uint32_t LangpackType)
+static int32_t __PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t LangpackBlocks, uint32_t LangpackType)
 {
 	PROFILE_FLASH_LANGPACK_RECORD_HEADER_T Header;
 	uint32_t i, Addr;
@@ -1442,7 +1442,7 @@ error:
 	return -1;
 }
 
-int32_t __PROFILE_FLASH_LoadLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t DataAddr, char *Data, uint32_t DataSize)
+static int32_t __PROFILE_FLASH_LoadLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t Idx, uint32_t DataAddr, char *Data, uint32_t DataSize)
 {
 	uint32_t Addr;
 	
@@ -1607,10 +1607,39 @@ void PROFILE_FLASH_SaveCalibs(PROFILE_FLASH_T *ProfileFlash)
 	osMessagePut(ProfileFlash->MessageQId, 0, 0);	
 }
 
+int32_t PROFILE_FLASH_LoadCalibs(PROFILE_FLASH_T *ProfileFlash)
+{
+	uint32_t CalibsValuesIdx;
+	if (PROFILE_FLASH_LoadCalibsRecord(ProfileFlash, (ProfileFlash->CalibIdx - 1) % PROFILE_FLASH_CALIB_RECORDS_CNT, &CalibsValuesIdx))
+		goto error;	
+	LOG_Info("PROFILE_FLASH", "",  "", "Load Calibs %d", ProfileFlash->CalibIdx - 1);
+	return 0;
+
+error:
+	memcpy(ProfileFlash->Profile->Calib->Values, ProfileFlash->Profile->Calib->DefaultValues, ProfileFlash->Profile->Calib->ValuesSize);
+	LOG_Error("PROFILE_FLASH", "",  "", "Load Calibs %d: Error", ProfileFlash->CalibIdx - 1);
+	return -1;
+}
+
 void PROFILE_FLASH_SaveConfigs(PROFILE_FLASH_T *ProfileFlash)
 {
 	/*Wake up Profile Save Thread*/
 	osMessagePut(ProfileFlash->MessageQId, 1, 0);	
+}
+
+int32_t PROFILE_FLASH_LoadConfigs(PROFILE_FLASH_T *ProfileFlash)
+{
+	uint32_t ConfigsValuesIdx;
+	if (PROFILE_FLASH_LoadConfigsRecord(ProfileFlash, (ProfileFlash->ConfigIdx - 1) % PROFILE_FLASH_CONFIG_RECORDS_CNT, &ConfigsValuesIdx))
+		goto error;	
+	LOG_Info("PROFILE_FLASH", "",  "", "Load Configs %d", ProfileFlash->ConfigIdx - 1);
+	return 0;
+
+error:
+	ProfileFlash->ConfigIdx = 0;
+	memcpy(ProfileFlash->Profile->Config->Values, ProfileFlash->Profile->Config->DefaultValues, ProfileFlash->Profile->Config->ValuesSize);
+	LOG_Error("PROFILE_FLASH", "",  "", "Load Configs %d: Error", ProfileFlash->ConfigIdx - 1);
+	return -1;
 }
 
 void PROFILE_FLASH_SaveParamValue(PROFILE_FLASH_T *ProfileFlash, PROFILE_PARAM_T *Param)

@@ -609,7 +609,7 @@ void http_server_serve_get_api_v1_profile_config(struct netconn *conn, HTTP_REQU
 void http_server_serve_put_api_v1_profile_config(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen)
 {
 	struct netbuf *inbuf;
-	char *Start, *End, *Section, *Name, *Value, *Type, *data;
+	char *p, *Section, *Name, *Value, *Type, *data;
 	uint8_t Color;
 	uint16_t datalen;
 	uint32_t ContentLength, Error, SectionIdx, NameLen;
@@ -620,7 +620,7 @@ void http_server_serve_put_api_v1_profile_config(struct netconn *conn, HTTP_REQU
 	
 	if (ReqHeader->ContentLength == 0)
 		goto error;
-	
+	ContentLength = ReqHeader->ContentLength;
 	RESPONCE_BODY_LEN = 0;
 	Error = 0;
 	PROFILE_MUTEX_LOCK(Profile);
@@ -629,7 +629,6 @@ void http_server_serve_put_api_v1_profile_config(struct netconn *conn, HTTP_REQU
 		inbuf = NULL;
 		data = body;
 		datalen = bodylen;
-		Start = data;
 		goto parse_body;
 	}
 	while(ContentLength)
@@ -638,11 +637,11 @@ void http_server_serve_put_api_v1_profile_config(struct netconn *conn, HTTP_REQU
 		if (recv_err == ERR_OK)
 		{
 			netbuf_data(inbuf, (void**)&data, &datalen);
-			Start = data;
 parse_body:
-			for (End = Start; (End < (data + datalen - 1)) && (!Error); End++)
+			ContentLength -= datalen;
+			for (p = data; (p < (data + datalen)) && (!Error); p++)
 			{
-				if (*End == '\n')
+				if (*p == '\n')
 				{
 					if (RESPONCE_BODY[RESPONCE_BODY_LEN - 1] == '\r')
 					{
@@ -669,7 +668,8 @@ parse_body:
 								{
 									if (*Type == ';')
 									{
-										NameLen = Value - Name - 1;
+										NameLen = Type - Name;
+										break;
 									}
 								}
 								if ((Type == Name) || (*Type != ';'))
@@ -691,44 +691,44 @@ parse_body:
 										{
 											if (PROFILE_GetParamByName(Profile, SectionIdx, Name, NameLen, &Param))
 												Error = 1;
-											if ((!Error) && (PROFILE_IsCalibParam(Profile,Param)))
+											if ((Error) || (PROFILE_IsConfigParam(Profile,Param)))
 												Error = 1;
-											if ((!Error) && (PROFILE_StringToParamValue(Param->Type, &ParamValue, Value, &RESPONCE_BODY[RESPONCE_BODY_LEN] - Value)))
+											if ((Error) || (PROFILE_StringToParamValue(Param->Type, &ParamValue, Value, &RESPONCE_BODY[RESPONCE_BODY_LEN] - Value)))
 												Error = 1;
-											if ((!Error) && (__PROFILE_SetParamValue(Profile, Param, &ParamValue)))
+											if ((Error) || (__PROFILE_SetParamValue(Profile, Param, &ParamValue)))
 												Error = 1;
 										}
 										else if (*Type == '1')
 										{
 											if (PROFILE_GetParamByName(Profile, SectionIdx, Name, NameLen, &Param))
 												Error = 1;
-											if ((!Error) && (!Param->Colors))
+											if ((Error) || (!Param->Colors))
 												Error = 1;
-											if (!Error)
+											else
 												Color = strtoul(Value, NULL, 10);
-											if ((!Error) && (__PROFILE_SetParamColors(Profile, Param, Color, *Param->Colors->Degrade, *Param->Colors->Failure)))
+											if ((Error) || (__PROFILE_SetParamColors(Profile, Param, Color, *Param->Colors->Degrade, *Param->Colors->Failure)))
 												Error = 1;
 										}
 										else if (*Type == '2')
 										{
 											if (PROFILE_GetParamByName(Profile, SectionIdx, Name, NameLen, &Param))
 												Error = 1;
-											if ((!Error) && (!Param->Colors))
+											if ((Error) || (!Param->Colors))
 												Error = 1;
-											if (!Error)
+											else
 												Color = strtoul(Value, NULL, 10);
-											if ((!Error) && (__PROFILE_SetParamColors(Profile, Param, *Param->Colors->Normal, Color, *Param->Colors->Failure)))
+											if ((Error) | (__PROFILE_SetParamColors(Profile, Param, *Param->Colors->Normal, Color, *Param->Colors->Failure)))
 												Error = 1;
 										}
 										else if (*Type == '3')
 										{
 											if (PROFILE_GetParamByName(Profile, SectionIdx, Name, NameLen, &Param))
 												Error = 1;
-											if ((!Error) && (!Param->Colors))
+											if ((Error) || (!Param->Colors))
 												Error = 1;
-											if (!Error)
+											else
 												Color = strtoul(Value, NULL, 10);
-											if ((!Error) && (__PROFILE_SetParamColors(Profile, Param, *Param->Colors->Normal, *Param->Colors->Degrade, Color)))
+											if ((Error) || (__PROFILE_SetParamColors(Profile, Param, *Param->Colors->Normal, *Param->Colors->Degrade, Color)))
 												Error = 1;
 										}
 									}
@@ -744,21 +744,23 @@ parse_body:
 				}
 				else
 				{
-					RESPONCE_BODY[RESPONCE_BODY_LEN++] = *End;
+					RESPONCE_BODY[RESPONCE_BODY_LEN++] = *p;
 					if (RESPONCE_BODY_LEN >= 1024)
 						Error = 1;
 				}
 			}
-			ContentLength -= datalen;
+			netbuf_delete(inbuf);
 		}
 		else
 		{
 			goto error;
 		}
-	}
+	}	
 	PROFILE_MUTEX_UNLOCK(Profile);
-	PROFILE_FLASH_SaveParamValue(&ProfileFlash, Param);
+	if (Error)
+		goto error;
 	
+	PROFILE_FLASH_SaveConfigs(&ProfileFlash);
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
@@ -773,6 +775,7 @@ parse_body:
 	return;
 
 error:
+	PROFILE_FLASH_LoadConfigs(&ProfileFlash);
 	http_server_write_400_error(conn);
 }
 /**
@@ -1087,6 +1090,7 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 		if (recv_err == ERR_OK)
 		{
 			netbuf_data(inbuf, (void**)&data, &datalen);
+			netbuf_delete(inbuf);
 		}
 		else
 		{
@@ -1098,7 +1102,9 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	if (PROFILE_GetParamByIndex(Profile, section_idx, param_idx, &Param))
 		goto error;
 	if (PROFILE_StringToParamValue(Param->Type, &Value, data, datalen))
-		goto error;	
+		goto error;
+	if (inbuf)
+		netbuf_delete(inbuf);
 	PROFILE_MUTEX_LOCK(Profile);
 	if (__PROFILE_SetParamValue(Profile, Param, &Value))
 	{
@@ -1174,6 +1180,8 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 		goto error;
 	data++;
 	Failure = strtoul(data, &data, 10);
+	if (inbuf)
+		netbuf_delete(inbuf);
 	PROFILE_MUTEX_LOCK(Profile);
 	if (__PROFILE_SetParamColors(Profile, Param, Normal, Degrade, Failure))
 	{
