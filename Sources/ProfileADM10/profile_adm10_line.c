@@ -240,6 +240,16 @@ const uint16_t ProfileADM10PerfLnODU2EFEC2BIP8Idx[PROFILE_ADM10_LINE_PORTS] =
 	PROFILE_ADM10_LN_1_ODU2_EFEC_2_BIP8_IDX, PROFILE_ADM10_LN_2_ODU2_EFEC_2_BIP8_IDX, PROFILE_ADM10_LN_3_ODU2_EFEC_2_BIP8_IDX, PROFILE_ADM10_LN_4_ODU2_EFEC_2_BIP8_IDX
 };
 
+const uint16_t ProfileADM10PerfLnOTU2FECCorrIdx[PROFILE_ADM10_LINE_PORTS] = 
+{ 
+	PROFILE_ADM10_LN_1_OTU2_FEC_CORR_IDX, PROFILE_ADM10_LN_2_OTU2_FEC_CORR_IDX, PROFILE_ADM10_LN_3_OTU2_FEC_CORR_IDX, PROFILE_ADM10_LN_4_OTU2_FEC_CORR_IDX
+};
+
+const uint16_t ProfileADM10PerfLnOTU2FECUncorrIdx[PROFILE_ADM10_LINE_PORTS] = 
+{ 
+	PROFILE_ADM10_LN_1_OTU2_FEC_UNCORR_IDX, PROFILE_ADM10_LN_2_OTU2_FEC_UNCORR_IDX, PROFILE_ADM10_LN_3_OTU2_FEC_UNCORR_IDX, PROFILE_ADM10_LN_4_OTU2_FEC_UNCORR_IDX
+};
+
 const uint16_t ProfileADM10PerfLnOTU2EBIdx[PROFILE_ADM10_LINE_PORTS] = 
 { 
 	PROFILE_ADM10_LN_1_OTU2_EB_IDX, PROFILE_ADM10_LN_2_OTU2_EB_IDX, PROFILE_ADM10_LN_3_OTU2_EB_IDX, PROFILE_ADM10_LN_4_OTU2_EB_IDX
@@ -397,10 +407,16 @@ const uint16_t ProfileADM10PortTxLnCatIdx[PROFILE_ADM10_LINE_PORTS] =
 	PROFILE_ADM10_PTLINE1TXCAT_IDX, PROFILE_ADM10_PTLINE2TXCAT_IDX, PROFILE_ADM10_PTLINE3TXCAT_IDX, PROFILE_ADM10_PTLINE4TXCAT_IDX
 };
 
+static uint64_t LnOTU2FECCorr[PROFILE_ADM10_LINE_PORTS];
+static uint64_t LnOTU2FECUncorr[PROFILE_ADM10_LINE_PORTS];
 static PERF_T LnOTU2Perf[PROFILE_ADM10_LINE_PORTS];
 static PERF_T LnODU2Perf[PROFILE_ADM10_LINE_PORTS];
 static PERF_T LnODU1Perf[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU1S];
 static PERF_T LnODU0Perf[PROFILE_ADM10_LINE_PORTS][PROFILE_ADM10_LINE_PORT_ODU0S];
+static uint64_t LnOTU2EFECCorr[PROFILE_ADM10_LINE_PORTS][2];
+static uint64_t LnOTU2EFECUncorr[PROFILE_ADM10_LINE_PORTS][2];
+static uint64_t LnOTU2EFECBIP8[PROFILE_ADM10_LINE_PORTS][2];
+static uint64_t LnODU2EFECBIP8[PROFILE_ADM10_LINE_PORTS][2];
 
 static ALS_T LnALS[PROFILE_ADM10_LINE_PORTS];
 
@@ -1562,23 +1578,24 @@ static void PROFILE_ADM10_LINE_UpdateOTU2FECBERValue(PROFILE_T *Profile, uint32_
 		(State != PROFILE_STATE_OOS))
 	{
 		OTU2FECBER = 0;		
-		if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (BSP_DEV_GET_STATE(&fpga_line_adm_10) == BSP_DEV_STATE_OK)))
+		if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && \
+			 (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_adm_10) == BSP_DEV_STATE_OK))
 		{
 			OTU2FECBER = (float)fpga_line_adm_10.Iface[Idx].OTU2FECCorr / 10037273924.0f;
 		}
-		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK)))
+		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && \
+			(Idx < FPGA_LINE_AGG_2X10_BS_IFACE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
 		{
 			OTU2FECBER = (float)fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECCorr / 10037273924.0f;
 		}
-		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) == BSP_DEV_STATE_OK)))
+		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && \
+			(Idx < FPGA_LINE_AGG_2X10_EFEC_LINE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) == BSP_DEV_STATE_OK) && \
+			(Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx]) == BSP_DEV_STATE_OK))
 		{
-			OTU2FECBER = (float)fpga_client_agg_2x10_efec[Idx].Line.OTU2FECCorr / 10037273924.0f;
+			OTU2FECBER = (float)(fpga_line_agg_2x10_efec.Line[Idx].OTU2FECCorr + fpga_client_agg_2x10_efec[Idx].Line.OTU2FECCorr) / 10037273924.0f;
 		}
-		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx == 0) || (Idx == 2)) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK)))
+		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && \
+			((Idx == 0) || (Idx == 2)) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
 		{
 			OTU2FECBER = (float)fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECCorr / 10037273924.0f;
 		}
@@ -2199,10 +2216,58 @@ static void PROFILE_ADM10_LINE_UpdateDynamicValues(PROFILE_T *Profile, uint32_t 
 	PROFILE_ADM10_LINE_UpdateALSValue(Profile, Idx);
 }
 
+static void PROFILE_ADM10_LINE_UpdateOTU2FECPerfValues(PROFILE_T *Profile, uint32_t Idx)
+{
+	uint32_t DataType;
+	uint8_t State;
+	
+	if (PROFILE_ADM10_LINE_GetState(Profile, Idx, &State))
+		return;
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetDataTypeIdx[Idx], &DataType))
+		return;
+	
+	if ((DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
+			(State != PROFILE_STATE_OOS))
+	{
+		if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && \
+				(Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_adm_10) == BSP_DEV_STATE_OK))
+		{
+			LnOTU2FECCorr[Idx] += fpga_line_adm_10.Iface[Idx].OTU2FECCorr;
+			LnOTU2FECUncorr[Idx] += fpga_line_adm_10.Iface[Idx].OTU2FECUncorr;
+		}
+		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && \
+				(Idx < FPGA_LINE_AGG_2X10_BS_IFACE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
+		{
+			LnOTU2FECCorr[Idx] += fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECCorr;
+			LnOTU2FECUncorr[Idx] += fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECUncorr;
+		}
+		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && \
+				(Idx < FPGA_LINE_AGG_2X10_EFEC_LINE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) == BSP_DEV_STATE_OK) && \
+				(Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx]) == BSP_DEV_STATE_OK))
+		{
+			LnOTU2FECCorr[Idx] += fpga_line_agg_2x10_efec.Line[Idx].OTU2FECCorr + fpga_client_agg_2x10_efec[Idx].Line.OTU2FECCorr;
+			LnOTU2FECUncorr[Idx] += fpga_client_agg_2x10_efec[Idx].Line.OTU2FECUncorr;
+		}
+		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && \
+				((Idx == 0) || (Idx == 2)) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
+		{
+			LnOTU2FECCorr[Idx] += fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECCorr;
+			LnOTU2FECUncorr[Idx] += fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECUncorr;
+		}
+	}
+	else
+	{
+		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
+		LnOTU2FECCorr[Idx] = 0;
+		LnOTU2FECUncorr[Idx] = 0;
+	}
+	
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2FECCorrIdx[Idx], &LnOTU2FECCorr[Idx], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2FECUncorrIdx[Idx], &LnOTU2FECUncorr[Idx], State);
+}
+
 static void PROFILE_ADM10_LINE_UpdateOTU2EFECPerfValues(PROFILE_T *Profile, uint32_t Idx)
 {
-	uint64_t Corr_1, Uncorr_1, OTU2_BIP8_1, ODU2_BIP8_1;
-	uint64_t Corr_2, Uncorr_2, OTU2_BIP8_2, ODU2_BIP8_2;
 	uint32_t DataType, FECType;
 	uint8_t State;
 	
@@ -2216,53 +2281,44 @@ static void PROFILE_ADM10_LINE_UpdateOTU2EFECPerfValues(PROFILE_T *Profile, uint
 	if ((FECType == PROFILE_ADM10_LN_SET_FEC_TYPE_ENUM_EFEC_I_4) &&
 			(DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_OTU2) &&
 			(State != PROFILE_STATE_OOS))
-	{
-		Corr_1 = 0;
-		Uncorr_1 = 0;
-		OTU2_BIP8_1 = 0;
-		ODU2_BIP8_1 = 0;
-		Corr_2 = 0;
-		Uncorr_2 = 0;
-		OTU2_BIP8_2 = 0;
-		ODU2_BIP8_2 = 0;
-		
+	{		
 		if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < FPGA_LINE_AGG_2X10_EFEC_LINE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) == BSP_DEV_STATE_OK))
 		{
-			Corr_1 = fpga_line_agg_2x10_efec.Line[Idx].__OTU2FECCorr;
-			Uncorr_1 = fpga_line_agg_2x10_efec.Line[Idx].__OTU2FECUncorr;
-			OTU2_BIP8_1 = fpga_line_agg_2x10_efec.Line[Idx].__OTU2BIP;
-			ODU2_BIP8_1 = fpga_line_agg_2x10_efec.Line[Idx].__ODU2BIP;
+			LnOTU2EFECCorr[Idx][0] += fpga_line_agg_2x10_efec.Line[Idx].OTU2FECCorr;
+			LnOTU2EFECUncorr[Idx][0] += fpga_line_agg_2x10_efec.Line[Idx].OTU2FECUncorr;
+			LnOTU2EFECBIP8[Idx][0] += fpga_line_agg_2x10_efec.Line[Idx].OTU2BIP;
+			LnODU2EFECBIP8[Idx][0] += fpga_line_agg_2x10_efec.Line[Idx].ODU2BIP;
 		}
 		
 		if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx]) == BSP_DEV_STATE_OK))
 		{
-			Corr_2 = fpga_client_agg_2x10_efec[Idx].Line.__OTU2FECCorr;
-			Uncorr_2 = fpga_client_agg_2x10_efec[Idx].Line.__OTU2FECUncorr;
-			OTU2_BIP8_2 = fpga_client_agg_2x10_efec[Idx].Line.__OTU2BIP;
-			ODU2_BIP8_2 = fpga_client_agg_2x10_efec[Idx].Line.__ODU2BIP;
+			LnOTU2EFECCorr[Idx][1] += fpga_client_agg_2x10_efec[Idx].Line.OTU2FECCorr;
+			LnOTU2EFECUncorr[Idx][1] += fpga_client_agg_2x10_efec[Idx].Line.OTU2FECUncorr;
+			LnOTU2EFECBIP8[Idx][1] += fpga_client_agg_2x10_efec[Idx].Line.OTU2BIP;
+			LnODU2EFECBIP8[Idx][1] += fpga_client_agg_2x10_efec[Idx].Line.ODU2BIP;
 		}
 	}
 	else
 	{
 		State = PROFILE_ADM10_LN_SET_STATE_ENUM_OOS;
-		Corr_1 = 0;
-		Uncorr_1 = 0;
-		OTU2_BIP8_1 = 0;
-		ODU2_BIP8_1 = 0;
-		Corr_2 = 0;
-		Uncorr_2 = 0;
-		OTU2_BIP8_2 = 0;
-		ODU2_BIP8_2 = 0;
+		LnOTU2EFECCorr[Idx][0] = 0;
+		LnOTU2EFECUncorr[Idx][0] = 0;
+		LnOTU2EFECBIP8[Idx][0] = 0;
+		LnODU2EFECBIP8[Idx][0] = 0;
+		LnOTU2EFECCorr[Idx][1] = 0;
+		LnOTU2EFECUncorr[Idx][1] = 0;
+		LnOTU2EFECBIP8[Idx][1] = 0;
+		LnODU2EFECBIP8[Idx][1] = 0;
 	}
 	
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC1CorrIdx[Idx], &Corr_1, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC1UncorrIdx[Idx], &Uncorr_1, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC1BIP8Idx[Idx], &OTU2_BIP8_1, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnODU2EFEC1BIP8Idx[Idx], &ODU2_BIP8_1, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC2CorrIdx[Idx], &Corr_2, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC2UncorrIdx[Idx], &Uncorr_2, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC2BIP8Idx[Idx], &OTU2_BIP8_2, State);
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnODU2EFEC2BIP8Idx[Idx], &ODU2_BIP8_2, State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC1CorrIdx[Idx], &LnOTU2EFECCorr[Idx][0], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC1UncorrIdx[Idx], &LnOTU2EFECUncorr[Idx][0], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC1BIP8Idx[Idx], &LnOTU2EFECBIP8[Idx][0], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnODU2EFEC1BIP8Idx[Idx], &LnODU2EFECBIP8[Idx][0], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC2CorrIdx[Idx], &LnOTU2EFECCorr[Idx][1], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC2UncorrIdx[Idx], &LnOTU2EFECUncorr[Idx][1], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnOTU2EFEC2BIP8Idx[Idx], &LnOTU2EFECBIP8[Idx][1], State);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_8, ProfileADM10PerfLnODU2EFEC2BIP8Idx[Idx], &LnODU2EFECBIP8[Idx][1], State);
 }
 
 static void PROFILE_ADM10_LINE_UpdateOTU2PerfValues(PROFILE_T *Profile, uint32_t Idx)
@@ -2722,6 +2778,7 @@ static void PROFILE_ADM10_LINE_UpdatePerfValues(PROFILE_T *Profile, uint32_t Idx
 	uint32_t i;
 	
 	PROFILE_ADM10_LINE_UpdateOTU2EFECPerfValues(Profile, Idx);
+	PROFILE_ADM10_LINE_UpdateOTU2FECPerfValues(Profile, Idx);
 	PROFILE_ADM10_LINE_UpdateOTU2PerfValues(Profile, Idx);
 	PROFILE_ADM10_LINE_UpdateODU2PerfValues(Profile, Idx);
 	for (i = 0 ; i < 4; i++)
