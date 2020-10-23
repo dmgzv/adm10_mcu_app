@@ -6,8 +6,8 @@
 #include "profile_adm10_idx.h"
 #include "profile_adm10_values.h"
 
-int32_t PROFILE_ADM10_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
-int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
+int32_t PROFILE_ADM10_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore);
+int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore);
 void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile);
 void PROFILE_ADM10_CLIENT_UpdateValues(PROFILE_T *Profile);
 

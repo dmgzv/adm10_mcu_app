@@ -15,11 +15,11 @@
 #define SHELL_IFACE_Disconnect(Shell) (Shell)->Iface->Disconnect ? (Shell)->Iface->Disconnect((Shell)->Iface->Priv) : 0
 
 #define SHELL_VERSION	"1.0.0"
-#define SHELL_HELLO 	"Welcome to IPG IRE-Polus Shell (ver. "SHELL_VERSION")\r"\
-											"=====================================================\r"
+#define SHELL_HELLO 	"Welcome to IPG IRE-Polus Shell (ver. "SHELL_VERSION")\r\n"\
+											"=====================================================\r\n"
 
-#define SHELL_UNKNOWN_CMD 	"Unknown command\r"
-#define SHELL_GOOD_BYE 			"Good bye...\r"
+#define SHELL_UNKNOWN_CMD 	"Unknown command\r\n"
+#define SHELL_GOOD_BYE 			"Good bye...\r\n"
 
 #define SHELL_POINTER	"> "
 
@@ -33,10 +33,10 @@
 #define SHELL_CMD_EXIT_NAME	"exit"
 #define SHELL_CMD_RESET_NAME	"reset"
 
-#define SHELL_CMD_HELP_HEADER						"Avaliable commands:\r"
-#define SHELL_CMD_HELP_HELP_DESCRIPTION	"    "SHELL_CMD_HELP_NAME" - This help\r"
-#define SHELL_CMD_HELP_EXIT_DESCRIPTION	"    "SHELL_CMD_EXIT_NAME" - Exit from this shell\r"
-#define SHELL_CMD_HELP_RESET_DESCRIPTION	"    "SHELL_CMD_RESET_NAME" - Software reset\r"
+#define SHELL_CMD_HELP_HEADER						"Avaliable commands:\r\n"
+#define SHELL_CMD_HELP_HELP_DESCRIPTION	"    "SHELL_CMD_HELP_NAME" - This help\r\n"
+#define SHELL_CMD_HELP_EXIT_DESCRIPTION	"    "SHELL_CMD_EXIT_NAME" - Exit from this shell\r\n"
+#define SHELL_CMD_HELP_RESET_DESCRIPTION	"    "SHELL_CMD_RESET_NAME" - Software reset\r\n"
 
 typedef enum {
 	SHELL_CMD_TYPE_EMPTY,
@@ -61,7 +61,7 @@ static void SHELL_IFACE_TransmitHelp(SHELL_T *Shell)
 		strcat(Shell->TxBuffer, Shell->CmdList[i].Name);
 		strcat(Shell->TxBuffer, " - ");
 		strcat(Shell->TxBuffer, Shell->CmdList[i].Description);
-		strcat(Shell->TxBuffer, "\r");
+		strcat(Shell->TxBuffer, "\r\n");
 		SHELL_IFACE_Transmit(Shell, Shell->TxBuffer, strlen(Shell->TxBuffer));
 	}
 }

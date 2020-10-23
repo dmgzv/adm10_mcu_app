@@ -999,7 +999,7 @@ static int32_t PROFILE_ADM10_CLIENT_GetXCClientODU0(PROFILE_T *Profile, uint32_t
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t Mode;
 	uint32_t SetState;
@@ -1009,7 +1009,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx], &SetState))
 		return -1;
 	
-	if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) && ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_IS) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_AINS)))
+	if ((SetState == PROFILE_ADM10_CL_SET_STATE_ENUM_OOS) && ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_IS) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_STATE_ENUM_AINS)) && (!Restore))
 		return -1;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
@@ -1050,7 +1050,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_CheckClSFPEnableTxValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_CLIENT_CheckClSFPEnableTxValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t SetState;
 	
@@ -1065,7 +1065,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSFPEnableTxValue(PROFILE_T *Profile, 
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t SetState;
 	
@@ -1080,7 +1080,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(PROFILE_T *Profile, 
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t Mode;
 	
@@ -1132,7 +1132,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, 
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_CheckClSetALSModeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_CLIENT_CheckClSetALSModeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t DataType;
 	
@@ -1145,7 +1145,7 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetALSModeValue(PROFILE_T *Profile, u
 	return 0;
 }
 
-int32_t PROFILE_ADM10_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value)
+int32_t PROFILE_ADM10_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Restore)
 {
 	uint32_t i;
 	
@@ -1153,31 +1153,31 @@ int32_t PROFILE_ADM10_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table,
 	{
 		if (TableIdx == ProfileADM10ConfigClSetStateIdx[i])
 		{
-			if (PROFILE_ADM10_CLIENT_CheckClSetStateValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_CLIENT_CheckClSetStateValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		if (TableIdx == ProfileADM10ConfigClSFPEnableTxIdx[i])
 		{
-			if (PROFILE_ADM10_CLIENT_CheckClSFPEnableTxValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_CLIENT_CheckClSFPEnableTxValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		if (TableIdx == ProfileADM10ConfigClSetLoopbackIdx[i])
 		{
-			if (PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		if (TableIdx == ProfileADM10ConfigClSetDataTypeIdx[i])
 		{
-			if (PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		if (TableIdx == ProfileADM10ConfigClSetALSModeIdx[i])
 		{
-			if (PROFILE_ADM10_CLIENT_CheckClSetALSModeValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_CLIENT_CheckClSetALSModeValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
@@ -1185,7 +1185,7 @@ int32_t PROFILE_ADM10_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table,
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_SetModeValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value)
+static int32_t PROFILE_ADM10_CLIENT_SetModeValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Restore)
 {
 	uint32_t i;
 	uint32_t Mode;
@@ -1284,7 +1284,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetFactoryConfigValues(PROFILE_T *Profile, u
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t Mode, Loopback;
 	
@@ -1306,7 +1306,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(PROFILE_T *Pr
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t Mode;
 	uint32_t OPU1Payload;
@@ -1377,10 +1377,13 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t i;
 	uint32_t Mode;
+	
+	if (Restore)
+		return 0;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return -1;
@@ -1458,13 +1461,13 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 	return 0;
 }
 
-int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value)
+int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Restore)
 {
 	uint32_t i;
 	
 	if (TableIdx == PROFILE_ADM10_SETMODE_IDX)
 	{
-		if (PROFILE_ADM10_CLIENT_SetModeValueDependencies(Profile, Table, TableIdx, Value))
+		if (PROFILE_ADM10_CLIENT_SetModeValueDependencies(Profile, Table, TableIdx, Value, Restore))
 			return -1;
 		return 0;
 	}
@@ -1473,19 +1476,19 @@ int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint
 	{
 		if (TableIdx == ProfileADM10ConfigClSetStateIdx[i])
 		{
-			if (PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		if (TableIdx == ProfileADM10ConfigClSetDataTypeIdx[i])
 		{
-			if (PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		if (TableIdx == ProfileADM10ConfigClSetFactoryIdx[i])
 		{
-			if (PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}

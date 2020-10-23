@@ -950,8 +950,6 @@ typedef struct {
     uint8_t ODU0_PG_8_ActiveODUkState;
     uint8_t SetDefaultState;
     uint8_t ResetState;
-    uint8_t SI5332_1_SetAdjCapState;
-    uint8_t SI5332_2_SetAdjCapState;
     uint8_t SetFactoryState;
     uint8_t SetModeState;
     uint8_t Ln_1_SetStateState;
@@ -4350,8 +4348,6 @@ typedef struct {
     char SrNumber[PROFILE_STRING_MAX_LEN];
     uint32_t SetDefault;
     uint32_t Reset;
-    uint32_t SI5332_1_SetAdjCap;
-    uint32_t SI5332_2_SetAdjCap;
 } PROFILE_ADM10_VALUES_CALIB_T;
 
 

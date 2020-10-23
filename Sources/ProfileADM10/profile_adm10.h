@@ -11,8 +11,8 @@
 #include "profile_adm10_pg.h"
 
 void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile);
-int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
-int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value);
+int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore);
+int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore);
 void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile);
 
 #endif /* __PROFILE_ADM10_H */

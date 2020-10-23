@@ -601,63 +601,26 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	PROFILE_ADM10_UpdateStateStage++;
 }
 
-int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
+int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
-	uint32_t Mode;
-	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
+	if (PROFILE_ADM10_LINE_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
-	
-	if (Idx == PROFILE_ADM10_SI5332_1_SETADJCAP_IDX)
-	{
-		if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC)
-		{
-			if ((*(uint32_t*)Value) != PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_11_5)
-				return -1;
-		}
-		else
-		{
-			if ((*(uint32_t*)Value) != PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_10_0)
-				return -1;
-		}
-	}	
-	
-	if (PROFILE_ADM10_LINE_CheckConfigValue(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_CLIENT_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
-	if (PROFILE_ADM10_CLIENT_CheckConfigValue(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_XC_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
-	if (PROFILE_ADM10_XC_CheckConfigValue(Profile, Table, Idx, Value))
-		return -1;
-	if (PROFILE_ADM10_PG_CheckConfigValue(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_PG_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
 	return 0;
 }
 
 
-int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
+int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
-	uint32_t SI5332_1_SetAdjCap;
-	
-	if (Idx == PROFILE_ADM10_SETMODE_IDX)
-	{
-		if ((*(uint32_t*)Value) == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC)
-		{
-			SI5332_1_SetAdjCap = PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_11_5;
-			if (PROFILE_SetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))
-				return - 1;
-		}
-		else
-		{
-			SI5332_1_SetAdjCap = PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_10_0;
-			if (PROFILE_SetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))
-				return - 1;
-		}
-	}
-	
-	if (Idx == PROFILE_ADM10_SETDEFAULT_IDX)
+	if ((Idx == PROFILE_ADM10_SETDEFAULT_IDX) && (!Restore))
 		PROFILE_SetDefault(Profile);
 	
-	if (Idx == PROFILE_ADM10_SETFACTORY_IDX)
+	if ((Idx == PROFILE_ADM10_SETFACTORY_IDX) && (!Restore))
 	{
 		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_INFO))
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_1);
@@ -671,24 +634,24 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_103);
 	}
 	
-	if (Idx == PROFILE_ADM10_RESET_IDX)
+	if ((Idx == PROFILE_ADM10_RESET_IDX) && (!Restore))
 		BSP_Reset();
 	
 	
-	if (PROFILE_ADM10_LINE_SetConfigValueDependencies(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_LINE_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
-	if (PROFILE_ADM10_CLIENT_SetConfigValueDependencies(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_CLIENT_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
-	if (PROFILE_ADM10_XC_SetConfigValueDependencies(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_XC_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
-	if (PROFILE_ADM10_PG_SetConfigValueDependencies(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_PG_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;	
 	return 0;
 }
 
 void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 {
-	uint32_t Mode, SI5332_1_SetAdjCap, SI5332_2_SetAdjCap;
+	uint32_t Mode;
 	
 	PROFILE_ADM10_UpdateConfigsStage = 0;
 	
@@ -702,75 +665,33 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 		FPGA_MAXV_MODE_SET(&fpga_maxv, FPGA_MAXV_MODE_ADM_10);
 		si5332_mode[0] = BSP_CLK_SI5332_MODE_RSFEC;
 		si5332_mode[1] = BSP_CLK_SI5332_MODE_RSFEC;
+		si5332_cfg[0] = BSP_CLK_SI5332_11P5_CFG;
+		si5332_cfg[1] = BSP_CLK_SI5332_11P5_CFG;
 	}
 	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS)
 	{
 		FPGA_MAXV_MODE_SET(&fpga_maxv, FPGA_MAXV_MODE_AGG_2X10_BS);
 		si5332_mode[0] = BSP_CLK_SI5332_MODE_RSFEC;
 		si5332_mode[1] = BSP_CLK_SI5332_MODE_RSFEC;
+		si5332_cfg[0] = BSP_CLK_SI5332_11P5_CFG;
+		si5332_cfg[1] = BSP_CLK_SI5332_11P5_CFG;
 	}
 	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC)
 	{
 		FPGA_MAXV_MODE_SET(&fpga_maxv, FPGA_MAXV_MODE_AGG_2X10_EFEC);
 		si5332_mode[0] = BSP_CLK_SI5332_MODE_EFEC_I_4;
 		si5332_mode[1] = BSP_CLK_SI5332_MODE_EFEC_I_4;
+		si5332_cfg[0] = BSP_CLK_SI5332_11P5_CFG;
+		si5332_cfg[1] = BSP_CLK_SI5332_11P5_CFG;
 	}
 	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5)
 	{
 		FPGA_MAXV_MODE_SET(&fpga_maxv, FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5);
 		si5332_mode[0] = BSP_CLK_SI5332_MODE_RSFEC;
 		si5332_mode[1] = BSP_CLK_SI5332_MODE_RSFEC;
-	}
-	
-	PROFILE_ADM10_UpdateConfigsStage++;
-	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_1_SETADJCAP_IDX, &SI5332_1_SetAdjCap))
-		return;
-	
-	PROFILE_ADM10_UpdateConfigsStage++;
-	
-	if (SI5332_1_SetAdjCap == PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_10_0)
-	{
-		si5332_cfg[0] = BSP_CLK_SI5332_10P0_CFG;
-	}
-	else if (SI5332_1_SetAdjCap == PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_11_5)
-	{
 		si5332_cfg[0] = BSP_CLK_SI5332_11P5_CFG;
-	}
-	
-	PROFILE_ADM10_UpdateConfigsStage++;
-	
-	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SI5332_2_SETADJCAP_IDX, &SI5332_2_SetAdjCap))
-		return;
-	
-	PROFILE_ADM10_UpdateConfigsStage++;
-	
-	if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_6_0)
-		si5332_cfg[1] = BSP_CLK_SI5332_6P0_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_6_5)
-		si5332_cfg[1] = BSP_CLK_SI5332_6P5_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_7_0)
-		si5332_cfg[1] = BSP_CLK_SI5332_7P0_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_7_5)
-		si5332_cfg[1] = BSP_CLK_SI5332_7P5_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_8_0)
-		si5332_cfg[1] = BSP_CLK_SI5332_8P0_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_8_5)
-		si5332_cfg[1] = BSP_CLK_SI5332_8P5_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_9_0)
-		si5332_cfg[1] = BSP_CLK_SI5332_9P0_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_9_5)
-		si5332_cfg[1] = BSP_CLK_SI5332_9P5_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_10_0)
-		si5332_cfg[1] = BSP_CLK_SI5332_10P0_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_10_5)
-		si5332_cfg[1] = BSP_CLK_SI5332_10P5_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_11_0)
-		si5332_cfg[1] = BSP_CLK_SI5332_11P0_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_11_5)
 		si5332_cfg[1] = BSP_CLK_SI5332_11P5_CFG;
-	else if (SI5332_2_SetAdjCap == PROFILE_ADM10_SI5332_2_SET_ADJ_CAP_ENUM_12_0)
-		si5332_cfg[1] = BSP_CLK_SI5332_12P0_CFG;
+	}
 	
 	PROFILE_ADM10_UpdateConfigsStage++;
 	

@@ -121,16 +121,16 @@ void PROFILE_UpdateValues(void)
 	PROFILE_ADM10_UpdateValues(&Profile);	
 }
 
-int32_t PROFILE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
+int32_t PROFILE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
-	if (PROFILE_ADM10_CheckConfigValue(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
 	return 0;
 }
 
-int32_t PROFILE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
+int32_t PROFILE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
-	if (PROFILE_ADM10_SetConfigValueDependencies(Profile, Table, Idx, Value))
+	if (PROFILE_ADM10_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
 	return 0;
 }

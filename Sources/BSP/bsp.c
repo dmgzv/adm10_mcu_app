@@ -85,19 +85,19 @@ const uint32_t ModulesCnt = sizeof(Modules) / sizeof(Modules[0]);
 
 void os_assert_failed(char* file, unsigned int line)
 {
-	BSP_Reset();
+	LOG_Error("OS", "ASSERT", "", "%s [%d]", file, line);
 	while(1);
 }
 
 void hal_assert_failed(char* file, unsigned int line)
 {
-	BSP_Reset();
+	LOG_Error("HAL", "ASSERT", "", "%s [%d]", file, line);
 	while(1);
 }
 
 void lwip_assert_failed(char* file, unsigned int line)
 {
-	BSP_Reset();
+	LOG_Error("LWIP", "ASSERT", "", "%s [%d]", file, line);
 	while(1);
 }
 

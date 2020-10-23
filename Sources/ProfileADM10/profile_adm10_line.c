@@ -618,7 +618,7 @@ static void PROFILE_ADM10_LINE_GetODU0State(PROFILE_T *Profile, uint32_t Idx, ui
 	}
 }
 
-static int32_t PROFILE_ADM10_LINE_CheckLnSetStateValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_CheckLnSetStateValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t SetState;
 	uint32_t Mode;
@@ -629,7 +629,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSetStateValue(PROFILE_T *Profile, uint8
 	/* Do not alow to go from OOS to IS */
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetStateIdx[Idx], &SetState))
 		return -1;
-	if ((SetState == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) && (*(uint32_t*)Value == PROFILE_ADM10_LN_SET_STATE_ENUM_IS))
+	if ((SetState == PROFILE_ADM10_LN_SET_STATE_ENUM_OOS) && (*(uint32_t*)Value == PROFILE_ADM10_LN_SET_STATE_ENUM_IS) && (!Restore))
 		return -1;
 	
 	if (Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10)
@@ -666,7 +666,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSetStateValue(PROFILE_T *Profile, uint8
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_CheckLnSFPEnableTxValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_CheckLnSFPEnableTxValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t SetState;
 	
@@ -681,7 +681,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSFPEnableTxValue(PROFILE_T *Profile, ui
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_CheckLnSetLoopbackValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_CheckLnSetLoopbackValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t SetState;
 	
@@ -696,7 +696,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSetLoopbackValue(PROFILE_T *Profile, ui
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_CheckLnSFPSetFreqValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_CheckLnSFPSetFreqValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	float __FreqSp;
 	uint32_t Freq, FreqSp;
@@ -713,7 +713,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSFPSetFreqValue(PROFILE_T *Profile, uin
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_CheckLnSFPSetFreqSpValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_CheckLnSFPSetFreqSpValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	float FreqSp;
 	
@@ -726,7 +726,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSFPSetFreqSpValue(PROFILE_T *Profile, u
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_CheckLnSetFECTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_CheckLnSetFECTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t Mode;
 	
@@ -754,7 +754,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnSetFECTypeValue(PROFILE_T *Profile, uin
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_CheckLnOPU1SetPayloadValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t OPU1Idx)
+static int32_t PROFILE_ADM10_LINE_CheckLnOPU1SetPayloadValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t OPU1Idx, uint32_t Restore)
 {
 	uint32_t OPU1Payload, OPU2Payload;
 	uint32_t Mode;
@@ -779,7 +779,7 @@ static int32_t PROFILE_ADM10_LINE_CheckLnOPU1SetPayloadValue(PROFILE_T *Profile,
 	return 0;
 }
 
-int32_t PROFILE_ADM10_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value)
+int32_t PROFILE_ADM10_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Restore)
 {
 	uint32_t i, j;
 	
@@ -787,37 +787,37 @@ int32_t PROFILE_ADM10_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, u
 	{
 		if (TableIdx == ProfileADM10ConfigLnSetStateIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_CheckLnSetStateValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_CheckLnSetStateValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		else if (TableIdx == ProfileADM10ConfigLnSFPEnableTxIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_CheckLnSFPEnableTxValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_CheckLnSFPEnableTxValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		else if (TableIdx == ProfileADM10ConfigLnSetLoopbackIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_CheckLnSetLoopbackValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_CheckLnSetLoopbackValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		else if (TableIdx == ProfileADM10ConfigLnSFPSetFreqIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_CheckLnSFPSetFreqValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_CheckLnSFPSetFreqValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		else if (TableIdx == ProfileADM10ConfigLnSFPSetFreqSpIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_CheckLnSFPSetFreqSpValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_CheckLnSFPSetFreqSpValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		else if (TableIdx == ProfileADM10ConfigLnSetFECTypeIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_CheckLnSetFECTypeValue(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_CheckLnSetFECTypeValue(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
@@ -827,7 +827,7 @@ int32_t PROFILE_ADM10_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, u
 			{
 				if (TableIdx == ProfileADM10ConfigLnOPU1SetPayloadIdx[i][j])
 				{
-					if (PROFILE_ADM10_LINE_CheckLnOPU1SetPayloadValue(Profile, Table, TableIdx, Value, i, j))
+					if (PROFILE_ADM10_LINE_CheckLnOPU1SetPayloadValue(Profile, Table, TableIdx, Value, i, j, Restore))
 						return -1;
 					return 0;
 				}
@@ -837,7 +837,7 @@ int32_t PROFILE_ADM10_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, u
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_SetModeValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value)
+static int32_t PROFILE_ADM10_LINE_SetModeValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Restore)
 {
 	uint32_t i, j, FECType;
 	
@@ -868,7 +868,7 @@ static int32_t PROFILE_ADM10_LINE_SetModeValueDependencies(PROFILE_T *Profile, u
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_SetLnSetStateValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_SetLnSetStateValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t j;
 	uint32_t Loopback, FECType;	
@@ -907,7 +907,7 @@ static int32_t PROFILE_ADM10_LINE_SetLnSetStateValueDependencies(PROFILE_T *Prof
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_SetLnOPU2SetPayloadDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_SetLnOPU2SetPayloadDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	/*
 	uint32_t i, OPU1Payload;
@@ -922,11 +922,14 @@ static int32_t PROFILE_ADM10_LINE_SetLnOPU2SetPayloadDependencies(PROFILE_T *Pro
 	return 0;
 }
 
-static int32_t PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx)
+static int32_t PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	float MinFreq, MaxFreq, FreqSp;
 	uint32_t i;
 	uint32_t Mode, FECType;
+	
+	if (Restore)
+		return 0;
 	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_SETMODE_IDX, &Mode))
 		return -1;
@@ -1041,13 +1044,13 @@ static int32_t PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Pr
 	return 0;
 }
 
-int32_t PROFILE_ADM10_LINE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value)
+int32_t PROFILE_ADM10_LINE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Restore)
 {
 	uint32_t i;
 	
 	if (TableIdx == PROFILE_ADM10_SETMODE_IDX)
 	{
-		if (PROFILE_ADM10_LINE_SetModeValueDependencies(Profile, Table, TableIdx, Value))
+		if (PROFILE_ADM10_LINE_SetModeValueDependencies(Profile, Table, TableIdx, Value, Restore))
 			return -1;
 	}
 	
@@ -1055,19 +1058,19 @@ int32_t PROFILE_ADM10_LINE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_
 	{
 		if (TableIdx == ProfileADM10ConfigLnSetStateIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_SetLnSetStateValueDependencies(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_SetLnSetStateValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		if (TableIdx == ProfileADM10ConfigLnOPU2SetPayloadIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_SetLnOPU2SetPayloadDependencies(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_SetLnOPU2SetPayloadDependencies(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}
 		if (TableIdx == ProfileADM10ConfigLnSetFactoryIdx[i])
 		{
-			if (PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i))
+			if (PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
 				return -1;
 			return 0;
 		}

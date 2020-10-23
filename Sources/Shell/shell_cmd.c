@@ -13,17 +13,27 @@
 
 extern BOOTLOADER_T Bootloader;
 extern PROFILE_FLASH_T ProfileFlash;
+extern PROFILE_IFACE_T ProfileIfaceUart4;
+extern PROFILE_IFACE_T ProfileIfaceUart5;
 
 static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
-static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 #ifdef BSP_CONFIG_USE_LOG
 static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 #endif
+#if defined(BSP_CONFIG_USE_I2C1) || defined(BSP_CONFIG_USE_I2C2) || defined(BSP_CONFIG_USE_I2C3)
 static void SHELL_CMD_I2CCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+#endif
+#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || \
+	defined(BSP_CONFIG_USE_SPI4) || defined(BSP_CONFIG_USE_SPI5)
 static void SHELL_CMD_SPICallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+#endif
+#if defined(BSP_CONFIG_USE_UART1) || defined(BSP_CONFIG_USE_UART2) || defined(BSP_CONFIG_USE_UART3) || \
+	defined(BSP_CONFIG_USE_UART4) || defined(BSP_CONFIG_USE_UART5) || defined(BSP_CONFIG_USE_UART6)
 static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+#endif
 static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -44,9 +54,17 @@ const SHELL_CMD_T ShellCmdList[] =
 #ifdef BSP_CONFIG_USE_LOG
 	{ "log", 			"Log control", &SHELL_CMD_LOGCallback},
 #endif
+#if defined(BSP_CONFIG_USE_I2C1) || defined(BSP_CONFIG_USE_I2C2) || defined(BSP_CONFIG_USE_I2C3)
 	{ "i2c", 			"I2C statistics", &SHELL_CMD_I2CCallback},
+#endif
+#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || \
+	defined(BSP_CONFIG_USE_SPI4) || defined(BSP_CONFIG_USE_SPI5)
 	{ "spi", 			"SPI statistics", &SHELL_CMD_SPICallback},
+#endif
+#if defined(BSP_CONFIG_USE_UART1) || defined(BSP_CONFIG_USE_UART2) || defined(BSP_CONFIG_USE_UART3) || \
+	defined(BSP_CONFIG_USE_UART4) || defined(BSP_CONFIG_USE_UART5) || defined(BSP_CONFIG_USE_UART6)
 	{ "uart", 		"UART statistics", &SHELL_CMD_UARTCallback},
+#endif
 	{ "status", 	"Status of devices", &SHELL_CMD_StatusCallback},	
 	{ "flash", 		"External flash control", &SHELL_CMD_FLASHCallback},
 	{ "dim3r", 		"DIM3R3400 control", &SHELL_CMD_DIM3RCallback},
@@ -69,8 +87,8 @@ static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t
 	char *p1,*p2;
 	uint32_t len;
 	
-	SHELL_Transmit(Shell, "Heap size: %d bytes\r", xPortGetFreeHeapSize());
-	SHELL_Transmit(Shell, "Name          State Priority   Stack   Num\r");
+	SHELL_Transmit(Shell, "Heap size: %d bytes\r\n", xPortGetFreeHeapSize());
+	SHELL_Transmit(Shell, "Name          State Priority   Stack   Num\r\n");
 	osThreadList((uint8_t*)((SHELL_T*)Shell)->TxBuffer);
 	
 	len = strlen(((SHELL_T*)Shell)->TxBuffer);
@@ -91,53 +109,42 @@ static void SHELL_CMD_SystemCallback(void *Shell, char **CmdParamsList, uint32_t
 static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	uint32_t i;
-	SHELL_Transmit(Shell, "Project: %s\r", BSP_PROJECT);
-	SHELL_Transmit(Shell, "HW Version: %s\r", BSP_HW_VERSION);
-	SHELL_Transmit(Shell, "SW Version: %s\r", BSP_SW_VERSION);
-	SHELL_Transmit(Shell, "SW Date: %s\r", BSP_SW_DATE);
-	SHELL_Transmit(Shell, "SW Time: %s\r", BSP_SW_TIME);
-	SHELL_Transmit(Shell, "MCU SW Version: %s\r", BSP_MCU_SW_VERSION);
+	SHELL_Transmit(Shell, "Project: %s\r\n", BSP_PROJECT);
+	SHELL_Transmit(Shell, "HW Version: %s\r\n", BSP_HW_VERSION);
+	SHELL_Transmit(Shell, "SW Version: %s\r\n", BSP_SW_VERSION);
+	SHELL_Transmit(Shell, "SW Date: %s\r\n", BSP_SW_DATE);
+	SHELL_Transmit(Shell, "SW Time: %s\r\n", BSP_SW_TIME);
+	SHELL_Transmit(Shell, "MCU SW Version: %s\r\n", BSP_MCU_SW_VERSION);
 	if (BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK)
-		SHELL_Transmit(Shell, "FPGA MAXV SW Version: %s\r", fpga_maxv.SwVersion );
+		SHELL_Transmit(Shell, "FPGA MAXV SW Version: %s\r\n", fpga_maxv.SwVersion );
 	else
-		SHELL_Transmit(Shell, "FPGA MAXV SW Version: -\r");
+		SHELL_Transmit(Shell, "FPGA MAXV SW Version: -\r\n");
 	if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
-		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r", fpga_line_agg_2x10_bs.SwVersion );
+		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r\n", fpga_line_agg_2x10_bs.SwVersion );
 	else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (BSP_DEV_GET_STATE(&fpga_line_adm_10) == BSP_DEV_STATE_OK))
-		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r", fpga_line_adm_10.SwVersion );
+		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r\n", fpga_line_adm_10.SwVersion );
+	else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) == BSP_DEV_STATE_OK))
+		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r\n", fpga_line_agg_2x10_efec.SwVersion );
+	else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
+		SHELL_Transmit(Shell, "FPGA LINE Version: %s\r\n", fpga_line_agg_2x10_bs.SwVersion );
 	else
-		SHELL_Transmit(Shell, "FPGA LINE Version: -\r");
+		SHELL_Transmit(Shell, "FPGA LINE Version: -\r\n");
 	for (i = 0; i < BSP_FPGA_CLIENT_CNT; i++)
 	{
 		if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[i]) == BSP_DEV_STATE_OK))
-			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r", i, fpga_client_agg_2x10_bs[i].SwVersion );
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r\n", i, fpga_client_agg_2x10_bs[i].SwVersion );
 		else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && (BSP_DEV_GET_STATE(&fpga_client_adm_10[i]) == BSP_DEV_STATE_OK))
-			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r", i, fpga_client_adm_10[i].SwVersion );
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r\n", i, fpga_client_adm_10[i].SwVersion );
+		else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[i]) == BSP_DEV_STATE_OK))
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r\n", i, fpga_client_agg_2x10_efec[i].SwVersion );
+		else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (i == 0) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[i]) == BSP_DEV_STATE_OK))
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r\n", i, fpga_client_agg_2x10_bs[i].SwVersion );
+		else if ((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (i == 1) && (BSP_DEV_GET_STATE(&fpga_client_adm_2_5[i]) == BSP_DEV_STATE_OK))
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: %s\r\n", i, fpga_client_adm_2_5[i].SwVersion );
 		else
-			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: -\r", i);
+			SHELL_Transmit(Shell, "FPGA CLIENT %d Version: -\r\n", i);
 	}
-	SHELL_Transmit(Shell, "Time: %d s\r", osKernelSysTick() / 1000);
-}
-
-extern PROFILE_IFACE_T ProfileIfaceUart4;
-extern PROFILE_IFACE_T ProfileIfaceUart5;
-
-static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
-{
-	SHELL_Transmit(Shell, "Iface: UART 1\r");
-	SHELL_Transmit(Shell, "Max Parse Time: %d ms\r", ProfileIfaceUart4.MaxParseTime);
-	SHELL_Transmit(Shell, "Max Parse Time Cmd: 0x%02x\r", ProfileIfaceUart4.MaxParseTimeCommand);
-	SHELL_Transmit(Shell, "Max Responce Len: %d\r", ProfileIfaceUart4.MaxResponceLen);
-	SHELL_Transmit(Shell, "Max Responce Len Cmd: 0x%02x\r", ProfileIfaceUart4.MaxResponceLenCommand);
-	SHELL_Transmit(Shell, "Max Transmit Time: %d ms\r", ProfileIfaceUart4.MaxTransmitTime);
-	SHELL_Transmit(Shell, "Max Transmit Time Cmd: 0x%02x\r", ProfileIfaceUart4.MaxTransmitTimeCommand);
-	SHELL_Transmit(Shell, "Iface: UART 6\r");
-	SHELL_Transmit(Shell, "Max Parse Time: %d ms\r", ProfileIfaceUart5.MaxParseTime);
-	SHELL_Transmit(Shell, "Max Parse Time Cmd: 0x%02x\r", ProfileIfaceUart5.MaxParseTimeCommand);
-	SHELL_Transmit(Shell, "Max Responce Len: %d\r", ProfileIfaceUart5.MaxResponceLen);
-	SHELL_Transmit(Shell, "Max Responce Len Cmd: 0x%02x\r", ProfileIfaceUart5.MaxResponceLenCommand);
-	SHELL_Transmit(Shell, "Max Transmit Time: %d ms\r", ProfileIfaceUart5.MaxTransmitTime);
-	SHELL_Transmit(Shell, "Max Transmit Time Cmd: 0x%02x\r", ProfileIfaceUart5.MaxTransmitTimeCommand);
+	SHELL_Transmit(Shell, "Time: %d s\r\n", osKernelSysTick() / 1000);
 }
 
 #ifdef BSP_CONFIG_USE_LOG
@@ -148,241 +155,488 @@ static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	LOG_LINE_T LogLine;
 	
 	LinesCnt = LOG_GetLinesCnt();
-	SHELL_Transmit(Shell, "Size: %d\r", LOG_LINES_CNT);
-	SHELL_Transmit(Shell, "Records Count: %d\r", LOG_GetLinesCnt());
+	SHELL_Transmit(Shell, "Size: %d\r\n", LOG_LINES_CNT);
+	SHELL_Transmit(Shell, "Records Count: %d\r\n", LOG_GetLinesCnt());
 	for (i = 0; i < LinesCnt; i++)
 	{
 		LOG_GetLine(i, &LogLine);
 		Time = (float)LogLine.Time / osKernelSysTickFrequency;
-		SHELL_Transmit(Shell, "[%4.4f] %s %s %s\r", Time, LogLine.Object, LogLine.ObjectId, LogLine.Description);
+		SHELL_Transmit(Shell, "[%4.4f] %s %s %s\r\n", Time, LogLine.Object, LogLine.ObjectId, LogLine.Description);
 	}	
 }
 #endif
 
+#if defined(BSP_CONFIG_USE_I2C1) || defined(BSP_CONFIG_USE_I2C2) || defined(BSP_CONFIG_USE_I2C3)
 static void SHELL_CMD_I2CCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
-{
+{	
 #ifdef BSP_CONFIG_USE_I2C1
-	SHELL_Transmit(Shell, "I2C1:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", i2c1.overrun_errors);
-	SHELL_Transmit(Shell, "  BERR errors: %d\r", i2c1.berr_errors);
-	SHELL_Transmit(Shell, "  ARLO errors: %d\r", i2c1.arlo_errors);
-	SHELL_Transmit(Shell, "  AF errors: %d\r", i2c1.af_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", i2c1.dma_errors);
-	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", i2c1.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", i2c1.seq_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", i2c1.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", i2c1.seq_tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Queue overflows: %d\r", i2c1.message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "I2C1:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", i2c1.overrun_errors);
+	SHELL_Transmit(Shell, "  BERR errors: %d\r\n", i2c1.berr_errors);
+	SHELL_Transmit(Shell, "  ARLO errors: %d\r\n", i2c1.arlo_errors);
+	SHELL_Transmit(Shell, "  AF errors: %d\r\n", i2c1.af_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", i2c1.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r\n", i2c1.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r\n", i2c1.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r\n", i2c1.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r\n", i2c1.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r\n", i2c1.message_queue_overflow_errors);
+	if (osMutexWait(i2c1.mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Lock: Unlocked\r\n");
+		osMutexRelease(i2c1.mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_I2C2
-	SHELL_Transmit(Shell, "I2C2:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", i2c2.overrun_errors);
-	SHELL_Transmit(Shell, "  BERR errors: %d\r", i2c2.berr_errors);
-	SHELL_Transmit(Shell, "  ARLO errors: %d\r", i2c2.arlo_errors);
-	SHELL_Transmit(Shell, "  AF errors: %d\r", i2c2.af_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", i2c2.dma_errors);
-	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", i2c2.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", i2c2.seq_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", i2c2.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", i2c2.seq_tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Queue overflows: %d\r", i2c2.message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "I2C2:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", i2c2.overrun_errors);
+	SHELL_Transmit(Shell, "  BERR errors: %d\r\n", i2c2.berr_errors);
+	SHELL_Transmit(Shell, "  ARLO errors: %d\r\n", i2c2.arlo_errors);
+	SHELL_Transmit(Shell, "  AF errors: %d\r\n", i2c2.af_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", i2c2.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r\n", i2c2.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r\n", i2c2.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r\n", i2c2.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r\n", i2c2.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r\n", i2c2.message_queue_overflow_errors);
+	if (osMutexWait(i2c2.mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Lock: Unlocked\r\n");
+		osMutexRelease(i2c2.mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_I2C3
-	SHELL_Transmit(Shell, "I2C3:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", i2c3.overrun_errors);
-	SHELL_Transmit(Shell, "  BERR errors: %d\r", i2c3.berr_errors);
-	SHELL_Transmit(Shell, "  ARLO errors: %d\r", i2c3.arlo_errors);
-	SHELL_Transmit(Shell, "  AF errors: %d\r", i2c3.af_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", i2c3.dma_errors);
-	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", i2c3.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", i2c3.seq_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", i2c3.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", i2c3.seq_tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Queue overflows: %d\r", i2c3.message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "I2C3:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", i2c3.overrun_errors);
+	SHELL_Transmit(Shell, "  BERR errors: %d\r\n", i2c3.berr_errors);
+	SHELL_Transmit(Shell, "  ARLO errors: %d\r\n", i2c3.arlo_errors);
+	SHELL_Transmit(Shell, "  AF errors: %d\r\n", i2c3.af_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", i2c3.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r\n", i2c3.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r\n", i2c3.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r\n", i2c3.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r\n", i2c3.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r\n", i2c3.message_queue_overflow_errors);
+	if (osMutexWait(i2c3.mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Lock: Unlocked\r\n");
+		osMutexRelease(i2c3.mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Lock: Locked\r\n");
+	}
 #endif
 }
+#endif
 
+#if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || \
+	defined(BSP_CONFIG_USE_SPI4) || defined(BSP_CONFIG_USE_SPI5)
 static void SHELL_CMD_SPICallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 #ifdef BSP_CONFIG_USE_SPI1
-	SHELL_Transmit(Shell, "SPI1:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi1.overrun_errors);
-	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi1.mode_fault_errors);
-	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi1.crc_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi1.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi1.dma_errors);
-	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi1.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi1.seq_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi1.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi1.seq_tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi1.tx_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi1.message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "SPI1:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", spi1.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r\n", spi1.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r\n", spi1.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", spi1.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", spi1.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r\n", spi1.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r\n", spi1.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r\n", spi1.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r\n", spi1.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r\n", spi1.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r\n", spi1.message_queue_overflow_errors);
+	if (osMutexWait(spi1.mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Lock: Unlocked\r\n");
+		osMutexRelease(spi1.mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_SPI2
-	SHELL_Transmit(Shell, "SPI2:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi2.overrun_errors);
-	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi2.mode_fault_errors);
-	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi2.crc_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi2.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi2.dma_errors);
-	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi2.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi2.seq_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi2.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi2.seq_tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi2.tx_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi2.message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "SPI2:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", spi2.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r\n", spi2.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r\n", spi2.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", spi2.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", spi2.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r\n", spi2.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r\n", spi2.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r\n", spi2.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r\n", spi2.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r\n", spi2.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r\n", spi2.message_queue_overflow_errors);
+	if (osMutexWait(spi2.mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Lock: Unlocked\r\n");
+		osMutexRelease(spi2.mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_SPI3
-	SHELL_Transmit(Shell, "SPI3:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi3.overrun_errors);
-	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi3.mode_fault_errors);
-	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi3.crc_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi3.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi3.dma_errors);
-	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi3.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi3.seq_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi3.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi3.seq_tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi3.tx_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi3.message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "SPI3:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", spi3.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r\n", spi3.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r\n", spi3.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", spi3.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", spi3.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r\n", spi3.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r\n", spi3.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r\n", spi3.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r\n", spi3.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r\n", spi3.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r\n", spi3.message_queue_overflow_errors);
+	if (osMutexWait(spi3.mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Lock: Unlocked\r\n");
+		osMutexRelease(spi3.mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_SPI4
-	SHELL_Transmit(Shell, "SPI4:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi4.overrun_errors);
-	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi4.mode_fault_errors);
-	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi4.crc_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi4.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi4.dma_errors);
-	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi4.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi4.seq_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi4.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi4.seq_tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi4.tx_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi4.message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "SPI4:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", spi4.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r\n", spi4.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r\n", spi4.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", spi4.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", spi4.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r\n", spi4.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r\n", spi4.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r\n", spi4.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r\n", spi4.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r\n", spi4.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r\n", spi4.message_queue_overflow_errors);
+	if (osMutexWait(spi4.mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Lock: Unlocked\r\n");
+		osMutexRelease(spi4.mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_SPI5
-	SHELL_Transmit(Shell, "SPI5:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", spi5.overrun_errors);
-	SHELL_Transmit(Shell, "  Mode fault errors: %d\r", spi5.mode_fault_errors);
-	SHELL_Transmit(Shell, "  CRC errors: %d\r", spi5.crc_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", spi5.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", spi5.dma_errors);
-	SHELL_Transmit(Shell, "  Receive timeouts: %d\r", spi5.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r", spi5.seq_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r", spi5.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r", spi5.seq_tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r", spi5.tx_rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Queue overflows: %d\r", spi5.message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "SPI5:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", spi5.overrun_errors);
+	SHELL_Transmit(Shell, "  Mode fault errors: %d\r\n", spi5.mode_fault_errors);
+	SHELL_Transmit(Shell, "  CRC errors: %d\r\n", spi5.crc_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", spi5.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", spi5.dma_errors);
+	SHELL_Transmit(Shell, "  Receive timeouts: %d\r\n", spi5.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential receive timeouts: %d\r\n", spi5.seq_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit timeouts: %d\r\n", spi5.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Sequential transmit timeouts: %d\r\n", spi5.seq_tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Transmit and receive timeouts: %d\r\n", spi5.tx_rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Queue overflows: %d\r\n", spi5.message_queue_overflow_errors);
+	if (osMutexWait(spi5.mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Lock: Unlocked\r\n");
+		osMutexRelease(spi5.mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Lock: Locked\r\n");
+	}
 #endif
 }
+#endif
 
+#if defined(BSP_CONFIG_USE_UART1) || defined(BSP_CONFIG_USE_UART2) || defined(BSP_CONFIG_USE_UART3) || \
+	defined(BSP_CONFIG_USE_UART4) || defined(BSP_CONFIG_USE_UART5) || defined(BSP_CONFIG_USE_UART6)
 static void SHELL_CMD_UARTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 #ifdef BSP_CONFIG_USE_UART1
-	SHELL_Transmit(Shell, "UART1:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart1.overrun_errors);
-	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart1.parity_errors);
-	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart1.noise_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart1.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart1.dma_errors);
-	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart1.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart1.rx_cmd_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart1.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart1.tx_message_queue_overflow_errors);
-	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart1.rx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "UART1:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", uart1.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r\n", uart1.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r\n", uart1.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", uart1.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", uart1.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r\n", uart1.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r\n", uart1.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r\n", uart1.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r\n", uart1.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r\n", uart1.rx_message_queue_overflow_errors);
+	if (osMutexWait(uart1.rx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Unlocked\r\n");
+		osMutexRelease(uart1.rx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Locked\r\n");
+	}
+	if (osMutexWait(uart1.tx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Unlocked\r\n");
+		osMutexRelease(uart1.tx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_UART2
-	SHELL_Transmit(Shell, "UART2:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart2.overrun_errors);
-	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart2.parity_errors);
-	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart2.noise_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart2.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart2.dma_errors);
-	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart2.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart2.rx_cmd_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart2.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart2.tx_message_queue_overflow_errors);
-	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart2.rx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "UART2:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", uart2.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r\n", uart2.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r\n", uart2.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", uart2.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", uart2.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r\n", uart2.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r\n", uart2.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r\n", uart2.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r\n", uart2.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r\n", uart2.rx_message_queue_overflow_errors);
+	if (osMutexWait(uart2.rx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Unlocked\r\n");
+		osMutexRelease(uart2.rx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Locked\r\n");
+	}
+	if (osMutexWait(uart2.tx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Unlocked\r\n");
+		osMutexRelease(uart2.tx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_UART3
-	SHELL_Transmit(Shell, "UART3:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart3.overrun_errors);
-	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart3.parity_errors);
-	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart3.noise_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart3.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart3.dma_errors);
-	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart3.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart3.rx_cmd_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart3.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart3.tx_message_queue_overflow_errors);
-	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart3.rx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "UART3:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", uart3.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r\n", uart3.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r\n", uart3.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", uart3.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", uart3.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r\n", uart3.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r\n", uart3.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r\n", uart3.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r\n", uart3.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r\n", uart3.rx_message_queue_overflow_errors);
+	if (osMutexWait(uart3.rx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Unlocked\r\n");
+		osMutexRelease(uart3.rx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Locked\r\n");
+	}
+	if (osMutexWait(uart3.tx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Unlocked\r\n");
+		osMutexRelease(uart3.tx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_UART4
-	SHELL_Transmit(Shell, "UART4:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart4.overrun_errors);
-	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart4.parity_errors);
-	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart4.noise_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart4.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart4.dma_errors);
-	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart4.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart4.rx_cmd_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart4.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart4.tx_message_queue_overflow_errors);
-	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart4.rx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "UART4:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", uart4.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r\n", uart4.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r\n", uart4.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", uart4.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", uart4.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r\n", uart4.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r\n", uart4.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r\n", uart4.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r\n", uart4.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r\n", uart4.rx_message_queue_overflow_errors);
+	if (osMutexWait(uart4.rx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Unlocked\r\n");
+		osMutexRelease(uart4.rx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Locked\r\n");
+	}
+	if (osMutexWait(uart4.tx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Unlocked\r\n");
+		osMutexRelease(uart4.tx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_UART5
-	SHELL_Transmit(Shell, "UART5:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart5.overrun_errors);
-	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart5.parity_errors);
-	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart5.noise_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart5.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart5.dma_errors);
-	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart5.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart5.rx_cmd_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart5.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart5.tx_message_queue_overflow_errors);
-	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart5.rx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "UART5:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", uart5.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r\n", uart5.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r\n", uart5.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", uart5.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", uart5.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r\n", uart5.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r\n", uart5.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r\n", uart5.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r\n", uart5.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r\n", uart5.rx_message_queue_overflow_errors);
+	if (osMutexWait(uart5.rx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Unlocked\r\n");
+		osMutexRelease(uart5.rx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Locked\r\n");
+	}
+	if (osMutexWait(uart5.tx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Unlocked\r\n");
+		osMutexRelease(uart5.tx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Locked\r\n");
+	}
 #endif
 #ifdef BSP_CONFIG_USE_UART6
-	SHELL_Transmit(Shell, "UART6:\r");
-	SHELL_Transmit(Shell, "  Overrun errors: %d\r", uart6.overrun_errors);
-	SHELL_Transmit(Shell, "  Parity errors: %d\r", uart6.parity_errors);
-	SHELL_Transmit(Shell, "  Noise errors: %d\r", uart6.noise_errors);
-	SHELL_Transmit(Shell, "  Frame errors: %d\r", uart6.frame_errors);
-	SHELL_Transmit(Shell, "  DMA errors: %d\r", uart6.dma_errors);
-	SHELL_Transmit(Shell, "  Rx timeouts: %d\r", uart6.rx_timeout_errors);
-	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r", uart6.rx_cmd_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx timeouts: %d\r", uart6.tx_timeout_errors);
-	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r", uart6.tx_message_queue_overflow_errors);
-	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r", uart6.rx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "UART6:\r\n");
+	SHELL_Transmit(Shell, "  Overrun errors: %d\r\n", uart6.overrun_errors);
+	SHELL_Transmit(Shell, "  Parity errors: %d\r\n", uart6.parity_errors);
+	SHELL_Transmit(Shell, "  Noise errors: %d\r\n", uart6.noise_errors);
+	SHELL_Transmit(Shell, "  Frame errors: %d\r\n", uart6.frame_errors);
+	SHELL_Transmit(Shell, "  DMA errors: %d\r\n", uart6.dma_errors);
+	SHELL_Transmit(Shell, "  Rx timeouts: %d\r\n", uart6.rx_timeout_errors);
+	SHELL_Transmit(Shell, "  Rx cmd timeouts: %d\r\n", uart6.rx_cmd_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx timeouts: %d\r\n", uart6.tx_timeout_errors);
+	SHELL_Transmit(Shell, "  Tx queue overflows: %d\r\n", uart6.tx_message_queue_overflow_errors);
+	SHELL_Transmit(Shell, "  Rx queue overflows: %d\r\n", uart6.rx_message_queue_overflow_errors);
+	if (osMutexWait(uart6.rx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Unlocked\r\n");
+		osMutexRelease(uart6.rx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Rx Lock: Locked\r\n");
+	}
+	if (osMutexWait(uart6.tx_mutex_id, 1) == osOK)
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Unlocked\r\n");
+		osMutexRelease(uart6.tx_mutex_id);
+	}
+	else
+	{
+		SHELL_Transmit(Shell, "  Tx Lock: Locked\r\n");
+	}
 #endif
 }
+#endif
 
 static void SHELL_CMD_StatusCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
+	char *Locked;
 	uint32_t i;
 	
-	SHELL_Transmit(Shell,  "Device       Id   State\r");
+	SHELL_Transmit(Shell,  "Device       Id    State InitCnt InitErr UpdCnt UpdErr Lock\r\n");
 	for (i = 0; i < DevicesCnt; i++)
 	{
-		SHELL_Transmit(Shell,   ".12s %.5s %s\r", Devices[i]->DevName, Devices[i]->DevId, BSP_DEV_GET_STATE_STR(Devices[i]));
+		if (osMutexWait(Devices[i]->DevMutexId, 1) == osOK)
+		{
+			Locked = "Unlocked";
+			osMutexRelease(Devices[i]->DevMutexId);
+		}
+		else
+		{
+			Locked = "Locked";
+		}
+		
+		SHELL_Transmit(Shell,   "%12s %5s %5s %7d %7d %6d %6d %s\r\n", 
+			Devices[i]->DevName,
+			Devices[i]->DevId,
+			BSP_DEV_GET_STATE_STR(Devices[i]),
+			Devices[i]->InitCnt,
+			Devices[i]->InitErr,
+			Devices[i]->UpdateCnt,
+			Devices[i]->UpdateErr,
+			Locked);
+	}
+	for (i = 0; i < ModulesCnt; i++)
+	{
+		if (osMutexWait(Modules[i]->DevMutexId, 1) == osOK)
+		{
+			Locked = "Unlocked";
+			osMutexRelease(Modules[i]->DevMutexId);
+		}
+		else
+		{
+			Locked = "Locked";
+		}
+		
+		SHELL_Transmit(Shell,   "%12s %5s %5s %7d %7d %6d %6d %s\r\n", 
+			Modules[i]->DevName,
+			Modules[i]->DevId,
+			BSP_DEV_GET_STATE_STR(Modules[i]),
+			Modules[i]->InitCnt,
+			Modules[i]->InitErr,
+			Modules[i]->UpdateCnt,
+			Modules[i]->UpdateErr,
+			Locked);
 	}
 }
 
+static void SHELL_CMD_IfaceCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
+{
+	SHELL_Transmit(Shell, "Iface: UART 1\r\n");
+	SHELL_Transmit(Shell, "Max Parse Time: %d ms\r\n", ProfileIfaceUart4.MaxParseTime);
+	SHELL_Transmit(Shell, "Max Parse Time Cmd: 0x%02x\r\n", ProfileIfaceUart4.MaxParseTimeCommand);
+	SHELL_Transmit(Shell, "Max Responce Len: %d\r\n", ProfileIfaceUart4.MaxResponceLen);
+	SHELL_Transmit(Shell, "Max Responce Len Cmd: 0x%02x\r\n", ProfileIfaceUart4.MaxResponceLenCommand);
+	SHELL_Transmit(Shell, "Max Transmit Time: %d ms\r\n", ProfileIfaceUart4.MaxTransmitTime);
+	SHELL_Transmit(Shell, "Max Transmit Time Cmd: 0x%02x\r\n", ProfileIfaceUart4.MaxTransmitTimeCommand);
+	SHELL_Transmit(Shell, "Iface: UART 6\r\n");
+	SHELL_Transmit(Shell, "Max Parse Time: %d ms\r\n", ProfileIfaceUart5.MaxParseTime);
+	SHELL_Transmit(Shell, "Max Parse Time Cmd: 0x%02x\r\n", ProfileIfaceUart5.MaxParseTimeCommand);
+	SHELL_Transmit(Shell, "Max Responce Len: %d\r\n", ProfileIfaceUart5.MaxResponceLen);
+	SHELL_Transmit(Shell, "Max Responce Len Cmd: 0x%02x\r\n", ProfileIfaceUart5.MaxResponceLenCommand);
+	SHELL_Transmit(Shell, "Max Transmit Time: %d ms\r\n", ProfileIfaceUart5.MaxTransmitTime);
+	SHELL_Transmit(Shell, "Max Transmit Time Cmd: 0x%02x\r\n", ProfileIfaceUart5.MaxTransmitTimeCommand);
+}
+
 #define SHELL_CMD_DIM3R_HELP \
-"Usage:\r"\
-"    dim3r <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    init - Init device.\r"\
-"    mntr - Display device monitor values.\r"
+"Usage:\r\n"\
+"    dim3r <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    init - Init device.\r\n"\
+"    mntr - Display device monitor values.\r\n"
 
 static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&dim3r3400));
-		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r", dim3r3400.Addr >> 1);
+		SHELL_Transmit(Shell, "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&dim3r3400));
+		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r\n", dim3r3400.Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -399,12 +653,12 @@ static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t 
 		{
 			if (DIM3R3400_Update(&dim3r3400))
 				goto cmd_err;
-			SHELL_Transmit(Shell, "Status: 0x%02X\r", dim3r3400.Status);
-			SHELL_Transmit(Shell, "VOUT: %2.2f\r", dim3r3400.Vout);
-			SHELL_Transmit(Shell, "IOUT: %2.2f\r", dim3r3400.Iout);
-			SHELL_Transmit(Shell, "VINA: %2.2f\r", dim3r3400.Vin[0]);
-			SHELL_Transmit(Shell, "VINB: %2.2f\r", dim3r3400.Vin[1]);
-			SHELL_Transmit(Shell, "Temperature: %2.2f\r", dim3r3400.Temp);
+			SHELL_Transmit(Shell, "Status: 0x%02X\r\n", dim3r3400.Status);
+			SHELL_Transmit(Shell, "VOUT: %2.2f\r\n", dim3r3400.Vout);
+			SHELL_Transmit(Shell, "IOUT: %2.2f\r\n", dim3r3400.Iout);
+			SHELL_Transmit(Shell, "VINA: %2.2f\r\n", dim3r3400.Vin[0]);
+			SHELL_Transmit(Shell, "VINB: %2.2f\r\n", dim3r3400.Vin[1]);
+			SHELL_Transmit(Shell, "Temperature: %2.2f\r\n", dim3r3400.Temp);
 		}
 		else
 		{
@@ -418,23 +672,23 @@ static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t 
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
+	SHELL_Transmit(Shell, "Error: command error\r\n");
 	return;
 }
 
 #define SHELL_CMD_PCA9536_HELP \
-"Usage:\r"\
-"    pca9536 <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    init - Init device.\r"\
-"    pin - Display device pin states.\r"\
-"    out <pin> <data> - Set device pin output.\r"\
-"    dir <pin> <data> - Set device pin direction.\r"\
-"    pol <pin> <data> - Set device pin polarity.\r"
+"Usage:\r\n"\
+"    pca9536 <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    init - Init device.\r\n"\
+"    pin - Display device pin states.\r\n"\
+"    out <pin> <data> - Set device pin output.\r\n"\
+"    dir <pin> <data> - Set device pin direction.\r\n"\
+"    pol <pin> <data> - Set device pin polarity.\r\n"
 
 static const char *shell_pca9536_pin_info[4] = 
 {
@@ -451,8 +705,8 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pwr_pca9536));
-		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r", PCA9536_I2C_ADDR >> 1);
+		SHELL_Transmit(Shell, "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&pwr_pca9536));
+		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r\n", PCA9536_I2C_ADDR >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -475,10 +729,10 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 				goto cmd_err;
 			if (PCA9536_GetBankPol(&pwr_pca9536))
 				goto cmd_err;
-			SHELL_Transmit(Shell,   "Idx  In  Dir  Out  Pol  Info\r");
+			SHELL_Transmit(Shell,   "Idx  In  Dir  Out  Pol  Info\r\n");
 			for (i = 0; i < 4; i++)
 			{
-				SHELL_Transmit(Shell,   "%3d  %2d  %3d  %3d  %3d  %s\r",
+				SHELL_Transmit(Shell,   "%3d  %2d  %3d  %3d  %3d  %s\r\n",
 					i,
 					(pwr_pca9536.Ins >> (i % 8)) & 0x01,
 					(pwr_pca9536.Dirs >> (i % 8)) & 0x01,
@@ -551,29 +805,29 @@ static void SHELL_CMD_PCA9536Callback(void *Shell, char **CmdParamsList, uint32_
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 invalid_pin:
-	SHELL_Transmit(Shell, "Error: invalid pin\r");
+	SHELL_Transmit(Shell, "Error: invalid pin\r\n");
 	return;
 invalid_data:
-	SHELL_Transmit(Shell, "Error: invalid data\r");
+	SHELL_Transmit(Shell, "Error: invalid data\r\n");
 	return;
 cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
+	SHELL_Transmit(Shell, "Error: command error\r\n");
 	return;
 }
 
 #define SHELL_CMD_PCAL6524_HELP \
-"Usage:\r"\
-"    pcal6524 <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    init - Init device.\r"\
-"    pin - Display device pin states.\r"\
-"    out <pin> <data> - Set device pin output.\r"\
-"    dir <pin> <data> - Set device pin direction.\r"\
-"    pol <pin> <data> - Set device pin polarity.\r"
+"Usage:\r\n"\
+"    pcal6524 <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    init - Init device.\r\n"\
+"    pin - Display device pin states.\r\n"\
+"    out <pin> <data> - Set device pin output.\r\n"\
+"    dir <pin> <data> - Set device pin direction.\r\n"\
+"    pol <pin> <data> - Set device pin polarity.\r\n"
 
 static const char *shell_pcal6524_pin_info[BSP_SFP_PIN_PCAL6524_CNT][PCAL6524_BANKS_CNT * 8] = 
 {
@@ -665,8 +919,8 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pcal6524[Idx]));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", pcal6524[Idx].Addr >> 1);
+		SHELL_Transmit(Shell,   "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&pcal6524[Idx]));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r\n", pcal6524[Idx].Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -692,10 +946,10 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 				if (PCAL6524_GetBankPol(&pcal6524[Idx], i))
 					goto cmd_err;
 			}
-			SHELL_Transmit(Shell,   "Idx  In  Cfg  Out  Pol  Info\r");
+			SHELL_Transmit(Shell,   "Idx  In  Cfg  Out  Pol  Info\r\n");
 			for (i = 0; i < PCAL6524_BANKS_CNT * 8; i++)
 			{
-				SHELL_Transmit(Shell,   "%3d  %2d  %3d  %3d  %3d  %s\r",
+				SHELL_Transmit(Shell,   "%3d  %2d  %3d  %3d  %3d  %s\r\n",
 					i,
 					(pcal6524[Idx].Ins[i / 8] >> (i % 8)) & 0x01,
 					(pcal6524[Idx].Cfgs[i / 8] >> (i % 8)) & 0x01,
@@ -784,29 +1038,29 @@ static void SHELL_CMD_PCAL6524Callback(void *Shell, char **CmdParamsList, uint32
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 invalid_idx:
-	SHELL_Transmit(Shell, "Error: invalid index\r");
+	SHELL_Transmit(Shell, "Error: invalid index\r\n");
 	return;
 invalid_pin:
-	SHELL_Transmit(Shell, "Error: invalid pin\r");
+	SHELL_Transmit(Shell, "Error: invalid pin\r\n");
 	return;
 invalid_data:
-	SHELL_Transmit(Shell, "Error: invalid data\r");
+	SHELL_Transmit(Shell, "Error: invalid data\r\n");
 	return;
 cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
+	SHELL_Transmit(Shell, "Error: command error\r\n");
 	return;
 }
 
 #define SHELL_CMD_PCA9548A_HELP \
-"Usage:\r"\
-"    pca9548a <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    init - Init device.\r"\
-"    select <idx> - Select device. <idx>: 0, 1, 2\r"\
+"Usage:\r\n"\
+"    pca9548a <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    init - Init device.\r\n"\
+"    select <idx> - Select device. <idx>: 0, 1, 2\r\n"\
 
 static void SHELL_CMD_PCA9548ACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
@@ -816,8 +1070,8 @@ static void SHELL_CMD_PCA9548ACallback(void *Shell, char **CmdParamsList, uint32
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&pca9548a[Idx]));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", pca9548a[Idx].Addr >> 1);
+		SHELL_Transmit(Shell,   "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&pca9548a[Idx]));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r\n", pca9548a[Idx].Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -858,28 +1112,28 @@ static void SHELL_CMD_PCA9548ACallback(void *Shell, char **CmdParamsList, uint32
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 invalid_idx:
-	SHELL_Transmit(Shell, "Error: invalid index\r");
+	SHELL_Transmit(Shell, "Error: invalid index\r\n");
 	return;
 cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
+	SHELL_Transmit(Shell, "Error: command error\r\n");
 	return;
 }
 
 #define SHELL_CMD_SFP_HELP \
-"Usage:\r"\
-"    sfp <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    select <idx> - Select device. <idx>: 0, ... ,19.\r"\
-"    init - Init device.\r"\
-"    info - Display device info values.\r"\
-"    update - Update device.\r"\
-"    mntr - Display device monitor values.\r"\
-"    pin - Display device pin states.\r"\
-"    tx <state> - Set device tx enable. <state>: 0 - Disable, 1 - Enable.\r"
+"Usage:\r\n"\
+"    sfp <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    select <idx> - Select device. <idx>: 0, ... ,19.\r\n"\
+"    init - Init device.\r\n"\
+"    info - Display device info values.\r\n"\
+"    update - Update device.\r\n"\
+"    mntr - Display device monitor values.\r\n"\
+"    pin - Display device pin states.\r\n"\
+"    tx <state> - Set device tx enable. <state>: 0 - Disable, 1 - Enable.\r\n"
 
 static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
@@ -889,9 +1143,9 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Index: %d\r", Idx);
-		SHELL_Transmit(Shell, "Init state: %d (%s)\r", BSP_DEV_GET_STATE(&sfp[Idx]), BSP_DEV_GET_STATE_STR(&sfp[Idx]));
-		SHELL_Transmit(Shell, "Tx Disable: %d (%s)\r", sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxDisable ? "Disable" : "Enable");
+		SHELL_Transmit(Shell, "Index: %d\r\n", Idx);
+		SHELL_Transmit(Shell, "Init state: %d (%s)\r\n", BSP_DEV_GET_STATE(&sfp[Idx]), BSP_DEV_GET_STATE_STR(&sfp[Idx]));
+		SHELL_Transmit(Shell, "Tx Disable: %d (%s)\r\n", sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxDisable ? "Disable" : "Enable");
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -903,9 +1157,9 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		{
 			if (BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
 				goto invalid_state;
-			SHELL_Transmit(Shell, "Vendor: %s\r", sfp[Idx].Info.Vendor);
-			SHELL_Transmit(Shell, "Part Number: %s\r", sfp[Idx].Info.PartNumber);
-			SHELL_Transmit(Shell, "Serial Number: %s\r", sfp[Idx].Info.SerialNumber);
+			SHELL_Transmit(Shell, "Vendor: %s\r\n", sfp[Idx].Info.Vendor);
+			SHELL_Transmit(Shell, "Part Number: %s\r\n", sfp[Idx].Info.PartNumber);
+			SHELL_Transmit(Shell, "Serial Number: %s\r\n", sfp[Idx].Info.SerialNumber);
 		}
 		else if (!strcmp(CmdParamsList[1], "init"))
 		{
@@ -921,17 +1175,17 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		{
 			if (BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
 				goto invalid_state;
-			SHELL_Transmit(Shell, "MOD_ABS  RX_LOS  TX_DIS  TX_FAULT\r");
-			SHELL_Transmit(Shell, "   %d       %d       %d     %d\r",
+			SHELL_Transmit(Shell, "MOD_ABS  RX_LOS  TX_DIS  TX_FAULT\r\n");
+			SHELL_Transmit(Shell, "   %d       %d       %d     %d\r\n",
 				sfp[Idx].Pin.ModAbs, sfp[Idx].Pin.RxLos, sfp[Idx].Pin.TxDisable, sfp[Idx].Pin.TxFault);
 		}
 		else if (!strcmp(CmdParamsList[1], "mntr"))
 		{
 			if (BSP_DEV_GET_STATE(&sfp[Idx]) != BSP_DEV_STATE_OK)
 				goto invalid_state;		
-			SHELL_Transmit(Shell, "Rx Power: %.2f\r", sfp[Idx].RxPwr);	
-			SHELL_Transmit(Shell, "Tx Power: %.2f\r", sfp[Idx].TxPwr);
-			SHELL_Transmit(Shell, "Temperature: %.2f\r", sfp[Idx].Temp);		
+			SHELL_Transmit(Shell, "Rx Power: %.2f\r\n", sfp[Idx].RxPwr);	
+			SHELL_Transmit(Shell, "Tx Power: %.2f\r\n", sfp[Idx].TxPwr);
+			SHELL_Transmit(Shell, "Temperature: %.2f\r\n", sfp[Idx].Temp);		
 		}
 		else
 		{
@@ -971,32 +1225,32 @@ static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 invalid_idx:
-	SHELL_Transmit(Shell, "Error: invalid index\r");
+	SHELL_Transmit(Shell, "Error: invalid index\r\n");
 	return;
 cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
+	SHELL_Transmit(Shell, "Error: command error\r\n");
 	return;
 invalid_state:
-	SHELL_Transmit(Shell, "Error: invalid module state\r");
+	SHELL_Transmit(Shell, "Error: invalid module state\r\n");
 	return;
 }
 
 #define SHELL_CMD_FPGA_HELP \
-"Usage:\r"\
-"    fpga <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    select <dev> - Select fpga device. <dev>: 0 - FPGA Line, 1 - FPGA Client 1, 2 - FPGA Client 2, 3 - MAXV\r"\
-"    test - Test fpga device.\r"\
-"        Example: fpga test 0x01 0x10\r"\
-"    r <addr> - Read device register.\r"\
-"        Example: fpga r 0x01\r"\
-"    w <addr> <data> - Write device register.\r"\
-"        Example: fpga w 0x01 0x10\r"\
-"    update <file1> <file2> <ip> - Update FPGA firmware via TFTP.\r"\
+"Usage:\r\n"\
+"    fpga <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    select <dev> - Select fpga device. <dev>: 0 - FPGA Line, 1 - FPGA Client 1, 2 - FPGA Client 2, 3 - MAXV\r\n"\
+"    test - Test fpga device.\r\n"\
+"        Example: fpga test 0x01 0x10\r\n"\
+"    r <addr> - Read device register.\r\n"\
+"        Example: fpga r 0x01\r\n"\
+"    w <addr> <data> - Write device register.\r\n"\
+"        Example: fpga w 0x01 0x10\r\n"\
+"    update <file1> <file2> <ip> - Update FPGA firmware via TFTP.\r\n"\
 
 static int SHELL_CMD_FPGADownloadImageReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
@@ -1023,8 +1277,8 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&fpga_maxv));
-		SHELL_Transmit(Shell, "Device: %d\r", Dev);
+		SHELL_Transmit(Shell, "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&fpga_maxv));
+		SHELL_Transmit(Shell, "Device: %d\r\n", Dev);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1063,11 +1317,11 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 				Data = *(uint8_t*)(Addr + i);
 				if (Data != rand() % 255)
 				{
-					SHELL_Transmit(Shell, "Test Failed: %d\r", i);
+					SHELL_Transmit(Shell, "Test Failed: %d\r\n", i);
 					return;
 				}
 			}
-			SHELL_Transmit(Shell, "Test Successful\r", Addr);
+			SHELL_Transmit(Shell, "Test Successful\r\n", Addr);
 		}
 		else
 		{
@@ -1109,7 +1363,7 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 				goto invalid_dev;
 			}
 			
-			SHELL_Transmit(Shell, "0x%x\r", Data);
+			SHELL_Transmit(Shell, "0x%x\r\n", Data);
 		}
 		else if (!strcmp(CmdParamsList[1], "select"))
 		{
@@ -1225,37 +1479,37 @@ static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t C
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 invalid_ip_addr:
-	SHELL_Transmit(Shell, "Error: invalid ip address\r");
+	SHELL_Transmit(Shell, "Error: invalid ip address\r\n");
 	return;
 invalid_addr:
-	SHELL_Transmit(Shell, "Error: invalid address\r");
+	SHELL_Transmit(Shell, "Error: invalid address\r\n");
 	return;
 invalid_data:
-	SHELL_Transmit(Shell, "Error: invalid data\r");
+	SHELL_Transmit(Shell, "Error: invalid data\r\n");
 	return;
 invalid_dev:
-	SHELL_Transmit(Shell, "Error: invalid device\r");
+	SHELL_Transmit(Shell, "Error: invalid device\r\n");
 	return;
 download_error:
-	SHELL_Transmit(Shell, "Error: download error\r");
+	SHELL_Transmit(Shell, "Error: download error\r\n");
 	return;
 download_timeout:
-	SHELL_Transmit(Shell, "Error: download timeout\r");
+	SHELL_Transmit(Shell, "Error: download timeout\r\n");
 	return;
 }
 
 #define SHELL_CMD_UCD_HELP \
-"Usage:\r"\
-"    ucd <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    init - Init device.\r"\
-"    mntr - Display device monitor values.\r"\
-"    log  - Display device log.\r"\
-"    mntr - Clear device log.\r"
+"Usage:\r\n"\
+"    ucd <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    init - Init device.\r\n"\
+"    mntr - Display device monitor values.\r\n"\
+"    log  - Display device log.\r\n"\
+"    mntr - Clear device log.\r\n"
 
 static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
@@ -1266,8 +1520,8 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&ucd90120a));
-		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r", ucd90120a.Addr >> 1);
+		SHELL_Transmit(Shell,   "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&ucd90120a));
+		SHELL_Transmit(Shell,   "I2C Addr: 0x%x\r\n", ucd90120a.Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1284,26 +1538,26 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		{
 			if (UCD90120A_Update(&ucd90120a))
 				goto cmd_err;
-			SHELL_Transmit(Shell, "Device temp: %2.2f\r", ucd90120a.Mon.Temp);
-			SHELL_Transmit(Shell,   "Rail   Vout    Iout    Temp    Status\r");
+			SHELL_Transmit(Shell, "Device temp: %2.2f\r\n", ucd90120a.Mon.Temp);
+			SHELL_Transmit(Shell,   "Rail   Vout    Iout    Temp    Status\r\n");
 			for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 			{
-				SHELL_Transmit(Shell,   " %2d    %2.2f    %2.2f    %2.2f    %02x\r", i + 1, ucd90120a.Mon.Rail[i].Vout, ucd90120a.Mon.Rail[i].Iout, ucd90120a.Mon.Rail[i].Temp, ucd90120a.Mon.Rail[i].StatusVout);
+				SHELL_Transmit(Shell,   " %2d    %2.2f    %2.2f    %2.2f    %02x\r\n", i + 1, ucd90120a.Mon.Rail[i].Vout, ucd90120a.Mon.Rail[i].Iout, ucd90120a.Mon.Rail[i].Temp, ucd90120a.Mon.Rail[i].StatusVout);
 			}
 		}
 		else if (!strcmp(CmdParamsList[1], "log"))
 		{
 			if (UCD90120A_ReadFaultLog(&ucd90120a, Log))
 				goto cmd_err;
-			SHELL_Transmit(Shell, "Non-Paged faults: 0x%x\r", Log[0]);
-			SHELL_Transmit(Shell, "GPI faults: 0x%x\r", Log[1]);
+			SHELL_Transmit(Shell, "Non-Paged faults: 0x%x\r\n", Log[0]);
+			SHELL_Transmit(Shell, "GPI faults: 0x%x\r\n", Log[1]);
 			for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 			{
-				SHELL_Transmit(Shell, "Rail %d faults: 0x%x\r", i + 1, Log[i+2]);
+				SHELL_Transmit(Shell, "Rail %d faults: 0x%x\r\n", i + 1, Log[i+2]);
 			}
 			if (UCD90120A_ReadFaultLogSize(&ucd90120a, &LogSize))
 				goto cmd_err;
-			SHELL_Transmit(Shell, "Log records: %d\r", LogSize);
+			SHELL_Transmit(Shell, "Log records: %d\r\n", LogSize);
 			for (i = 0; i < LogSize; i++)
 			{
 				if (UCD90120A_ReadFaultLogRecord(&ucd90120a, i, &LogRecord))
@@ -1311,46 +1565,46 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 				switch (LogRecord.Type)
 				{
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_SWD:
-						SHELL_Transmit(Shell,   "%d-%d: System Watchdog Timeout\r", LogRecord.Day, LogRecord.Time);
+						SHELL_Transmit(Shell,   "%d-%d: System Watchdog Timeout\r\n", LogRecord.Day, LogRecord.Time);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_SEQ:
-						SHELL_Transmit(Shell,   "%d-%d: Resequense Error\r", LogRecord.Day, LogRecord.Time);
+						SHELL_Transmit(Shell,   "%d-%d: Resequense Error\r\n", LogRecord.Day, LogRecord.Time);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_WD:
-						SHELL_Transmit(Shell,   "%d-%d: Watchdog Timeout\r", LogRecord.Day, LogRecord.Time);
+						SHELL_Transmit(Shell,   "%d-%d: Watchdog Timeout\r\n", LogRecord.Day, LogRecord.Time);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_FAN:
-						SHELL_Transmit(Shell,   "%d-%d: Fan Fault\r", LogRecord.Day, LogRecord.Time);
+						SHELL_Transmit(Shell,   "%d-%d: Fan Fault\r\n", LogRecord.Day, LogRecord.Time);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_GPI:
-						SHELL_Transmit(Shell,   "%d-%d: GPI Fault\r", LogRecord.Day, LogRecord.Time);
+						SHELL_Transmit(Shell,   "%d-%d: GPI Fault\r\n", LogRecord.Day, LogRecord.Time);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_VOUT_OV:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d VOUT_OV %.1fV\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d VOUT_OV %.1fV\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_VOUT_UV:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d VOUT_UV %.1fV\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d VOUT_UV %.1fV\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_TON_MAX:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d TON_MAX %.1fV\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d TON_MAX %.1fV\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_IOUT_OC:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d IOUT_OC %.1fA\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d IOUT_OC %.1fA\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_IOUT_UC:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d IOUT_UC %.1fA\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d IOUT_UC %.1fA\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_TEMP_OT:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d TEMPERATURE_OT %.1fA\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d TEMPERATURE_OT %.1fA\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.f);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_SEQ_ON:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d Sequence On Timeout 0x%x\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.u);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d Sequence On Timeout 0x%x\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.u);
 						break;
 					case UCD90120A_FAULT_LOG_RECORD_TYPE_RAIL_SEQ_OFF:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d Sequence Off Timeout 0x%x\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.u);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d Sequence Off Timeout 0x%x\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Value.u);
 						break;
 					default:
-						SHELL_Transmit(Shell,   "%d-%d: Rail %d Reserved(0x%x) 0x%x\r", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Type, LogRecord.Value.u);
+						SHELL_Transmit(Shell,   "%d-%d: Rail %d Reserved(0x%x) 0x%x\r\n", LogRecord.Day, LogRecord.Time, LogRecord.Rail, LogRecord.Type, LogRecord.Value.u);
 						break;
 				}
 			}
@@ -1372,21 +1626,21 @@ static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
+	SHELL_Transmit(Shell, "Error: command error\r\n");
 	return;
 }
 
 #define SHELL_CMD_GDT_HELP \
-"Usage:\r"\
-"    gdt <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    select <idx> - Select device.\r"\
-"    mntr - Display device monitor values.\r"\
-"    vout <data> - Set device Vout value.\r"
+"Usage:\r\n"\
+"    gdt <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    select <idx> - Select device.\r\n"\
+"    mntr - Display device monitor values.\r\n"\
+"    vout <data> - Set device Vout value.\r\n"
 
 static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
@@ -1397,9 +1651,9 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	if (CmdParamsCnt == 1)
 	{	
-		SHELL_Transmit(Shell, "Index: %d\r", Idx);
-		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&gdt080a[Idx]));
-		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r", gdt080a[Idx].Addr >> 1);
+		SHELL_Transmit(Shell, "Index: %d\r\n", Idx);
+		SHELL_Transmit(Shell, "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&gdt080a[Idx]));
+		SHELL_Transmit(Shell, "I2C Addr: 0x%x\r\n", gdt080a[Idx].Addr >> 1);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1416,9 +1670,9 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		{
 			if (GDT080A_Update(&gdt080a[(Idx)]))
 				goto cmd_err;
-			SHELL_Transmit(Shell, "Set Vout: %2.2f\r", gdt080a[Idx].Cfg.Vout.Value);
-			SHELL_Transmit(Shell, "Vin    Vout    Iout    Temp1    Temp2\r");
-			SHELL_Transmit(Shell, "%2.2f   %2.2f   %2.2f   %2.2f   %2.2f\r",
+			SHELL_Transmit(Shell, "Set Vout: %2.2f\r\n", gdt080a[Idx].Cfg.Vout.Value);
+			SHELL_Transmit(Shell, "Vin    Vout    Iout    Temp1    Temp2\r\n");
+			SHELL_Transmit(Shell, "%2.2f   %2.2f   %2.2f   %2.2f   %2.2f\r\n",
 				gdt080a[Idx].Mon.Vin, gdt080a[Idx].Mon.Vout, gdt080a[Idx].Mon.Iout,
 				gdt080a[Idx].Mon.Temp1, gdt080a[Idx].Mon.Temp2);
 		}
@@ -1458,30 +1712,30 @@ static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 invalid_idx:
-	SHELL_Transmit(Shell, "Error: invalid index\r");
+	SHELL_Transmit(Shell, "Error: invalid index\r\n");
 	return;
 invalid_data:
-	SHELL_Transmit(Shell, "Error: invalid data\r");
+	SHELL_Transmit(Shell, "Error: invalid data\r\n");
 	return;
 cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
+	SHELL_Transmit(Shell, "Error: command error\r\n");
 	return;
 }
 
 #define SHELL_CMD_KSZ_HELP \
-"Usage:\r"\
-"    ksz <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    mac - Display mac table.\r"\
-"    link - Display port link.\r"\
-"    r <addr> - Read device register.\r"\
-"        Example: ksz r 0x01\r"\
-"    w <addr> <data> - Write device register.\r"\
-"        Example: ksz w 0x01 0x10\r"
+"Usage:\r\n"\
+"    ksz <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    mac - Display mac table.\r\n"\
+"    link - Display port link.\r\n"\
+"    r <addr> - Read device register.\r\n"\
+"        Example: ksz r 0x01\r\n"\
+"    w <addr> <data> - Write device register.\r\n"\
+"        Example: ksz w 0x01 0x10\r\n"
 
 #define KSZ8895_MAC_TABLE_SIZE 64
 static KSZ8895_MAC_TABLE_T ksz_mac_table[KSZ8895_MAC_TABLE_SIZE];
@@ -1494,7 +1748,7 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Init state: %s\r", BSP_DEV_GET_STATE_STR(&ksz8895));
+		SHELL_Transmit(Shell, "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&ksz8895));
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1508,20 +1762,20 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 			{
 				if (KSZ8895_UpdatePortStatus(&ksz8895, i))
 					goto cmd_err;
-				SHELL_Transmit(Shell, "Port %d:\r", i);
-				SHELL_Transmit(Shell, "    Link - %s\r", KSZ8895_PORT_LINK(&ksz8895, i) ? "Up" : "Down");
-				SHELL_Transmit(Shell, "    Speed - %d M\r", KSZ8895_PORT_SPEED(&ksz8895, i));
-				SHELL_Transmit(Shell, "    Duplex - %s\r", KSZ8895_PORT_DUPLEX(&ksz8895, i) ? "Full" : "Half");
+				SHELL_Transmit(Shell, "Port %d:\r\n", i);
+				SHELL_Transmit(Shell, "    Link - %s\r\n", KSZ8895_PORT_LINK(&ksz8895, i) ? "Up" : "Down");
+				SHELL_Transmit(Shell, "    Speed - %d M\r\n", KSZ8895_PORT_SPEED(&ksz8895, i));
+				SHELL_Transmit(Shell, "    Duplex - %s\r\n", KSZ8895_PORT_DUPLEX(&ksz8895, i) ? "Full" : "Half");
 			}
 		}
 		else if (!strcmp(CmdParamsList[1], "mac"))
 		{
 			if (KSZ8895_ReadMACTable(&ksz8895, ksz_mac_table, KSZ8895_MAC_TABLE_SIZE, &ksz_mac_table_size))
 				goto cmd_err;
-			SHELL_Transmit(Shell, "Idx    Port    Mac\r", i);
+			SHELL_Transmit(Shell, "Idx    Port    Mac\r\n", i);
 			for (i = 0; i < ksz_mac_table_size; i++)
 			{
-				SHELL_Transmit(Shell, "%3d    %4d    %02X:%02X:%02X:%02X:%02X:%02X\r", i, ksz_mac_table[i].Port, ksz_mac_table[i].Mac[0],
+				SHELL_Transmit(Shell, "%3d    %4d    %02X:%02X:%02X:%02X:%02X:%02X\r\n", i, ksz_mac_table[i].Port, ksz_mac_table[i].Mac[0],
 					ksz_mac_table[i].Mac[1], ksz_mac_table[i].Mac[2], ksz_mac_table[i].Mac[3], ksz_mac_table[i].Mac[4], ksz_mac_table[i].Mac[5]);
 			}
 		}
@@ -1547,7 +1801,7 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 			if (KSZ8895_ReadReg(&ksz8895, Addr, &Data8))
 				goto cmd_err;
 			
-			SHELL_Transmit(Shell, "0x%x\r", Data8);
+			SHELL_Transmit(Shell, "0x%x\r\n", Data8);
 		}
 		else
 		{
@@ -1593,25 +1847,25 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 cmd_err:
-	SHELL_Transmit(Shell, "Error: command error\r");
+	SHELL_Transmit(Shell, "Error: command error\r\n");
 	return;
 invalid_addr:
-	SHELL_Transmit(Shell, "Error: invalid address\r");
+	SHELL_Transmit(Shell, "Error: invalid address\r\n");
 	return;
 invalid_data:
-	SHELL_Transmit(Shell, "Error: invalid data\r");
+	SHELL_Transmit(Shell, "Error: invalid data\r\n");
 	return;
 }
 
 #define SHELL_CMD_SDRAM_HELP \
-"Usage:\r"\
-"    sdram <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    load <file> <ip> - Load file to SDRAM via TFTP.\r"\
+"Usage:\r\n"\
+"    sdram <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    load <file> <ip> - Load file to SDRAM via TFTP.\r\n"\
 
 static int32_t TFTP_CLIENT_ProgramSDRAM(void *Priv, uint16_t Block, char *Source, uint32_t Size)
 {
@@ -1629,7 +1883,7 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 	
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell,   "Init state: %s\r", BSP_DEV_GET_STATE_STR(&mt48lc16m16a2));
+		SHELL_Transmit(Shell,   "Init state: %s\r\n", BSP_DEV_GET_STATE_STR(&mt48lc16m16a2));
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1684,27 +1938,27 @@ static void SHELL_CMD_SDRAMCallback(void *Shell, char **CmdParamsList, uint32_t 
 	return;
 	
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 invalid_ip_addr:
-	SHELL_Transmit(Shell, "Error: invalid ip address\r");
+	SHELL_Transmit(Shell, "Error: invalid ip address\r\n");
 	return;
 download_error:
-	SHELL_Transmit(Shell, "Error: download error\r");
+	SHELL_Transmit(Shell, "Error: download error\r\n");
 	return;
 download_timeout:
-	SHELL_Transmit(Shell, "Error: download timeout\r");
+	SHELL_Transmit(Shell, "Error: download timeout\r\n");
 	return;
 }
 
 #define SHELL_CMD_FLASH_HELP \
-"Usage:\r"\
-"    flash <cmd> [<data1> <data2> ...]\r"\
-"Commands:\r"\
-"    help - Display this help.\r"\
-"    update <file-name> <ip> - Update software via TFTP.\r"\
-"    load	<file-type> <file-name> <ip> - Load file via TFTP.\r"\
-"      <file-type>: lng - langpack file, web - web file.\r"\
+"Usage:\r\n"\
+"    flash <cmd> [<data1> <data2> ...]\r\n"\
+"Commands:\r\n"\
+"    help - Display this help.\r\n"\
+"    update <file-name> <ip> - Update software via TFTP.\r\n"\
+"    load	<file-type> <file-name> <ip> - Load file via TFTP.\r\n"\
+"      <file-type>: lng - langpack file, web - web file.\r\n"\
 
 static int32_t SHELL_CMD_FLASH_LOAD_WEB_TFTP_ReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
@@ -1767,7 +2021,7 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 		
 	if (CmdParamsCnt == 1)
 	{
-		SHELL_Transmit(Shell, "Init state: %d (%s)\r", BSP_DEV_GET_STATE(&at45db641e), BSP_DEV_GET_STATE_STR(&at45db641e));
+		SHELL_Transmit(Shell, "Init state: %d (%s)\r\n", BSP_DEV_GET_STATE(&at45db641e), BSP_DEV_GET_STATE_STR(&at45db641e));
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -1871,18 +2125,18 @@ static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t 
 	
 	return;
 invalid_cmd:
-	SHELL_Transmit(Shell, "Error: invalid command\r");
+	SHELL_Transmit(Shell, "Error: invalid command\r\n");
 	return;
 download_error:
-	SHELL_Transmit(Shell, "Error: download error\r");
+	SHELL_Transmit(Shell, "Error: download error\r\n");
 	return;
 download_timeout:
-	SHELL_Transmit(Shell, "Error: download timeout\r");
+	SHELL_Transmit(Shell, "Error: download timeout\r\n");
 	return;
 invalid_file_type:
-	SHELL_Transmit(Shell, "Error: invalid file type\r");
+	SHELL_Transmit(Shell, "Error: invalid file type\r\n");
 	return;
 invalid_ip_addr:
-	SHELL_Transmit(Shell, "Error: invalid ip address\r");
+	SHELL_Transmit(Shell, "Error: invalid ip address\r\n");
 	return;
 }

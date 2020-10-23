@@ -1296,8 +1296,6 @@ const PROFILE_ADM10_VALUES_CALIB_T ProfileADM10ValuesCalibDefault = {
     "0000-0000-0000",
     0,
     0,
-    8,
-    11,
 };
 
 
