@@ -1784,7 +1784,7 @@ static void http_server_serve_get_api_v1_log(struct netconn *conn, HTTP_REQUEST_
 		return;
 	
 	LinesCnt = LOG_GetLinesCnt();
-	RESPONCE_BODY_LEN += snprintf (RESPONCE_BODY, sizeof(RESPONCE_BODY), "{\r\n\t\"max-records-cnt\" : \"%d\",\r\n\t\"records-cnt\" : \"%d\",\r\n\t\"records\" : [\r\n", LOG_LINES_CNT, LinesCnt);
+	RESPONCE_BODY_LEN = snprintf (RESPONCE_BODY, sizeof(RESPONCE_BODY), "{\r\n\t\"max-records-cnt\" : \"%d\",\r\n\t\"records-cnt\" : \"%d\",\r\n\t\"records\" : [\r\n", LOG_LINES_CNT, LinesCnt);
 	for (i = 0; i < LinesCnt; i++)
 	{
 		LOG_GetLine(i, &LogLine);
