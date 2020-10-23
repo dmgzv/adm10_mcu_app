@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define HTTP_SERVER_THREAD_STACK_SIZE  ( 512 )

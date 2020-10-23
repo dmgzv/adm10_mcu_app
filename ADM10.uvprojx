@@ -1186,6 +1186,36 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_files.c</FilePath>
             </File>
+            <File>
+              <FileName>http_server_api_v1_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_devices.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_devices.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_modules.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_modules.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_interfaces.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_interfaces.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_power.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_power.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_os.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2394,6 +2424,36 @@
               <FileName>http_server_files.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_files.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_devices.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_devices.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_modules.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_modules.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_interfaces.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_interfaces.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_power.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_power.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_os.c</FilePath>
             </File>
           </Files>
         </Group>
