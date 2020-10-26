@@ -2227,10 +2227,10 @@ static void PROFILE_ADM10_CLIENT_UpdateOTU1FECBERValue(PROFILE_T *Profile, uint3
 		FpgaIdx = Idx / 8;
 		LineIdx = (Idx % 8) / 2;
 		
-		if ((BSP_DEV_GET_STATE(&fpga_maxv) != BSP_DEV_STATE_OK) || \
-			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && (BSP_DEV_GET_STATE(&fpga_client_adm_2_5[FpgaIdx]) != BSP_DEV_STATE_OK)))
+		if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && \
+			(BSP_DEV_GET_STATE(&fpga_client_adm_2_5[FpgaIdx]) == BSP_DEV_STATE_OK))
 		{
-			OTU1FECBER = fpga_client_adm_2_5[FpgaIdx].Line[LineIdx].OTU1FECCorr / 2498775126.0f;
+			OTU1FECBER = fpga_client_adm_2_5[FpgaIdx].Line[LineIdx].OTU1FECCorr / PERF_OTU1_BITRATE;
 		}
 	}
 	else
@@ -2716,7 +2716,7 @@ static void PROFILE_ADM10_CLIENT_UpdateOTU1FECPerfValues(PROFILE_T *Profile, uin
 		LineIdx = (Idx % 8) / 2;
 		
 		if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && \
-				(BSP_DEV_GET_STATE(&fpga_client_adm_2_5[FpgaIdx]) != BSP_DEV_STATE_OK))
+				(BSP_DEV_GET_STATE(&fpga_client_adm_2_5[FpgaIdx]) == BSP_DEV_STATE_OK))
 		{
 			ClOTU1FECCorr[Idx] += fpga_client_adm_2_5[FpgaIdx].Line[LineIdx].OTU1FECCorr;
 			ClOTU1FECUncorr[Idx] += fpga_client_adm_2_5[FpgaIdx].Line[LineIdx].OTU1FECUncorr;

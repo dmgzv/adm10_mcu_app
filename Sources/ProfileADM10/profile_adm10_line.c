@@ -1584,23 +1584,23 @@ static void PROFILE_ADM10_LINE_UpdateOTU2FECBERValue(PROFILE_T *Profile, uint32_
 		if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && \
 			 (Idx < FPGA_LINE_ADM_10_IFACE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_adm_10) == BSP_DEV_STATE_OK))
 		{
-			OTU2FECBER = (float)fpga_line_adm_10.Iface[Idx].OTU2FECCorr / 10037273924.0f;
+			OTU2FECBER = (float)fpga_line_adm_10.Iface[Idx].OTU2FECCorr / PERF_OTU2_BITRATE;
 		}
 		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && \
 			(Idx < FPGA_LINE_AGG_2X10_BS_IFACE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
 		{
-			OTU2FECBER = (float)fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECCorr / 10037273924.0f;
+			OTU2FECBER = (float)fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECCorr / PERF_OTU2_BITRATE;
 		}
 		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && \
 			(Idx < FPGA_LINE_AGG_2X10_EFEC_LINE_CNT) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) == BSP_DEV_STATE_OK) && \
 			(Idx < BSP_FPGA_CLIENT_CNT) && (BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[Idx]) == BSP_DEV_STATE_OK))
 		{
-			OTU2FECBER = (float)(fpga_line_agg_2x10_efec.Line[Idx].OTU2FECCorr + fpga_client_agg_2x10_efec[Idx].Line.OTU2FECCorr) / 10037273924.0f;
+			OTU2FECBER = (float)(fpga_line_agg_2x10_efec.Line[Idx].OTU2FECCorr + fpga_client_agg_2x10_efec[Idx].Line.OTU2FECCorr) / PERF_OTU2_BITRATE;
 		}
 		else if ((BSP_DEV_GET_STATE(&fpga_maxv) == BSP_DEV_STATE_OK) && (fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && \
 			((Idx == 0) || (Idx == 2)) && (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) == BSP_DEV_STATE_OK))
 		{
-			OTU2FECBER = (float)fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECCorr / 10037273924.0f;
+			OTU2FECBER = (float)fpga_line_agg_2x10_bs.Iface[Idx].OTU2FECCorr / PERF_OTU2_BITRATE;
 		}
 	}
 	else
