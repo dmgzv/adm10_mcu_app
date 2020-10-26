@@ -93,7 +93,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8
 				return -1;
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
-			if (i < 4)
+			if (Index < 4)
 			{
 				/*First 4 ODU1XC source values are fixed*/
 				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
@@ -200,7 +200,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8
 				return -1;
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
-			if (i < 4)
+			if (Index < 4)
 			{
 				/*First 4 ODU1XC destination values are fixed*/
 				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
@@ -313,7 +313,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8
 				return -1;
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
-			if (i < 8)
+			if (Index < 8)
 			{
 				/*ODU0XC source is fixed*/
 				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Src))
@@ -421,7 +421,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetDstValue(PROFILE_T *Profile, uint8
 				return -1;
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
-			if (i < 8)
+			if (Index < 8)
 			{
 				/*ODU0XC destination is fixed*/
 				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, Index, &Dst))
