@@ -93,14 +93,12 @@ static void HTTP_SERVER_API_V1_PROFILE_GetProcessing(struct netconn *Conn, struc
 	uint32_t i;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
+	netbuf_delete(Inbuf);
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(Conn, &RspHeader))
@@ -128,10 +126,7 @@ static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_GetProcessing(struct netconn *Co
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(Conn, &RspHeader))
@@ -162,19 +157,23 @@ static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_PutProcessing(struct netconn *Co
 	uint32_t ContentLength;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
-	ContentLength = ReqHeader->ContentLength;
-	if ((ContentLength > PROFILE_FLASH_LANG_RECORD_BODY_SIZE) || (ContentLength == 0))
+	if (!ReqHeader->ContentLength)
+		goto error_400;
+	
+	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
+	if ((ContentLength == 0) || (ContentLength > PROFILE_FLASH_LANG_RECORD_BODY_SIZE))
 		goto error_400;
 	
 	LangpackAddr = 0;
 	LangpackBlocks = (ContentLength % PROFILE_FLASH_LANG_BLOCK_SIZE) ? ((ContentLength / PROFILE_FLASH_LANG_BLOCK_SIZE) + 1) : (ContentLength / PROFILE_FLASH_LANG_BLOCK_SIZE);
-	inbuf = NULL;
 	if ((Body) && (BodyLen))
 	{
+		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;
 		goto write_data;
 	}
+	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
 		recv_err = netconn_recv(Conn, &inbuf);
@@ -205,10 +204,7 @@ write_data:
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(Conn, &RspHeader);
@@ -254,14 +250,12 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_HeadProcessing(struct netconn *Con
 		}
 	}
 	
+	netbuf_delete(Inbuf);
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
 	RspHeader.ContentLength = ContentLength;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(Conn, &RspHeader))
@@ -276,14 +270,12 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_GetProcessing(struct netconn *Conn
 	char ValueString[64];
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
+	netbuf_delete(Inbuf);
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(Conn, &RspHeader))
@@ -327,19 +319,25 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing(struct netconn *Conn
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	err_t recv_err;
 	
-	if (ReqHeader->ContentLength == 0)
+	if (!ReqHeader->ContentLength)
 		goto error_400;
-	ContentLength = ReqHeader->ContentLength;
+	
+	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
+	if (ContentLength == 0)
+		goto error_400;
+	
 	BufferLen = 0;
 	Error = 0;
 	PROFILE_MUTEX_LOCK(Profile);
 	if ((Body) && (BodyLen))
 	{
-		inbuf = NULL;
+		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;
 		goto parse_body;
 	}
+	netbuf_delete(Inbuf);
+	
 	while(ContentLength)
 	{
 		recv_err = netconn_recv(Conn, &inbuf);
@@ -474,10 +472,7 @@ parse_body:
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(Conn, &RspHeader);
@@ -513,14 +508,12 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing(struct netco
 	{
 		if (Profile->Sections[i]->Index == section_idx)
 		{
+			netbuf_delete(Inbuf);
 			RspHeader.Code = HTTP_RESPONCE_200_OK;
 			RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 			RspHeader.Charset = HTTP_CHARSET_UTF_8;
 			RspHeader.ContentLength = 0;
-			if (ReqHeader->ConnectionKeepAlive)
-				RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-			else
-				RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 			RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 			RspHeader.AllowedLen = 0;
 			if (http_server_write_header(Conn, &RspHeader))
@@ -546,7 +539,6 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing(struct netco
 		}
 	}
 	
-error_404:
 	http_server_write_404_error(Conn);
 	return;
 error_400:
@@ -571,14 +563,12 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_GetProcessing(struct netco
 	{
 		if (Profile->Sections[i]->Index == section_idx)
 		{
+			netbuf_delete(Inbuf);
 			RspHeader.Code = HTTP_RESPONCE_200_OK;
 			RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 			RspHeader.Charset = HTTP_CHARSET_UTF_8;
 			RspHeader.ContentLength = 0;
-			if (ReqHeader->ConnectionKeepAlive)
-				RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-			else
-				RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 			RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 			RspHeader.AllowedLen = 0;
 			if (http_server_write_header(Conn, &RspHeader))
@@ -601,7 +591,6 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_GetProcessing(struct netco
 		}
 	}
 
-error_404:
 	http_server_write_404_error(Conn);
 	return;
 error_400:
@@ -612,7 +601,7 @@ error_400:
 static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
 	char *c;
-	uint32_t section_idx, param_idx, error;
+	uint32_t section_idx, param_idx, error, ContentLength;
 	struct netbuf *inbuf;
 	err_t recv_err;
 	char *data;
@@ -633,14 +622,19 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_PutProcessing(struct 
 	if (ReqHeader->ContentLength == 0)
 		goto error_400;
 	
+	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
+	if (ContentLength == 0)
+		goto error_400;
+	
 	error = 0;
 	if ((Body) && (BodyLen))
 	{
-		inbuf = NULL;
+		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;
 		goto write_param;
 	}
+	netbuf_delete(Inbuf);
 	
 	recv_err = netconn_recv(Conn, &inbuf);
 	if (recv_err == ERR_OK)
@@ -676,10 +670,7 @@ write_param:
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(Conn, &RspHeader);
@@ -695,7 +686,7 @@ error_404:
 
 static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
-	uint32_t section_idx, param_idx, error;
+	uint32_t section_idx, param_idx, error, ContentLength;
 	struct netbuf *inbuf;
 	err_t recv_err;
 	char *data;
@@ -707,14 +698,20 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_PutProcessing(struct
 	if (ReqHeader->ContentLength == 0)
 		goto error_400;
 	
+	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
+	if (ContentLength == 0)
+		goto error_400;
+	
 	error = 0;
 	if ((Body) && (BodyLen))
 	{
-		inbuf = NULL;
+		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;
 		goto write_param;
 	}
+	netbuf_delete(Inbuf);
+	
 	recv_err = netconn_recv(Conn, &inbuf);
 	if (recv_err == ERR_OK)
 	{
@@ -769,10 +766,7 @@ write_param:
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(Conn, &RspHeader);

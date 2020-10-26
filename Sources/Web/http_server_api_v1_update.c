@@ -94,14 +94,12 @@ static void HTTP_SERVER_API_V1_UPDATE_GetProcessing(struct netconn *Conn, struct
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	uint32_t i, j;
 	
+	netbuf_delete(Inbuf);
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(Conn, &RspHeader))
@@ -189,20 +187,23 @@ static void HTTP_SERVER_API_V1_UPDATE_PostProcessing(struct netconn *Conn, struc
 	char ip[4];
 	uint32_t tmp;
 
-	ContentLength = ReqHeader->ContentLength;
+	if (ReqHeader->ContentLength == 0)
+		goto error;
 	
+	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if (ContentLength == 0)
 		goto error;
 	
-	inbuf = NULL;
 	error = 0;
 	BufferLen = 0;
 	if ((Body) && (BodyLen))
 	{
+		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;		
 		goto parse_data;
 	}
+	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
 		recv_err = netconn_recv(Conn, &inbuf);
@@ -310,10 +311,7 @@ parse_data:
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(Conn, &RspHeader);
@@ -333,21 +331,24 @@ static void HTTP_SERVER_API_V1_UPDATE_MCU_SOFTWARE_PostProcessing(struct netconn
 	uint32_t ContentLength;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
-	ContentLength = ReqHeader->ContentLength;
+	if (ReqHeader->ContentLength == 0)
+		goto error;
 	
+	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if ((ContentLength == 0) || (ContentLength > BSP_FLASH_FW_SIZE))
 		goto error;
 	
 	BOOTLOADER_UpdateNewFwStart(&Bootloader);
 	
-	inbuf = NULL;
 	error = 0;
 	if ((Body) && (BodyLen))
 	{
+		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;		
 		goto write_data;
 	}
+	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
 		recv_err = netconn_recv(Conn, &inbuf);
@@ -382,10 +383,7 @@ write_data:
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(Conn, &RspHeader);
@@ -408,20 +406,23 @@ static void HTTP_SERVER_API_V1_UPDATE_MCU_WEB_PostProcessing(struct netconn *Con
 	uint32_t dataaddr, ContentLength;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
-	ContentLength = ReqHeader->ContentLength;
+	if (ReqHeader->ContentLength == 0)
+		goto error;
 	
+	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if ((ContentLength == 0) || (ContentLength > HTTP_SERVER_FILES_RECORD_BODY_SIZE))
 		goto error;
 	
 	dataaddr = 0;
-	inbuf = NULL;
 	error = 0;
 	if ((Body) && (BodyLen))
 	{
+		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;		
 		goto write_data;
 	}
+	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
 		recv_err = netconn_recv(Conn, &inbuf);
@@ -453,10 +454,7 @@ write_data:
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
 	http_server_write_header(Conn, &RspHeader);	

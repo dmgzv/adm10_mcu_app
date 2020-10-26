@@ -36,11 +36,15 @@ int32_t HTTP_SERVER_URL_CompareToTemplate(char *Url, uint32_t UrlSize, char *Url
 		{
 			return -1;
 		}
+		UrlIdx++;
+		UrlTemplateIdx++;
 	}
+	if ((UrlIdx != UrlSize) || (UrlTemplateIdx != UrlTemplateSize))
+		return -1;
 	return 0;
 }
 
-void HTTP_SERVER_URL_Process(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+int32_t HTTP_SERVER_URL_Process(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
 	uint32_t i;
 	char **Allowed;
@@ -73,10 +77,7 @@ void HTTP_SERVER_URL_Process(struct netconn *Conn, struct netbuf *Inbuf, HTTP_RE
 				RspHeader.ContentType = NULL;
 				RspHeader.Charset = NULL;
 				RspHeader.ContentLength = 0;
-				if (ReqHeader->ConnectionKeepAlive)
-					RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-				else
-					RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+				RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 				RspHeader.TransferEncoding = NULL;
 				Allowed = RspHeader.Allowed;
 				if (HTTP_SERVER_URL_List[i]->HeadProcessing)
@@ -90,7 +91,8 @@ void HTTP_SERVER_URL_Process(struct netconn *Conn, struct netbuf *Inbuf, HTTP_RE
 				RspHeader.AllowedLen = Allowed - RspHeader.Allowed;
 				http_server_write_header(Conn, &RspHeader);
 			}
-			return;
+			return 0;
 		}
 	}
+	return -1;
 }

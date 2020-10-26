@@ -20,14 +20,12 @@ static void HTTP_SERVER_API_V1_DEVICES_GetProcessing(struct netconn *Conn, struc
 	char *Locked;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
+	netbuf_delete(Inbuf);
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
 	RspHeader.ContentLength = 0;
-	if (ReqHeader->ConnectionKeepAlive)
-		RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
-	else
-		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
 	if (http_server_write_header(Conn, &RspHeader))

@@ -39,11 +39,10 @@ typedef struct {
 	uint32_t QuerySize;
 	char *ContentType;
 	uint32_t ContentTypeSize;
-	char *Charset;
-	uint32_t CharsetSize;
-	uint32_t ContentLength;
+	char *ContentLength;
+	uint32_t ContentLengthSize;
 	char *Connection;
-	uint32_t ConnectionKeepAlive;
+	uint32_t ConnectionSize;
 } HTTP_REQUEST_HEADER_T;
 
 typedef struct {
