@@ -51,18 +51,86 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 {
 	char *p1, *p2;
 	
-	Header->Type = data;
+	memset(Header, 0, sizeof(HTTP_REQUEST_HEADER_T));
 	
-	if (!memcmp(Header->Type, HTTP_REQUEST_HEAD" ", sizeof(HTTP_REQUEST_HEAD)))
-		Header->Url = data + sizeof(HTTP_REQUEST_HEAD);
-	else if (!memcmp(Header->Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)))
-		Header->Url = data + sizeof(HTTP_REQUEST_GET);
-	else if (!memcmp(Header->Type, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT)))
-		Header->Url = data + sizeof(HTTP_REQUEST_PUT);
-	else if (!memcmp(Header->Type, HTTP_REQUEST_POST" ", sizeof(HTTP_REQUEST_POST)))
-		Header->Url = data + sizeof(HTTP_REQUEST_POST);
+	p1 = p2 = data;
+	
+	if (!memcmp(p1, HTTP_REQUEST_HEAD" ", sizeof(HTTP_REQUEST_HEAD)))
+	{
+		Header->Type = p2;
+		Header->TypeSize = sizeof(HTTP_REQUEST_HEAD) - 1;
+		p1 = p2 + sizeof(HTTP_REQUEST_HEAD);
+	}
+	else if (!memcmp(p1, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)))
+	{
+		Header->Type = p2;
+		Header->TypeSize = sizeof(HTTP_REQUEST_GET) - 1;
+		p1 = p2 + sizeof(HTTP_REQUEST_GET);
+	}
+	else if (!memcmp(p1, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT)))
+	{
+		Header->Type = p2;
+		Header->TypeSize = sizeof(HTTP_REQUEST_PUT) - 1;
+		p1 = p2 + sizeof(HTTP_REQUEST_PUT);
+	}
+	else if (!memcmp(p1, HTTP_REQUEST_POST" ", sizeof(HTTP_REQUEST_POST)))
+	{
+		Header->Type = p2;
+		Header->TypeSize = sizeof(HTTP_REQUEST_POST) - 1;
+		p1 = p2 + sizeof(HTTP_REQUEST_POST);
+	}
 	else
+	{
 		return -1;
+	}
+	
+	p2 = ++p1;	
+	if (*p1 != '/')
+		return -1;	
+	while (((*p1 >= '0') && (*p1 <= '9')) || \
+				((*p1 >= 'a') && (*p1 <= 'z')) || \
+				((*p1 >= 'A') && (*p1 <= 'Z')) ||\
+				(*p1 == '/') || (*p1 == '.') || \
+				(*p1 == '_') || (*p1 == '-') || \
+				(*p1 == '~'))
+	{
+			p1++;
+	}	
+	if (*p1 == '?')
+	{
+		Header->Url = p2;
+		Header->UrlSize = p1 - p2;
+		
+		p2 = p1;
+		while (((*p1 >= '0') && (*p1 <= '9')) || \
+					((*p1 >= 'a') && (*p1 <= 'z')) || \
+					((*p1 >= 'A') && (*p1 <= 'Z')) ||\
+					(*p1 == '/') || (*p1 == '.') || \
+					(*p1 == '_') || (*p1 == '-') || \
+					(*p1 == '~'))
+		{
+				p1++;
+		}
+		if ((*p1 == '\r') && (*(p1 + 1) == '\n'))
+		{
+			Header->Query = p2;
+			Header->QuerySize = p1 - p2;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	else if ((*p1 == '\r') && (*(p1 + 1) == '\n'))
+	{
+		Header->Url = p2;
+		Header->UrlSize = p1 - p2;
+	}
+	else
+	{
+		return -1;
+	}
+	p2 = p1 = p1 + 2;
 	
 	p1 = strstr(data, "Connection: ");
 	p2 = strstr(data, "connection: ");
@@ -97,8 +165,6 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 		Header->ContentType += sizeof("Content-Type: ") - 1;
 	else if (p2)
 		Header->ContentType += sizeof("content-type: ") - 1;
-	else
-		Header->ContentType = NULL;
 	
 	Header->Charset = strstr(data, "charset=");
 	if (Header->Charset)
@@ -136,6 +202,13 @@ int32_t http_server_write_400_error(struct netconn *conn)
 int32_t http_server_write_404_error(struct netconn *conn)
 {
 	if (http_server_write(conn, HTTP_RESPONCE_404_NOT_FOUND"\r\n\r\n", sizeof(HTTP_RESPONCE_404_NOT_FOUND"\r\n\r\n") - 1, NETCONN_NOCOPY))
+		return -1;
+	return 0;
+}
+
+int32_t http_server_write_500_error(struct netconn *conn)
+{
+	if (http_server_write(conn, HTTP_RESPONCE_500_INTERNAL_SERVER_ERROR"\r\n\r\n", sizeof(HTTP_RESPONCE_500_INTERNAL_SERVER_ERROR"\r\n\r\n") - 1, NETCONN_NOCOPY))
 		return -1;
 	return 0;
 }
@@ -211,6 +284,22 @@ int32_t http_server_write_body(struct netconn *conn, char *str, ...)
 			return -1;
 		RESPONCE_BODY_LEN = 0;
 	}
+  return 0;
+}
+
+int32_t http_server_write_body_static(struct netconn *conn, char *str)
+{
+	char chunk_size[16];
+	uint32_t len;
+	
+	len = strlen(str);
+	snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", len);
+	if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+		return -1;	
+	if (http_server_write(conn, str, len, NETCONN_NOCOPY | NETCONN_MORE))
+		return -1;
+	if (http_server_write(conn, "\r\n", 2, NETCONN_NOCOPY | NETCONN_MORE))
+		return -1;;
   return 0;
 }
 

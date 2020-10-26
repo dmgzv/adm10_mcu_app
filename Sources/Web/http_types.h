@@ -8,10 +8,11 @@
 #define HTTP_REQUEST_PUT	"PUT"
 #define HTTP_REQUEST_POST	"POST"
 
-#define HTTP_RESPONCE_200_OK									"HTTP/1.1 200 OK"
-#define HTTP_RESPONCE_400_BAD_REQUEST					"HTTP/1.1 400 Bad Request"
-#define HTTP_RESPONCE_404_NOT_FOUND						"HTTP/1.1 404 Not Found"
-#define HTTP_RESPONCE_405_METHOD_NOT_ALLOWED	"HTTP/1.1 405 Method Not Allowed"
+#define HTTP_RESPONCE_200_OK										"HTTP/1.1 200 OK"
+#define HTTP_RESPONCE_400_BAD_REQUEST						"HTTP/1.1 400 Bad Request"
+#define HTTP_RESPONCE_404_NOT_FOUND							"HTTP/1.1 404 Not Found"
+#define HTTP_RESPONCE_405_METHOD_NOT_ALLOWED		"HTTP/1.1 405 Method Not Allowed"
+#define HTTP_RESPONCE_500_INTERNAL_SERVER_ERROR	"HTTP/1.1 500 Internal Server Error"
 
 #define HTTP_CHARSET_UTF_8						"utf-8"
 #define HTTP_CHARSET_WINDOWS_1251			"windows-1251"
@@ -31,9 +32,15 @@
 
 typedef struct {	
 	char *Type;
+	uint32_t TypeSize;
 	char *Url;
+	uint32_t UrlSize;
+	char *Query;
+	uint32_t QuerySize;
 	char *ContentType;
+	uint32_t ContentTypeSize;
 	char *Charset;
+	uint32_t CharsetSize;
 	uint32_t ContentLength;
 	char *Connection;
 	uint32_t ConnectionKeepAlive;

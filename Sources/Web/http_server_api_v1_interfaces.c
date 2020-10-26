@@ -16,7 +16,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_API_V1_INTERFACES_Url = {
 
 static void HTTP_SERVER_API_V1_INTERFACES_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
-	char chunk_size[16];
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;

@@ -1216,6 +1216,21 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_api_v1_os.c</FilePath>
             </File>
+            <File>
+              <FileName>http_server_api_v1_profile.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_profile.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_update.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_update.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2454,6 +2469,21 @@
               <FileName>http_server_api_v1_os.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_api_v1_os.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_profile.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_profile.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_api_v1_update.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_api_v1_update.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url.c</FilePath>
             </File>
           </Files>
         </Group>
