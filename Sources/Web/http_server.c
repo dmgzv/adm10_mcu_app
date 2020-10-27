@@ -217,7 +217,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 {	
 	uint32_t data_addr, data_size, data_type;
 	char *name, *name_end;
-	uint32_t name_size, size;
+	uint32_t name_size;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	name = ReqHeader->Url + 1;
@@ -235,7 +235,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_HTML;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		if (ReqHeader->ConnectionKeepAlive)
 			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 		else
@@ -250,7 +250,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_JS;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		if (ReqHeader->ConnectionKeepAlive)
 			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 		else
@@ -265,7 +265,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_CSS;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		if (ReqHeader->ConnectionKeepAlive)
 			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 		else
@@ -280,7 +280,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_FONT_WOFF2;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		if (ReqHeader->ConnectionKeepAlive)
 			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 		else
@@ -295,7 +295,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		if (ReqHeader->ConnectionKeepAlive)
 			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 		else
@@ -310,7 +310,7 @@ static void http_server_serve_get_file(struct netconn *conn, HTTP_REQUEST_HEADER
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_OCTET;
 		RspHeader.Charset = NULL;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		if (ReqHeader->ConnectionKeepAlive)
 			RspHeader.Connection = HTTP_CONNECTION_KEEP_ALIVE;
 		else
