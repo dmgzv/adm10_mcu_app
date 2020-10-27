@@ -40,43 +40,43 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 	
 	memset(Header, 0, sizeof(HTTP_REQUEST_HEADER_T));
 	
-	p1 = p2 = data;
+	p2 = p1 = data;
 	
-	if (!memcmp(p1, HTTP_REQUEST_HEAD" ", sizeof(HTTP_REQUEST_HEAD)))
+	if (!memcmp(p1, HTTP_REQUEST_HEAD, sizeof(HTTP_REQUEST_HEAD) - 1))
 	{
 		Header->Type = p2;
 		Header->TypeSize = sizeof(HTTP_REQUEST_HEAD) - 1;
-		p1 = p2 + sizeof(HTTP_REQUEST_HEAD);
+		p1 = p1 + sizeof(HTTP_REQUEST_HEAD) - 1;
 	}
-	else if (!memcmp(p1, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET)))
+	else if (!memcmp(p1, HTTP_REQUEST_GET, sizeof(HTTP_REQUEST_GET) - 1))
 	{
 		Header->Type = p2;
 		Header->TypeSize = sizeof(HTTP_REQUEST_GET) - 1;
-		p1 = p2 + sizeof(HTTP_REQUEST_GET);
+		p1 = p1 + sizeof(HTTP_REQUEST_GET) - 1;
 	}
-	else if (!memcmp(p1, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT)))
+	else if (!memcmp(p1, HTTP_REQUEST_PUT, sizeof(HTTP_REQUEST_PUT) - 1))
 	{
 		Header->Type = p2;
 		Header->TypeSize = sizeof(HTTP_REQUEST_PUT) - 1;
-		p1 = p2 + sizeof(HTTP_REQUEST_PUT);
+		p1 = p1 + sizeof(HTTP_REQUEST_PUT) - 1;
 	}
-	else if (!memcmp(p1, HTTP_REQUEST_POST" ", sizeof(HTTP_REQUEST_POST)))
+	else if (!memcmp(p1, HTTP_REQUEST_POST, sizeof(HTTP_REQUEST_POST) - 1))
 	{
 		Header->Type = p2;
 		Header->TypeSize = sizeof(HTTP_REQUEST_POST) - 1;
-		p1 = p2 + sizeof(HTTP_REQUEST_POST);
+		p1 = p1 + sizeof(HTTP_REQUEST_POST) - 1;
 	}
 	else
 	{
 		return -1;
 	}
 	
-	if ((p1 - data) > datalen)
+	if (((p1 - data) > datalen) || (*p1 != ' '))
 		return -1;
 	
 	p2 = ++p1;	
-	if (*p1 != '/')
-		return -1;	
+	if (((p1 - data) > datalen) || (*p1 != '/'))
+		return -1;
 	while (((p1 - data) <= datalen) && \
 				(((*p1 >= '0') && (*p1 <= '9')) || \
 				((*p1 >= 'a') && (*p1 <= 'z')) || \
@@ -87,23 +87,31 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 	{
 			p1++;
 	}	
-	if ((((p1 - data) <= datalen)) && (*p1 == '?'))
+	if ((((p1 - data) <= datalen)) && ((*p1 == '?') || (*p1 == ' ')))
 	{
 		Header->Url = p2;
 		Header->UrlSize = p1 - p2;
-		
-		p2 = p1;
+	}
+	else
+	{
+		return -1;
+	}
+	
+	if ((((p1 - data) <= datalen)) && (*p1 == '?'))
+	{
+		p2 = ++p1;		
 		while (((p1 - data) <= datalen) && \
 					(((*p1 >= '0') && (*p1 <= '9')) || \
 					((*p1 >= 'a') && (*p1 <= 'z')) || \
 					((*p1 >= 'A') && (*p1 <= 'Z')) ||\
 					(*p1 == '/') || (*p1 == '.') || \
 					(*p1 == '_') || (*p1 == '-') || \
-					(*p1 == '~')))
+					(*p1 == '~') || (*p1 == '=') || \
+					(*p1 == '&') || (*p1 == '+')))
 		{
 				p1++;
 		}
-		if ((((p1 - data) < datalen)) && ((*p1 == '\r') && (*(p1 + 1) == '\n')))
+		if (((p1 - data) <= datalen) && (*p1 == ' '))
 		{
 			Header->Query = p2;
 			Header->QuerySize = p1 - p2;
@@ -113,16 +121,15 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 			return -1;
 		}
 	}
-	else if ((((p1 - data) < datalen)) && ((*p1 == '\r') && (*(p1 + 1) == '\n')))
+	
+	while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 	{
-		Header->Url = p2;
-		Header->UrlSize = p1 - p2;
+		if ((p1 - data) < datalen)
+			p1++;
+		else
+			return -1;
 	}
-	else
-	{
-		return -1;
-	}
-	p2 = p1 = p1 + 2;
+	p1 = p1 + 2;
 	
 	while ((p1 - data) < datalen)
 	{
@@ -144,138 +151,97 @@ static int32_t http_server_parse_request(char *data, uint32_t datalen, HTTP_REQU
 		else if (!memcmp(p1, "Connection: ", sizeof("Connection: ") - 1))
 		{
 			p2 = p1 = p1 + sizeof("Connection: ") - 1;
-			
-			while ((((p1 - data) < datalen)) && ((*p1 != '\r') || (*(p1 + 1) != '\n')))
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 			{
-				p1++;
+				if ((p1 - data) < datalen)
+					p1++;
+				else
+					return -1;
 			}
-			
-			if ((((p1 - data) < datalen)) && (*p1 == '\r') && (*(p1 + 1) == '\n'))
-			{
-				Header->Connection = p2;
-				Header->ConnectionSize = p1 - p2;
-				p1 = p1 + 2;
-			}
-			else
-			{
-				return -1;
-			}
+			Header->Connection = p2;
+			Header->ConnectionSize = p1 - p2;
+			p1 = p1 + 2;
 		}
 		else if (!memcmp(p1, "connection: ", sizeof("connection: ") - 1))
 		{
 			p2 = p1 = p1 + sizeof("connection: ") - 1;
-			
-			while ((((p1 - data) < datalen)) && ((*p1 != '\r') || (*(p1 + 1) != '\n')))
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 			{
-				p1++;
+				if ((p1 - data) < datalen)
+					p1++;
+				else
+					return -1;
 			}
-			
-			if ((((p1 - data) < datalen)) && (*p1 == '\r') && (*(p1 + 1) == '\n'))
-			{
-				Header->Connection = p2;
-				Header->ConnectionSize = p1 - p2;
-				p1 = p1 + 2;
-			}
-			else
-			{
-				return -1;
-			}
+			Header->Connection = p2;
+			Header->ConnectionSize = p1 - p2;
+			p1 = p1 + 2;
 		}
 		else if (!memcmp(p1, "Content-Type: ", sizeof("Content-Type: ") - 1))
 		{
 			p2 = p1 = p1 + sizeof("Content-Type: ") - 1;
-			
-			while ((((p1 - data) < datalen)) && ((*p1 != '\r') || (*(p1 + 1) != '\n')))
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 			{
-				p1++;
+				if ((p1 - data) < datalen)
+					p1++;
+				else
+					return -1;
 			}
-			
-			if ((((p1 - data) < datalen)) && (*p1 == '\r') && (*(p1 + 1) == '\n'))
-			{
-				Header->ContentType = p2;
-				Header->ContentTypeSize = p1 - p2;
-				p1 = p1 + 2;
-			}
-			else
-			{
-				return -1;
-			}
+			Header->ContentType = p2;
+			Header->ContentTypeSize = p1 - p2;
+			p1 = p1 + 2;
 		}
 		else if (!memcmp(p1, "content-type: ", sizeof("content-type: ") - 1))
 		{
 			p2 = p1 = p1 + sizeof("content-type: ") - 1;
-			
-			while ((((p1 - data) < datalen)) && ((*p1 != '\r') || (*(p1 + 1) != '\n')))
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 			{
-				p1++;
+				if ((p1 - data) < datalen)
+					p1++;
+				else
+					return -1;
 			}
-			
-			if ((((p1 - data) < datalen)) && (*p1 == '\r') && (*(p1 + 1) == '\n'))
-			{
-				Header->ContentType = p2;
-				Header->ContentTypeSize = p1 - p2;
-				p1 = p1 + 2;
-			}
-			else
-			{
-				return -1;
-			}
+			Header->ContentType = p2;
+			Header->ContentTypeSize = p1 - p2;
+			p1 = p1 + 2;
 		}
 		else if (!memcmp(p1, "Content-Length: ", sizeof("Content-Length: ") - 1))
 		{
 			p2 = p1 = p1 + sizeof("Content-Length: ") - 1;
-			
-			while ((((p1 - data) < datalen)) && ((*p1 != '\r') || (*(p1 + 1) != '\n')))
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 			{
-				p1++;
+				if ((p1 - data) < datalen)
+					p1++;
+				else
+					return -1;
 			}
-			
-			if ((((p1 - data) < datalen)) && (*p1 == '\r') && (*(p1 + 1) == '\n'))
-			{
-				Header->ContentLength = p2;
-				Header->ContentLengthSize = p1 - p2;
-				p1 = p1 + 2;
-			}
-			else
-			{
-				return -1;
-			}
+			Header->ContentLength = p2;
+			Header->ContentLengthSize = p1 - p2;
+			p1 = p1 + 2;
 		}
 		else if (!memcmp(p1, "content-length: ", sizeof("content-length: ") - 1))
 		{
 			p2 = p1 = p1 + sizeof("content-length: ") - 1;
-			
-			while ((((p1 - data) < datalen)) && ((*p1 != '\r') || (*(p1 + 1) != '\n')))
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 			{
-				p1++;
+				if ((p1 - data) < datalen)
+					p1++;
+				else
+					return -1;
 			}
-			
-			if ((((p1 - data) < datalen)) && (*p1 == '\r') && (*(p1 + 1) == '\n'))
-			{
-				Header->ContentLength = p2;
-				Header->ContentLengthSize = p1 - p2;
-				p1 = p1 + 2;
-			}
-			else
-			{
-				return -1;
-			}
+			Header->ContentLength = p2;
+			Header->ContentLengthSize = p1 - p2;
+			p1 = p1 + 2;
 		}
 		else
 		{
-			while ((((p1 - data) < datalen)) && ((*p1 != '\r') || (*(p1 + 1) != '\n')))
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 			{
-				p1++;
+				if ((p1 - data) < datalen)
+					p1++;
+				else
+					return -1;
 			}
-			
-			if ((((p1 - data) < datalen)) && (*p1 == '\r') && (*(p1 + 1) == '\n'))
-			{
-				p1 = p1 + 2;
-			}
-			else
-			{
-				return -1;
-			}
+			p1 = p1 + 2;
 		}
 	}
 	return -1;
@@ -396,7 +362,7 @@ int32_t http_server_write_body_finish(struct netconn *conn)
 {
 	char chunk_size[16];
 	
-	if (RESPONCE_BODY_LEN >= 1024)
+	if (RESPONCE_BODY_LEN)
 	{
 		snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
 		if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
@@ -418,7 +384,7 @@ static void http_server_serve_get_file(struct netconn *conn, struct netbuf *inbu
 {	
 	uint32_t data_addr, data_size, data_type;
 	char *name;
-	uint32_t name_size, size;
+	uint32_t name_size;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	name = ReqHeader->Url + 1;
@@ -436,7 +402,7 @@ static void http_server_serve_get_file(struct netconn *conn, struct netbuf *inbu
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_HTML;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 		RspHeader.TransferEncoding = NULL;
 		RspHeader.AllowedLen = 0;
@@ -449,7 +415,7 @@ static void http_server_serve_get_file(struct netconn *conn, struct netbuf *inbu
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_JS;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 		RspHeader.TransferEncoding = NULL;
 		RspHeader.AllowedLen = 0;
@@ -462,7 +428,7 @@ static void http_server_serve_get_file(struct netconn *conn, struct netbuf *inbu
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_CSS;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 		RspHeader.TransferEncoding = NULL;
 		RspHeader.AllowedLen = 0;
@@ -475,7 +441,7 @@ static void http_server_serve_get_file(struct netconn *conn, struct netbuf *inbu
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_FONT_WOFF2;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 		RspHeader.TransferEncoding = NULL;
 		RspHeader.AllowedLen = 0;
@@ -488,7 +454,7 @@ static void http_server_serve_get_file(struct netconn *conn, struct netbuf *inbu
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
 		RspHeader.Charset = HTTP_CHARSET_UTF_8;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 		RspHeader.TransferEncoding = NULL;
 		RspHeader.AllowedLen = 0;
@@ -501,7 +467,7 @@ static void http_server_serve_get_file(struct netconn *conn, struct netbuf *inbu
 		RspHeader.Code = HTTP_RESPONCE_200_OK;
 		RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_OCTET;
 		RspHeader.Charset = NULL;
-		RspHeader.ContentLength = size;
+		RspHeader.ContentLength = data_size;
 		RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 		RspHeader.TransferEncoding = NULL;
 		RspHeader.AllowedLen = 0;
