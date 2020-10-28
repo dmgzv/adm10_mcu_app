@@ -1187,49 +1187,59 @@
               <FilePath>.\Sources\Web\http_server_files.c</FilePath>
             </File>
             <File>
-              <FileName>http_server_api_v1_log.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_log.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_devices.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_devices.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_modules.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_modules.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_interfaces.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_interfaces.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_power.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_power.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_os.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_os.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_profile.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_profile.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_update.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_update.c</FilePath>
-            </File>
-            <File>
               <FileName>http_server_url.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_url.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_files.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_files.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_devices.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_devices.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_interfaces.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_interfaces.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_modules.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_modules.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_os.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_power.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_power.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_profile.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_profile.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_update.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_update.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2441,49 +2451,59 @@
               <FilePath>.\Sources\Web\http_server_files.c</FilePath>
             </File>
             <File>
-              <FileName>http_server_api_v1_log.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_log.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_devices.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_devices.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_modules.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_modules.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_interfaces.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_interfaces.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_power.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_power.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_os.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_os.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_profile.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_profile.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_server_api_v1_update.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\Web\http_server_api_v1_update.c</FilePath>
-            </File>
-            <File>
               <FileName>http_server_url.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_url.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_files.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_files.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_devices.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_devices.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_interfaces.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_interfaces.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_modules.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_modules.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_os.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_power.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_power.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_profile.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_profile.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_update.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_update.c</FilePath>
             </File>
           </Files>
         </Group>

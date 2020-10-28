@@ -9,6 +9,7 @@
 #define HTTP_REQUEST_POST	"POST"
 
 #define HTTP_RESPONCE_200_OK										"HTTP/1.1 200 OK"
+#define HTTP_RESPONCE_301_MOVED_PERMANENTLY			"HTTP/1.1 301 Moved Permanently"
 #define HTTP_RESPONCE_400_BAD_REQUEST						"HTTP/1.1 400 Bad Request"
 #define HTTP_RESPONCE_404_NOT_FOUND							"HTTP/1.1 404 Not Found"
 #define HTTP_RESPONCE_405_METHOD_NOT_ALLOWED		"HTTP/1.1 405 Method Not Allowed"
@@ -43,6 +44,8 @@ typedef struct {
 	uint32_t ContentLengthSize;
 	char *Connection;
 	uint32_t ConnectionSize;
+	char *Body;
+	uint32_t BodyLen;
 } HTTP_REQUEST_HEADER_T;
 
 typedef struct {
@@ -54,6 +57,6 @@ typedef struct {
 	char *TransferEncoding;
 	char *Allowed[4];
 	uint32_t AllowedLen;
-} HTTP_RESPONCE_HEADER_T;
+} HTTP_HTTP_SERVER_Buffer_T;
 
 #endif /*__HTTP_TYPES_H__*/

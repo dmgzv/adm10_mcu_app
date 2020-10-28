@@ -148,24 +148,7 @@
           <Name>(105=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint>
-        <Bp>
-          <Number>0</Number>
-          <Type>0</Type>
-          <LineNumber>261</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134301628</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\Sources\Web\http_server_api_v1_profile.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\ADM10_Debug\Sources/Web/http_server_api_v1_profile.c\261</Expression>
-        </Bp>
-      </Breakpoint>
+      <Breakpoint/>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -595,22 +578,6 @@
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>0</BreakIfRCount>
           <Filename>.\Sources\Web\http_server_files.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>261</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>.\Sources\Web\http_server_api_v1_profile.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>
@@ -2677,8 +2644,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_api_v1_log.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_api_v1_log.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2689,8 +2656,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_api_v1_devices.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_api_v1_devices.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url_files.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_files.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2701,8 +2668,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_api_v1_modules.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_api_v1_modules.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url_api.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2713,8 +2680,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_api_v1_interfaces.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_api_v1_interfaces.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url_api_v1_devices.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api_v1_devices.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2725,8 +2692,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_api_v1_power.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_api_v1_power.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url_api_v1_interfaces.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api_v1_interfaces.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2737,8 +2704,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_api_v1_os.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_api_v1_os.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url_api_v1_log.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api_v1_log.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2749,8 +2716,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_api_v1_profile.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_api_v1_profile.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url_api_v1_modules.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api_v1_modules.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2761,8 +2728,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_api_v1_update.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_api_v1_update.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url_api_v1_os.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api_v1_os.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2773,8 +2740,32 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\Web\http_server_url.c</PathWithFileName>
-      <FilenameWithoutPath>http_server_url.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\Web\http_server_url_api_v1_power.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api_v1_power.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>13</GroupNumber>
+      <FileNumber>159</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\Sources\Web\http_server_url_api_v1_profile.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api_v1_profile.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>13</GroupNumber>
+      <FileNumber>160</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\Sources\Web\http_server_url_api_v1_update.c</PathWithFileName>
+      <FilenameWithoutPath>http_server_url_api_v1_update.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2782,13 +2773,13 @@
 
   <Group>
     <GroupName>TFTP</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>14</GroupNumber>
-      <FileNumber>159</FileNumber>
+      <FileNumber>161</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -2800,7 +2791,7 @@
     </File>
     <File>
       <GroupNumber>14</GroupNumber>
-      <FileNumber>160</FileNumber>
+      <FileNumber>162</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -2812,7 +2803,7 @@
     </File>
     <File>
       <GroupNumber>14</GroupNumber>
-      <FileNumber>161</FileNumber>
+      <FileNumber>163</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -2824,7 +2815,7 @@
     </File>
     <File>
       <GroupNumber>14</GroupNumber>
-      <FileNumber>162</FileNumber>
+      <FileNumber>164</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

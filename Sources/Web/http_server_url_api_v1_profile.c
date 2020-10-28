@@ -1,4 +1,4 @@
-#include "http_server_api_v1_profile.h"
+#include "http_server_url_api_v1_profile.h"
 #include "profile.h"
 #include "profile_flash.h"
 #include <string.h>
@@ -6,92 +6,92 @@
 extern const PROFILE_T *Profile;
 extern PROFILE_FLASH_T ProfileFlash;
 
-#define HTTP_SERVER_API_V1_PROFILE_URL_TEMPLATE	"/api/v1/profile"
-#define HTTP_SERVER_API_V1_PROFILE_LANGPACK_URL_TEMPLATE	"/api/v1/profile/langpack"
-#define HTTP_SERVER_API_V1_PROFILE_CONFIG_URL_TEMPLATE	"/api/v1/profile/config"
-#define HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_URL_TEMPLATE	"/api/v1/profile/sections/*/values"
-#define HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_URL_TEMPLATE	"/api/v1/profile/sections/*/colors"
-#define HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_URL_TEMPLATE	"/api/v1/profile/sections/*/params/*/value"
-#define HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_URL_TEMPLATE	"/api/v1/profile/sections/*/params/*/colors"
+#define HTTP_SERVER_URL_API_V1_PROFILE_TEMPLATE	"/api/v1/profile"
+#define HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_TEMPLATE	"/api/v1/profile/langpack"
+#define HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_TEMPLATE	"/api/v1/profile/config"
+#define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_TEMPLATE	"/api/v1/profile/sections/*/values"
+#define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_TEMPLATE	"/api/v1/profile/sections/*/colors"
+#define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE	"/api/v1/profile/sections/*/params/*/value"
+#define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE	"/api/v1/profile/sections/*/params/*/colors"
 
-static void HTTP_SERVER_API_V1_PROFILE_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_CONFIG_HeadProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_CONFIG_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
-static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
+static void HTTP_SERVER_URL_API_V1_PROFILE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Head(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 
-const HTTP_SERVER_URL_T HTTP_SERVER_API_V1_PROFILE_Url = {
-	.Url = HTTP_SERVER_API_V1_PROFILE_URL_TEMPLATE,
-	.UrlSize = sizeof(HTTP_SERVER_API_V1_PROFILE_URL_TEMPLATE) - 1,
-	.HeadProcessing = NULL,
-	.GetProcessing = HTTP_SERVER_API_V1_PROFILE_GetProcessing,
-	.PutProcessing = NULL,
-	.PostProcessing = NULL,
+const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE = {
+	.Template = HTTP_SERVER_URL_API_V1_PROFILE_TEMPLATE,
+	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_TEMPLATE) - 1,
+	.Head = NULL,
+	.Get = HTTP_SERVER_URL_API_V1_PROFILE_Get,
+	.Put = NULL,
+	.Post = NULL,
 };
 
-const HTTP_SERVER_URL_T HTTP_SERVER_API_V1_PROFILE_LANGPACK_Url = {
-	.Url = HTTP_SERVER_API_V1_PROFILE_LANGPACK_URL_TEMPLATE,
-	.UrlSize = sizeof(HTTP_SERVER_API_V1_PROFILE_LANGPACK_URL_TEMPLATE) - 1,
-	.HeadProcessing = NULL,
-	.GetProcessing = HTTP_SERVER_API_V1_PROFILE_LANGPACK_GetProcessing,
-	.PutProcessing = HTTP_SERVER_API_V1_PROFILE_LANGPACK_PutProcessing,
-	.PostProcessing = NULL,
+const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK = {
+	.Template = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_TEMPLATE,
+	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_TEMPLATE) - 1,
+	.Head = NULL,
+	.Get = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get,
+	.Put = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Put,
+	.Post = NULL,
 };
 
-const HTTP_SERVER_URL_T HTTP_SERVER_API_V1_PROFILE_CONFIG_Url = {
-	.Url = HTTP_SERVER_API_V1_PROFILE_CONFIG_URL_TEMPLATE,
-	.UrlSize = sizeof(HTTP_SERVER_API_V1_PROFILE_CONFIG_URL_TEMPLATE) - 1,
-	.HeadProcessing = HTTP_SERVER_API_V1_PROFILE_CONFIG_HeadProcessing,
-	.GetProcessing = HTTP_SERVER_API_V1_PROFILE_CONFIG_GetProcessing,
-	.PutProcessing = HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing,
-	.PostProcessing = NULL,
+const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_CONFIG = {
+	.Template = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_TEMPLATE,
+	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_TEMPLATE) - 1,
+	.Head = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Head,
+	.Get = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Get,
+	.Put = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Put,
+	.Post = NULL,
 };
 
-const HTTP_SERVER_URL_T HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_Url = {
-	.Url = HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_URL_TEMPLATE,
-	.UrlSize = sizeof(HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_URL_TEMPLATE) - 1,
-	.HeadProcessing = NULL,
-	.GetProcessing = HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing,
-	.PutProcessing = NULL,
-	.PostProcessing = NULL,
+const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES = {
+	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_TEMPLATE,
+	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_TEMPLATE) - 1,
+	.Head = NULL,
+	.Get = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_Get,
+	.Put = NULL,
+	.Post = NULL,
 };
 
-const HTTP_SERVER_URL_T HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_Url = {
-	.Url = HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_URL_TEMPLATE,
-	.UrlSize = sizeof(HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_URL_TEMPLATE) - 1,
-	.HeadProcessing = NULL,
-	.GetProcessing = HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_GetProcessing,
-	.PutProcessing = NULL,
-	.PostProcessing = NULL,
+const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS = {
+	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_TEMPLATE,
+	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_TEMPLATE) - 1,
+	.Head = NULL,
+	.Get = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_Get,
+	.Put = NULL,
+	.Post = NULL,
 };
 
-const HTTP_SERVER_URL_T HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_Url = {
-	.Url = HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_URL_TEMPLATE,
-	.UrlSize = sizeof(HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_URL_TEMPLATE) - 1,
-	.HeadProcessing = NULL,
-	.GetProcessing = NULL,
-	.PutProcessing = HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_PutProcessing,
-	.PostProcessing = NULL,
+const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE = {
+	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE,
+	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE) - 1,
+	.Head = NULL,
+	.Get = NULL,
+	.Put = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_Put,
+	.Post = NULL,
 };
 
-const HTTP_SERVER_URL_T HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_Url = {
-	.Url = HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_URL_TEMPLATE,
-	.UrlSize = sizeof(HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_URL_TEMPLATE) - 1,
-	.HeadProcessing = NULL,
-	.GetProcessing = NULL,
-	.PutProcessing = HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_PutProcessing,
-	.PostProcessing = NULL,
+const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS = {
+	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE,
+	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE) - 1,
+	.Head = NULL,
+	.Get = NULL,
+	.Put = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_Put,
+	.Post = NULL,
 };
 
-static void HTTP_SERVER_API_V1_PROFILE_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	uint32_t i;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	
 	netbuf_delete(Inbuf);
 	
@@ -102,24 +102,24 @@ static void HTTP_SERVER_API_V1_PROFILE_GetProcessing(struct netconn *Conn, struc
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
-	if (http_server_write_header(Conn, &RspHeader))
+	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	http_server_write_body_start(Conn);
+	__HTTP_SERVER_StartBody(Conn);
 	for (i = 0; i < *Profile->LinesCnt; i++)
 	{
-		http_server_write_body_data(Conn, (char*)Profile->Lines[i], strlen(Profile->Lines[i]));
-		http_server_write_body(Conn, "\r\n");
+		__HTTP_SERVER_WriteBodyData(Conn, (char*)Profile->Lines[i], strlen(Profile->Lines[i]));
+		__HTTP_SERVER_WriteBody(Conn, "\r\n");
 	}
-	http_server_write_body_finish(Conn);
+	__HTTP_SERVER_FinishBody(Conn);
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	uint32_t i;
 	char LangpackBlock[PROFILE_FLASH_LANG_BLOCK_SIZE + 1];
 	uint32_t LangpackBlocks, LangpackType;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	
 	netbuf_delete(Inbuf);
 	
@@ -133,32 +133,32 @@ static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_GetProcessing(struct netconn *Co
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
-	if (http_server_write_header(Conn, &RspHeader))
+	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	http_server_write_body_start(Conn);
+	__HTTP_SERVER_StartBody(Conn);
 	for (i = 0; i < LangpackBlocks; i++)
 	{
 		if (PROFILE_FLASH_LoadLangpackData(&ProfileFlash, i * PROFILE_FLASH_LANG_BLOCK_SIZE, LangpackBlock, PROFILE_FLASH_LANG_BLOCK_SIZE))
 			return;
 		LangpackBlock[PROFILE_FLASH_LANG_BLOCK_SIZE] = 0;
-		http_server_write_body(Conn, LangpackBlock);
+		__HTTP_SERVER_WriteBody(Conn, LangpackBlock);
 	}
-	http_server_write_body_finish(Conn);
+	__HTTP_SERVER_FinishBody(Conn);
 	return;
 
 error_500:
-	http_server_write_500_error(Conn);
+	__HTTP_SERVER_WriteError500(Conn);
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
 	uint32_t LangpackAddr, LangpackBlocks;
 	uint32_t ContentLength;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 
 	if (!ReqHeader->ContentLength)
 	{
@@ -175,10 +175,10 @@ static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_PutProcessing(struct netconn *Co
 	
 	LangpackAddr = 0;
 	LangpackBlocks = (ContentLength % PROFILE_FLASH_LANG_BLOCK_SIZE) ? ((ContentLength / PROFILE_FLASH_LANG_BLOCK_SIZE) + 1) : (ContentLength / PROFILE_FLASH_LANG_BLOCK_SIZE);
-	if ((Body) && (BodyLen))
+	if (ReqHeader->Body)
 	{
-		data = Body;
-		datalen = BodyLen;
+		data = ReqHeader->Body;
+		datalen = ReqHeader->BodyLen;
 		goto write_data;
 	}
 	netbuf_delete(Inbuf);
@@ -215,18 +215,18 @@ write_data:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	http_server_write_header(Conn, &RspHeader);
+	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 	
 error_400:
-	http_server_write_400_error(Conn);
+	__HTTP_SERVER_WriteError400(Conn);
 	return;
 error_500:
-	http_server_write_500_error(Conn);
+	__HTTP_SERVER_WriteError500(Conn);
 	return;
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_CONFIG_HeadProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Head(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	char Buffer[128];
 	char ValueString[sizeof(PROFILE_VALUE_T)];
@@ -234,7 +234,7 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_HeadProcessing(struct netconn *Con
 	uint8_t NColor, DColor, FColor;
 	uint32_t i, j, Len;
 	PROFILE_VALUE_T Value;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	
 	ContentLength = 0;
 	ContentLength += sprintf(Buffer, "#"BSP_PT_NUMBER";"BSP_HW_VERSION";"BSP_SW_VERSION"\r\n");
@@ -267,17 +267,17 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_HeadProcessing(struct netconn *Con
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	if (http_server_write_header(Conn, &RspHeader))
+	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_CONFIG_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	uint8_t NColor, DColor, FColor;
 	uint32_t i, j, Len;
 	PROFILE_VALUE_T Value;
 	char ValueString[64];
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	
 	netbuf_delete(Inbuf);
 	
@@ -288,11 +288,11 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_GetProcessing(struct netconn *Conn
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 	RspHeader.AllowedLen = 0;
-	if (http_server_write_header(Conn, &RspHeader))
+	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	http_server_write_body_start(Conn);	
-	http_server_write_body(Conn, "#"BSP_PT_NUMBER";"BSP_HW_VERSION";"BSP_SW_VERSION"\r\n");
+	__HTTP_SERVER_StartBody(Conn);	
+	__HTTP_SERVER_WriteBody(Conn, "#"BSP_PT_NUMBER";"BSP_HW_VERSION";"BSP_SW_VERSION"\r\n");
 	for (i = 0; i < Profile->SectionsCnt; i++)
 	{
 		for (j = 0; j < Profile->Sections[i]->ParamsCnt; j++)
@@ -301,21 +301,21 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_GetProcessing(struct netconn *Conn
 			{
 				__PROFILE_GetParamValue(Profile, Profile->Sections[i]->Params[j], &Value);
 				PROFILE_ParamValueToString(Profile->Sections[i]->Params[j]->Type, &Value, ValueString, &Len);
-				http_server_write_body(Conn, "%d;%s;0;%s\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, ValueString);
+				__HTTP_SERVER_WriteBody(Conn, "%d;%s;0;%s\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, ValueString);
 			}
 			if (Profile->Sections[i]->Params[j]->Colors)
 			{
 				__PROFILE_GetParamColors(Profile, Profile->Sections[i]->Params[j], &NColor, &DColor, &FColor);
-				http_server_write_body(Conn, "%d;%s;1;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, NColor);
-				http_server_write_body(Conn, "%d;%s;2;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, DColor);
-				http_server_write_body(Conn, "%d;%s;3;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, FColor);
+				__HTTP_SERVER_WriteBody(Conn, "%d;%s;1;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, NColor);
+				__HTTP_SERVER_WriteBody(Conn, "%d;%s;2;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, DColor);
+				__HTTP_SERVER_WriteBody(Conn, "%d;%s;3;%d\r\n", Profile->Sections[i]->Params[j]->Section, Profile->Sections[i]->Params[j]->Name, FColor);
 			}
 		}
 	}
-	http_server_write_body_finish(Conn);	
+	__HTTP_SERVER_FinishBody(Conn);	
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	char *p, *Section, *Name, *Value, *Type, *data;
 	char Buffer[256];
@@ -325,7 +325,7 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing(struct netconn *Conn
 	uint32_t ContentLength, Error, SectionIdx, NameLen;
 	PROFILE_PARAM_T *Param;
 	PROFILE_VALUE_T ParamValue;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	err_t recv_err;
 	
 	if (!ReqHeader->ContentLength)
@@ -344,10 +344,10 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing(struct netconn *Conn
 	BufferLen = 0;
 	Error = 0;
 	PROFILE_MUTEX_LOCK(Profile);
-	if ((Body) && (BodyLen))
+	if (ReqHeader->Body)
 	{
-		data = Body;
-		datalen = BodyLen;
+		data = ReqHeader->Body;
+		datalen = ReqHeader->BodyLen;
 		goto parse_body;
 	}
 	netbuf_delete(Inbuf);
@@ -490,20 +490,20 @@ parse_body:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	http_server_write_header(Conn, &RspHeader);
+	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 
 error_500:
 	PROFILE_FLASH_LoadConfigs(&ProfileFlash);
-	http_server_write_500_error(Conn);
+	__HTTP_SERVER_WriteError500(Conn);
 	return;
 		
 error_400:
-	http_server_write_400_error(Conn);
+	__HTTP_SERVER_WriteError400(Conn);
 	return;
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	char *c;
 	uint32_t section_idx;
@@ -512,7 +512,7 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing(struct netco
 	char ValueStr[sizeof(PROFILE_VALUE_T)];
 	uint8_t Color;
 	int32_t AdminState;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);
@@ -535,10 +535,10 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing(struct netco
 			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 			RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 			RspHeader.AllowedLen = 0;
-			if (http_server_write_header(Conn, &RspHeader))
+			if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 				return;
 			
-			http_server_write_body_start(Conn);
+			__HTTP_SERVER_StartBody(Conn);
 			PROFILE_MUTEX_LOCK(Profile);
 			for (j = 0; j < Profile->Sections[i]->ParamsCnt; j++)
 			{
@@ -546,32 +546,32 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing(struct netco
 				__PROFILE_GetParamColor(Profile, Profile->Sections[i]->Params[j], &Color);
 				__PROFILE_GetParamAdminState(Profile, Profile->Sections[i]->Params[j], &AdminState);
 				PROFILE_ParamValueToString(Profile->Sections[i]->Params[j]->Type, &Value, ValueStr, &Len);
-				http_server_write_body(Conn, "%s@%d", ValueStr, AdminState);
+				__HTTP_SERVER_WriteBody(Conn, "%s@%d", ValueStr, AdminState);
 				if (Color != PROFILE_COLOR_NA)
-					http_server_write_body(Conn, "@%u", Color);
+					__HTTP_SERVER_WriteBody(Conn, "@%u", Color);
 				if (j != Profile->Sections[i]->ParamsCnt - 1)
-					http_server_write_body(Conn, ";");
+					__HTTP_SERVER_WriteBody(Conn, ";");
 			}
 			PROFILE_MUTEX_UNLOCK(Profile);
-			http_server_write_body_finish(Conn);
+			__HTTP_SERVER_FinishBody(Conn);
 			return;
 		}
 	}
 	
-	http_server_write_404_error(Conn);
+	__HTTP_SERVER_WriteError404(Conn);
 	return;
 error_400:
-	http_server_write_400_error(Conn);
+	__HTTP_SERVER_WriteError400(Conn);
 	return;
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	char *c;
 	uint32_t section_idx;
 	uint32_t i, j;
 	uint8_t Normal, Degrade, Failure;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);
@@ -594,41 +594,41 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_GetProcessing(struct netco
 			RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 			RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
 			RspHeader.AllowedLen = 0;
-			if (http_server_write_header(Conn, &RspHeader))
+			if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 				return;
 			
-			http_server_write_body_start(Conn);
+			__HTTP_SERVER_StartBody(Conn);
 			PROFILE_MUTEX_LOCK(Profile);
 			for (j = 0; j < Profile->Sections[i]->ParamsCnt; j++)
 			{
 				if (!__PROFILE_GetParamColors(Profile, Profile->Sections[i]->Params[j], &Normal, &Degrade, &Failure))
 				{
-					http_server_write_body(Conn, "%d@%d@%d", Normal, Degrade, Failure);
+					__HTTP_SERVER_WriteBody(Conn, "%d@%d@%d", Normal, Degrade, Failure);
 				}
 				if (j != Profile->Sections[i]->ParamsCnt - 1)
-					http_server_write_body(Conn, ";");
+					__HTTP_SERVER_WriteBody(Conn, ";");
 			}
 			PROFILE_MUTEX_UNLOCK(Profile);
-			http_server_write_body_finish(Conn);
+			__HTTP_SERVER_FinishBody(Conn);
 			return;
 		}
 	}
 
-	http_server_write_404_error(Conn);
+	__HTTP_SERVER_WriteError404(Conn);
 	return;
 error_400:
-	http_server_write_400_error(Conn);
+	__HTTP_SERVER_WriteError400(Conn);
 	return;
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	char *c;
 	uint32_t section_idx, param_idx, error, ContentLength;
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	PROFILE_PARAM_T *Param;
 	PROFILE_VALUE_T Value;
 
@@ -661,10 +661,10 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_PutProcessing(struct 
 	}
 	
 	error = 0;
-	if ((Body) && (BodyLen))
+	if (ReqHeader->Body)
 	{
-		data = Body;
-		datalen = BodyLen;
+		data = ReqHeader->Body;
+		datalen = ReqHeader->BodyLen;
 		goto write_param;
 	}
 	netbuf_delete(Inbuf);
@@ -706,25 +706,25 @@ write_param:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	http_server_write_header(Conn, &RspHeader);
+	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 
 error_400:
-	http_server_write_400_error(Conn);
+	__HTTP_SERVER_WriteError400(Conn);
 	return;
 error_404:
-	http_server_write_404_error(Conn);
+	__HTTP_SERVER_WriteError404(Conn);
 	return;
 }
 
-static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
+static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	char *c;
 	uint32_t section_idx, param_idx, error, ContentLength;
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
-	HTTP_RESPONCE_HEADER_T RspHeader;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	PROFILE_PARAM_T *Param;
 	uint8_t Normal, Degrade, Failure;
 
@@ -757,10 +757,10 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_PutProcessing(struct
 	}
 	
 	error = 0;
-	if ((Body) && (BodyLen))
+	if (ReqHeader->Body)
 	{
-		data = Body;
-		datalen = BodyLen;
+		data = ReqHeader->Body;
+		datalen = ReqHeader->BodyLen;
 		goto write_param;
 	}
 	netbuf_delete(Inbuf);
@@ -822,13 +822,13 @@ write_param:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	http_server_write_header(Conn, &RspHeader);
+	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 
 error_400:
-	http_server_write_400_error(Conn);
+	__HTTP_SERVER_WriteError400(Conn);
 	return;
 error_404:
-	http_server_write_404_error(Conn);
+	__HTTP_SERVER_WriteError404(Conn);
 	return;
 }
