@@ -9,10 +9,10 @@ extern PROFILE_FLASH_T ProfileFlash;
 #define HTTP_SERVER_API_V1_PROFILE_URL_TEMPLATE	"/api/v1/profile"
 #define HTTP_SERVER_API_V1_PROFILE_LANGPACK_URL_TEMPLATE	"/api/v1/profile/langpack"
 #define HTTP_SERVER_API_V1_PROFILE_CONFIG_URL_TEMPLATE	"/api/v1/profile/config"
-#define HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_URL_TEMPLATE	"/api/v1/profile/section/*/values"
-#define HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_URL_TEMPLATE	"/api/v1/profile/section/*/colors"
-#define HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_URL_TEMPLATE	"/api/v1/profile/section/*/param/*/value"
-#define HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_URL_TEMPLATE	"/api/v1/profile/section/*/param/*/colors"
+#define HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_URL_TEMPLATE	"/api/v1/profile/sections/*/values"
+#define HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_URL_TEMPLATE	"/api/v1/profile/sections/*/colors"
+#define HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_URL_TEMPLATE	"/api/v1/profile/sections/*/params/*/value"
+#define HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_URL_TEMPLATE	"/api/v1/profile/sections/*/params/*/colors"
 
 static void HTTP_SERVER_API_V1_PROFILE_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
 static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_GetProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen);
@@ -94,6 +94,7 @@ static void HTTP_SERVER_API_V1_PROFILE_GetProcessing(struct netconn *Conn, struc
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	netbuf_delete(Inbuf);
+	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
@@ -107,7 +108,8 @@ static void HTTP_SERVER_API_V1_PROFILE_GetProcessing(struct netconn *Conn, struc
 	http_server_write_body_start(Conn);
 	for (i = 0; i < *Profile->LinesCnt; i++)
 	{
-		http_server_write_body_static(Conn, (char*)Profile->Lines[i]);
+		http_server_write_body_data(Conn, (char*)Profile->Lines[i], strlen(Profile->Lines[i]));
+		http_server_write_body(Conn, "\r\n");
 	}
 	http_server_write_body_finish(Conn);
 }
@@ -118,6 +120,8 @@ static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_GetProcessing(struct netconn *Co
 	char LangpackBlock[PROFILE_FLASH_LANG_BLOCK_SIZE + 1];
 	uint32_t LangpackBlocks, LangpackType;
 	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	netbuf_delete(Inbuf);
 	
 	if (PROFILE_FLASH_LoadLangpackHeader(&ProfileFlash, &LangpackBlocks, &LangpackType))
 		goto error_500;
@@ -149,7 +153,6 @@ error_500:
 
 static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
-	struct netbuf *inbuf;
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
@@ -158,17 +161,22 @@ static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_PutProcessing(struct netconn *Co
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	if (!ReqHeader->ContentLength)
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 	
 	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if ((ContentLength == 0) || (ContentLength > PROFILE_FLASH_LANG_RECORD_BODY_SIZE))
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 	
 	LangpackAddr = 0;
 	LangpackBlocks = (ContentLength % PROFILE_FLASH_LANG_BLOCK_SIZE) ? ((ContentLength / PROFILE_FLASH_LANG_BLOCK_SIZE) + 1) : (ContentLength / PROFILE_FLASH_LANG_BLOCK_SIZE);
 	if ((Body) && (BodyLen))
 	{
-		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;
 		goto write_data;
@@ -176,19 +184,19 @@ static void HTTP_SERVER_API_V1_PROFILE_LANGPACK_PutProcessing(struct netconn *Co
 	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
-		recv_err = netconn_recv(Conn, &inbuf);
+		recv_err = netconn_recv(Conn, &Inbuf);
 		if (recv_err == ERR_OK)
 		{
-			netbuf_data(inbuf, (void**)&data, &datalen);
+			netbuf_data(Inbuf, (void**)&data, &datalen);
 write_data:
 			ContentLength -= datalen;
 			if (PROFILE_FLASH_SaveLangpackData(&ProfileFlash, LangpackAddr, data, datalen))
 			{
-				netbuf_delete(inbuf);
+				netbuf_delete(Inbuf);
 				goto error_500;
 			}
 			LangpackAddr += datalen;
-			netbuf_delete(inbuf);
+			netbuf_delete(Inbuf);
 			
 		}
 		else
@@ -220,7 +228,7 @@ error_500:
 
 static void HTTP_SERVER_API_V1_PROFILE_CONFIG_HeadProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
-	char Buffer[256];
+	char Buffer[128];
 	char ValueString[sizeof(PROFILE_VALUE_T)];
 	uint32_t ContentLength;
 	uint8_t NColor, DColor, FColor;
@@ -251,6 +259,7 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_HeadProcessing(struct netconn *Con
 	}
 	
 	netbuf_delete(Inbuf);
+	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
@@ -271,6 +280,7 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_GetProcessing(struct netconn *Conn
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	netbuf_delete(Inbuf);
+	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
@@ -307,7 +317,6 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_GetProcessing(struct netconn *Conn
 
 static void HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
-	struct netbuf *inbuf;
 	char *p, *Section, *Name, *Value, *Type, *data;
 	char Buffer[256];
 	uint32_t BufferLen;
@@ -320,18 +329,23 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing(struct netconn *Conn
 	err_t recv_err;
 	
 	if (!ReqHeader->ContentLength)
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 	
 	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if (ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 	
 	BufferLen = 0;
 	Error = 0;
 	PROFILE_MUTEX_LOCK(Profile);
 	if ((Body) && (BodyLen))
 	{
-		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;
 		goto parse_body;
@@ -340,10 +354,10 @@ static void HTTP_SERVER_API_V1_PROFILE_CONFIG_PutProcessing(struct netconn *Conn
 	
 	while(ContentLength)
 	{
-		recv_err = netconn_recv(Conn, &inbuf);
+		recv_err = netconn_recv(Conn, &Inbuf);
 		if (recv_err == ERR_OK)
 		{
-			netbuf_data(inbuf, (void**)&data, &datalen);
+			netbuf_data(Inbuf, (void**)&data, &datalen);
 parse_body:
 			ContentLength -= datalen;
 			for (p = data; (p < (data + datalen)) && (!Error); p++)
@@ -456,7 +470,7 @@ parse_body:
 						Error = 1;
 				}
 			}
-			netbuf_delete(inbuf);
+			netbuf_delete(Inbuf);
 		}
 		else
 		{
@@ -468,6 +482,7 @@ parse_body:
 		goto error_500;
 	
 	PROFILE_FLASH_SaveConfigs(&ProfileFlash);
+	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
 	RspHeader.Charset = NULL;
@@ -502,13 +517,17 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_GetProcessing(struct netco
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);
 	if (memcmp(c, "/values", sizeof("/values") - 1))
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 
+	netbuf_delete(Inbuf);
+	
 	for (i = 0; i < Profile->SectionsCnt; i++)
 	{
 		if (Profile->Sections[i]->Index == section_idx)
 		{
-			netbuf_delete(Inbuf);
 			RspHeader.Code = HTTP_RESPONCE_200_OK;
 			RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 			RspHeader.Charset = HTTP_CHARSET_UTF_8;
@@ -557,13 +576,17 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_GetProcessing(struct netco
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);
 	if (memcmp(c, "/colors", sizeof("/colors") - 1))
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
+
+	netbuf_delete(Inbuf);
 	
 	for (i = 0; i < Profile->SectionsCnt; i++)
 	{
 		if (Profile->Sections[i]->Index == section_idx)
 		{
-			netbuf_delete(Inbuf);
 			RspHeader.Code = HTTP_RESPONCE_200_OK;
 			RspHeader.ContentType = HTTP_CONTENT_TYPE_TEXT_PLAIN;
 			RspHeader.Charset = HTTP_CHARSET_UTF_8;
@@ -602,7 +625,6 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_PutProcessing(struct 
 {
 	char *c;
 	uint32_t section_idx, param_idx, error, ContentLength;
-	struct netbuf *inbuf;
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
@@ -612,34 +634,45 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_PutProcessing(struct 
 
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);
-	if (memcmp(c, "/param/", sizeof("/param/") - 1))
+	if (memcmp(c, "/params/", sizeof("/params/") - 1))
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
-	c += sizeof("/param/") - 1;
+	}
+	c += sizeof("/params/") - 1;
 	param_idx = strtoul(c, &c, 10);
 	if (memcmp(c, "/value", sizeof("/value") - 1))
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 	
 	if (ReqHeader->ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 	
 	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if (ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 	
 	error = 0;
 	if ((Body) && (BodyLen))
 	{
-		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;
 		goto write_param;
 	}
 	netbuf_delete(Inbuf);
 	
-	recv_err = netconn_recv(Conn, &inbuf);
+	recv_err = netconn_recv(Conn, &Inbuf);
 	if (recv_err == ERR_OK)
 	{
-		netbuf_data(inbuf, (void**)&data, &datalen);
+		netbuf_data(Inbuf, (void**)&data, &datalen);
 write_param:
 		if (PROFILE_GetParamByIndex(Profile, section_idx, param_idx, &Param))
 			error = 404;
@@ -652,7 +685,7 @@ write_param:
 			error = 400;
 		}
 		PROFILE_MUTEX_UNLOCK(Profile);
-		netbuf_delete(inbuf);
+		netbuf_delete(Inbuf);
 	}
 	else
 	{
@@ -686,8 +719,8 @@ error_404:
 
 static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_PutProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
+	char *c;
 	uint32_t section_idx, param_idx, error, ContentLength;
-	struct netbuf *inbuf;
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
@@ -695,27 +728,47 @@ static void HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_PutProcessing(struct
 	PROFILE_PARAM_T *Param;
 	uint8_t Normal, Degrade, Failure;
 
-	if (ReqHeader->ContentLength == 0)
+	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
+	section_idx = strtoul(c, &c, 10);
+	if (memcmp(c, "/params/", sizeof("/params/") - 1))
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
+	c += sizeof("/params/") - 1;
+	param_idx = strtoul(c, &c, 10);
+	if (memcmp(c, "/colors", sizeof("/colors") - 1))
+	{
+		netbuf_delete(Inbuf);
+		goto error_400;
+	}
+	
+	if (ReqHeader->ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
+		goto error_400;
+	}
 	
 	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if (ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
 		goto error_400;
+	}
 	
 	error = 0;
 	if ((Body) && (BodyLen))
 	{
-		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;
 		goto write_param;
 	}
 	netbuf_delete(Inbuf);
 	
-	recv_err = netconn_recv(Conn, &inbuf);
+	recv_err = netconn_recv(Conn, &Inbuf);
 	if (recv_err == ERR_OK)
 	{
-		netbuf_data(inbuf, (void**)&data, &datalen);
+		netbuf_data(Inbuf, (void**)&data, &datalen);
 write_param:
 		if (PROFILE_GetParamByIndex(Profile, section_idx, param_idx, &Param))
 			error = 404;
@@ -748,7 +801,7 @@ write_param:
 			error = 400;
 		}
 		PROFILE_MUTEX_UNLOCK(Profile);
-		netbuf_delete(inbuf);
+		netbuf_delete(Inbuf);
 	}
 	else
 	{

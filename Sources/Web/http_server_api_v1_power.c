@@ -20,6 +20,7 @@ static void HTTP_SERVER_API_V1_POWER_GetProcessing(struct netconn *Conn, struct 
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	netbuf_delete(Inbuf);
+	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;

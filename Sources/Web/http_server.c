@@ -8,7 +8,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define HTTP_SERVER_THREAD_STACK_SIZE  ( 512 )
+#define HTTP_SERVER_THREAD_STACK_SIZE  ( 1024 )
 #define HTTP_SERVER_THREAD_PRIO    ( osPriorityAboveNormal )
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -342,20 +342,38 @@ int32_t http_server_write_body(struct netconn *conn, char *str, ...)
   return 0;
 }
 
-int32_t http_server_write_body_static(struct netconn *conn, char *str)
+int32_t http_server_write_body_data(struct netconn *conn, char *data, uint32_t datalen)
 {
 	char chunk_size[16];
-	uint32_t len;
+	uint32_t datashift;
 	
-	len = strlen(str);
-	snprintf (chunk_size, sizeof(chunk_size), "%X\r\n", len);
-	if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
-		return -1;	
-	if (http_server_write(conn, str, len, NETCONN_NOCOPY | NETCONN_MORE))
-		return -1;
-	if (http_server_write(conn, "\r\n", 2, NETCONN_NOCOPY | NETCONN_MORE))
-		return -1;;
-  return 0;
+	while (datalen)
+	{
+		if (datalen + RESPONCE_BODY_LEN >= 1024)
+		{
+			datashift = 1024 - RESPONCE_BODY_LEN;
+			memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], data, datashift);
+			RESPONCE_BODY_LEN = 1024;
+			snprintf(chunk_size, sizeof(chunk_size), "%X\r\n", RESPONCE_BODY_LEN);
+			if (http_server_write(conn, chunk_size, strlen(chunk_size), NETCONN_COPY | NETCONN_MORE))
+				return -1;	
+			RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\r';
+			RESPONCE_BODY[RESPONCE_BODY_LEN++] = '\n';
+			if (http_server_write(conn, RESPONCE_BODY, RESPONCE_BODY_LEN, NETCONN_COPY | NETCONN_MORE))
+				return -1;
+			data += datashift;
+			datalen -= datashift;
+			RESPONCE_BODY_LEN = 0;
+		}
+		else
+		{
+			memcpy(&RESPONCE_BODY[RESPONCE_BODY_LEN], data, datalen);
+			RESPONCE_BODY_LEN += datalen;
+			data += datalen;
+			datalen = 0;
+		}
+	}
+	return 0;
 }
 
 int32_t http_server_write_body_finish(struct netconn *conn)

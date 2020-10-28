@@ -18,7 +18,7 @@ int32_t http_server_write_500_error(struct netconn *conn);
 int32_t http_server_write_header(struct netconn *conn, HTTP_RESPONCE_HEADER_T *Header);
 int32_t http_server_write_body_start(struct netconn *conn);
 int32_t http_server_write_body(struct netconn *conn, char *str, ...);
-int32_t http_server_write_body_static(struct netconn *conn, char *str);
+int32_t http_server_write_body_data(struct netconn *conn, char *data, uint32_t datalen);
 int32_t http_server_write_body_finish(struct netconn *conn);
 
 void HTTP_SERVER_Init(void);

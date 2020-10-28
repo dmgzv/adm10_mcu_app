@@ -95,6 +95,7 @@ static void HTTP_SERVER_API_V1_UPDATE_GetProcessing(struct netconn *Conn, struct
 	uint32_t i, j;
 	
 	netbuf_delete(Inbuf);
+	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
 	RspHeader.Charset = HTTP_CHARSET_UTF_8;
@@ -176,7 +177,6 @@ static void HTTP_SERVER_API_V1_UPDATE_PostProcessing(struct netconn *Conn, struc
 {
 	char Buffer[256];
 	uint32_t BufferLen;
-	struct netbuf *inbuf;
 	err_t recv_err;
 	char *data;
 	char *p, *_p;
@@ -188,17 +188,22 @@ static void HTTP_SERVER_API_V1_UPDATE_PostProcessing(struct netconn *Conn, struc
 	uint32_t tmp;
 
 	if (ReqHeader->ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
 		goto error;
+	}
 	
 	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if (ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
 		goto error;
+	}
 	
 	error = 0;
 	BufferLen = 0;
 	if ((Body) && (BodyLen))
 	{
-		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;		
 		goto parse_data;
@@ -206,10 +211,10 @@ static void HTTP_SERVER_API_V1_UPDATE_PostProcessing(struct netconn *Conn, struc
 	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
-		recv_err = netconn_recv(Conn, &inbuf);
+		recv_err = netconn_recv(Conn, &Inbuf);
 		if (recv_err == ERR_OK)
 		{
-			netbuf_data(inbuf, (void**)&data, &datalen);
+			netbuf_data(Inbuf, (void**)&data, &datalen);
 parse_data:
 			ContentLength -= datalen;
 			if ((!error) && ((BufferLen + datalen) < (sizeof(Buffer) - 1)))
@@ -221,7 +226,7 @@ parse_data:
 			{
 				error = 1;
 			}
-			netbuf_delete(inbuf);
+			netbuf_delete(Inbuf);
 		}
 		else
 		{
@@ -324,7 +329,6 @@ error:
 
 static void HTTP_SERVER_API_V1_UPDATE_MCU_SOFTWARE_PostProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
-	struct netbuf *inbuf;
 	err_t recv_err;
 	char *data;
 	uint16_t error, datalen;
@@ -332,18 +336,23 @@ static void HTTP_SERVER_API_V1_UPDATE_MCU_SOFTWARE_PostProcessing(struct netconn
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	if (ReqHeader->ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
 		goto error;
+	}
 	
 	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if ((ContentLength == 0) || (ContentLength > BSP_FLASH_FW_SIZE))
+	{
+		netbuf_delete(Inbuf);
 		goto error;
+	}
 	
 	BOOTLOADER_UpdateNewFwStart(&Bootloader);
 	
 	error = 0;
 	if ((Body) && (BodyLen))
 	{
-		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;		
 		goto write_data;
@@ -351,10 +360,10 @@ static void HTTP_SERVER_API_V1_UPDATE_MCU_SOFTWARE_PostProcessing(struct netconn
 	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
-		recv_err = netconn_recv(Conn, &inbuf);
+		recv_err = netconn_recv(Conn, &Inbuf);
 		if (recv_err == ERR_OK)
 		{
-			netbuf_data(inbuf, (void**)&data, &datalen);
+			netbuf_data(Inbuf, (void**)&data, &datalen);
 write_data:
 			ContentLength -= datalen;
 			if (!error)
@@ -362,7 +371,7 @@ write_data:
 				if (BOOTLOADER_UpdateNewFwBlock(&Bootloader, data, datalen))
 					error = 1;
 			}			
-			netbuf_delete(inbuf);
+			netbuf_delete(Inbuf);
 		}
 		else
 		{
@@ -399,7 +408,6 @@ error:
 
 static void HTTP_SERVER_API_V1_UPDATE_MCU_WEB_PostProcessing(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, char* Body, uint16_t BodyLen)
 {
-	struct netbuf *inbuf;
 	err_t recv_err;
 	char *data;
 	uint16_t error, datalen;
@@ -407,17 +415,22 @@ static void HTTP_SERVER_API_V1_UPDATE_MCU_WEB_PostProcessing(struct netconn *Con
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	if (ReqHeader->ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
 		goto error;
+	}
 	
 	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if ((ContentLength == 0) || (ContentLength > HTTP_SERVER_FILES_RECORD_BODY_SIZE))
+	{
+		netbuf_delete(Inbuf);
 		goto error;
+	}
 	
 	dataaddr = 0;
 	error = 0;
 	if ((Body) && (BodyLen))
 	{
-		inbuf = Inbuf;
 		data = Body;
 		datalen = BodyLen;		
 		goto write_data;
@@ -425,10 +438,10 @@ static void HTTP_SERVER_API_V1_UPDATE_MCU_WEB_PostProcessing(struct netconn *Con
 	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
-		recv_err = netconn_recv(Conn, &inbuf);
+		recv_err = netconn_recv(Conn, &Inbuf);
 		if (recv_err == ERR_OK)
 		{
-			netbuf_data(inbuf, (void**)&data, &datalen);
+			netbuf_data(Inbuf, (void**)&data, &datalen);
 write_data:
 			ContentLength -= datalen;
 			if (!error)
@@ -437,7 +450,7 @@ write_data:
 					error = 1;
 			}
 			dataaddr += datalen;
-			netbuf_delete(inbuf);
+			netbuf_delete(Inbuf);
 		}
 		else
 		{

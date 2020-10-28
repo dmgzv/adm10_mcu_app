@@ -1,9 +1,31 @@
 #include "http_server_url.h"
 #include "http_server_api_v1_log.h"
+#include "http_server_api_v1_devices.h"
+#include "http_server_api_v1_modules.h"
+#include "http_server_api_v1_interfaces.h"
+#include "http_server_api_v1_power.h"
+#include "http_server_api_v1_os.h"
+#include "http_server_api_v1_profile.h"
+#include "http_server_api_v1_update.h"
 #include <string.h>
 
 const HTTP_SERVER_URL_T *HTTP_SERVER_URL_List[] = {
 	&HTTP_SERVER_API_V1_LOG_Url,
+	&HTTP_SERVER_API_V1_DEVICES_Url,
+	&HTTP_SERVER_API_V1_MODULES_Url,
+	&HTTP_SERVER_API_V1_INTERFACES_Url,
+	&HTTP_SERVER_API_V1_POWER_Url,
+	&HTTP_SERVER_API_V1_OS_Url,
+	&HTTP_SERVER_API_V1_PROFILE_Url,
+	&HTTP_SERVER_API_V1_PROFILE_LANGPACK_Url,
+	&HTTP_SERVER_API_V1_PROFILE_CONFIG_Url,
+	&HTTP_SERVER_API_V1_PROFILE_SECTION_VALUES_Url,
+	&HTTP_SERVER_API_V1_PROFILE_SECTION_COLORS_Url,
+	&HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_VALUE_Url,
+	&HTTP_SERVER_API_V1_PROFILE_SECTION_PARAM_COLORS_Url,
+	&HTTP_SERVER_API_V1_UPDATE_Url,
+	&HTTP_SERVER_API_V1_UPDATE_MCU_SOFTWARE_Url,
+	&HTTP_SERVER_API_V1_UPDATE_MCU_WEB_Url,
 };
 const uint32_t HTTP_SERVER_URL_ListSize = sizeof(HTTP_SERVER_URL_List) / sizeof(HTTP_SERVER_URL_List[0]);
 
@@ -56,7 +78,7 @@ int32_t HTTP_SERVER_URL_Process(struct netconn *Conn, struct netbuf *Inbuf, HTTP
 		{
 			if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_HEAD" ", sizeof(HTTP_REQUEST_HEAD))) && (HTTP_SERVER_URL_List[i]->HeadProcessing))
 			{
-				HTTP_SERVER_URL_List[i]->GetProcessing(Conn, Inbuf, ReqHeader, Body, BodyLen);
+				HTTP_SERVER_URL_List[i]->HeadProcessing(Conn, Inbuf, ReqHeader, Body, BodyLen);
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET))) && (HTTP_SERVER_URL_List[i]->GetProcessing))
 			{
@@ -68,11 +90,12 @@ int32_t HTTP_SERVER_URL_Process(struct netconn *Conn, struct netbuf *Inbuf, HTTP
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_POST" ", sizeof(HTTP_REQUEST_POST))) && (HTTP_SERVER_URL_List[i]->PostProcessing))
 			{
-				HTTP_SERVER_URL_List[i]->PutProcessing(Conn, Inbuf, ReqHeader, Body, BodyLen);
+				HTTP_SERVER_URL_List[i]->PostProcessing(Conn, Inbuf, ReqHeader, Body, BodyLen);
 			}
 			else
 			{
 				netbuf_delete(Inbuf);
+				
 				RspHeader.Code = HTTP_RESPONCE_405_METHOD_NOT_ALLOWED;
 				RspHeader.ContentType = NULL;
 				RspHeader.Charset = NULL;
