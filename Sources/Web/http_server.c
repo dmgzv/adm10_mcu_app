@@ -1,6 +1,5 @@
 #include "http_server.h"
 #include "http_server_url.h"
-#include "http_server_url_files.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -430,13 +429,7 @@ static void HTTP_SERVER_ServeConnection(struct netconn *Conn)
 			return;
 		}
 		
-		if (!HTTP_SERVER_URL_Process(Conn, Inbuf, &ReqHeader))
-			return;
-		if (!HTTP_SERVER_URL_FILES_Process(Conn, Inbuf, &ReqHeader))
-			return;
-		
-		netbuf_delete(Inbuf);
-		__HTTP_SERVER_WriteError404(Conn);
+		HTTP_SERVER_URL_Process(Conn, Inbuf, &ReqHeader);
 	}
 }
 

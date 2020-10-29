@@ -1,0 +1,179 @@
+#include "http_server_url_api_v1_auth.h"
+#include "user.h"
+#include <string.h>
+
+#define HTTP_SERVER_URL_API_V1_AUTH_TEMPLATE	"/api/v1/auth"
+
+static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+
+const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_AUTH = {
+	.Template = HTTP_SERVER_URL_API_V1_AUTH_TEMPLATE,
+	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_AUTH_TEMPLATE) - 1,
+	.Head = NULL,
+	.Get = NULL,
+	.Put = NULL,
+	.Post = HTTP_SERVER_URL_API_V1_AUTH_Post,
+};
+
+static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
+{
+	char *Data, *p1, *p2;
+	uint16_t DataLen;
+	char *Login, *Password;
+	uint32_t LoginSize, PasswordSize;
+	USER_T User;
+	uint32_t ContentLength, RecvError;
+	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	
+	if (!ReqHeader->ContentLength)
+	{
+		netbuf_delete(Inbuf);
+		goto error_400;
+	}
+	
+	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
+	if (ContentLength == 0)
+	{
+		netbuf_delete(Inbuf);
+		goto error_400;
+	}
+	
+	Login = NULL;
+	LoginSize = 0;
+	Password = NULL;
+	PasswordSize = 0;
+	
+	if (ReqHeader->Body)
+	{
+		Data = ReqHeader->Body;
+		DataLen = ReqHeader->BodyLen;
+		goto parse_body;
+	}
+	netbuf_delete(Inbuf);
+	
+	RecvError = netconn_recv(Conn, &Inbuf);
+	if (RecvError == ERR_OK)
+	{
+		netbuf_data(Inbuf, (void**)&Data, &DataLen);
+parse_body:		
+		for (p1 = Data; p1 < (Data + DataLen); p1++)
+		{
+			if (!memcmp(p1, "\"login\"", sizeof("\"login\"") - 1))
+			{
+				p2 = p1 + sizeof("\"login\"") - 1;
+				while ((*p2 == ' ') || (*p2 == '\t'))
+					p2++;
+				
+				if ((*p2 != ':') || (p2 >= (Data + DataLen)))
+				{
+					netbuf_delete(Inbuf);
+					goto error_400;
+				}
+				p2++;
+				
+				while ((*p2 == ' ') || (*p2 == '\t'))
+					p2++;
+				
+				if ((*p2 != '\"') || (p2 >= (Data + DataLen)))
+				{
+					netbuf_delete(Inbuf);
+					goto error_400;
+				}
+				p2++;
+				
+				Login = p2;
+				
+				while (*p2 != '\"')
+				{
+					if (p2 >= (Data + DataLen))
+					{
+						netbuf_delete(Inbuf);
+						goto error_400;
+					}
+					p2++;
+				}
+				LoginSize = p2 - Login;
+			}
+			if (!memcmp(p1, "\"password\"", sizeof("\"password\"") - 1))
+			{
+				p2 = p1 + sizeof("\"password\"") - 1;
+				while ((*p2 == ' ') || (*p2 == '\t'))
+					p2++;
+				
+				if ((*p2 != ':') || (p2 >= (Data + DataLen)))
+				{
+					netbuf_delete(Inbuf);
+					goto error_400;
+				}
+				p2++;
+				
+				while ((*p2 == ' ') || (*p2 == '\t'))
+					p2++;
+				
+				if ((*p2 != '\"') || (p2 >= (Data + DataLen)))
+				{
+					netbuf_delete(Inbuf);
+					goto error_400;
+				}
+				p2++;
+				
+				Password = p2;
+				
+				while (*p2 != '\"')
+				{
+					if (p2 >= (Data + DataLen))
+					{
+						netbuf_delete(Inbuf);
+						goto error_400;
+					}
+					p2++;
+				}
+				PasswordSize = p2 - Password;
+			}
+		}
+		
+		if ((!Login) || (LoginSize == 0) || (!Password) || (PasswordSize == 0))
+		{
+			netbuf_delete(Inbuf);
+			goto error_400;
+		}
+		
+		if (USER_FindByLoginAndPassword(Login, LoginSize, Password, PasswordSize, &User))
+		{
+			netbuf_delete(Inbuf);
+			goto error_400;
+		}
+		
+		netbuf_delete(Inbuf);
+	}
+	else
+	{
+		goto error_400;
+	}
+	
+	RspHeader.Code = HTTP_RESPONCE_200_OK;
+	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
+	RspHeader.Charset = HTTP_CHARSET_UTF_8;
+	RspHeader.ContentLength = 0;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
+	RspHeader.AllowedLen = 0;
+	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
+		return;
+	
+	__HTTP_SERVER_StartBody(Conn);
+	__HTTP_SERVER_WriteBody(Conn, "{\r\n");
+	__HTTP_SERVER_WriteBody(Conn, "\t\"login\" : \"%s\",\r\n", User.Login);
+	__HTTP_SERVER_WriteBody(Conn, "\t\"name\" : \"%s\",\r\n", User.Name);
+	__HTTP_SERVER_WriteBody(Conn, "\t\"tel\" : \"+%s\",\r\n", User.Tel);
+	__HTTP_SERVER_WriteBody(Conn, "\t\"email\" : \"%s\",\r\n", User.Email);
+	__HTTP_SERVER_WriteBody(Conn, "\t\"role\" : \"%s\"\r\n", User.Role);
+	__HTTP_SERVER_WriteBody(Conn, "}\r\n");
+	__HTTP_SERVER_FinishBody(Conn);
+	
+	return;
+	
+error_400:
+	__HTTP_SERVER_WriteError400(Conn);
+	return;
+}

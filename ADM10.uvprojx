@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI, DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web;.\Sources\TFTP</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web;.\Sources\TFTP;.\Sources\User</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1202,6 +1202,11 @@
               <FilePath>.\Sources\Web\http_server_url_api.c</FilePath>
             </File>
             <File>
+              <FileName>http_server_url_api_v1_auth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_auth.c</FilePath>
+            </File>
+            <File>
               <FileName>http_server_url_api_v1_devices.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_url_api_v1_devices.c</FilePath>
@@ -1265,6 +1270,16 @@
               <FileName>tftp_bootloader_mcu.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader_mcu.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User</GroupName>
+          <Files>
+            <File>
+              <FileName>user.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\User\user.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2466,6 +2481,11 @@
               <FilePath>.\Sources\Web\http_server_url_api.c</FilePath>
             </File>
             <File>
+              <FileName>http_server_url_api_v1_auth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_auth.c</FilePath>
+            </File>
+            <File>
               <FileName>http_server_url_api_v1_devices.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_url_api_v1_devices.c</FilePath>
@@ -2529,6 +2549,16 @@
               <FileName>tftp_bootloader_mcu.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader_mcu.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User</GroupName>
+          <Files>
+            <File>
+              <FileName>user.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\User\user.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,4 +1,5 @@
 #include "http_server_url_api.h"
+#include "http_server_url_api_v1_auth.h"
 #include "http_server_url_api_v1_log.h"
 #include "http_server_url_api_v1_devices.h"
 #include "http_server_url_api_v1_modules.h"
@@ -10,6 +11,7 @@
 #include <string.h>
 
 const HTTP_SERVER_URL_T *HTTP_SERVER_URL_API[] = {
+	&HTTP_SERVER_URL_API_V1_AUTH,
 	&HTTP_SERVER_URL_API_V1_LOG,
 	&HTTP_SERVER_URL_API_V1_DEVICES,
 	&HTTP_SERVER_URL_API_V1_MODULES,
