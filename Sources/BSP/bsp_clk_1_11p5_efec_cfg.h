@@ -26,6 +26,7 @@
 
 const SI5332_CFG_T bsp_clk_1_11p5_efec_cfg[BSP_CLK_1_11P5_EFEC_CFG_NUM_REGS] =
 {
+	/* Start configuration registers */
 	{ 0x0017, 0x41 },
 	{ 0x0018, 0x44 },
 	{ 0x0019, 0x4D },
@@ -115,6 +116,7 @@ const SI5332_CFG_T bsp_clk_1_11p5_efec_cfg[BSP_CLK_1_11P5_EFEC_CFG_NUM_REGS] =
 	{ 0x00BF, 0x00 },
 	{ 0x00C0, 0x26 },
 	{ 0x00C1, 0x26 },
+	/* End configuration registers */
 };
 
 /*

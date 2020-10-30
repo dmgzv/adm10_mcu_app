@@ -27,7 +27,7 @@
 const SI5332_CFG_T bsp_clk_2_11p5_cfg[BSP_CLK_2_11P5_CFG_NUM_REGS] =
 {
 	/* Start configuration registers */
-{ 0x0017, 0x41 },
+	{ 0x0017, 0x41 },
 	{ 0x0018, 0x44 },
 	{ 0x0019, 0x4D },
 	{ 0x001A, 0x31 },
