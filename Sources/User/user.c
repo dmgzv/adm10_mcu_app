@@ -51,3 +51,17 @@ int32_t USER_FindByLoginAndPassword(char* Login, uint32_t LoginSize, char* Passw
 	
 	return -1;
 }
+
+uint32_t USER_GetUsersCnt(void)
+{
+	return UserListSize;
+}
+
+int32_t USER_GetUser(uint32_t Idx, USER_T *User)
+{
+	if (Idx >= UserListSize)
+		return -1;
+	memcpy(User, &UserList[Idx], sizeof(USER_T));
+	return 0;
+}
+

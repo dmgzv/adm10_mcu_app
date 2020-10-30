@@ -1,5 +1,6 @@
 #include "http_server_url_api_v1_auth.h"
 #include "user.h"
+#include "tiny-json.h"
 #include <string.h>
 
 #define HTTP_SERVER_URL_API_V1_AUTH_TEMPLATE	"/api/v1/auth"
@@ -21,6 +22,9 @@ static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf
 	uint16_t DataLen;
 	char *Login, *Password;
 	uint32_t LoginSize, PasswordSize;
+	json_t mem[4];
+	json_t const* json;
+	json_t const* jsonProp;
 	USER_T User;
 	uint32_t ContentLength, RecvError;
 	HTTP_HTTP_SERVER_Buffer_T RspHeader;
@@ -55,88 +59,31 @@ static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf
 	if (RecvError == ERR_OK)
 	{
 		netbuf_data(Inbuf, (void**)&Data, &DataLen);
-parse_body:		
-		for (p1 = Data; p1 < (Data + DataLen); p1++)
-		{
-			if (!memcmp(p1, "\"login\"", sizeof("\"login\"") - 1))
-			{
-				p2 = p1 + sizeof("\"login\"") - 1;
-				while ((*p2 == ' ') || (*p2 == '\t'))
-					p2++;
-				
-				if ((*p2 != ':') || (p2 >= (Data + DataLen)))
-				{
-					netbuf_delete(Inbuf);
-					goto error_400;
-				}
-				p2++;
-				
-				while ((*p2 == ' ') || (*p2 == '\t'))
-					p2++;
-				
-				if ((*p2 != '\"') || (p2 >= (Data + DataLen)))
-				{
-					netbuf_delete(Inbuf);
-					goto error_400;
-				}
-				p2++;
-				
-				Login = p2;
-				
-				while (*p2 != '\"')
-				{
-					if (p2 >= (Data + DataLen))
-					{
-						netbuf_delete(Inbuf);
-						goto error_400;
-					}
-					p2++;
-				}
-				LoginSize = p2 - Login;
-			}
-			if (!memcmp(p1, "\"password\"", sizeof("\"password\"") - 1))
-			{
-				p2 = p1 + sizeof("\"password\"") - 1;
-				while ((*p2 == ' ') || (*p2 == '\t'))
-					p2++;
-				
-				if ((*p2 != ':') || (p2 >= (Data + DataLen)))
-				{
-					netbuf_delete(Inbuf);
-					goto error_400;
-				}
-				p2++;
-				
-				while ((*p2 == ' ') || (*p2 == '\t'))
-					p2++;
-				
-				if ((*p2 != '\"') || (p2 >= (Data + DataLen)))
-				{
-					netbuf_delete(Inbuf);
-					goto error_400;
-				}
-				p2++;
-				
-				Password = p2;
-				
-				while (*p2 != '\"')
-				{
-					if (p2 >= (Data + DataLen))
-					{
-						netbuf_delete(Inbuf);
-						goto error_400;
-					}
-					p2++;
-				}
-				PasswordSize = p2 - Password;
-			}
-		}
+parse_body:
 		
-		if ((!Login) || (LoginSize == 0) || (!Password) || (PasswordSize == 0))
-		{
-			netbuf_delete(Inbuf);
-			goto error_400;
-		}
+		json = json_create( Data, mem, sizeof mem / sizeof *mem );
+    if ( !json ) {
+        netbuf_delete(Inbuf);
+				goto error_400;
+    }
+		
+		jsonProp = json_getProperty( json, "login" );
+    if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
+        netbuf_delete(Inbuf);
+				goto error_400;
+    }
+		
+		Login = (char*)json_getValue( jsonProp );
+		LoginSize = strlen(Login);
+		
+		jsonProp = json_getProperty( json, "password" );
+    if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
+        netbuf_delete(Inbuf);
+				goto error_400;
+    }
+		
+		Password = (char*)json_getValue( jsonProp );
+		PasswordSize = strlen(Password);
 		
 		if (USER_FindByLoginAndPassword(Login, LoginSize, Password, PasswordSize, &User))
 		{

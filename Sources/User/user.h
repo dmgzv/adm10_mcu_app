@@ -14,5 +14,7 @@ typedef struct {
 
 int32_t USER_Init(void);
 int32_t USER_FindByLoginAndPassword(char* Login, uint32_t LoginSize, char* Password, uint32_t PasswordSize, USER_T *User);
+uint32_t USER_GetUsersCnt(void);
+int32_t USER_GetUser(uint32_t Idx, USER_T *User);
 
 #endif /* __USER_H__ */

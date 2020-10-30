@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI, DEBUG</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web;.\Sources\TFTP;.\Sources\User</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web;.\Sources\TFTP;.\Sources\User;.\Sources\JSON</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1246,6 +1246,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_url_api_v1_update.c</FilePath>
             </File>
+            <File>
+              <FileName>http_server_url_api_v1_users.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_users.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1280,6 +1285,16 @@
               <FileName>user.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\User\user.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>JSON</GroupName>
+          <Files>
+            <File>
+              <FileName>tiny-json.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\JSON\tiny-json.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2525,6 +2540,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_url_api_v1_update.c</FilePath>
             </File>
+            <File>
+              <FileName>http_server_url_api_v1_users.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_users.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2559,6 +2579,16 @@
               <FileName>user.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\User\user.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>JSON</GroupName>
+          <Files>
+            <File>
+              <FileName>tiny-json.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\JSON\tiny-json.c</FilePath>
             </File>
           </Files>
         </Group>

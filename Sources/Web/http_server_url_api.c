@@ -8,10 +8,12 @@
 #include "http_server_url_api_v1_os.h"
 #include "http_server_url_api_v1_profile.h"
 #include "http_server_url_api_v1_update.h"
+#include "http_server_url_api_v1_users.h"
 #include <string.h>
 
 const HTTP_SERVER_URL_T *HTTP_SERVER_URL_API[] = {
 	&HTTP_SERVER_URL_API_V1_AUTH,
+	&HTTP_SERVER_URL_API_V1_USERS,
 	&HTTP_SERVER_URL_API_V1_LOG,
 	&HTTP_SERVER_URL_API_V1_DEVICES,
 	&HTTP_SERVER_URL_API_V1_MODULES,
