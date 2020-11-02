@@ -3,6 +3,7 @@
 
 #include "http_server.h"
 
+extern const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_USER;
 extern const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_USERS;
 
 #endif /*__HTTP_SERVER_URL_API_V1_USERS_H__*/

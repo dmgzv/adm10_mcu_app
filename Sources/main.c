@@ -14,6 +14,7 @@
 #include "tftp_bootloader.h"
 #include "log.h"
 #include "watchdog.h"
+#include "user.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -157,6 +158,7 @@ static void System_Thread(void const *argument)
 	SHELL_Init(&ShellTelnet, "Shell TELNET" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellTelnetIface);
 	WATCHDOG_Refresh();	
 	
+	USER_Init();
 	TFTP_CLIENT_Init();
 	TFTP_BOOTLOADER_Init();
 	HTTP_SERVER_FILES_Init();

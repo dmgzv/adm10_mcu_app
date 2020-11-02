@@ -10,6 +10,7 @@ typedef struct {
 	void (*Get)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 	void (*Put)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 	void (*Post)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+	void (*Delete)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 } HTTP_SERVER_URL_T;
 
 int32_t __HTTP_SERVER_WriteError301(struct netconn *conn, char *Location);

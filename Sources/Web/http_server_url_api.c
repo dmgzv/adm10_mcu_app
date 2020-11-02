@@ -13,6 +13,7 @@
 
 const HTTP_SERVER_URL_T *HTTP_SERVER_URL_API[] = {
 	&HTTP_SERVER_URL_API_V1_AUTH,
+	&HTTP_SERVER_URL_API_V1_USER,
 	&HTTP_SERVER_URL_API_V1_USERS,
 	&HTTP_SERVER_URL_API_V1_LOG,
 	&HTTP_SERVER_URL_API_V1_DEVICES,
@@ -62,8 +63,11 @@ int32_t HTTP_SERVER_URL_API_CompareToTemplate(char *Url, uint32_t UrlSize, char 
 		{
 			return -1;
 		}
-		UrlIdx++;
-		UrlTemplateIdx++;
+		else
+		{
+			UrlIdx++;
+			UrlTemplateIdx++;
+		}
 	}
 	if ((UrlIdx != UrlSize) || (UrlTemplateIdx != UrlTemplateSize))
 		return -1;
@@ -96,6 +100,10 @@ int32_t HTTP_SERVER_URL_API_Process(struct netconn *Conn, struct netbuf *Inbuf, 
 			{
 				HTTP_SERVER_URL_API[i]->Post(Conn, Inbuf, ReqHeader);
 			}
+			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_DELETE" ", sizeof(HTTP_REQUEST_DELETE))) && (HTTP_SERVER_URL_API[i]->Delete))
+			{
+				HTTP_SERVER_URL_API[i]->Delete(Conn, Inbuf, ReqHeader);
+			}
 			else
 			{
 				netbuf_delete(Inbuf);
@@ -115,6 +123,8 @@ int32_t HTTP_SERVER_URL_API_Process(struct netconn *Conn, struct netbuf *Inbuf, 
 					*Allowed++ = HTTP_REQUEST_PUT;
 				if (HTTP_SERVER_URL_API[i]->Post)
 					*Allowed++ = HTTP_REQUEST_POST;
+				if (HTTP_SERVER_URL_API[i]->Delete)
+					*Allowed++ = HTTP_REQUEST_DELETE;
 				RspHeader.AllowedLen = Allowed - RspHeader.Allowed;
 				__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 			}

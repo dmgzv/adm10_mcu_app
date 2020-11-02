@@ -63,6 +63,12 @@ static int32_t HTTP_SERVER_ParseRequest(char *Data, uint32_t DataLen, HTTP_REQUE
 		Header->TypeSize = sizeof(HTTP_REQUEST_POST) - 1;
 		p1 = p1 + sizeof(HTTP_REQUEST_POST) - 1;
 	}
+	else if (!memcmp(p1, HTTP_REQUEST_DELETE, sizeof(HTTP_REQUEST_DELETE) - 1))
+	{
+		Header->Type = p2;
+		Header->TypeSize = sizeof(HTTP_REQUEST_DELETE) - 1;
+		p1 = p1 + sizeof(HTTP_REQUEST_DELETE) - 1;
+	}
 	else
 	{
 		return -1;

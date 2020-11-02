@@ -18,10 +18,9 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_AUTH = {
 
 static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
-	char *Data, *p1, *p2;
+	char *Data;
 	uint16_t DataLen;
 	char *Login, *Password;
-	uint32_t LoginSize, PasswordSize;
 	json_t mem[4];
 	json_t const* json;
 	json_t const* jsonProp;
@@ -43,9 +42,7 @@ static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf
 	}
 	
 	Login = NULL;
-	LoginSize = 0;
 	Password = NULL;
-	PasswordSize = 0;
 	
 	if (ReqHeader->Body)
 	{
@@ -74,7 +71,6 @@ parse_body:
     }
 		
 		Login = (char*)json_getValue( jsonProp );
-		LoginSize = strlen(Login);
 		
 		jsonProp = json_getProperty( json, "password" );
     if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
@@ -83,9 +79,14 @@ parse_body:
     }
 		
 		Password = (char*)json_getValue( jsonProp );
-		PasswordSize = strlen(Password);
 		
-		if (USER_FindByLoginAndPassword(Login, LoginSize, Password, PasswordSize, &User))
+		if (USER_GetUserByLogin(Login, &User))
+		{
+			netbuf_delete(Inbuf);
+			goto error_400;
+		}
+		
+		if (strcmp(Password, User.Password))
 		{
 			netbuf_delete(Inbuf);
 			goto error_400;
@@ -112,7 +113,7 @@ parse_body:
 	__HTTP_SERVER_WriteBody(Conn, "{\r\n");
 	__HTTP_SERVER_WriteBody(Conn, "\t\"login\" : \"%s\",\r\n", User.Login);
 	__HTTP_SERVER_WriteBody(Conn, "\t\"name\" : \"%s\",\r\n", User.Name);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"tel\" : \"+%s\",\r\n", User.Tel);
+	__HTTP_SERVER_WriteBody(Conn, "\t\"tel\" : \"%s\",\r\n", User.Tel);
 	__HTTP_SERVER_WriteBody(Conn, "\t\"email\" : \"%s\",\r\n", User.Email);
 	__HTTP_SERVER_WriteBody(Conn, "\t\"role\" : \"%s\"\r\n", User.Role);
 	__HTTP_SERVER_WriteBody(Conn, "}\r\n");
