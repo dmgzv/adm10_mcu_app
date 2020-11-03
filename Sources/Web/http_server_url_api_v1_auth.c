@@ -10,10 +10,12 @@ static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_AUTH = {
 	.Template = HTTP_SERVER_URL_API_V1_AUTH_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_AUTH_TEMPLATE) - 1,
+	.Auth = NULL,
 	.Head = NULL,
 	.Get = NULL,
 	.Put = NULL,
 	.Post = HTTP_SERVER_URL_API_V1_AUTH_Post,
+	.Delete = NULL,
 };
 
 static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)

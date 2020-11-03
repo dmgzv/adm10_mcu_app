@@ -235,6 +235,34 @@ static int32_t HTTP_SERVER_ParseRequest(char *Data, uint32_t DataLen, HTTP_REQUE
 			Header->ContentLengthSize = p1 - p2;
 			p1 = p1 + 2;
 		}
+		else if (!memcmp(p1, "Authorization: ", sizeof("Authorization: ") - 1))
+		{
+			p2 = p1 = p1 + sizeof("Authorization: ") - 1;
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
+			{
+				if ((p1 - Data) < DataLen)
+					p1++;
+				else
+					return -1;
+			}
+			Header->Authorization = p2;
+			Header->AuthorizationSize = p1 - p2;
+			p1 = p1 + 2;
+		}
+		else if (!memcmp(p1, "authorization: ", sizeof("authorization: ") - 1))
+		{
+			p2 = p1 = p1 + sizeof("authorization: ") - 1;
+			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
+			{
+				if ((p1 - Data) < DataLen)
+					p1++;
+				else
+					return -1;
+			}
+			Header->Authorization = p2;
+			Header->AuthorizationSize = p1 - p2;
+			p1 = p1 + 2;
+		}
 		else
 		{
 			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
@@ -261,6 +289,12 @@ int32_t __HTTP_SERVER_WriteError301(struct netconn *Conn, char *Location)
 int32_t __HTTP_SERVER_WriteError400(struct netconn *Conn)
 {
 	if (HTTP_SERVER_Write(Conn, HTTP_RESPONCE_400_BAD_REQUEST"\r\n\r\n", sizeof(HTTP_RESPONCE_400_BAD_REQUEST"\r\n\r\n") - 1, NETCONN_NOCOPY))
+		return -1;
+	return 0;
+}
+int32_t __HTTP_SERVER_WriteError401(struct netconn *Conn)
+{
+	if (HTTP_SERVER_Write(Conn, HTTP_RESPONCE_401_UNAUTHORIZED"\r\nWWW-Authenticate: Basic realm=\"Access to device data\"\r\n\r\n", sizeof(HTTP_RESPONCE_401_UNAUTHORIZED"\r\nWWW-Authenticate: Basic realm=\"Access to device data\"\r\n\r\n") - 1, NETCONN_NOCOPY))
 		return -1;
 	return 0;
 }

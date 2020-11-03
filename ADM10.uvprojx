@@ -966,6 +966,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Utilities\string_fnc.c</FilePath>
             </File>
+            <File>
+              <FileName>base64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Utilities\base64.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2259,6 +2264,11 @@
               <FileName>string_fnc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Utilities\string_fnc.c</FilePath>
+            </File>
+            <File>
+              <FileName>base64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Utilities\base64.c</FilePath>
             </File>
           </Files>
         </Group>

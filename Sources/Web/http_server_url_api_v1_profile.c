@@ -1,6 +1,8 @@
 #include "http_server_url_api_v1_profile.h"
 #include "profile.h"
 #include "profile_flash.h"
+#include "user.h"
+#include "base64.h"
 #include <string.h>
 
 extern const PROFILE_T *Profile;
@@ -13,6 +15,8 @@ extern PROFILE_FLASH_T ProfileFlash;
 #define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_TEMPLATE	"/api/v1/profile/sections/*/colors"
 #define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE	"/api/v1/profile/sections/*/params/*/value"
 #define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE	"/api/v1/profile/sections/*/params/*/colors"
+
+static int32_t HTTP_SERVER_URL_API_V1_PROFILE_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 
 static void HTTP_SERVER_URL_API_V1_PROFILE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
@@ -28,65 +32,159 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_Put(struct netco
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_TEMPLATE) - 1,
+	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_Get,
 	.Put = NULL,
 	.Post = NULL,
+	.Delete = NULL,
 };
 
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_TEMPLATE) - 1,
+	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get,
 	.Put = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Put,
 	.Post = NULL,
+	.Delete = NULL,
 };
 
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_CONFIG = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_TEMPLATE) - 1,
+	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Head,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Get,
 	.Put = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Put,
 	.Post = NULL,
+	.Delete = NULL,
 };
 
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_TEMPLATE) - 1,
+	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_Get,
 	.Put = NULL,
 	.Post = NULL,
+	.Delete = NULL,
 };
 
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_TEMPLATE) - 1,
+	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_Get,
 	.Put = NULL,
 	.Post = NULL,
+	.Delete = NULL,
 };
 
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE) - 1,
+	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = NULL,
 	.Put = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_Put,
 	.Post = NULL,
+	.Delete = NULL,
 };
 
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE) - 1,
+	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = NULL,
 	.Put = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_Put,
 	.Post = NULL,
+	.Delete = NULL,
 };
+
+static int32_t HTTP_SERVER_URL_API_V1_PROFILE_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
+{
+	char *Base64, *Login, *Password, *c;
+	USER_T User;
+	char Buffer[34];
+	uint32_t Base64Len, i;
+	
+	if ((!ReqHeader->Authorization) || (ReqHeader->AuthorizationSize < sizeof("Basic ")))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	if (!memcpy(ReqHeader->Authorization, "Basic ", sizeof("Basic ") - 1))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	Base64 = &ReqHeader->Authorization[sizeof("Basic ") - 1];
+	ReqHeader->Authorization[ReqHeader->AuthorizationSize] = 0;
+	Base64Len = strlen(Base64);
+	if ((Base64Len % 4) || ((Base64Len * 3 / 4) >= sizeof(Buffer)))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	c = b64tobin(Buffer, Base64);
+	if (!c)
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	*c = 0;
+	
+	for (i = 0; i < sizeof(Buffer); i++)
+	{
+		if (Buffer[i] == 0)
+		{
+			netbuf_delete(Inbuf);
+			goto error_401;
+		}
+		else if (Buffer[i] == ':')
+		{
+			break;
+		}
+	}
+	
+	if (i == sizeof(Buffer))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	Buffer[i] = 0;
+	
+	Login = Buffer;
+	Password = &Buffer[i + 1];
+	
+	if (USER_GetUserByLogin(Login, &User))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	if (strcmp(Password, User.Password))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	return 0;
+	
+error_401:
+	__HTTP_SERVER_WriteError401(Conn);
+	return -1;
+}
 
 static void HTTP_SERVER_URL_API_V1_PROFILE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {

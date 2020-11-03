@@ -86,23 +86,63 @@ int32_t HTTP_SERVER_URL_API_Process(struct netconn *Conn, struct netbuf *Inbuf, 
 		{
 			if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_HEAD" ", sizeof(HTTP_REQUEST_HEAD))) && (HTTP_SERVER_URL_API[i]->Head))
 			{
-				HTTP_SERVER_URL_API[i]->Head(Conn, Inbuf, ReqHeader);
+				if (HTTP_SERVER_URL_API[i]->Auth)
+				{
+					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
+						HTTP_SERVER_URL_API[i]->Head(Conn, Inbuf, ReqHeader);
+				}
+				else
+				{
+					HTTP_SERVER_URL_API[i]->Head(Conn, Inbuf, ReqHeader);
+				}
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET))) && (HTTP_SERVER_URL_API[i]->Get))
 			{
-				HTTP_SERVER_URL_API[i]->Get(Conn, Inbuf, ReqHeader);
+				if (HTTP_SERVER_URL_API[i]->Auth)
+				{
+					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
+						HTTP_SERVER_URL_API[i]->Get(Conn, Inbuf, ReqHeader);
+				}
+				else
+				{
+					HTTP_SERVER_URL_API[i]->Get(Conn, Inbuf, ReqHeader);
+				}
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT))) && (HTTP_SERVER_URL_API[i]->Put))
 			{
-				HTTP_SERVER_URL_API[i]->Put(Conn, Inbuf, ReqHeader);
+				if (HTTP_SERVER_URL_API[i]->Auth)
+				{
+					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
+						HTTP_SERVER_URL_API[i]->Put(Conn, Inbuf, ReqHeader);
+				}
+				else
+				{
+					HTTP_SERVER_URL_API[i]->Put(Conn, Inbuf, ReqHeader);
+				}
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_POST" ", sizeof(HTTP_REQUEST_POST))) && (HTTP_SERVER_URL_API[i]->Post))
 			{
-				HTTP_SERVER_URL_API[i]->Post(Conn, Inbuf, ReqHeader);
+				if (HTTP_SERVER_URL_API[i]->Auth)
+				{
+					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
+						HTTP_SERVER_URL_API[i]->Post(Conn, Inbuf, ReqHeader);
+				}
+				else
+				{
+					HTTP_SERVER_URL_API[i]->Post(Conn, Inbuf, ReqHeader);
+				}
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_DELETE" ", sizeof(HTTP_REQUEST_DELETE))) && (HTTP_SERVER_URL_API[i]->Delete))
 			{
-				HTTP_SERVER_URL_API[i]->Delete(Conn, Inbuf, ReqHeader);
+				if (HTTP_SERVER_URL_API[i]->Auth)
+				{
+					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
+						HTTP_SERVER_URL_API[i]->Delete(Conn, Inbuf, ReqHeader);
+				}
+				else
+				{
+					HTTP_SERVER_URL_API[i]->Delete(Conn, Inbuf, ReqHeader);
+				}
 			}
 			else
 			{

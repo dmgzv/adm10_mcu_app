@@ -12,6 +12,7 @@
 #define HTTP_RESPONCE_200_OK										"HTTP/1.1 200 OK"
 #define HTTP_RESPONCE_301_MOVED_PERMANENTLY			"HTTP/1.1 301 Moved Permanently"
 #define HTTP_RESPONCE_400_BAD_REQUEST						"HTTP/1.1 400 Bad Request"
+#define HTTP_RESPONCE_401_UNAUTHORIZED					"HTTP/1.1 401 Unauthorized"
 #define HTTP_RESPONCE_404_NOT_FOUND							"HTTP/1.1 404 Not Found"
 #define HTTP_RESPONCE_405_METHOD_NOT_ALLOWED		"HTTP/1.1 405 Method Not Allowed"
 #define HTTP_RESPONCE_500_INTERNAL_SERVER_ERROR	"HTTP/1.1 500 Internal Server Error"
@@ -45,6 +46,8 @@ typedef struct {
 	uint32_t ContentLengthSize;
 	char *Connection;
 	uint32_t ConnectionSize;
+	char *Authorization;
+	uint32_t AuthorizationSize;
 	char *Body;
 	uint32_t BodyLen;
 } HTTP_REQUEST_HEADER_T;
