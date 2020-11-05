@@ -7,7 +7,8 @@
 #define HTTP_SERVER_URL_API_V1_USER_TEMPLATE	"/api/v1/users/*"
 #define HTTP_SERVER_URL_API_V1_USERS_TEMPLATE	"/api/v1/users"
 
-static int32_t HTTP_SERVER_URL_API_V1_USERS_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static int32_t HTTP_SERVER_URL_API_V1_USER_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+#define HTTP_SERVER_URL_API_V1_USERS_Auth HTTP_SERVER_URL_API_V1_USER_Auth
 
 static void HTTP_SERVER_URL_API_V1_USER_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_USER_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
@@ -18,7 +19,7 @@ static void HTTP_SERVER_URL_API_V1_USERS_Post(struct netconn *Conn, struct netbu
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_USER = {
 	.Template = HTTP_SERVER_URL_API_V1_USER_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_USER_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_USERS_Auth,
+	.Auth = HTTP_SERVER_URL_API_V1_USER_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_USER_Get,
 	.Put = HTTP_SERVER_URL_API_V1_USER_Put,
@@ -294,7 +295,7 @@ error_400:
 
 static void HTTP_SERVER_URL_API_V1_USER_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
-	char *Data, *c;
+	char *Data, *c, *Login;
 	uint16_t DataLen;
 	json_t jsonPool[16];
 	json_t const* json;
@@ -303,9 +304,9 @@ static void HTTP_SERVER_URL_API_V1_USER_Put(struct netconn *Conn, struct netbuf 
 	uint32_t ContentLength, RecvError;
 	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	
-	c = &ReqHeader->Url[sizeof("/api/v1/users/") - 1];
+	Login = &ReqHeader->Url[sizeof("/api/v1/users/") - 1];
 	ReqHeader->Url[ReqHeader->UrlSize] = 0;
-	if (USER_GetUserByLogin(c, &User))
+	if (USER_GetUserByLogin(Login, &User))
 	{
 		netbuf_delete(Inbuf);
 		goto error_400;
@@ -345,54 +346,66 @@ parse_body:
     }
 		
 		jsonProp = json_getProperty( json, "login" );
-    if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
+    if ( jsonProp ) {
+			if (JSON_TEXT != json_getType( jsonProp ) ) {
         netbuf_delete(Inbuf);
 				goto error_400;
-    }		
-		c = (char*)json_getValue( jsonProp );
-		strncpy(User.Login, c, sizeof(User.Login));
+			}		
+			c = (char*)json_getValue( jsonProp );
+			strncpy(User.Login, c, sizeof(User.Login));
+		}
 		
 		jsonProp = json_getProperty( json, "name" );
-    if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
-        netbuf_delete(Inbuf);
-				goto error_400;
-    }		
-		c = (char*)json_getValue( jsonProp );
-		strncpy(User.Name, c, sizeof(User.Name));
+    if ( jsonProp ) {
+			if ( JSON_TEXT != json_getType( jsonProp ) ) {
+					netbuf_delete(Inbuf);
+					goto error_400;
+			}		
+			c = (char*)json_getValue( jsonProp );
+			strncpy(User.Name, c, sizeof(User.Name));
+		}
 		
 		jsonProp = json_getProperty( json, "password" );
-    if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
-        netbuf_delete(Inbuf);
-				goto error_400;
-    }		
-		c = (char*)json_getValue( jsonProp );
-		strncpy(User.Password, c, sizeof(User.Password));
+    if ( jsonProp ) {
+			if( JSON_TEXT != json_getType( jsonProp ) ) {
+					netbuf_delete(Inbuf);
+					goto error_400;
+			}		
+			c = (char*)json_getValue( jsonProp );
+			strncpy(User.Password, c, sizeof(User.Password));
+		}
 		
 		jsonProp = json_getProperty( json, "tel" );
-    if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
-        netbuf_delete(Inbuf);
-				goto error_400;
-    }		
-		c = (char*)json_getValue( jsonProp );
-		strncpy(User.Tel, c, sizeof(User.Tel));
+    if ( jsonProp ) {
+			if ( JSON_TEXT != json_getType( jsonProp ) ) {
+					netbuf_delete(Inbuf);
+					goto error_400;
+			}		
+			c = (char*)json_getValue( jsonProp );
+			strncpy(User.Tel, c, sizeof(User.Tel));
+		}
 		
 		jsonProp = json_getProperty( json, "email" );
-    if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
-        netbuf_delete(Inbuf);
-				goto error_400;
-    }		
-		c = (char*)json_getValue( jsonProp );
-		strncpy(User.Email, c, sizeof(User.Email));
+    if ( jsonProp ) {
+			if ( JSON_TEXT != json_getType( jsonProp ) ) {
+					netbuf_delete(Inbuf);
+					goto error_400;
+			}		
+			c = (char*)json_getValue( jsonProp );
+			strncpy(User.Email, c, sizeof(User.Email));
+		}
 		
 		jsonProp = json_getProperty( json, "role" );
-    if ( !jsonProp || JSON_TEXT != json_getType( jsonProp ) ) {
-        netbuf_delete(Inbuf);
-				goto error_400;
-    }		
-		c = (char*)json_getValue( jsonProp );
-		strncpy(User.Role, c, sizeof(User.Role));
+    if ( jsonProp ) {
+			if ( JSON_TEXT != json_getType( jsonProp ) ) {
+					netbuf_delete(Inbuf);
+					goto error_400;
+			}		
+			c = (char*)json_getValue( jsonProp );
+			strncpy(User.Role, c, sizeof(User.Role));
+		}
 		
-		if (USER_UpdateUserByLogin(c, &User))
+		if (USER_UpdateUserByLogin(Login, &User))
 		{
         netbuf_delete(Inbuf);
 				goto error_400;
