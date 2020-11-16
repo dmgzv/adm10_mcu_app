@@ -117,6 +117,7 @@ static void HTTP_SERVER_URL_API_V1_INTERFACES_Get(struct netconn *Conn, struct n
 		return;
 	
 	__HTTP_SERVER_StartBody(Conn);
+	__HTTP_SERVER_WriteBody(Conn, "{\r\n");
 	__HTTP_SERVER_WriteBody(Conn, "\t\"i2c\" : [\r\n");
 #ifdef BSP_CONFIG_USE_I2C1
 	__HTTP_SERVER_WriteBody(Conn, "\t\t{\r\n");
