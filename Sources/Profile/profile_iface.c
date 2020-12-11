@@ -3,7 +3,7 @@
 #include "bsp.h"
 
 #ifdef PROFILE_IFACE_MULTITHREAD
-#define PROFILE_IFACE_TransmitResponce(Iface) UART_Transmit((Iface)->Uart, (Iface)->Responce, (Iface)->ResponceLen)
+#define PROFILE_IFACE_TransmitResponce(Iface) UART_DMA_Transmit((Iface)->Uart, (Iface)->Responce, (Iface)->ResponceLen)
 #define PROFILE_IFACE_ReceiveCommand(Iface, Idx) UART_ReceiveCommand((Iface)->Uart, (Iface)->Commands[(Idx)], sizeof((Iface)->Commands[(Idx)]), PROFILE_IFACE_STOP_BYTE, &(Iface)->CommandsLen[(Idx)], osWaitForever)
 static void PROFILE_IFACE_ReceiveThread(void const *argument)
 {
@@ -131,7 +131,7 @@ int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveThreadName, char
 
 
 #else
-#define PROFILE_IFACE_TransmitResponce(Iface) UART_Transmit((Iface)->Uart, (Iface)->Responce, (Iface)->ResponceLen)
+#define PROFILE_IFACE_TransmitResponce(Iface) UART_DMA_Transmit((Iface)->Uart, (Iface)->Responce, (Iface)->ResponceLen)
 #define PROFILE_IFACE_ReceiveCommand(Iface) UART_ReceiveCommand((Iface)->Uart, (Iface)->Command, sizeof((Iface)->Command), PROFILE_IFACE_STOP_BYTE, &(Iface)->CommandLen, osWaitForever)
 
 static void PROFILE_IFACE_Thread(void const *argument)
