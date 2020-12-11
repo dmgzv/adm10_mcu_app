@@ -236,11 +236,9 @@ void UART4_DMA_TX_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void USART4_IRQHandler(void)
+void UART4_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&uart4.handle);
-	
-	//UART_IDLE_IRQHandler(&uart4);
 }
 #endif /*BSP_CONFIG_USE_UART4*/
 
