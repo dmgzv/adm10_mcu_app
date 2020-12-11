@@ -72,10 +72,10 @@ extern BOOTLOADER_T Bootloader;
 extern PROFILE_PROTOCOL_T ProfileProtocol;
 extern PROFILE_FLASH_T ProfileFlash;
 
-static char REQUEST_BODY[PROFILE_PROTOCOL_CMD_MAX_SIZE];
-static uint32_t REQUEST_BODY_LEN;
-static char RESPONCE_HEADER[512];
-static uint32_t RESPONCE_HEADER_LEN;
+static char __attribute__((section ("CCM_DATA"))) REQUEST_BODY[PROFILE_PROTOCOL_CMD_MAX_SIZE];
+static uint32_t __attribute__((section ("CCM_DATA"))) REQUEST_BODY_LEN;
+static char __attribute__((section ("CCM_DATA"))) RESPONCE_HEADER[512];
+static uint32_t __attribute__((section ("CCM_DATA"))) RESPONCE_HEADER_LEN;
 static char RESPONCE_BODY[PROFILE_PROTOCOL_RSP_MAX_SIZE];
 static uint32_t RESPONCE_BODY_LEN;
 
@@ -453,6 +453,7 @@ write_data:
 		}
 		else
 		{
+			LOG_Error("HTTP", "", "", "Netconn recv err: %d", recv_err);
 			return;
 		}
 	}
@@ -827,6 +828,7 @@ write_data:
 		}
 		else
 		{
+			LOG_Error("HTTP", "", "", "Netconn recv err: %d", recv_err);
 			break;
 		}
 	}
@@ -1103,26 +1105,50 @@ error:
   */
 static void http_server_serve_put_api_v1_profile_section_param_value(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen, uint32_t section_idx, uint32_t param_idx)
 {
+	struct netbuf *inbuf;
+	err_t recv_err;
+	char *data;
+	uint16_t datalen;
 	uint32_t i;
 	uint32_t complete;
 	uint32_t header_len;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
-	if ((!body) || (!bodylen))
+	if (ReqHeader->ContentLength == 0)
+		goto error;
+
+	if ((body) && (bodylen))
 	{
-		http_server_write_400_error(conn);
-		return;
-	}	
+		inbuf = NULL;
+		data = body;
+		datalen = bodylen;
+	}
+	else
+	{
+		recv_err = netconn_recv(conn, &inbuf);
+		if (recv_err == ERR_OK)
+		{
+			netbuf_data(inbuf, (void**)&data, &datalen);
+		}
+		else
+		{
+			LOG_Error("HTTP", "", "", "Netconn recv err: %d", recv_err);
+			goto error;
+		}
+	}
+	
 	/*Prepare request*/
 	REQUEST_BODY[0] = SlotAddress + 0x80;
 	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_SET_VALUE_2;
 	REQUEST_BODY_LEN = 2;
 	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d;%d;", section_idx, param_idx);
 	header_len = REQUEST_BODY_LEN - 1;
-	memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], body, bodylen);
-	REQUEST_BODY_LEN += bodylen;
+	memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, datalen);
+	REQUEST_BODY_LEN += datalen;
 	REQUEST_BODY[REQUEST_BODY_LEN++] = ';';
 	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
+	
+	netbuf_delete(inbuf);
 	
 	/*Parse request and prepare responce*/
 	Profile.SetEnable = 1;
@@ -1178,15 +1204,36 @@ error:
   */
 static void http_server_serve_put_api_v1_profile_section_param_color(struct netconn *conn, HTTP_REQUEST_HEADER_T *ReqHeader, char *body, uint16_t bodylen, uint32_t section_idx, uint32_t param_idx)
 {
+	struct netbuf *inbuf;
+	err_t recv_err;
+	char *data;
+	uint16_t datalen;
 	uint32_t i;
 	uint32_t complete;
 	uint32_t header_len;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
-	if ((!body) || (!bodylen))
+	if (ReqHeader->ContentLength == 0)
+		goto error;
+
+	if ((body) && (bodylen))
 	{
-		http_server_write_400_error(conn);
-		return;
+		inbuf = NULL;
+		data = body;
+		datalen = bodylen;
+	}
+	else
+	{
+		recv_err = netconn_recv(conn, &inbuf);
+		if (recv_err == ERR_OK)
+		{
+			netbuf_data(inbuf, (void**)&data, &datalen);
+		}
+		else
+		{
+			LOG_Error("HTTP", "", "", "Netconn recv err: %d", recv_err);
+			goto error;
+		}
 	}
 	
 	/*Prepare request*/
@@ -1195,10 +1242,12 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 	REQUEST_BODY_LEN = 2;
 	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d;%d;", section_idx, param_idx);
 	header_len = REQUEST_BODY_LEN - 1;
-	memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], body, bodylen);
-	REQUEST_BODY_LEN += bodylen;
+	memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, datalen);
+	REQUEST_BODY_LEN += datalen;
 	REQUEST_BODY[REQUEST_BODY_LEN++] = ';';
 	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d", Calc_CRC16_ASCII(REQUEST_BODY, REQUEST_BODY_LEN));
+	
+	netbuf_delete(inbuf);
 	
 	/*Parse request and prepare responce*/
 	Profile.SetEnable = 1;
@@ -1876,6 +1925,7 @@ write_data:
 		}
 		else
 		{
+			LOG_Error("HTTP", "", "", "Netconn recv err: %d", recv_err);
 			return;
 		}
 	}
@@ -1956,6 +2006,7 @@ write_data:
 		}
 		else
 		{
+			LOG_Error("HTTP", "", "", "Netconn recv err: %d", recv_err);
 			return;
 		}
 	}
@@ -2173,6 +2224,7 @@ parse_data:
 		}
 		else
 		{
+			LOG_Error("HTTP", "", "", "Netconn recv err: %d", recv_err);
 			return;
 		}
 	}
@@ -2292,6 +2344,7 @@ static void http_server_serve(struct netconn *conn)
 	HTTP_RESPONCE_HEADER_T rsp_header;
 
 receive:
+	netconn_set_recvtimeout(conn, 1000);
 	recv_err = netconn_recv(conn, &inbuf);
 	if (recv_err == ERR_OK)
 	{
@@ -2718,6 +2771,10 @@ receive:
 		if (req_header.ConnectionKeepAlive)
 			goto receive;
 	}
+	else
+	{
+		LOG_Error("HTTP", "", "", "Netconn recv err: %d", recv_err);
+	}
 }
 
 /**
@@ -2728,7 +2785,7 @@ receive:
 static void HTTP_SERVER_Thread(void *arg)
 { 
   struct netconn *conn, *newconn;
-  err_t err, accept_err;
+  err_t err;
   
   /* Create a new TCP connection handle */
   conn = netconn_new(NETCONN_TCP);
@@ -2746,18 +2803,26 @@ static void HTTP_SERVER_Thread(void *arg)
       while(1) 
       {
         /* Accept any icoming connection */
-        accept_err = netconn_accept(conn, &newconn);
-        if(accept_err == ERR_OK)
+        err = netconn_accept(conn, &newconn);
+        if(err == ERR_OK)
         {
 					/* Serve incoming connection */
 					http_server_serve(newconn);
 
 					/* Close the connection*/
 					netconn_close(newconn);
+					if(err != ERR_OK)
+						LOG_Error("HTTP", "", "", "Netconn close err: %d", err);
 
 					/* delete connection */
-					netconn_delete(newconn);    
+					netconn_delete(newconn);
+					if(err != ERR_OK)
+						LOG_Error("HTTP", "", "", "Netconn delete err: %d", err);
         }
+				else
+				{
+					LOG_Error("HTTP", "", "", "Netconn accept err: %d", err);
+				}
       }
     }
   }

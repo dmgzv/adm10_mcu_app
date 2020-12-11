@@ -203,6 +203,12 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
  */
 #define LWIP_SOCKET                     0
 
+/**
+ * LWIP_SO_RCVTIMEO==1: Enable receive timeout for sockets/netconns and
+ * SO_RCVTIMEO processing.
+ */
+#define LWIP_SO_RCVTIMEO                1
+
 /*
    ---------------------------------
    ---------- OS options ----------
