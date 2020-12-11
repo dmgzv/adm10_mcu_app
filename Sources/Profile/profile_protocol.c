@@ -608,7 +608,10 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 			if( !StrToUint( LangBlock, &LangpackType, ';' ) )
 				goto error;
 			Protocol->LangpackBlocks = LangpackBlocks;
-			Protocol->LangpackType = LangpackType;			
+			Protocol->LangpackType = LangpackType;
+			p = UintToStr( p, Item );
+			strcpy( p, ";OK;" );
+			p += 4;
 		}
 		else if (Item <= Protocol->LangpackBlocks)
 		{
