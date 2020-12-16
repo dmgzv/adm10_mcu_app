@@ -267,11 +267,9 @@ void UART5_DMA_TX_IRQHandler(void)
   * @param  None
   * @retval None
   */
-void USART5_IRQHandler(void)
+void UART5_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&uart5.handle);
-	
-	//UART_IDLE_IRQHandler(&uart5);
 }
 #endif /*BSP_CONFIG_USE_UART5*/
 
