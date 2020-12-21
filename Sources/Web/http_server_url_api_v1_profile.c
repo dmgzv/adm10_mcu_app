@@ -16,8 +16,6 @@ extern PROFILE_FLASH_T ProfileFlash;
 #define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE	"/api/v1/profile/sections/*/params/*/value"
 #define HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE	"/api/v1/profile/sections/*/params/*/colors"
 
-static int32_t HTTP_SERVER_URL_API_V1_PROFILE_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
-
 static void HTTP_SERVER_URL_API_V1_PROFILE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
@@ -32,7 +30,6 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_Put(struct netco
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_Get,
 	.Put = NULL,
@@ -43,7 +40,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get,
 	.Put = HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Put,
@@ -54,7 +50,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_CONFIG = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Head,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Get,
 	.Put = HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Put,
@@ -65,7 +60,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_CONFIG = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_Get,
 	.Put = NULL,
@@ -76,7 +70,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_Get,
 	.Put = NULL,
@@ -87,7 +80,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = NULL,
 	.Put = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_Put,
@@ -98,7 +90,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS = {
 	.Template = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_PROFILE_Auth,
 	.Head = NULL,
 	.Get = NULL,
 	.Put = HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_Put,
@@ -106,90 +97,14 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS = {
 	.Delete = NULL,
 };
 
-static int32_t HTTP_SERVER_URL_API_V1_PROFILE_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
-{
-	char *Base64, *Login, *Password, *c;
-	USER_T User;
-	char Buffer[34];
-	uint32_t Base64Len, i;
-	
-	if ((!ReqHeader->Authorization) || (ReqHeader->AuthorizationSize < sizeof("Basic ")))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	if (!memcpy(ReqHeader->Authorization, "Basic ", sizeof("Basic ") - 1))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	Base64 = &ReqHeader->Authorization[sizeof("Basic ") - 1];
-	ReqHeader->Authorization[ReqHeader->AuthorizationSize] = 0;
-	Base64Len = strlen(Base64);
-	if ((Base64Len % 4) || ((Base64Len * 3 / 4) >= sizeof(Buffer)))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	c = b64tobin(Buffer, Base64);
-	if (!c)
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	*c = 0;
-	
-	for (i = 0; i < sizeof(Buffer); i++)
-	{
-		if (Buffer[i] == 0)
-		{
-			netbuf_delete(Inbuf);
-			goto error_401;
-		}
-		else if (Buffer[i] == ':')
-		{
-			break;
-		}
-	}
-	
-	if (i == sizeof(Buffer))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	Buffer[i] = 0;
-	
-	Login = Buffer;
-	Password = &Buffer[i + 1];
-	
-	if (USER_GetUserByLogin(Login, &User))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	if (strcmp(Password, User.Password))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	return 0;
-	
-error_401:
-	__HTTP_SERVER_WriteError401(Conn);
-	return -1;
-}
-
 static void HTTP_SERVER_URL_API_V1_PROFILE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	uint32_t i;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	netbuf_delete(Inbuf);
 	
@@ -217,7 +132,11 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get(struct netconn *Conn, st
 	uint32_t i;
 	char LangpackBlock[PROFILE_FLASH_LANG_BLOCK_SIZE + 1];
 	uint32_t LangpackBlocks, LangpackType;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	netbuf_delete(Inbuf);
 	
@@ -256,7 +175,11 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Put(struct netconn *Conn, st
 	uint16_t datalen;
 	uint32_t LangpackAddr, LangpackBlocks;
 	uint32_t ContentLength;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 
 	if (!ReqHeader->ContentLength)
 	{
@@ -332,7 +255,11 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Head(struct netconn *Conn, str
 	uint8_t NColor, DColor, FColor;
 	uint32_t i, j, Len;
 	PROFILE_VALUE_T Value;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	ContentLength = 0;
 	ContentLength += sprintf(Buffer, "#"BSP_PT_NUMBER";"BSP_HW_VERSION";"BSP_SW_VERSION"\r\n");
@@ -375,7 +302,11 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Get(struct netconn *Conn, stru
 	uint32_t i, j, Len;
 	PROFILE_VALUE_T Value;
 	char ValueString[64];
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	netbuf_delete(Inbuf);
 	
@@ -423,8 +354,12 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Put(struct netconn *Conn, stru
 	uint32_t ContentLength, Error, SectionIdx, NameLen;
 	PROFILE_PARAM_T *Param;
 	PROFILE_VALUE_T ParamValue;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	err_t recv_err;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	if (!ReqHeader->ContentLength)
 	{
@@ -610,7 +545,11 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_Get(struct netconn *Co
 	char ValueStr[sizeof(PROFILE_VALUE_T)];
 	uint8_t Color;
 	int32_t AdminState;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);
@@ -669,7 +608,11 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_Get(struct netconn *Co
 	uint32_t section_idx;
 	uint32_t i, j;
 	uint8_t Normal, Degrade, Failure;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);
@@ -726,9 +669,13 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_Put(struct netcon
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	PROFILE_PARAM_T *Param;
 	PROFILE_VALUE_T Value;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);
@@ -822,9 +769,13 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_COLORS_Put(struct netco
 	err_t recv_err;
 	char *data;
 	uint16_t datalen;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	PROFILE_PARAM_T *Param;
 	uint8_t Normal, Degrade, Failure;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 
 	c = &ReqHeader->Url[sizeof("/api/v1/profile/sections/") - 1];
 	section_idx = strtoul(c, &c, 10);

@@ -61,6 +61,6 @@ typedef struct {
 	char *TransferEncoding;
 	char *Allowed[4];
 	uint32_t AllowedLen;
-} HTTP_HTTP_SERVER_Buffer_T;
+} HTTP_RESPONCE_HEADER_T;
 
 #endif /*__HTTP_TYPES_H__*/

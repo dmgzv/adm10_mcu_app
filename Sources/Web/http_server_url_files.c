@@ -5,7 +5,7 @@
 
 static void HTTP_SERVER_URL_FILES_Head(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, uint32_t DataAddr, uint32_t DataSize, uint32_t DataType)
 {
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	if (DataType == HTTP_SERVER_FILES_DATA_TYPE_HTML)
 	{
@@ -91,7 +91,7 @@ static void HTTP_SERVER_URL_FILES_Get(struct netconn *Conn, struct netbuf *Inbuf
 {
 	char Buffer[256];
 	uint32_t Size;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	if (DataType == HTTP_SERVER_FILES_DATA_TYPE_HTML)
 	{
@@ -195,7 +195,7 @@ int32_t HTTP_SERVER_URL_FILES_Process(struct netconn *Conn, struct netbuf *Inbuf
 	char *Name;
 	uint32_t NameSize;
 	char **Allowed;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	Name = ReqHeader->Url + 1;
 	NameSize = ReqHeader->UrlSize - 1;

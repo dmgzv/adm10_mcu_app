@@ -2,11 +2,11 @@
 #define __HTTP_SERVER_H__
 
 #include "http_types.h"
+#include "user.h"
 
 typedef struct {
 	char *Template;
 	uint32_t TemplateSize;
-	int32_t (*Auth)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 	void (*Head)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 	void (*Get)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 	void (*Put)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
@@ -14,12 +14,13 @@ typedef struct {
 	void (*Delete)(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 } HTTP_SERVER_URL_T;
 
+int32_t __HTTP_SERVER_Authenticate(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, USER_T *User);
 int32_t __HTTP_SERVER_WriteError301(struct netconn *conn, char *Location);
 int32_t __HTTP_SERVER_WriteError400(struct netconn *conn);
 int32_t __HTTP_SERVER_WriteError401(struct netconn *Conn);
 int32_t __HTTP_SERVER_WriteError404(struct netconn *conn);
 int32_t __HTTP_SERVER_WriteError500(struct netconn *conn);
-int32_t __HTTP_SERVER_WriteHeader(struct netconn *conn, HTTP_HTTP_SERVER_Buffer_T *Header);
+int32_t __HTTP_SERVER_WriteHeader(struct netconn *conn, HTTP_RESPONCE_HEADER_T *Header);
 int32_t __HTTP_SERVER_StartBody(struct netconn *conn);
 int32_t __HTTP_SERVER_WriteBody(struct netconn *conn, char *str, ...);
 int32_t __HTTP_SERVER_WriteBodyData(struct netconn *conn, char *data, uint32_t datalen);

@@ -9,6 +9,8 @@
 #include "http_server_url_api_v1_profile.h"
 #include "http_server_url_api_v1_update.h"
 #include "http_server_url_api_v1_users.h"
+#include "user.h"
+#include "base64.h"
 #include <string.h>
 
 const HTTP_SERVER_URL_T *HTTP_SERVER_URL_API[] = {
@@ -78,7 +80,8 @@ int32_t HTTP_SERVER_URL_API_Process(struct netconn *Conn, struct netbuf *Inbuf, 
 {
 	uint32_t i;
 	char **Allowed;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	for (i = 0; i < HTTP_SERVER_URL_APISize; i++)
 	{
@@ -86,63 +89,23 @@ int32_t HTTP_SERVER_URL_API_Process(struct netconn *Conn, struct netbuf *Inbuf, 
 		{
 			if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_HEAD" ", sizeof(HTTP_REQUEST_HEAD))) && (HTTP_SERVER_URL_API[i]->Head))
 			{
-				if (HTTP_SERVER_URL_API[i]->Auth)
-				{
-					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
-						HTTP_SERVER_URL_API[i]->Head(Conn, Inbuf, ReqHeader);
-				}
-				else
-				{
-					HTTP_SERVER_URL_API[i]->Head(Conn, Inbuf, ReqHeader);
-				}
+				HTTP_SERVER_URL_API[i]->Head(Conn, Inbuf, ReqHeader);
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_GET" ", sizeof(HTTP_REQUEST_GET))) && (HTTP_SERVER_URL_API[i]->Get))
 			{
-				if (HTTP_SERVER_URL_API[i]->Auth)
-				{
-					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
-						HTTP_SERVER_URL_API[i]->Get(Conn, Inbuf, ReqHeader);
-				}
-				else
-				{
-					HTTP_SERVER_URL_API[i]->Get(Conn, Inbuf, ReqHeader);
-				}
+				HTTP_SERVER_URL_API[i]->Get(Conn, Inbuf, ReqHeader);
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_PUT" ", sizeof(HTTP_REQUEST_PUT))) && (HTTP_SERVER_URL_API[i]->Put))
 			{
-				if (HTTP_SERVER_URL_API[i]->Auth)
-				{
-					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
-						HTTP_SERVER_URL_API[i]->Put(Conn, Inbuf, ReqHeader);
-				}
-				else
-				{
-					HTTP_SERVER_URL_API[i]->Put(Conn, Inbuf, ReqHeader);
-				}
+				HTTP_SERVER_URL_API[i]->Put(Conn, Inbuf, ReqHeader);
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_POST" ", sizeof(HTTP_REQUEST_POST))) && (HTTP_SERVER_URL_API[i]->Post))
 			{
-				if (HTTP_SERVER_URL_API[i]->Auth)
-				{
-					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
-						HTTP_SERVER_URL_API[i]->Post(Conn, Inbuf, ReqHeader);
-				}
-				else
-				{
-					HTTP_SERVER_URL_API[i]->Post(Conn, Inbuf, ReqHeader);
-				}
+				HTTP_SERVER_URL_API[i]->Post(Conn, Inbuf, ReqHeader);
 			}
 			else if ((!memcmp(ReqHeader->Type, HTTP_REQUEST_DELETE" ", sizeof(HTTP_REQUEST_DELETE))) && (HTTP_SERVER_URL_API[i]->Delete))
 			{
-				if (HTTP_SERVER_URL_API[i]->Auth)
-				{
-					if (!HTTP_SERVER_URL_API[i]->Auth(Conn, Inbuf, ReqHeader))
-						HTTP_SERVER_URL_API[i]->Delete(Conn, Inbuf, ReqHeader);
-				}
-				else
-				{
-					HTTP_SERVER_URL_API[i]->Delete(Conn, Inbuf, ReqHeader);
-				}
+				HTTP_SERVER_URL_API[i]->Delete(Conn, Inbuf, ReqHeader);
 			}
 			else
 			{

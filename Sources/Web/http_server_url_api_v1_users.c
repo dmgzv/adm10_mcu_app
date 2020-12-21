@@ -7,9 +7,6 @@
 #define HTTP_SERVER_URL_API_V1_USER_TEMPLATE	"/api/v1/users/*"
 #define HTTP_SERVER_URL_API_V1_USERS_TEMPLATE	"/api/v1/users"
 
-static int32_t HTTP_SERVER_URL_API_V1_USER_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
-#define HTTP_SERVER_URL_API_V1_USERS_Auth HTTP_SERVER_URL_API_V1_USER_Auth
-
 static void HTTP_SERVER_URL_API_V1_USER_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_USER_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_USER_Delete(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
@@ -19,7 +16,6 @@ static void HTTP_SERVER_URL_API_V1_USERS_Post(struct netconn *Conn, struct netbu
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_USER = {
 	.Template = HTTP_SERVER_URL_API_V1_USER_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_USER_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_USER_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_USER_Get,
 	.Put = HTTP_SERVER_URL_API_V1_USER_Put,
@@ -30,7 +26,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_USER = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_USERS = {
 	.Template = HTTP_SERVER_URL_API_V1_USERS_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_USERS_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_USERS_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_USERS_Get,
 	.Put = NULL,
@@ -38,91 +33,14 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_USERS = {
 	.Delete = NULL,
 };
 
-static int32_t HTTP_SERVER_URL_API_V1_USERS_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
-{
-	char *Base64, *Login, *Password, *c;
-	USER_T User;
-	char Buffer[34];
-	uint32_t Base64Len, i;
-	
-	if ((!ReqHeader->Authorization) || (ReqHeader->AuthorizationSize < sizeof("Basic ")))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	if (!memcpy(ReqHeader->Authorization, "Basic ", sizeof("Basic ") - 1))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	Base64 = &ReqHeader->Authorization[sizeof("Basic ") - 1];
-	ReqHeader->Authorization[ReqHeader->AuthorizationSize] = 0;
-	Base64Len = strlen(Base64);
-	if ((Base64Len % 4) || ((Base64Len * 3 / 4) >= sizeof(Buffer)))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	c = b64tobin(Buffer, Base64);
-	if (!c)
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	*c = 0;
-	
-	for (i = 0; i < sizeof(Buffer); i++)
-	{
-		if (Buffer[i] == 0)
-		{
-			netbuf_delete(Inbuf);
-			goto error_401;
-		}
-		else if (Buffer[i] == ':')
-		{
-			break;
-		}
-	}
-	
-	if (i == sizeof(Buffer))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	Buffer[i] = 0;
-	
-	Login = Buffer;
-	Password = &Buffer[i + 1];
-	
-	if (USER_GetUserByLogin(Login, &User))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	if (strcmp(Password, User.Password))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	return 0;
-	
-error_401:
-	__HTTP_SERVER_WriteError401(Conn);
-	return -1;
-}
-
 static void HTTP_SERVER_URL_API_V1_USERS_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	uint32_t i, UsersCnt;
 	USER_T User;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	netbuf_delete(Inbuf);
 	
@@ -168,9 +86,12 @@ static void HTTP_SERVER_URL_API_V1_USERS_Post(struct netconn *Conn, struct netbu
 	json_t jsonPool[16];
 	json_t const* json;
 	json_t const* jsonProp;
-	USER_T User;
 	uint32_t ContentLength, RecvError;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	if (!ReqHeader->ContentLength)
 	{
@@ -302,7 +223,10 @@ static void HTTP_SERVER_URL_API_V1_USER_Put(struct netconn *Conn, struct netbuf 
 	json_t const* jsonProp;
 	USER_T User;
 	uint32_t ContentLength, RecvError;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	Login = &ReqHeader->Url[sizeof("/api/v1/users/") - 1];
 	ReqHeader->Url[ReqHeader->UrlSize] = 0;
@@ -449,7 +373,10 @@ static void HTTP_SERVER_URL_API_V1_USER_Get(struct netconn *Conn, struct netbuf 
 {
 	char *c;
 	USER_T User;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	c = &ReqHeader->Url[sizeof("/api/v1/users/") - 1];
 	ReqHeader->Url[ReqHeader->UrlSize] = 0;
@@ -489,7 +416,11 @@ error_400:
 static void HTTP_SERVER_URL_API_V1_USER_Delete(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	char *c;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	c = &ReqHeader->Url[sizeof("/api/v1/users/") - 1];
 	ReqHeader->Url[ReqHeader->UrlSize] = 0;

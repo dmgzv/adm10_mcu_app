@@ -10,7 +10,6 @@ static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_AUTH = {
 	.Template = HTTP_SERVER_URL_API_V1_AUTH_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_AUTH_TEMPLATE) - 1,
-	.Auth = NULL,
 	.Head = NULL,
 	.Get = NULL,
 	.Put = NULL,
@@ -28,7 +27,7 @@ static void HTTP_SERVER_URL_API_V1_AUTH_Post(struct netconn *Conn, struct netbuf
 	json_t const* jsonProp;
 	USER_T User;
 	uint32_t ContentLength, RecvError;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	HTTP_RESPONCE_HEADER_T RspHeader;
 	
 	if (!ReqHeader->ContentLength)
 	{

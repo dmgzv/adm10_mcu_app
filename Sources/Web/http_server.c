@@ -1,5 +1,6 @@
 #include "http_server.h"
 #include "http_server_url.h"
+#include "base64.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -165,9 +166,9 @@ static int32_t HTTP_SERVER_ParseRequest(char *Data, uint32_t DataLen, HTTP_REQUE
 			Header->ConnectionSize = p1 - p2;
 			p1 = p1 + 2;
 		}
-		else if (!memcmp(p1, "Connection: ", sizeof("Connection: ") - 1))
+		else if (!memcmp(p1, "connection: ", sizeof("connection: ") - 1))
 		{
-			p2 = p1 = p1 + sizeof("Connection: ") - 1;
+			p2 = p1 = p1 + sizeof("connection: ") - 1;
 			while ((*p1 != '\r') || (*(p1 + 1) != '\n'))
 			{
 				if ((p1 - Data) < DataLen)
@@ -278,6 +279,85 @@ static int32_t HTTP_SERVER_ParseRequest(char *Data, uint32_t DataLen, HTTP_REQUE
 	return -1;
 }
 
+int32_t __HTTP_SERVER_Authenticate(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader, USER_T *User)
+{
+	char *Base64, *Login, *Password, *c;
+	char Buffer[34];
+	uint32_t Base64Len, i;
+	
+	if ((!ReqHeader->Authorization) || (ReqHeader->AuthorizationSize < sizeof("Basic ")))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	if (!memcpy(ReqHeader->Authorization, "Basic ", sizeof("Basic ") - 1))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	Base64 = &ReqHeader->Authorization[sizeof("Basic ") - 1];
+	ReqHeader->Authorization[ReqHeader->AuthorizationSize] = 0;
+	Base64Len = strlen(Base64);
+	if ((Base64Len % 4) || ((Base64Len * 3 / 4) >= sizeof(Buffer)))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	c = b64tobin(Buffer, Base64);
+	if (!c)
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	*c = 0;
+	
+	for (i = 0; i < sizeof(Buffer); i++)
+	{
+		if (Buffer[i] == 0)
+		{
+			netbuf_delete(Inbuf);
+			goto error_401;
+		}
+		else if (Buffer[i] == ':')
+		{
+			break;
+		}
+	}
+	
+	if (i == sizeof(Buffer))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	Buffer[i] = 0;
+	
+	Login = Buffer;
+	Password = &Buffer[i + 1];
+	
+	if (USER_GetUserByLogin(Login, User))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	if (strcmp(Password, User->Password))
+	{
+		netbuf_delete(Inbuf);
+		goto error_401;
+	}
+	
+	return 0;
+	
+error_401:
+	__HTTP_SERVER_WriteError401(Conn);
+	return -1;
+}
+
 int32_t __HTTP_SERVER_WriteError301(struct netconn *Conn, char *Location)
 {
 	HTTP_SERVER_BufferLen = sprintf(HTTP_SERVER_Buffer, HTTP_RESPONCE_301_MOVED_PERMANENTLY"\r\nLocation: %s\r\n\r\n", Location);	
@@ -313,7 +393,7 @@ int32_t __HTTP_SERVER_WriteError500(struct netconn *Conn)
 	return 0;
 }
 
-int32_t __HTTP_SERVER_WriteHeader(struct netconn *Conn, HTTP_HTTP_SERVER_Buffer_T *Header)
+int32_t __HTTP_SERVER_WriteHeader(struct netconn *Conn, HTTP_RESPONCE_HEADER_T *Header)
 {
 	uint32_t i;
 	

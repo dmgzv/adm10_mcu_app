@@ -13,8 +13,6 @@ extern BOOTLOADER_T Bootloader;
 #define HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_TEMPLATE	"/api/v1/update/mcu/software"
 #define HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_TEMPLATE	"/api/v1/update/mcu/web"
 
-static int32_t HTTP_SERVER_URL_API_V1_UPDATE_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
-
 static void HTTP_SERVER_URL_API_V1_UPDATE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_UPDATE_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
@@ -23,7 +21,6 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Post(struct netconn *Conn, str
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE = {
 	.Template = HTTP_SERVER_URL_API_V1_UPDATE_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_UPDATE_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_UPDATE_Auth,
 	.Head = NULL,
 	.Get = HTTP_SERVER_URL_API_V1_UPDATE_Get,
 	.Put = NULL,
@@ -34,7 +31,6 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE = {
 	.Template = HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_UPDATE_Auth,
 	.Head = NULL,
 	.Get = NULL,
 	.Put = NULL,
@@ -45,93 +41,12 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE = {
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB = {
 	.Template = HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_TEMPLATE) - 1,
-	.Auth = HTTP_SERVER_URL_API_V1_UPDATE_Auth,
 	.Head = NULL,
 	.Get = NULL,
 	.Put = NULL,
 	.Post = HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Post,
 	.Delete = NULL,
 };
-
-static int32_t HTTP_SERVER_URL_API_V1_UPDATE_Auth(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
-{
-	char *Base64, *Login, *Password, *c;
-	USER_T User;
-	char Buffer[34];
-	uint32_t Base64Len, i;
-	
-	if ((!ReqHeader->Authorization) || (ReqHeader->AuthorizationSize < sizeof("Basic ")))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	if (!memcpy(ReqHeader->Authorization, "Basic ", sizeof("Basic ") - 1))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	Base64 = &ReqHeader->Authorization[sizeof("Basic ") - 1];
-	ReqHeader->Authorization[ReqHeader->AuthorizationSize] = 0;
-	Base64Len = strlen(Base64);
-	if ((Base64Len % 4) || ((Base64Len * 3 / 4) >= sizeof(Buffer)))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	c = b64tobin(Buffer, Base64);
-	if (!c)
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	*c = 0;
-	
-	for (i = 0; i < sizeof(Buffer); i++)
-	{
-		if (Buffer[i] == 0)
-		{
-			netbuf_delete(Inbuf);
-			goto error_401;
-		}
-		else if (Buffer[i] == ':')
-		{
-			break;
-		}
-	}
-	
-	if (i == sizeof(Buffer))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	Buffer[i] = 0;
-	
-	Login = Buffer;
-	Password = &Buffer[i + 1];
-	
-	if (USER_GetUserByLogin(Login, &User))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	if (strcmp(Password, User.Password))
-	{
-		netbuf_delete(Inbuf);
-		goto error_401;
-	}
-	
-	return 0;
-	
-error_401:
-	__HTTP_SERVER_WriteError401(Conn);
-	return -1;
-}
 
 static void HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(struct netconn *Conn, TFTP_BOOTLOADER_FILE_T *File)
 {
@@ -181,8 +96,12 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(struct netconn *Conn, 
 
 static void HTTP_SERVER_URL_API_V1_UPDATE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	uint32_t i, j;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 	
 	netbuf_delete(Inbuf);
 	
@@ -273,9 +192,13 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_Post(struct netconn *Conn, struct netb
 	char folder[64];
 	uint16_t error, datalen;
 	uint32_t ContentLength;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
 	char ip[4];
 	uint32_t tmp;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 
 	if (ReqHeader->ContentLength == 0)
 	{
@@ -423,7 +346,11 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Post(struct netconn *Conn
 	char *data;
 	uint16_t error, datalen;
 	uint32_t ContentLength;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 
 	if (ReqHeader->ContentLength == 0)
 	{
@@ -502,7 +429,11 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Post(struct netconn *Conn, str
 	char *data;
 	uint16_t error, datalen;
 	uint32_t dataaddr, ContentLength;
-	HTTP_HTTP_SERVER_Buffer_T RspHeader;
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
 
 	if (ReqHeader->ContentLength == 0)
 	{
