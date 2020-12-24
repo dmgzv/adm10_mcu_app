@@ -35,6 +35,7 @@
 #include "bsp_clk_1_11p5_cfg.h"
 #include "bsp_clk_1_11p5_efec_cfg.h"
 #include "bsp_clk_2_11p5_cfg.h"
+#include "bsp_clk_2_11p5_tp_cfg.h"
 #include "bsp_clk_1_12p0_cfg.h"
 #include "bsp_clk_1_12p0_efec_cfg.h"
 #include "bsp_clk_2_12p0_cfg.h"
@@ -173,6 +174,71 @@ static const uint32_t bsp_clk_si5332_cfg_efec_size[BSP_CLK_SI5332_CNT][BSP_CLK_S
 	},
 };
 
+static const SI5332_CFG_T* bsp_clk_si5332_tp_cfg[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332_CFG_CNT] = {
+	{
+		bsp_clk_1_6p0_cfg,
+		bsp_clk_1_6p5_cfg,
+		bsp_clk_1_7p0_cfg,
+		bsp_clk_1_7p5_cfg,
+		bsp_clk_1_8p0_cfg,
+		bsp_clk_1_8p5_cfg,
+		bsp_clk_1_9p0_cfg,
+		bsp_clk_1_9p5_cfg,
+		bsp_clk_1_10p0_cfg,
+		bsp_clk_1_10p5_cfg,
+		bsp_clk_1_11p0_cfg,
+		bsp_clk_1_11p5_cfg,
+		bsp_clk_1_12p0_cfg,
+	},
+	{
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		bsp_clk_2_11p5_tp_cfg,
+		NULL,
+	},
+};
+static const uint32_t bsp_clk_si5332_tp_cfg_size[BSP_CLK_SI5332_CNT][BSP_CLK_SI5332_CFG_CNT] = {
+	{
+		sizeof(bsp_clk_1_6p0_cfg) / sizeof(bsp_clk_1_6p0_cfg[0]),
+		sizeof(bsp_clk_1_6p5_cfg) / sizeof(bsp_clk_1_6p5_cfg[0]),
+		sizeof(bsp_clk_1_7p0_cfg) / sizeof(bsp_clk_1_7p0_cfg[0]),
+		sizeof(bsp_clk_1_7p5_cfg) / sizeof(bsp_clk_1_7p5_cfg[0]),
+		sizeof(bsp_clk_1_8p0_cfg) / sizeof(bsp_clk_1_8p0_cfg[0]),
+		sizeof(bsp_clk_1_8p5_cfg) / sizeof(bsp_clk_1_8p5_cfg[0]),
+		sizeof(bsp_clk_1_9p0_cfg) / sizeof(bsp_clk_1_9p0_cfg[0]),
+		sizeof(bsp_clk_1_9p5_cfg) / sizeof(bsp_clk_1_9p5_cfg[0]),
+		sizeof(bsp_clk_1_10p0_cfg) / sizeof(bsp_clk_1_10p0_cfg[0]),
+		sizeof(bsp_clk_1_10p5_cfg) / sizeof(bsp_clk_1_10p5_cfg[0]),
+		sizeof(bsp_clk_1_11p0_cfg) / sizeof(bsp_clk_1_11p0_cfg[0]),
+		sizeof(bsp_clk_1_11p5_cfg) / sizeof(bsp_clk_1_11p5_cfg[0]),
+		sizeof(bsp_clk_1_12p0_cfg) / sizeof(bsp_clk_1_12p0_cfg[0]),
+	},
+	{	
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		0,
+		sizeof(bsp_clk_2_11p5_tp_cfg) / sizeof(bsp_clk_2_11p5_tp_cfg[0]),
+		0,
+	},
+};
+
 SI5332_T si5332[BSP_CLK_SI5332_CNT] =
 {
 	{
@@ -254,15 +320,20 @@ void BSP_CLK_Process(void)
 					case BSP_CLK_SI5332_11P0_CFG:
 					case BSP_CLK_SI5332_11P5_CFG:
 					case BSP_CLK_SI5332_12P0_CFG:
-						if (si5332_mode[i] == BSP_CLK_SI5332_MODE_RSFEC)
+						if (si5332_mode[i] == BSP_CLK_SI5332_MODE_AGG_RSFEC)
 						{
 							cfg = (SI5332_CFG_T*)bsp_clk_si5332_cfg[i][si5332_cfg[i]];
 							cfg_size = bsp_clk_si5332_cfg_size[i][si5332_cfg[i]];
 						}
-						else if (si5332_mode[i] == BSP_CLK_SI5332_MODE_EFEC_I_4)
+						else if (si5332_mode[i] == BSP_CLK_SI5332_MODE_AGG_EFEC_I_4)
 						{
 							cfg = (SI5332_CFG_T*)bsp_clk_si5332_efec_cfg[i][si5332_cfg[i]];
 							cfg_size = bsp_clk_si5332_cfg_efec_size[i][si5332_cfg[i]];
+						}
+						else if (si5332_mode[i] == BSP_CLK_SI5332_MODE_AGG_EFEC_I_4)
+						{
+							cfg = (SI5332_CFG_T*)bsp_clk_si5332_tp_cfg[i][si5332_cfg[i]];
+							cfg_size = bsp_clk_si5332_cfg_tp_size[i][si5332_cfg[i]];
 						}
 						else
 						{
