@@ -1,4 +1,5 @@
 #include "profile.h"
+#include "log.h"
 #include <string.h>
 
 #define PROFILE_TYPE_INT32 		2
@@ -15,6 +16,86 @@
 #define PROFILE_TYPE_FLOAT_E2	18
 #define PROFILE_TYPE_FLOAT_E3	19
 #define PROFILE_TYPE_FLOAT_E4	20
+
+static void __PROFILE_LogParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param)
+{	
+	if (Param->Type == PROFILE_TYPE_INT32)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%d", *(int32_t*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_INT64)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%lld", *(int64_t*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_UINT32)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%u", *(uint32_t*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_HEX32)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%X", *(uint32_t*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_UINT64)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%llu", *(uint64_t*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_HEX64)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%llX", *(uint64_t*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_FLOAT_1)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.lf", *(float*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_FLOAT_2)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.2f", *(float*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_FLOAT_3)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.3f", *(float*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_FLOAT_4)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.4f", *(float*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_FLOAT_E1)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.le", *(float*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_FLOAT_E2)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.2e", *(float*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_FLOAT_E3)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.3e", *(float*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_FLOAT_E4)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.4e", *(float*)Param->Value);
+	}
+	else if ((Param->Type > PROFILE_TYPE_ENUM) && (Param->Type < (PROFILE_TYPE_ENUM + 1024)))
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%d", *(int32_t*)Param->Value);
+	}
+	else if ((Param->Type > PROFILE_TYPE_BITMSK) && (Param->Type < (PROFILE_TYPE_BITMSK + 1024)))
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%u", *(uint32_t*)Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_STRING16)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%s", Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_STRING32)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%s", Param->Value);
+	}
+	else if (Param->Type == PROFILE_TYPE_STRING64)
+	{
+		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%s", Param->Value);
+	}
+}
 
 static int32_t __PROFILE_CheckParamValueLimits(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, void *Value)
 {
@@ -100,6 +181,8 @@ static int32_t __PROFILE_CheckParamValueConstraint(const PROFILE_T *Profile, con
 
 static int32_t __PROFILE_WriteParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, void *Value)
 {
+	uint8_t OldColor, NewColor;
+	
 	if (Param->Type == PROFILE_TYPE_NONE)
 	{
 		return 0;
@@ -114,18 +197,47 @@ static int32_t __PROFILE_WriteParamValue(const PROFILE_T *Profile, const PROFILE
 		(Param->Type == PROFILE_TYPE_FLOAT_E1) ||
 		(Param->Type == PROFILE_TYPE_FLOAT_E2) ||
 		(Param->Type == PROFILE_TYPE_FLOAT_E3) ||
-		(Param->Type == PROFILE_TYPE_FLOAT_E4) || 
-		((Param->Type > PROFILE_TYPE_ENUM) && (Param->Type < (PROFILE_TYPE_ENUM + 1024))) ||
+		(Param->Type == PROFILE_TYPE_FLOAT_E4))
+	{
+		if ((Param->Section == 2) || (Param->Section == 8))
+		{
+			__PROFILE_GetParamColor(Profile, Param, &OldColor);
+			memcpy((void*)Param->Value, Value, 4);
+			__PROFILE_GetParamColor(Profile, Param, &NewColor);
+			if (OldColor != NewColor)
+				__PROFILE_LogParamValue(Profile, Param);
+		}
+		else
+		{
+			memcpy((void*)Param->Value, Value, 4);
+			__PROFILE_LogParamValue(Profile, Param);
+		}
+		return 0;
+	}
+	else if (((Param->Type > PROFILE_TYPE_ENUM) && (Param->Type < (PROFILE_TYPE_ENUM + 1024))) ||
 		((Param->Type > PROFILE_TYPE_BITMSK) && (Param->Type < (PROFILE_TYPE_BITMSK+1024))))
 	{
 		memcpy((void*)Param->Value, Value, 4);
+		__PROFILE_LogParamValue(Profile, Param);
 		return 0;
 	}
 	else if ((Param->Type == PROFILE_TYPE_INT64) ||
 		(Param->Type == PROFILE_TYPE_UINT64) ||
 		(Param->Type == PROFILE_TYPE_HEX64))
 	{
-		memcpy((void*)Param->Value, Value, 8);
+		if ((Param->Section == 2) || (Param->Section == 8))
+		{
+			__PROFILE_GetParamColor(Profile, Param, &OldColor);
+			memcpy((void*)Param->Value, Value, 8);
+			__PROFILE_GetParamColor(Profile, Param, &NewColor);
+			if (OldColor != NewColor)
+				__PROFILE_LogParamValue(Profile, Param);
+		}
+		else
+		{
+			memcpy((void*)Param->Value, Value, 8);
+			__PROFILE_LogParamValue(Profile, Param);
+		}
 		return 0;
 	}
 	else if ((Param->Type == PROFILE_TYPE_STRING16) ||
@@ -133,6 +245,7 @@ static int32_t __PROFILE_WriteParamValue(const PROFILE_T *Profile, const PROFILE
 		(Param->Type == PROFILE_TYPE_STRING64))
 	{
 		strcpy((void*)Param->Value, Value);
+		__PROFILE_LogParamValue(Profile, Param);
 		return 0;
 	}
 	
@@ -150,6 +263,7 @@ static int32_t __PROFILE_WriteParamValidValue(const PROFILE_T *Profile, const PR
 			if (Param->Constraints[i].CheckCondition())
 			{
 				Param->Constraints[i].GetValidValue(Param->Value);
+				__PROFILE_LogParamValue(Profile, Param);
 			}
 		}
 	}
@@ -295,7 +409,7 @@ int32_t PROFILE_StringToParamValue(uint16_t Type, PROFILE_VALUE_T *Value, char *
 		Value->s64[Len] = 0;
 		Value->i32 = strtol(Value->s64, &c, 10);
 	}
-	else if (((Type > PROFILE_TYPE_BITMSK) && (Type < (PROFILE_TYPE_BITMSK+1024))) && (Len <= 63))
+	else if (((Type > PROFILE_TYPE_BITMSK) && (Type < (PROFILE_TYPE_BITMSK + 1024))) && (Len <= 63))
 	{
 		memcpy(Value, String, Len);
 		Value->s64[Len] = 0;
@@ -389,7 +503,7 @@ int32_t PROFILE_ParamValueToString(uint16_t Type, PROFILE_VALUE_T *Value, char *
 	{
 		*Len = sprintf(String, "%d", Value->i32);
 	}
-	else if ((Type > PROFILE_TYPE_BITMSK) && (Type < (PROFILE_TYPE_BITMSK+1024)))
+	else if ((Type > PROFILE_TYPE_BITMSK) && (Type < (PROFILE_TYPE_BITMSK + 1024)))
 	{
 		*Len = sprintf(String, "%u", Value->u32);
 	}
