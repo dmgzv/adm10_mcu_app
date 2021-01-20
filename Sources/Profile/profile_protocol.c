@@ -1076,7 +1076,20 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_PROTOCOL_T *Protocol, char * cmd, cha
 		}
 		else
 		{
-			Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_1) | (1 << PROFILE_TABLE_2) | (1 << PROFILE_TABLE_3) | (1 << PROFILE_TABLE_4) | (1 << PROFILE_TABLE_103);
+			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table1Size )
+				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_1);
+			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size )
+				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_2);
+			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table3Size )
+				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_3);
+			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table4Size )
+				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_4);
+			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table5Size )
+				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_5);
+			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table8Size )
+				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_8);
+			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table103Size )
+				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_103);
 			PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
 			Protocol->Profile->ValuesLock = 0;			
 			*p++ = 'O';

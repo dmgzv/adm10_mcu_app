@@ -574,8 +574,6 @@ void PROFILE_FLASH_RestoreCalibsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t C
 	while (MapAddr < (PROFILE_FLASH_CALIB_MAP_BODY_ADDR(ProfileFlash->Profile->Idx) + CalibMapHeader.CalibsMapSize)) {
 		if (BSP_FLASH_Read(MapAddr, Map, sizeof(Map)))
 			goto exit;
-		if (BSP_FLASH_Read(ValAddr, Value, sizeof(Value)))
-			goto exit;
 		
 		Len = 0;
 		for (i = 0; i < sizeof(Map); i++)
@@ -589,6 +587,62 @@ void PROFILE_FLASH_RestoreCalibsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t C
 		
 		if ((Len == 0) || (Len > (sizeof(Map) - 2)))
 			goto exit;
+		
+		MapAddr += Len + 2;
+		
+		if (Map[Len + 1] != PROFILE_TABLE_2)
+		{
+			switch( Map[Len] )
+			{
+				case PROFILE_TYPE_BOOL:
+				case PROFILE_TYPE_UINT32:
+				case PROFILE_TYPE_CNT:
+				case PROFILE_TYPE_BITMSK:
+				case PROFILE_TYPE_HEX32:
+				case PROFILE_TYPE_IP:
+				case PROFILE_TYPE_ENUM:
+				case PROFILE_TYPE_INT32:
+				case PROFILE_TYPE_FLOAT_1:
+				case PROFILE_TYPE_FLOAT_2:
+				case PROFILE_TYPE_FLOAT_3:
+				case PROFILE_TYPE_FLOAT_E:
+					/*==========================================
+					  Fix data alignment for unpacked structures
+					  ==========================================*/
+					if (ValAddr % 4)
+						ValAddr += 4 - (ValAddr % 4);
+					/*==========================================*/
+					if (BSP_FLASH_Read(ValAddr, Value, 4))
+						goto exit;
+					ValAddr += 4;
+					break;
+				case PROFILE_TYPE_UINT64:
+					/*==========================================
+					  Fix data alignment for unpacked structures
+					  ==========================================*/
+					if (ValAddr % 8)
+						ValAddr += 8 - (ValAddr % 8);
+					/*==========================================*/
+					if (BSP_FLASH_Read(ValAddr, Value, 8))
+						goto exit;
+					ValAddr += 8;
+					break;
+				case PROFILE_TYPE_OID:
+				case PROFILE_TYPE_STRING:
+					if (BSP_FLASH_Read(ValAddr, Value, PROFILE_STRING_MAX_LEN))
+						goto exit;
+					ValAddr += PROFILE_STRING_MAX_LEN;
+					break;
+				default:
+					goto exit;
+			}
+		}
+		else
+		{
+			if (BSP_FLASH_Read(ValAddr, Value, 2))
+				goto exit;
+			ValAddr += 2;
+		}
 		
 		if (Map[Len+1] == PROFILE_TABLE_1)
 		{
@@ -699,40 +753,6 @@ void PROFILE_FLASH_RestoreCalibsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t C
 						}
 					}
 				}
-			}
-		}
-		MapAddr += Len + 2;
-		if (Map[Len + 1] == PROFILE_TABLE_2)
-		{
-			ValAddr += 2;
-		}
-		else
-		{
-			switch( Map[Len] )
-			{
-				case PROFILE_TYPE_BOOL:
-				case PROFILE_TYPE_UINT32:
-				case PROFILE_TYPE_CNT:
-				case PROFILE_TYPE_BITMSK:
-				case PROFILE_TYPE_HEX32:
-				case PROFILE_TYPE_IP:
-				case PROFILE_TYPE_ENUM:
-				case PROFILE_TYPE_INT32:
-				case PROFILE_TYPE_FLOAT_1:
-				case PROFILE_TYPE_FLOAT_2:
-				case PROFILE_TYPE_FLOAT_3:
-				case PROFILE_TYPE_FLOAT_E:
-					ValAddr += 4;
-					break;
-				case PROFILE_TYPE_UINT64:
-					ValAddr += 8;
-					break;
-				case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-				case PROFILE_TYPE_STRING:// произвольная строка
-					ValAddr += PROFILE_STRING_MAX_LEN;
-					break;
-				default:
-					goto exit;
 			}
 		}
 	}
@@ -1327,8 +1347,6 @@ void PROFILE_FLASH_RestoreConfigsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t 
 	while (MapAddr < (PROFILE_FLASH_CONFIG_MAP_BODY_ADDR(ProfileFlash->Profile->Idx) + ConfigMapHeader.ConfigsMapSize)) {
 		if (BSP_FLASH_Read(MapAddr, Map, sizeof(Map)))
 			goto exit;
-		if (BSP_FLASH_Read(ValAddr, Value, sizeof(Value)))
-			goto exit;
 		
 		Len = 0;
 		for (i = 0; i < sizeof(Map); i++)
@@ -1342,6 +1360,63 @@ void PROFILE_FLASH_RestoreConfigsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t 
 		
 		if ((Len == 0) || (Len > (sizeof(Map) - 2)))
 			goto exit;
+		
+		MapAddr += Len + 2;
+		
+		if (Map[Len + 1] != PROFILE_TABLE_2)
+		{
+			switch( Map[Len] )
+			{
+				case PROFILE_TYPE_BOOL:
+				case PROFILE_TYPE_UINT32:
+				case PROFILE_TYPE_CNT:
+				case PROFILE_TYPE_BITMSK:
+				case PROFILE_TYPE_HEX32:
+				case PROFILE_TYPE_IP:
+				case PROFILE_TYPE_ENUM:
+				case PROFILE_TYPE_INT32:
+				case PROFILE_TYPE_FLOAT_1:
+				case PROFILE_TYPE_FLOAT_2:
+				case PROFILE_TYPE_FLOAT_3:
+				case PROFILE_TYPE_FLOAT_E:
+					/*==========================================
+					  Fix data alignment for unpacked structures
+					  ==========================================*/
+					if (ValAddr % 4)
+						ValAddr += 4 - (ValAddr % 4);
+					/*==========================================*/
+					if (BSP_FLASH_Read(ValAddr, Value, 4))
+						goto exit;
+					ValAddr += 4;
+					break;
+				case PROFILE_TYPE_UINT64:
+					/*==========================================
+					  Fix data alignment for unpacked structures
+					  ==========================================*/
+					if (ValAddr % 8)
+						ValAddr += 8 - (ValAddr % 8);
+					/*==========================================*/
+					if (BSP_FLASH_Read(ValAddr, Value, 8))
+						goto exit;
+					ValAddr += 8;
+					break;
+				case PROFILE_TYPE_OID:
+				case PROFILE_TYPE_STRING:
+					if (BSP_FLASH_Read(ValAddr, Value, PROFILE_STRING_MAX_LEN))
+						goto exit;
+					ValAddr += PROFILE_STRING_MAX_LEN;
+					break;
+				default:
+					goto exit;
+			}
+		}
+		else
+		{
+			if (BSP_FLASH_Read(ValAddr, Value, 2))
+				goto exit;
+			ValAddr += 2;
+		}
+		
 		if (Map[Len+1] == PROFILE_TABLE_1)
 		{
 			for (i = 0; i < ProfileFlash->Profile->Descr[ProfileFlash->Profile->Idx]->Table1Size; i++)
@@ -1451,40 +1526,6 @@ void PROFILE_FLASH_RestoreConfigsValues(PROFILE_FLASH_T *ProfileFlash, uint32_t 
 						}
 					}
 				}
-			}
-		}
-		MapAddr += Len + 2;
-		if (Map[Len + 1] == PROFILE_TABLE_2)
-		{
-			ValAddr += 2;
-		}
-		else
-		{
-			switch( Map[Len] )
-			{
-				case PROFILE_TYPE_BOOL:
-				case PROFILE_TYPE_UINT32:
-				case PROFILE_TYPE_CNT:
-				case PROFILE_TYPE_BITMSK:
-				case PROFILE_TYPE_HEX32:
-				case PROFILE_TYPE_IP:
-				case PROFILE_TYPE_ENUM:
-				case PROFILE_TYPE_INT32:
-				case PROFILE_TYPE_FLOAT_1:
-				case PROFILE_TYPE_FLOAT_2:
-				case PROFILE_TYPE_FLOAT_3:
-				case PROFILE_TYPE_FLOAT_E:
-					ValAddr += 4;
-					break;
-				case PROFILE_TYPE_UINT64:
-					ValAddr += 8;
-					break;
-				case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-				case PROFILE_TYPE_STRING:// произвольная строка
-					ValAddr += PROFILE_STRING_MAX_LEN;
-					break;
-				default:
-					goto exit;
 			}
 		}
 	}

@@ -24,6 +24,11 @@
 #define PROFILE_DYNAMIC_PARAM_DEFAULT_FAIL_COLOR_PTR(Profile, Param) 	(Param)->FailureColor ? (uint8_t*)((uint32_t)((Profile)->Descr[(Profile)->Idx]->StaticDefaultValues) + (uint32_t)((Param)->FailureColor)) : NULL
 #define PROFILE_DYNAMIC_PARAM_STATE_PTR(Profile, Param) 							(Param)->State ? (uint8_t*)((uint32_t)((Profile)->Values->Dynamic) + (uint32_t)((Param)->State)) : NULL
 
+__weak void __PROFILE_GetStringColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *Color, uint8_t *DegradeColor, uint8_t *FailureColor)
+{
+	*Color = PROFILE_COLOR_NA;
+}
+
 __weak int32_t PROFILE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
 	return 0;
@@ -1036,7 +1041,7 @@ int32_t PROFILE_GetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_
 			osMutexRelease( Profile->Values->Mutex );
 			break;
 		default:
-			*Color = PROFILE_COLOR_NA;
+			__PROFILE_GetStringColor(Profile, Table, Idx, Color, DegradeColor, FailureColor);
 			break;
 	}
 	return 0;
