@@ -628,8 +628,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetPrimaryODUkValue(PROFILE_T *Profile
 				/*In ADM-10 always allow to set PrimaryODUk to None */
 				return 0;
 			}
-			else if ((*(uint32_t*)Value > PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_LN_1_ODU1_1) &&
-					(*(uint32_t*)Value < PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_LN_2_ODU1_4))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_LN_1_ODU1_1) &&
+					(*(uint32_t*)Value <= PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_LN_2_ODU1_4))
 			{
 				/*In ADM-10 allow to set PrimaryODUk to Line 1, 2 ODU1 1, 2, 3, 4 */
 			}
@@ -721,8 +721,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetProtectODUkValue(PROFILE_T *Profile
 				/*In ADM-10 always allow to set ProtectODUk to None */
 				return 0;
 			}
-			else if ((*(uint32_t*)Value > PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_LN_1_ODU1_1) &&
-					(*(uint32_t*)Value < PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_LN_2_ODU1_4))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_LN_1_ODU1_1) &&
+					(*(uint32_t*)Value <= PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_LN_2_ODU1_4))
 			{
 				/*In ADM-10 allow to set ProtectODUk to Line 1, 2 ODU1 1, 2, 3, 4 */
 			}
@@ -1007,8 +1007,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetPrimaryODUkValue(PROFILE_T *Profile
 				/*In ADM-10 always allow to set PrimaryODUk to None */
 				return 0;
 			}
-			else if ((*(uint32_t*)Value > PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_LN_1_ODU0_1) &&
-					(*(uint32_t*)Value < PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_LN_2_ODU0_8))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_LN_1_ODU0_1) &&
+					(*(uint32_t*)Value <= PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_LN_2_ODU0_8))
 			{
 				/*In ADM-10 allow to set PrimaryODUk to Line 1, 2 ODU1 1, 2, ..., 8 */
 			}
@@ -1104,8 +1104,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetProtectODUkValue(PROFILE_T *Profile
 				/*In ADM-10 always allow to set ProtectODUk to None */
 				return 0;
 			}
-			else if ((*(uint32_t*)Value > PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_LN_1_ODU0_1) &&
-					(*(uint32_t*)Value < PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_LN_2_ODU0_8))
+			else if ((*(uint32_t*)Value >= PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_LN_1_ODU0_1) &&
+					(*(uint32_t*)Value <= PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_LN_2_ODU0_8))
 			{
 				/*In ADM-10 allow to set ProtectODUk to Line 1, 2 ODU1 1, 2, ..., 8 */
 			}
