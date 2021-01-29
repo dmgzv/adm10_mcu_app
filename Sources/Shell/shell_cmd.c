@@ -1711,7 +1711,7 @@ static int32_t SHELL_CMD_FLASH_LOAD_WEB_TFTP_ReceiveCallback(void *Priv, uint16_
 		return -1;
 	if (DataSize != TFTP_DATA_LEN_MAX)
 	{
-		if (HTTP_SERVER_FILES_WriteDataComplete())
+		if (HTTP_SERVER_FILES_WriteDataSize(((Block - 1) * TFTP_DATA_LEN_MAX) + DataSize))
 			return -1;
 	}
 	return 0;

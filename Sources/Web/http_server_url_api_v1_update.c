@@ -15,8 +15,10 @@ extern BOOTLOADER_T Bootloader;
 
 static void HTTP_SERVER_URL_API_V1_UPDATE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 static void HTTP_SERVER_URL_API_V1_UPDATE_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
-static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
-static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE = {
 	.Template = HTTP_SERVER_URL_API_V1_UPDATE_TEMPLATE,
@@ -32,9 +34,9 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE = {
 	.Template = HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_TEMPLATE) - 1,
 	.Head = NULL,
-	.Get = NULL,
-	.Put = NULL,
-	.Post = HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Post,
+	.Get = HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Get,
+	.Put = HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Put,
+	.Post = NULL,
 	.Delete = NULL,
 };
 
@@ -42,9 +44,9 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB = {
 	.Template = HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_TEMPLATE,
 	.TemplateSize = sizeof(HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_TEMPLATE) - 1,
 	.Head = NULL,
-	.Get = NULL,
-	.Put = NULL,
-	.Post = HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Post,
+	.Get = HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Get,
+	.Put = HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Put,
+	.Post = NULL,
 	.Delete = NULL,
 };
 
@@ -340,7 +342,32 @@ error:
 	return;
 }
 
-static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
+static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
+{
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
+
+	netbuf_delete(Inbuf);
+	
+	RspHeader.Code = HTTP_RESPONCE_200_OK;
+	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
+	RspHeader.Charset = HTTP_CHARSET_UTF_8;
+	RspHeader.ContentLength = 0;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
+	RspHeader.AllowedLen = 0;
+	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
+		return;
+	
+	__HTTP_SERVER_StartBody(Conn);
+	__HTTP_SERVER_WriteBodyData(Conn, (char*)BOOTLOADER_FW_ADDR, BOOTLOADER_FW_SIZE);
+	__HTTP_SERVER_FinishBody(Conn);
+}
+
+static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
 	err_t recv_err;
 	char *data;
@@ -415,7 +442,7 @@ write_data:
 	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	netconn_close(Conn);
 	netconn_delete(Conn);
-	osDelay(1000);
+	osDelay(3000);
 	BSP_Reset();
 	return;
 	
@@ -423,12 +450,62 @@ error:
 	__HTTP_SERVER_WriteError400(Conn);
 }
 
-static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Post(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
+static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
 {
-	err_t recv_err;
-	char *data;
-	uint16_t error, datalen;
-	uint32_t dataaddr, ContentLength;
+	USER_T User;
+	char Data[256];
+	uint32_t DataAddr, DataLen, DataSize;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
+
+	netbuf_delete(Inbuf);
+	
+	DataAddr = 0;
+	if (HTTP_SERVER_FILES_ReadDataSize(&DataSize))
+		goto error_500;
+	
+	RspHeader.Code = HTTP_RESPONCE_200_OK;
+	RspHeader.ContentType = HTTP_CONTENT_TYPE_APP_JSON;
+	RspHeader.Charset = HTTP_CHARSET_UTF_8;
+	RspHeader.ContentLength = 0;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.TransferEncoding = HTTP_TRANSFER_ENCODING_CHUNKED;
+	RspHeader.AllowedLen = 0;
+	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
+		return;
+	
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	while (DataSize)
+	{
+		if (DataSize >= sizeof(Data))
+			DataLen = sizeof(Data);
+		else
+			DataLen = DataSize;
+		if (HTTP_SERVER_FILES_ReadData(DataAddr, Data, DataLen))
+			return;
+		if (__HTTP_SERVER_WriteBodyData(Conn, (char*)Data, DataLen))
+			return;
+		DataAddr += DataLen;
+		DataSize -= DataLen;
+	}
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
+	return;
+	
+error_500:
+	__HTTP_SERVER_WriteError500(Conn);
+	return;
+}
+
+static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Put(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
+{
+	err_t RecvError;
+	char *Data;
+	uint16_t Error, DataLen;
+	uint32_t DataAddr, DataSize, ContentLength;
 	USER_T User;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 	
@@ -438,39 +515,40 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_Post(struct netconn *Conn, str
 	if (ReqHeader->ContentLength == 0)
 	{
 		netbuf_delete(Inbuf);
-		goto error;
+		goto error_400;
 	}
 	
 	ContentLength = strtoul(ReqHeader->ContentLength, NULL, 10);
 	if ((ContentLength == 0) || (ContentLength > HTTP_SERVER_FILES_RECORD_BODY_SIZE))
 	{
 		netbuf_delete(Inbuf);
-		goto error;
+		goto error_400;
 	}
 	
-	dataaddr = 0;
-	error = 0;
+	DataAddr = 0;
+	DataSize = ContentLength;
+	Error = 0;
 	if (ReqHeader->Body)
 	{
-		data = ReqHeader->Body;
-		datalen = ReqHeader->BodyLen;		
+		Data = ReqHeader->Body;
+		DataLen = ReqHeader->BodyLen;		
 		goto write_data;
 	}
 	netbuf_delete(Inbuf);
 	
 	while(ContentLength) {
-		recv_err = netconn_recv(Conn, &Inbuf);
-		if (recv_err == ERR_OK)
+		RecvError = netconn_recv(Conn, &Inbuf);
+		if (RecvError == ERR_OK)
 		{
-			netbuf_data(Inbuf, (void**)&data, &datalen);
+			netbuf_data(Inbuf, (void**)&Data, &DataLen);
 write_data:
-			ContentLength -= datalen;
-			if (!error)
+			ContentLength -= DataLen;
+			if (!Error)
 			{
-				if (HTTP_SERVER_FILES_WriteData(dataaddr, data, datalen))
-					error = 1;
+				if (HTTP_SERVER_FILES_WriteData(DataAddr, Data, DataLen))
+					Error = 1;
 			}
-			dataaddr += datalen;
+			DataAddr += DataLen;
 			netbuf_delete(Inbuf);
 		}
 		else
@@ -478,11 +556,11 @@ write_data:
 			return;
 		}
 	}
-	if (error)
-		goto error;
+	if (Error)
+		goto error_500;
 	
-	if (HTTP_SERVER_FILES_WriteDataComplete())
-		goto error;
+	if (HTTP_SERVER_FILES_WriteDataSize(DataSize))
+		goto error_500;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -494,6 +572,10 @@ write_data:
 	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);	
 	return;
 	
-error:
+error_400:
 	__HTTP_SERVER_WriteError400(Conn);
+	return;
+error_500:
+	__HTTP_SERVER_WriteError500(Conn);
+	return;
 }

@@ -1,6 +1,7 @@
 #include "http_server.h"
 #include "http_server_url.h"
 #include "base64.h"
+#include "log.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,7 +9,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define HTTP_SERVER_THREAD_STACK_SIZE  ( 512 )
+#define HTTP_SERVER_THREAD_STACK_SIZE  ( 6*128 )
 #define HTTP_SERVER_THREAD_PRIO    ( osPriorityAboveNormal )
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -23,11 +24,18 @@ static int32_t HTTP_SERVER_Write(struct netconn *Conn, const void *Data, size_t 
 	{
 		WriteError = netconn_write(Conn, Data, Size, Flags);
 		if (WriteError == ERR_OK)
+		{
 			break;
+		}
 		else if (WriteError == ERR_INPROGRESS)
+		{
 			osDelay(1);
+		}
 		else
+		{
+			LOG_Error("HTTP", "SERVER", "", "Write error: %d", WriteError);
 			return -1;
+		}
 	}
 	return 0;
 }
@@ -372,9 +380,17 @@ int32_t __HTTP_SERVER_WriteError400(struct netconn *Conn)
 		return -1;
 	return 0;
 }
+
 int32_t __HTTP_SERVER_WriteError401(struct netconn *Conn)
 {
 	if (HTTP_SERVER_Write(Conn, HTTP_RESPONCE_401_UNAUTHORIZED"\r\nWWW-Authenticate: Basic realm=\"Access to device data\"\r\n\r\n", sizeof(HTTP_RESPONCE_401_UNAUTHORIZED"\r\nWWW-Authenticate: Basic realm=\"Access to device data\"\r\n\r\n") - 1, NETCONN_NOCOPY))
+		return -1;
+	return 0;
+}
+
+int32_t __HTTP_SERVER_WriteError403(struct netconn *Conn)
+{
+	if (HTTP_SERVER_Write(Conn, HTTP_RESPONCE_403_FORBIDDEN"\r\n\r\n", sizeof(HTTP_RESPONCE_403_FORBIDDEN"\r\n\r\n") - 1, NETCONN_NOCOPY))
 		return -1;
 	return 0;
 }
@@ -544,12 +560,17 @@ static void HTTP_SERVER_ServeConnection(struct netconn *Conn)
 		netbuf_data(Inbuf, (void**)&Data, &DataLen);
 		if (HTTP_SERVER_ParseRequest(Data, DataLen, &ReqHeader))
 		{
+			LOG_Error("HTTP", "SERVER", "", "Request header parse error");
 			netbuf_delete(Inbuf);
 			__HTTP_SERVER_WriteError400(Conn);
 			return;
 		}
 		
 		HTTP_SERVER_URL_Process(Conn, Inbuf, &ReqHeader);
+	}
+	else
+	{
+		LOG_Error("HTTP", "SERVER", "", "Netconn recv error: %d", RecvError);
 	}
 }
 
@@ -561,7 +582,7 @@ static void HTTP_SERVER_ServeConnection(struct netconn *Conn)
 static void HTTP_SERVER_Thread(void *arg)
 { 
   struct netconn *Conn, *NewConn;
-  err_t Error, AcceptError;
+  err_t Error;
   
   /* Create a new TCP Connection handle */
   Conn = netconn_new(NETCONN_TCP);
@@ -579,18 +600,26 @@ static void HTTP_SERVER_Thread(void *arg)
       while(1) 
       {
         /* Accept any icoming Connection */
-        AcceptError = netconn_accept(Conn, &NewConn);
-        if(AcceptError == ERR_OK)
+        Error = netconn_accept(Conn, &NewConn);
+        if(Error == ERR_OK)
         {
 					/* Serve incoming Connection */
 					HTTP_SERVER_ServeConnection(NewConn);
 
 					/* Close the Connection*/
-					netconn_close(NewConn);
+					Error = netconn_close(NewConn);
+					if(Error != ERR_OK)
+						LOG_Error("HTTP", "SERVER", "", "Netconn close error: %d", Error);
 
 					/* delete Connection */
-					netconn_delete(NewConn);    
+					Error = netconn_delete(NewConn);
+					if(Error != ERR_OK)
+						LOG_Error("HTTP", "SERVER", "", "Netconn delete error: %d", Error);					
         }
+				else
+				{
+					LOG_Error("HTTP", "SERVER", "", "Netconn accept error: %d", Error);
+				}
       }
     }
   }
@@ -598,5 +627,6 @@ static void HTTP_SERVER_Thread(void *arg)
  
 void HTTP_SERVER_Init(void)
 {
-   sys_thread_new("HTTP", HTTP_SERVER_Thread, NULL, HTTP_SERVER_THREAD_STACK_SIZE, HTTP_SERVER_THREAD_PRIO);
+   if (!sys_thread_new("HTTP", HTTP_SERVER_Thread, NULL, HTTP_SERVER_THREAD_STACK_SIZE, HTTP_SERVER_THREAD_PRIO))
+		 LOG_Error("HTTP", "SERVER", "", "Init error");
 }

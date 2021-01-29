@@ -30,7 +30,8 @@
 void HTTP_SERVER_FILES_Init(void);
 int32_t HTTP_SERVER_FILES_FindByName(char *Name, uint32_t NameLen, uint32_t *DataAddr, uint32_t *DataSize, uint32_t *DataType);
 int32_t HTTP_SERVER_FILES_ReadData(uint32_t DataAddr, char *Data, uint32_t DataSize);
+int32_t HTTP_SERVER_FILES_ReadDataSize(uint32_t *DataSize);
 int32_t HTTP_SERVER_FILES_WriteData(uint32_t DataAddr, char *Data, uint32_t DataSize);
-int32_t HTTP_SERVER_FILES_WriteDataComplete(void);
+int32_t HTTP_SERVER_FILES_WriteDataSize(uint32_t DataSize);
 
 #endif /* __HTTP_SERVER_FILES_H__ */

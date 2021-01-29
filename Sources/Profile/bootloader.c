@@ -221,7 +221,7 @@ int32_t BOOTLOADER_UpdateNewFwBlock(BOOTLOADER_T *Bootloader, char *FwBlock, uin
 		Bootloader->BufferAddr += Size;
 		FwBlock += Size;
 		FwBlockSize -= Size;
-		if (Bootloader->BufferAddr == BSP_FLASH_PAGE_SIZE)
+		if ((Bootloader->FlashAddr != BSP_FLASH_FW_INFO) && (Bootloader->BufferAddr == BSP_FLASH_PAGE_SIZE))
 		{
 			Bootloader->FwCRC16 = Calc_CRC16((char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE, Bootloader->FwCRC16);
 			if (BSP_FLASH_WaitReady())

@@ -5,16 +5,17 @@
 #include <stdlib.h>
 
 typedef struct {
+	uint32_t Idx;
 	char Project[sizeof(BSP_PROJECT)];
 	char HwVersion[sizeof(BSP_HW_VERSION)];
+	uint32_t DataSize;
 	uint16_t Crc16;
 }	HTTP_SERVER_FILES_RECORD_HEADER_T;
 
-static uint32_t HTTP_SERVER_FILES_RecordIdx;
+static HTTP_SERVER_FILES_RECORD_HEADER_T HTTP_SERVER_FILES_Header;
 
-static int32_t __HTTP_SERVER_FILES_ReadRecordHeader(uint32_t Idx)
+static int32_t __HTTP_SERVER_FILES_ReadRecordHeader(uint32_t Idx, HTTP_SERVER_FILES_RECORD_HEADER_T *Header)
 {
-	HTTP_SERVER_FILES_RECORD_HEADER_T Header;
 	uint32_t Addr;
 	uint16_t Crc16;
 	
@@ -23,54 +24,50 @@ static int32_t __HTTP_SERVER_FILES_ReadRecordHeader(uint32_t Idx)
 	
 	if (BSP_FLASH_WaitReady())
 		return -1;
-	if (BSP_FLASH_Read(Addr, (char*)&Header, sizeof(Header)))
+	if (BSP_FLASH_Read(Addr, (char*)Header, sizeof(*Header)))
 		return -1;
 	
-	if (memcmp(Header.Project, BSP_PROJECT, sizeof(BSP_PROJECT)))
+	if (memcmp(Header->Project, BSP_PROJECT, sizeof(BSP_PROJECT)))
 		goto error;
-	if (memcmp(Header.HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION)))
+	if (memcmp(Header->HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION)))
+		goto error;
+	if (Header->DataSize >= HTTP_SERVER_FILES_RECORD_BODY_SIZE)
 		goto error;
 
-	Crc16 = Header.Crc16;
-	Header.Crc16 = 0;
-	if (Crc16 != Calc_CRC16((char*)&Header, sizeof(Header), 0))
+	Crc16 = Header->Crc16;
+	Header->Crc16 = 0;
+	if (Crc16 != Calc_CRC16((char*)Header, sizeof(*Header), 0))
 		goto error;
 	
-	LOG_Info("HTTP_SERVER_FILES", "", "", "Read Files %d Header: Ok", Idx);
+	LOG_Info("HTTP_SERVER_FILES", "", "", "Read %d Header: Idx = %d, DataSize = %d", Idx, Header->Idx, Header->DataSize);
 	return 0;
 	
 error:
-	LOG_Warn("HTTP_SERVER_FILES", "", "", "Read Files %d Header: Error", Idx);
+	LOG_Warn("HTTP_SERVER_FILES", "", "", "Read %d Header: Error", Idx);
 	return -1;
 }
 
-static int32_t __HTTP_SERVER_FILES_WriteRecordHeader(uint32_t Idx)
+static int32_t __HTTP_SERVER_FILES_WriteRecordHeader(uint32_t Idx, HTTP_SERVER_FILES_RECORD_HEADER_T *Header)
 {
-	HTTP_SERVER_FILES_RECORD_HEADER_T Header;
 	uint32_t i, Addr;
 	uint16_t Crc16;
-	
-	memset(&Header, 0, sizeof(Header));
-	memcpy(Header.Project, BSP_PROJECT, sizeof(BSP_PROJECT));
-	memcpy(Header.HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION));
-	Header.Crc16 = Calc_CRC16((char*)&Header, sizeof(Header), 0);
 	
 	Idx = Idx % HTTP_SERVER_FILES_RECORDS_CNT;
 	Addr = HTTP_SERVER_FILES_RECORD_HEADER_ADDR(Idx);
 	
 	if (BSP_FLASH_WaitReady())
 		goto error;
-	if (BSP_FLASH_ProgramPage(Addr, (char*)&Header, sizeof(Header)))
+	if (BSP_FLASH_ProgramPage(Addr, (char*)Header, sizeof(*Header)))
 		goto error;
 	
-	memset(&Header, 0, sizeof(Header));
+	memset(Header, 0, sizeof(*Header));
 	if (BSP_FLASH_WaitReady())
 		goto error;
-	if (BSP_FLASH_Read(Addr, (char*)&Header, sizeof(Header)))
+	if (BSP_FLASH_Read(Addr, (char*)Header, sizeof(*Header)))
 		goto error;
-	Crc16 = Header.Crc16;
-	Header.Crc16 = 0;
-	if (Crc16 != Calc_CRC16((char*)&Header, sizeof(Header), 0))
+	Crc16 = Header->Crc16;
+	Header->Crc16 = 0;
+	if (Crc16 != Calc_CRC16((char*)Header, sizeof(*Header), 0))
 		goto error;
 	
 	for (i = 0; i < HTTP_SERVER_FILES_RECORDS_CNT; i++)
@@ -85,11 +82,11 @@ static int32_t __HTTP_SERVER_FILES_WriteRecordHeader(uint32_t Idx)
 		}
 	}
 	
-	LOG_Info("HTTP_SERVER_FILES", "",  "", "Write Files %d Header: Ok", Idx);
+	LOG_Info("HTTP_SERVER_FILES", "",  "", "Write %d Header: Idx = %d, DataSize = %d", Idx, Header->Idx, Header->DataSize);
 	return 0;
 
 error:
-	LOG_Error("HTTP_SERVER_FILES", "",  "", "Write Files %d Header: Error", Idx);
+	LOG_Error("HTTP_SERVER_FILES", "",  "", "Write %d Header: Error", Idx);
 	return -1;
 }
 
@@ -166,29 +163,37 @@ error:
 void HTTP_SERVER_FILES_Init(void)
 {
 	uint32_t Idx;
+	HTTP_SERVER_FILES_RECORD_HEADER_T Header;
 	
 	for (Idx = 0; Idx < HTTP_SERVER_FILES_RECORDS_CNT; Idx++)
 	{
-		if (__HTTP_SERVER_FILES_ReadRecordHeader(Idx))
+		if (__HTTP_SERVER_FILES_ReadRecordHeader(Idx, &Header))
 			continue;
-		HTTP_SERVER_FILES_RecordIdx = Idx;
-		LOG_Info("HTTP_SERVER_FILES", "",  "", "Init Files %d: Ok", HTTP_SERVER_FILES_RecordIdx);
+		HTTP_SERVER_FILES_Header = Header;
+		LOG_Info("HTTP_SERVER_FILES", "",  "", "Init %d: Idx = %d, DataSize = %d", Idx, HTTP_SERVER_FILES_Header.Idx, HTTP_SERVER_FILES_Header.DataSize);
 		return;
 	}
 	
-	HTTP_SERVER_FILES_RecordIdx = 0;
-	__HTTP_SERVER_FILES_WriteRecordHeader(0);
-	LOG_Info("HTTP_SERVER_FILES", "",  "", "Init Files %d: Ok", HTTP_SERVER_FILES_RecordIdx);
+	memset(&HTTP_SERVER_FILES_Header, 0, sizeof(HTTP_SERVER_FILES_Header));
+	HTTP_SERVER_FILES_Header.Idx = 0;
+	memcpy(HTTP_SERVER_FILES_Header.Project, BSP_PROJECT, sizeof(BSP_PROJECT));
+	memcpy(HTTP_SERVER_FILES_Header.HwVersion, BSP_HW_VERSION, sizeof(BSP_HW_VERSION));
+	HTTP_SERVER_FILES_Header.DataSize = 0;
+	HTTP_SERVER_FILES_Header.Crc16 = Calc_CRC16((char*)&HTTP_SERVER_FILES_Header, sizeof(HTTP_SERVER_FILES_Header), 0);
+	Idx = HTTP_SERVER_FILES_Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT;
+	__HTTP_SERVER_FILES_WriteRecordHeader(Idx, &HTTP_SERVER_FILES_Header);
+	LOG_Info("HTTP_SERVER_FILES", "",  "", "Init %d: Idx = %d, DataSize = %d", Idx, HTTP_SERVER_FILES_Header.Idx, HTTP_SERVER_FILES_Header.DataSize);
 }
 
 int32_t HTTP_SERVER_FILES_FindByName(char *Name, uint32_t NameLen, uint32_t *DataAddr, uint32_t *DataSize, uint32_t *DataType)
 {
 	char Buffer[BSP_FLASH_PAGE_SIZE];
-	uint32_t Addr;
+	uint32_t Idx, Addr;
 	char *__Name, *__DataType, *__Size, *__Data;
 	uint32_t __NameLen, __DataSize;
 	
-	Addr = HTTP_SERVER_FILES_RECORD_BODY_ADDR(HTTP_SERVER_FILES_RecordIdx);
+	Idx = HTTP_SERVER_FILES_Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT;
+	Addr = HTTP_SERVER_FILES_RECORD_BODY_ADDR(Idx);
 	while(1) {
 		if (BSP_FLASH_Read(Addr, Buffer, sizeof(Buffer)))
 			goto error;
@@ -218,7 +223,7 @@ int32_t HTTP_SERVER_FILES_FindByName(char *Name, uint32_t NameLen, uint32_t *Dat
 		
 		if ((__NameLen == NameLen) && (!memcmp(Name, __Name, __NameLen)))
 		{
-			*DataAddr = Addr - HTTP_SERVER_FILES_RECORD_BODY_ADDR(HTTP_SERVER_FILES_RecordIdx) + __Data - Buffer;
+			*DataAddr = Addr - HTTP_SERVER_FILES_RECORD_BODY_ADDR(Idx) + __Data - Buffer;
 			*DataSize = __DataSize;
 			
 			if (!memcmp(__DataType, "html", sizeof("html") - 1))
@@ -255,19 +260,34 @@ error:
 
 int32_t HTTP_SERVER_FILES_ReadData(uint32_t DataAddr, char *Data, uint32_t DataSize)
 {
-	return __HTTP_SERVER_FILES_ReadRecordBody(HTTP_SERVER_FILES_RecordIdx % HTTP_SERVER_FILES_RECORDS_CNT, DataAddr, Data, DataSize);
+	return __HTTP_SERVER_FILES_ReadRecordBody(HTTP_SERVER_FILES_Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT, DataAddr, Data, DataSize);
+}
+
+int32_t HTTP_SERVER_FILES_ReadDataSize(uint32_t *DataSize)
+{
+	*DataSize = HTTP_SERVER_FILES_Header.DataSize;
+	return 0;
 }
 
 int32_t HTTP_SERVER_FILES_WriteData(uint32_t DataAddr, char *Data, uint32_t DataSize)
 {
-	return __HTTP_SERVER_FILES_WriteRecordBody((HTTP_SERVER_FILES_RecordIdx + 1)% HTTP_SERVER_FILES_RECORDS_CNT, DataAddr, Data, DataSize);
+	return __HTTP_SERVER_FILES_WriteRecordBody((HTTP_SERVER_FILES_Header.Idx + 1)% HTTP_SERVER_FILES_RECORDS_CNT, DataAddr, Data, DataSize);
 }
 
-int32_t HTTP_SERVER_FILES_WriteDataComplete(void)
+int32_t HTTP_SERVER_FILES_WriteDataSize(uint32_t DataSize)
 {
-	if (__HTTP_SERVER_FILES_WriteRecordHeader((HTTP_SERVER_FILES_RecordIdx + 1)% HTTP_SERVER_FILES_RECORDS_CNT))
+	HTTP_SERVER_FILES_RECORD_HEADER_T Header;
+	
+	Header = HTTP_SERVER_FILES_Header;
+	Header.Idx++;
+	Header.DataSize = DataSize;
+	Header.Crc16 = Calc_CRC16((char*)&Header, sizeof(Header), 0);
+	if (__HTTP_SERVER_FILES_WriteRecordHeader(Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT, &Header))
+	{
+		LOG_Error("HTTP_SERVER_FILES", "",  "", "Write Files %d Complete: Error", Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT);
 		return -1;
-	HTTP_SERVER_FILES_RecordIdx++;
-	LOG_Info("HTTP_SERVER_FILES", "",  "", "Write Files %d Complete: Ok", HTTP_SERVER_FILES_RecordIdx % HTTP_SERVER_FILES_RECORDS_CNT);
+	}
+	HTTP_SERVER_FILES_Header = Header;
+	LOG_Info("HTTP_SERVER_FILES", "",  "", "Write Files %d Complete: Ok", Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT);
 	return 0;
 }

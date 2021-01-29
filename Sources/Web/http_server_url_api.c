@@ -80,7 +80,6 @@ int32_t HTTP_SERVER_URL_API_Process(struct netconn *Conn, struct netbuf *Inbuf, 
 {
 	uint32_t i;
 	char **Allowed;
-	USER_T User;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	for (i = 0; i < HTTP_SERVER_URL_APISize; i++)
