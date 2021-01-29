@@ -17,83 +17,120 @@
 #define PROFILE_TYPE_FLOAT_E3	19
 #define PROFILE_TYPE_FLOAT_E4	20
 
-static void __PROFILE_LogParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param)
-{	
+static void __PROFILE_LogParamValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param, uint8_t ParamColor)
+{
+	uint8_t Access, Severity;
+	
+	Severity = LOG_SEVERITY_NA;
+	switch(ParamColor)
+	{
+		case PROFILE_COLOR_NO:
+			Severity = LOG_SEVERITY_NO;
+			break;
+		case PROFILE_COLOR_INFO:
+			Severity = LOG_SEVERITY_INFO;
+			break;
+		case PROFILE_COLOR_NORMAL:
+			Severity = LOG_SEVERITY_NORMAL;
+			break;
+		case PROFILE_COLOR_WARNING:
+			Severity = LOG_SEVERITY_WARNING;
+			break;
+		case PROFILE_COLOR_MINOR:
+			Severity = LOG_SEVERITY_MINOR;
+			break;
+		case PROFILE_COLOR_MAJOR:
+			Severity = LOG_SEVERITY_MAJOR;
+			break;
+		case PROFILE_COLOR_CRITICAL:
+			Severity = LOG_SEVERITY_CRITICAL;
+			break;
+	}
+
+	if (Param->Access & PROFILE_ACCESS(PROFILE_ACCESS_READ, 0, 0, 0))
+		Access = LOG_ACCESS_MONITOR;
+	else if (Param->Access & PROFILE_ACCESS(0, PROFILE_ACCESS_READ, 0, 0))
+		Access = LOG_ACCESS_USER;
+	else if (Param->Access & PROFILE_ACCESS(0, 0, PROFILE_ACCESS_READ, 0))
+		Access = LOG_ACCESS_ADMIN;
+	else
+		Access = LOG_ACCESS_SU;
+	
 	if (Param->Type == PROFILE_TYPE_INT32)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%d", *(int32_t*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%d", *(int32_t*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_INT64)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%lld", *(int64_t*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%lld", *(int64_t*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_UINT32)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%u", *(uint32_t*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%u", *(uint32_t*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_HEX32)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%X", *(uint32_t*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%X", *(uint32_t*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_UINT64)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%llu", *(uint64_t*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%llu", *(uint64_t*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_HEX64)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%llX", *(uint64_t*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%llX", *(uint64_t*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_FLOAT_1)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.lf", *(float*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%.lf", *(float*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_FLOAT_2)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.2f", *(float*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%.2f", *(float*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_FLOAT_3)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.3f", *(float*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%.3f", *(float*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_FLOAT_4)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.4f", *(float*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%.4f", *(float*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_FLOAT_E1)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.le", *(float*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%.le", *(float*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_FLOAT_E2)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.2e", *(float*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%.2e", *(float*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_FLOAT_E3)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.3e", *(float*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%.3e", *(float*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_FLOAT_E4)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%.4e", *(float*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%.4e", *(float*)Param->Value);
 	}
 	else if ((Param->Type > PROFILE_TYPE_ENUM) && (Param->Type < (PROFILE_TYPE_ENUM + 1024)))
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%d", *(int32_t*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%d", *(int32_t*)Param->Value);
 	}
 	else if ((Param->Type > PROFILE_TYPE_BITMSK) && (Param->Type < (PROFILE_TYPE_BITMSK + 1024)))
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%u", *(uint32_t*)Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%u", *(uint32_t*)Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_STRING16)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%s", Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%s", Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_STRING32)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%s", Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%s", Param->Value);
 	}
 	else if (Param->Type == PROFILE_TYPE_STRING64)
 	{
-		LOG_Info("PROFILE", "PARAM", Param->Name, "Value=%s", Param->Value);
+		__LOG_Add("PROFILE", Access, Severity, "PARAM", Param->Name, "Value=%s", Param->Value);
 	}
 }
 
@@ -205,20 +242,28 @@ static int32_t __PROFILE_WriteParamValue(const PROFILE_T *Profile, const PROFILE
 			memcpy((void*)Param->Value, Value, 4);
 			__PROFILE_GetParamColor(Profile, Param, &NewColor);
 			if (OldColor != NewColor)
-				__PROFILE_LogParamValue(Profile, Param);
+				__PROFILE_LogParamValue(Profile, Param, NewColor);
 		}
 		else
 		{
-			memcpy((void*)Param->Value, Value, 4);
-			__PROFILE_LogParamValue(Profile, Param);
+			if (memcmp((void*)Param->Value, Value, 4))
+			{
+				memcpy((void*)Param->Value, Value, 4);
+				__PROFILE_GetParamColor(Profile, Param, &NewColor);
+				__PROFILE_LogParamValue(Profile, Param, NewColor);
+			}
 		}
 		return 0;
 	}
 	else if (((Param->Type > PROFILE_TYPE_ENUM) && (Param->Type < (PROFILE_TYPE_ENUM + 1024))) ||
 		((Param->Type > PROFILE_TYPE_BITMSK) && (Param->Type < (PROFILE_TYPE_BITMSK+1024))))
 	{
-		memcpy((void*)Param->Value, Value, 4);
-		__PROFILE_LogParamValue(Profile, Param);
+		if (memcmp((void*)Param->Value, Value, 4))
+		{
+			memcpy((void*)Param->Value, Value, 4);
+			__PROFILE_GetParamColor(Profile, Param, &NewColor);
+			__PROFILE_LogParamValue(Profile, Param, NewColor);
+		}
 		return 0;
 	}
 	else if ((Param->Type == PROFILE_TYPE_INT64) ||
@@ -231,12 +276,16 @@ static int32_t __PROFILE_WriteParamValue(const PROFILE_T *Profile, const PROFILE
 			memcpy((void*)Param->Value, Value, 8);
 			__PROFILE_GetParamColor(Profile, Param, &NewColor);
 			if (OldColor != NewColor)
-				__PROFILE_LogParamValue(Profile, Param);
+				__PROFILE_LogParamValue(Profile, Param, NewColor);
 		}
 		else
 		{
-			memcpy((void*)Param->Value, Value, 8);
-			__PROFILE_LogParamValue(Profile, Param);
+			if (memcmp((void*)Param->Value, Value, 8))
+			{
+				memcpy((void*)Param->Value, Value, 8);
+				__PROFILE_GetParamColor(Profile, Param, &NewColor);
+				__PROFILE_LogParamValue(Profile, Param, NewColor);
+			}
 		}
 		return 0;
 	}
@@ -244,8 +293,12 @@ static int32_t __PROFILE_WriteParamValue(const PROFILE_T *Profile, const PROFILE
 		(Param->Type == PROFILE_TYPE_STRING32) ||
 		(Param->Type == PROFILE_TYPE_STRING64))
 	{
-		strcpy((void*)Param->Value, Value);
-		__PROFILE_LogParamValue(Profile, Param);
+		if (strcmp((void*)Param->Value, Value))
+		{
+			strcpy((void*)Param->Value, Value);
+			__PROFILE_GetParamColor(Profile, Param, &NewColor);
+			__PROFILE_LogParamValue(Profile, Param, NewColor);
+		}
 		return 0;
 	}
 	
@@ -255,6 +308,7 @@ static int32_t __PROFILE_WriteParamValue(const PROFILE_T *Profile, const PROFILE
 static int32_t __PROFILE_WriteParamValidValue(const PROFILE_T *Profile, const PROFILE_PARAM_T *Param)
 {
 	uint32_t i;
+	uint8_t Color;
 	
 	if (Param->Constraints)
 	{
@@ -263,7 +317,8 @@ static int32_t __PROFILE_WriteParamValidValue(const PROFILE_T *Profile, const PR
 			if (Param->Constraints[i].CheckCondition())
 			{
 				Param->Constraints[i].GetValidValue(Param->Value);
-				__PROFILE_LogParamValue(Profile, Param);
+				__PROFILE_GetParamColor(Profile, Param, &Color);
+				__PROFILE_LogParamValue(Profile, Param, Color);
 			}
 		}
 	}

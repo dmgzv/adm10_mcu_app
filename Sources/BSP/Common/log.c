@@ -23,7 +23,7 @@ void __LOG_Init(void)
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 }
 
-void __LOG_Add(const char* Category, uint8_t Severity, const char* Object, const char* ObjectId, char *Description, ...)
+void __LOG_Add(const char* Category, uint8_t Access, uint8_t Severity, const char* Object, const char* ObjectId, char *Description, ...)
 {
 	va_list va;
 	
@@ -36,6 +36,7 @@ void __LOG_Add(const char* Category, uint8_t Severity, const char* Object, const
 	LogLines[LogLineIndex % LOG_LINES_CNT].Description[LOG_LINE_DESCRIPTION_SIZE - 1] = 0;
 	LogLines[LogLineIndex % LOG_LINES_CNT].Object = Object;
 	LogLines[LogLineIndex % LOG_LINES_CNT].ObjectId = ObjectId;
+	LogLines[LogLineIndex % LOG_LINES_CNT].Access = Access;
 	LogLines[LogLineIndex % LOG_LINES_CNT].Severity = Severity;
 	LogLines[LogLineIndex % LOG_LINES_CNT].Category = Category;
 #ifdef BSP_CONFIG_USE_FREERTOS

@@ -86,7 +86,7 @@ static int32_t __HTTP_SERVER_FILES_WriteRecordHeader(uint32_t Idx, HTTP_SERVER_F
 	return 0;
 
 error:
-	LOG_Error("HTTP_SERVER_FILES", "",  "", "Write %d Header: Error", Idx);
+	LOG_Crit("HTTP_SERVER_FILES", "",  "", "Write %d Header: Error", Idx);
 	return -1;
 }
 
@@ -156,7 +156,7 @@ static int32_t __HTTP_SERVER_FILES_WriteRecordBody(uint32_t Idx, uint32_t DataAd
 	return 0;
 	
 error:
-	LOG_Error("HTTP_SERVER_FILES", "",  "", "Write Files %d Addr %d Size %d: Error", Idx, DataAddr, DataSize);
+	LOG_Crit("HTTP_SERVER_FILES", "",  "", "Write Files %d Addr %d Size %d: Error", Idx, DataAddr, DataSize);
 	return -1;
 }
 
@@ -284,7 +284,7 @@ int32_t HTTP_SERVER_FILES_WriteDataSize(uint32_t DataSize)
 	Header.Crc16 = Calc_CRC16((char*)&Header, sizeof(Header), 0);
 	if (__HTTP_SERVER_FILES_WriteRecordHeader(Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT, &Header))
 	{
-		LOG_Error("HTTP_SERVER_FILES", "",  "", "Write Files %d Complete: Error", Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT);
+		LOG_Crit("HTTP_SERVER_FILES", "",  "", "Write Files %d Complete: Error", Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT);
 		return -1;
 	}
 	HTTP_SERVER_FILES_Header = Header;

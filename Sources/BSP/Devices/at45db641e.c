@@ -105,7 +105,7 @@ int32_t AT45DB641E_ErasePage(AT45DB641E_T *Dev, uint32_t Addr)
 	return 0;
 	
 error:
-	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Erase page: Error");
+	LOG_Crit("BSP", Dev->DevName, Dev->DevId, "Erase page: Error");
 	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;	
 }
@@ -132,7 +132,7 @@ int32_t AT45DB641E_WaitReady(AT45DB641E_T *Dev)
 	return 0;
 	
 error:
-	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Wait ready: Error");
+	LOG_Crit("BSP", Dev->DevName, Dev->DevId, "Wait ready: Error");
 	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
@@ -161,7 +161,7 @@ int32_t AT45DB641E_EraseBlock(AT45DB641E_T *Dev, uint32_t Addr)
 	return 0;
 	
 error:
-	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Erase block: Error");
+	LOG_Crit("BSP", Dev->DevName, Dev->DevId, "Erase block: Error");
 	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;	
 }
@@ -190,7 +190,7 @@ int32_t AT45DB641E_EraseSector(AT45DB641E_T *Dev, uint32_t Addr)
 	return 0;
 	
 error:
-	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Erase sector: Error");
+	LOG_Crit("BSP", Dev->DevName, Dev->DevId, "Erase sector: Error");
 	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;	
 }
@@ -215,7 +215,7 @@ int32_t AT45DB641E_Erase(AT45DB641E_T *Dev, uint32_t Addr)
 	return 0;
 	
 error:
-	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Erase: Error");
+	LOG_Crit("BSP", Dev->DevName, Dev->DevId, "Erase: Error");
 	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
@@ -244,7 +244,7 @@ int32_t AT45DB641E_Read(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, uint32_t
 	return 0;
 	
 error:
-	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Read: Error");
+	LOG_Crit("BSP", Dev->DevName, Dev->DevId, "Read: Error");
 	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
@@ -265,7 +265,7 @@ int32_t AT45DB641E_ProgramPage(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, u
 	return 0;
 	
 error:
-	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Program page: Error");
+	LOG_Crit("BSP", Dev->DevName, Dev->DevId, "Program page: Error");
 	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
@@ -300,7 +300,7 @@ int32_t AT45DB641E_ModifyPage(AT45DB641E_T *Dev, uint32_t Addr, char *Buffer, ui
 	return 0;
 	
 error:
-	LOG_Error("BSP", Dev->DevName, Dev->DevId, "Modify page: Error");
+	LOG_Crit("BSP", Dev->DevName, Dev->DevId, "Modify page: Error");
 	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }

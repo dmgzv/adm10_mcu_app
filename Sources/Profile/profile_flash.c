@@ -234,7 +234,7 @@ static int32_t PROFILE_FLASH_SaveCalibsMap(PROFILE_FLASH_T *ProfileFlash)
 	return 0;
 	
 error:
-	LOG_Error("PROFILE_FLASH", "",  "", "Save Calibs Map: Error");
+	LOG_Crit("PROFILE_FLASH", "",  "", "Save Calibs Map: Error");
 	return -1;	
 }
 
@@ -528,7 +528,7 @@ static int32_t PROFILE_FLASH_SaveCalibsValues(PROFILE_FLASH_T *ProfileFlash)
 	return 0;
 	
 error:
-	LOG_Error("PROFILE_FLASH", "",  "", "Save Calibs Values %d: Error", ProfileFlash->CalibIdx);
+	LOG_Crit("PROFILE_FLASH", "",  "", "Save Calibs Values %d: Error", ProfileFlash->CalibIdx);
 	return -1;
 }
 
@@ -972,7 +972,7 @@ static int32_t PROFILE_FLASH_SaveConfigsMap(PROFILE_FLASH_T *ProfileFlash)
 	return 0;
 	
 error:
-	LOG_Error("PROFILE_FLASH", "",  "", "Save Configs Map: Error");
+	LOG_Crit("PROFILE_FLASH", "",  "", "Save Configs Map: Error");
 	return -1;	
 }
 
@@ -1300,7 +1300,7 @@ static int32_t PROFILE_FLASH_SaveConfigsValues(PROFILE_FLASH_T *ProfileFlash)
 	return 0;
 	
 error:
-	LOG_Error("PROFILE_FLASH", "",  "", "Save Configs Values %d: Error", ProfileFlash->ConfigIdx);
+	LOG_Crit("PROFILE_FLASH", "",  "", "Save Configs Values %d: Error", ProfileFlash->ConfigIdx);
 	return -1;	
 }
 
@@ -1438,7 +1438,7 @@ static int32_t __PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash,
 	return 0;
 
 error:
-	LOG_Error("PROFILE_FLASH", "",  "", "Save Langpack %d Header: Error", Idx);
+	LOG_Crit("PROFILE_FLASH", "",  "", "Save Langpack %d Header: Error", Idx);
 	return -1;
 }
 
@@ -1455,7 +1455,7 @@ static int32_t __PROFILE_FLASH_LoadLangpackData(PROFILE_FLASH_T *ProfileFlash, u
 	return 0;
 	
 error:
-	LOG_Error("PROFILE_FLASH", "",  "", "Load Langpack %d Addr %d Size %d: Error", Idx, DataAddr, DataSize);
+	LOG_Crit("PROFILE_FLASH", "",  "", "Load Langpack %d Addr %d Size %d: Error", Idx, DataAddr, DataSize);
 	return -1;
 }
 
@@ -1516,7 +1516,7 @@ int32_t __PROFILE_FLASH_SaveLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t
 	return 0;
 	
 error:
-	LOG_Error("PROFILE_FLASH", "",  "", "Save Langpack %d Addr %d Size %d: Error", Idx, DataAddr, DataSize);
+	LOG_Crit("PROFILE_FLASH", "",  "", "Save Langpack %d Addr %d Size %d: Error", Idx, DataAddr, DataSize);
 	return -1;
 }
 
@@ -1617,7 +1617,7 @@ int32_t PROFILE_FLASH_LoadCalibs(PROFILE_FLASH_T *ProfileFlash)
 
 error:
 	memcpy(ProfileFlash->Profile->Calib->Values, ProfileFlash->Profile->Calib->DefaultValues, ProfileFlash->Profile->Calib->ValuesSize);
-	LOG_Error("PROFILE_FLASH", "",  "", "Load Calibs %d: Error", ProfileFlash->CalibIdx - 1);
+	LOG_Crit("PROFILE_FLASH", "",  "", "Load Calibs %d: Error", ProfileFlash->CalibIdx - 1);
 	return -1;
 }
 
@@ -1638,7 +1638,7 @@ int32_t PROFILE_FLASH_LoadConfigs(PROFILE_FLASH_T *ProfileFlash)
 error:
 	ProfileFlash->ConfigIdx = 0;
 	memcpy(ProfileFlash->Profile->Config->Values, ProfileFlash->Profile->Config->DefaultValues, ProfileFlash->Profile->Config->ValuesSize);
-	LOG_Error("PROFILE_FLASH", "",  "", "Load Configs %d: Error", ProfileFlash->ConfigIdx - 1);
+	LOG_Crit("PROFILE_FLASH", "",  "", "Load Configs %d: Error", ProfileFlash->ConfigIdx - 1);
 	return -1;
 }
 

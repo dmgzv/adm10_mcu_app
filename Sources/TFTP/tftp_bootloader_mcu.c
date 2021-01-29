@@ -38,14 +38,14 @@ static int32_t TFTP_BOOTLOADER_MCU_VerifyInfo(char *Data)
 	p = strstr(Data, "MCUSwNumber: ");
 	if (!p)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "MCUSwNumber: Not found");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "MCUSwNumber: Not found");
 		goto error;
 	}
 	p += sizeof("MCUSwNumber: ") - 1;
 	c = strstr(p, "\r\n");
 	if (!c)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "MCUSwNumber: Invalid syntax");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "MCUSwNumber: Invalid syntax");
 		goto error;
 	}
 	memcpy(&TFTP_BOOTLOADER_MCU.Version, p, c - p);
@@ -140,13 +140,13 @@ static int32_t TFTP_BOOTLOADER_MCU_DownloadWeb(void)
 	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadWebReceiveCallback, NULL);
 	if (result == TFTP_CLIENT_TIMEOUT)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Web: Timeout");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Download Web: Timeout");
 		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
 		return -1;
 	}
 	else if (result != TFTP_CLIENT_OK)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Web: Error");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Download Web: Error");
 		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
 		return -1;
 	}
@@ -193,13 +193,13 @@ static int32_t TFTP_BOOTLOADER_MCU_DownloadLangpack(void)
 	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadLangpackReceiveCallback, NULL);
 	if (result == TFTP_CLIENT_TIMEOUT)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: Timeout");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: Timeout");
 		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
 		return -1;
 	}
 	else if (result != TFTP_CLIENT_OK)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: Error");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Download Langpack: Error");
 		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
 		return -1;
 	}
@@ -247,20 +247,20 @@ static int32_t TFTP_BOOTLOADER_MCU_DownloadUpdate(void)
 	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_MCU.Addr[0], TFTP_BOOTLOADER_MCU.Addr[1], TFTP_BOOTLOADER_MCU.Addr[2], TFTP_BOOTLOADER_MCU.Addr[3]);
 	if (BOOTLOADER_UpdateNewFwStart(&Bootloader))
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Update: Error");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Download Update: Error");
 		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_UPDATE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
 		return -1;
 	}
 	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_UPDATE].Name, &ip_addr, TFTP_BOOTLOADER_MCU_DownloadUpdateReceiveCallback, NULL);
 	if (result == TFTP_CLIENT_TIMEOUT)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Update: Timeout");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Download Update: Timeout");
 		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_UPDATE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
 		return -1;
 	}
 	else if (result != TFTP_CLIENT_OK)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download Update: Error");
+		LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Download Update: Error");
 		TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_UPDATE].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
 		return -1;
 	}
@@ -283,7 +283,7 @@ static int32_t TFTP_BOOTLOADER_MCU_VerifyUpdate(void)
 	return 0;
 	
 error:
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Verify Update: Error");
+	LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Verify Update: Error");
 	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_UPDATE].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY_ERROR;
 	return -1;
 }
@@ -309,7 +309,7 @@ static void TFTP_BOOTLOADER_MCU_Idle(void)
 	return;
 
 error:
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Idle: Error");
+	LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Idle: Error");
 	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_IDLE_ERROR(&TFTP_BOOTLOADER_MCU), 0);
 	return;
 }
@@ -347,7 +347,7 @@ static void TFTP_BOOTLOADER_MCU_Download(void)
 	return;
 
 error:
-	LOG_Error("TFTP_BOOTLOADER", "MCU", "", "Download: Error");
+	LOG_Crit("TFTP_BOOTLOADER", "MCU", "", "Download: Error");
 	osMessagePut(TFTP_BOOTLOADER_MCU.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_DOWNLOAD_ERROR(&TFTP_BOOTLOADER_MCU), 0);
 	return;
 }

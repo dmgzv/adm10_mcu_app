@@ -33,7 +33,7 @@ static int32_t HTTP_SERVER_Write(struct netconn *Conn, const void *Data, size_t 
 		}
 		else
 		{
-			LOG_Error("HTTP", "SERVER", "", "Write error: %d", WriteError);
+			LOG_Crit("HTTP", "SERVER", "", "Write error: %d", WriteError);
 			return -1;
 		}
 	}
@@ -560,7 +560,7 @@ static void HTTP_SERVER_ServeConnection(struct netconn *Conn)
 		netbuf_data(Inbuf, (void**)&Data, &DataLen);
 		if (HTTP_SERVER_ParseRequest(Data, DataLen, &ReqHeader))
 		{
-			LOG_Error("HTTP", "SERVER", "", "Request header parse error");
+			LOG_Crit("HTTP", "SERVER", "", "Request header parse error");
 			netbuf_delete(Inbuf);
 			__HTTP_SERVER_WriteError400(Conn);
 			return;
@@ -570,7 +570,7 @@ static void HTTP_SERVER_ServeConnection(struct netconn *Conn)
 	}
 	else
 	{
-		LOG_Error("HTTP", "SERVER", "", "Netconn recv error: %d", RecvError);
+		LOG_Crit("HTTP", "SERVER", "", "Netconn recv error: %d", RecvError);
 	}
 }
 
@@ -609,16 +609,16 @@ static void HTTP_SERVER_Thread(void *arg)
 					/* Close the Connection*/
 					Error = netconn_close(NewConn);
 					if(Error != ERR_OK)
-						LOG_Error("HTTP", "SERVER", "", "Netconn close error: %d", Error);
+						LOG_Crit("HTTP", "SERVER", "", "Netconn close error: %d", Error);
 
 					/* delete Connection */
 					Error = netconn_delete(NewConn);
 					if(Error != ERR_OK)
-						LOG_Error("HTTP", "SERVER", "", "Netconn delete error: %d", Error);					
+						LOG_Crit("HTTP", "SERVER", "", "Netconn delete error: %d", Error);					
         }
 				else
 				{
-					LOG_Error("HTTP", "SERVER", "", "Netconn accept error: %d", Error);
+					LOG_Crit("HTTP", "SERVER", "", "Netconn accept error: %d", Error);
 				}
       }
     }
@@ -628,5 +628,5 @@ static void HTTP_SERVER_Thread(void *arg)
 void HTTP_SERVER_Init(void)
 {
    if (!sys_thread_new("HTTP", HTTP_SERVER_Thread, NULL, HTTP_SERVER_THREAD_STACK_SIZE, HTTP_SERVER_THREAD_PRIO))
-		 LOG_Error("HTTP", "SERVER", "", "Init error");
+		 LOG_Crit("HTTP", "SERVER", "", "Init error");
 }

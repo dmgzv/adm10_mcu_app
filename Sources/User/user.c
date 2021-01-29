@@ -241,7 +241,7 @@ int32_t USER_Init(void)
 				LOG_Info("USER", "", "", "Init: %s (%s)", User.Login, User.Role);
 			}
 		}
-		LOG_Error("USER", "", "", "Init: Ok");
+		LOG_Info("USER", "", "", "Init: Ok");
 		osMutexRelease(UserMutexId);
 		return 0;
 	}
@@ -283,7 +283,7 @@ flash_error:
 			UserCacheList[i].Present = 0;
 		}
 	}
-	LOG_Error("USER", "", "", "Init: Flash Error");
+	LOG_Crit("USER", "", "", "Init: Flash Error");
 	osMutexRelease(UserMutexId);
 	return -1;
 }

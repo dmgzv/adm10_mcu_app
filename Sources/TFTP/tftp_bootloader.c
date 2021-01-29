@@ -58,13 +58,13 @@ static int32_t TFTP_BOOTLOADER_DownloadInfo(void)
 	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER.Info.Name, &ip_addr, TFTP_BOOTLOADER_DownloadInfoReceiveCallback, NULL);
 	if (result == TFTP_CLIENT_TIMEOUT)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "", "", "Download Info: Timeout Error");
+		LOG_Crit("TFTP_BOOTLOADER", "", "", "Download Info: Timeout Error");
 		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
 		return -1;
 	}
 	else if (result != TFTP_CLIENT_OK)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "", "", "Download Info: Size Error");
+		LOG_Crit("TFTP_BOOTLOADER", "", "", "Download Info: Size Error");
 		TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
 		return -1;
 	}
@@ -85,26 +85,26 @@ static int32_t TFTP_BOOTLOADER_VerifyInfo(void)
 	p = strstr(TFTP_BOOTLOADER.Info.Data, "pId: ");
 	if (!p)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "", "", "pId: Not found");
+		LOG_Crit("TFTP_BOOTLOADER", "", "", "pId: Not found");
 		goto error;
 	}
 	p += sizeof("pId: ") - 1;
 	if (memcmp(p, BSP_PT_NUMBER"\r\n", sizeof(BSP_PT_NUMBER"\r\n") - 1))
 	{
-		LOG_Error("TFTP_BOOTLOADER", "", "", "pId: Invalid value");
+		LOG_Crit("TFTP_BOOTLOADER", "", "", "pId: Invalid value");
 		goto error;
 	}
 	
 	p = strstr(TFTP_BOOTLOADER.Info.Data, "HwNumber: ");
 	if (!p)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "", "", "HwNumber: Not found");
+		LOG_Crit("TFTP_BOOTLOADER", "", "", "HwNumber: Not found");
 		goto error;
 	}
 	p += sizeof("HwNumber: ") - 1;
 	if (memcmp(p, BSP_HW_VERSION"\r\n", sizeof(BSP_HW_VERSION"\r\n") - 1))
 	{
-		LOG_Error("TFTP_BOOTLOADER", "", "", "HwNumber: Invalid value");
+		LOG_Crit("TFTP_BOOTLOADER", "", "", "HwNumber: Invalid value");
 		goto error;
 	}
 
@@ -119,7 +119,7 @@ static int32_t TFTP_BOOTLOADER_VerifyInfo(void)
 	return 0;
 
 error:
-	LOG_Error("TFTP_BOOTLOADER", "", "", "Verify Info: Error");
+	LOG_Crit("TFTP_BOOTLOADER", "", "", "Verify Info: Error");
 	TFTP_BOOTLOADER.Info.Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY_ERROR;
 	return -1;
 }
@@ -223,9 +223,9 @@ event_wait:
 			}
 		}
 		
-		LOG_Error("TFTP_BOOTLOADER", "", "", "Update: Unknown Event");
+		LOG_Crit("TFTP_BOOTLOADER", "", "", "Update: Unknown Event");
 error:
-		LOG_Error("TFTP_BOOTLOADER", "", "", "Update: Terminated");
+		LOG_Crit("TFTP_BOOTLOADER", "", "", "Update: Terminated");
 		TFTP_BOOTLOADER.Status = TFTP_BOOTLOADER_STATUS_ERROR;
 		goto event_wait;
 	}

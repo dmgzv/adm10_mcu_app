@@ -57,7 +57,7 @@ do {\
 	{ \
 		if ((Dev)->DevState != BSP_DEV_STATE_FAIL) \
 		{ \
-			LOG_Error("BSP", (Dev)->DevName, (Dev)->DevId, "Init: Fail"); \
+			LOG_Crit("BSP", (Dev)->DevName, (Dev)->DevId, "Init: Fail"); \
 			(Dev)->DevState = BSP_DEV_STATE_FAIL; \
 		} \
 	} \
@@ -86,7 +86,7 @@ do {\
 	{ \
 		if ((Dev)->DevState != BSP_DEV_STATE_FAIL) \
 		{ \
-			LOG_Error("BSP", (Dev)->DevName, (Dev)->DevId, "Update: Fail"); \
+			LOG_Crit("BSP", (Dev)->DevName, (Dev)->DevId, "Update: Fail"); \
 			(Dev)->DevState = BSP_DEV_STATE_FAIL; \
 		} \
 	} \

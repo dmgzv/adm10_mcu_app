@@ -34,14 +34,14 @@ static int32_t TFTP_BOOTLOADER_FPGA_VerifyInfo(char *Data)
 	p = strstr(Data, "FPGASwNumber: ");
 	if (!p)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "FPGASwNumber: Not found");
+		LOG_Crit("TFTP_BOOTLOADER", "FPGA", "", "FPGASwNumber: Not found");
 		goto error;
 	}
 	p += sizeof("FPGASwNumber: ") - 1;
 	c = strstr(p, "\r\n");
 	if (!c)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "FPGASwNumber: Invalid syntax");
+		LOG_Crit("TFTP_BOOTLOADER", "FPGA", "", "FPGASwNumber: Invalid syntax");
 		goto error;
 	}
 	memcpy(&TFTP_BOOTLOADER_FPGA.Version, p, c - p);
@@ -113,13 +113,13 @@ static int32_t TFTP_BOOTLOADER_FPGA_DownloadUpdate(uint32_t Idx)
 	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_FPGA_Files[Idx].Name, &ip_addr, TFTP_BOOTLOADER_FPGA_DownloadUpdateReceiveCallback, (void*)Idx);
 	if (result == TFTP_CLIENT_TIMEOUT)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Timeout", Idx + 1);
+		LOG_Crit("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Timeout", Idx + 1);
 		TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
 		return -1;
 	}
 	else if (result != TFTP_CLIENT_OK)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Error", Idx + 1);
+		LOG_Crit("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Error", Idx + 1);
 		TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
 		return -1;
 	}	
@@ -155,7 +155,7 @@ static void TFTP_BOOTLOADER_FPGA_Idle(void)
 	return;
 
 error:
-	LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Idle: Error");
+	LOG_Crit("TFTP_BOOTLOADER", "FPGA", "", "Idle: Error");
 	TFTP_BOOTLOADER_FPGA.Status = TFTP_BOOTLOADER_STATUS_ERROR;
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_IDLE_ERROR(&TFTP_BOOTLOADER_FPGA), 0);
 	return;
@@ -182,7 +182,7 @@ static void TFTP_BOOTLOADER_FPGA_Download(void)
 	return;
 
 error:
-	LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download: Error");
+	LOG_Crit("TFTP_BOOTLOADER", "FPGA", "", "Download: Error");
 	TFTP_BOOTLOADER_FPGA.Status = TFTP_BOOTLOADER_STATUS_ERROR;
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_DOWNLOAD_ERROR(&TFTP_BOOTLOADER_FPGA), 0);
 	return;
