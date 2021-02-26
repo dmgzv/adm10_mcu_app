@@ -113,10 +113,6 @@ static void System_Thread(void const *argument)
 {
 	uint32_t Time = 0;
 	
-	/* Init Log*/	
-	LOG_Init();
-	WATCHDOG_Refresh();
-	
 	/* Init Slot Address */	
 	BSP_InitSlotAddress();
 	WATCHDOG_Refresh();
@@ -131,6 +127,10 @@ static void System_Thread(void const *argument)
 	
 	/* Init Memory*/
 	BSP_InitMemory();
+	WATCHDOG_Refresh();
+	
+	/* Init Log*/	
+	LOG_Init();
 	WATCHDOG_Refresh();
 	
 	/* Init Profile*/
