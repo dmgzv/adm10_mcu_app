@@ -2,11 +2,11 @@
 #include "bsp_pwr_pin.h"
 #include "log.h"
 
-DIM3R3400_T dim3r3400 = {
+DIM3R3400_T __attribute__((section ("CCM_DATA"))) dim3r3400 = {
 	.DevName = DIM3R3400_DEV_NAME,
 	.DevId = BSP_PWR_IN_DIM3R3400_ID,
 	.InitContErrThr = 3,
-	.UpdateContErrThr = 3,
+	.UpdateContErrThr = 10,
 	.I2C = BSP_PWR_IN_DIM3R3400_I2C,
 	.Addr = BSP_PWR_IN_DIM3R3400_I2C_ADDR,
 };
@@ -84,7 +84,10 @@ void BSP_PWR_IN_Process(void)
 							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
 							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
 						}
-						if (!dim3r3400_power_good)
+						if (((dim3r3400.Vin[0] <= BSP_PWR_IN_MIN_OFF) && (dim3r3400.Vin[1] <= BSP_PWR_IN_MIN_OFF))
+							|| (dim3r3400.Vin[0] >= BSP_PWR_IN_MAX_OFF)
+							|| (dim3r3400.Vin[1] >= BSP_PWR_IN_MAX_OFF)
+						)
 						{
 							BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 0);
 						}
@@ -118,7 +121,10 @@ void BSP_PWR_IN_Process(void)
 							dim3r3400_power_reset_timeout = BSP_PWR_IN_POWER_RESET_TIMEOUT;
 						}
 #endif
-						if (dim3r3400_power_good)
+						if (((dim3r3400.Vin[0] > BSP_PWR_IN_MIN_ON) || (dim3r3400.Vin[1] > BSP_PWR_IN_MIN_ON))
+							&& (dim3r3400.Vin[0] < BSP_PWR_IN_MAX_ON)
+							&& (dim3r3400.Vin[1] < BSP_PWR_IN_MAX_ON)
+						)
 						{
 							BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 1);
 						}
