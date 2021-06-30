@@ -3,16 +3,23 @@
 
 #include "cmsis_os.h"
 #include "stm32f4xx_hal.h"
+#include "user.h"
 
 #define SHELL_CMD_NAME_MAX_LEN				16
 #define SHELL_CMD_DESCRIPTION_MAX_LEN	128
 
-#define SHELL_RX_BUFFER_SIZE	64
+#define SHELL_RX_BUFFER_SIZE	512
 #define SHELL_TX_BUFFER_SIZE	1024
+
+#define SHELL_ACCESS_SU 				(0)
+#define SHELL_ACCESS_ADMIN 			(1 << 0)
+#define SHELL_ACCESS_USER 			(1 << 1)
+#define SHELL_ACCESS_MONITOR 		(1 << 2)
 
 typedef struct {
 	char Name[SHELL_CMD_NAME_MAX_LEN];
 	char Description[SHELL_CMD_DESCRIPTION_MAX_LEN];
+	uint8_t Access;
 	void (*Callback)(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 } SHELL_CMD_T;
 
@@ -32,6 +39,7 @@ typedef struct {
 	char RxBuffer[SHELL_RX_BUFFER_SIZE];
 	char TxBuffer[SHELL_TX_BUFFER_SIZE];
 	osThreadId ThreadId;
+	USER_T User;
 } SHELL_T;
 
 int32_t SHELL_Init(SHELL_T *Shell, char *Name, SHELL_CMD_T* CmdList, uint32_t CmdListSize, SHELL_IFACE_T *Iface);

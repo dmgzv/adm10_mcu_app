@@ -122,4 +122,15 @@ void DebugMon_Handler(void)
 {
 }
 
+/**
+  * @brief  This function handles SysTick interrupt.
+  * @param  None
+  * @retval None
+  */
+void SysTick_Handler(void)
+{
+	osSystickHandler();
+	HAL_IncTick();
+}
+
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

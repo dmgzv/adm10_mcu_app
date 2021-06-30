@@ -55,78 +55,61 @@
 
 #define PROFILE_ACCESS(MN, US, AD, SU)	(((MN) << 0) | ((US) << 2) | ((AD) << 4) | ((SU) << 6))
 
+#define PROFILE_TABLE_PARAM	\
+	const char *Name;\
+	const uint8_t Table;\
+	const uint16_t Index;\
+	const uint8_t Access;\
+	const uint8_t	Type;\
+	const void *Value
+	
 typedef struct {
-	const char *Name;
-	const uint8_t Table;
-	const uint16_t Index;
-	const uint8_t Access;
-	const uint8_t	Type;
-	const void *Value;
+	PROFILE_TABLE_PARAM;
+} PROFILE_TABLE_PARAM_T;
+
+typedef struct {
+	PROFILE_TABLE_PARAM;
+	const void *Thesholds;
 	const uint8_t *State;
 } PROFILE_TABLE1_PARAM_T;
 
 typedef struct {
-	const char *Name;
-	const uint8_t Table;
-	const uint16_t Index;
-	const uint8_t Access;
-	const uint8_t	Type;
-	const void *Value;
+	PROFILE_TABLE_PARAM;
 	const uint8_t *DegradeColor;//Цвет предупреждения
 	const uint8_t *FailureColor;//Цвет критического значения
-	const void *Thesholds; 
+	const void *Thesholds;
 	const uint8_t *State;
 } PROFILE_TABLE2_PARAM_T;
 
 typedef struct {
-	const char *Name;
-	const uint8_t Table;
-	const uint16_t Index;
-	const uint8_t Access;
-	const uint8_t	Type;
-	const void *Value;
+	PROFILE_TABLE_PARAM;
 	const void *Thesholds; 
 	const uint8_t *State;
 } PROFILE_TABLE3_PARAM_T;
 
 typedef struct {
-	const char *Name;
-	const uint8_t Table;
-	const uint16_t Index;
-	const uint8_t Access;
-	const uint8_t	Type;
-	const void *Value;
+	PROFILE_TABLE_PARAM;
 	const void *Thesholds;
 	const uint8_t *State;
 } PROFILE_TABLE4_PARAM_T;
 
 typedef struct {
-	const char *Name;
-	const uint8_t Table;
-	const uint16_t Index;
-	const uint8_t Access;
-	const uint8_t	Type;
-	const void *Value;
+	PROFILE_TABLE_PARAM;
 } PROFILE_TABLE5_PARAM_T;
 
 typedef struct {
-	const char *Name;
-	const uint8_t Table;
-	const uint16_t Index;
-	const uint8_t Access;
-	const uint8_t	Type;
-	const void *Value;
+	PROFILE_TABLE_PARAM;
 	const uint8_t *State;
 } PROFILE_TABLE8_PARAM_T;
 
 typedef struct {
-	const char *Name;
-	const uint8_t Table;
-	const uint16_t Index;
-	const uint8_t Access;
-	const uint8_t	Type;
-	const void *Value;
+	PROFILE_TABLE_PARAM;
 } PROFILE_TABLE103_PARAM_T;
+
+typedef struct {
+	PROFILE_TABLE_PARAM;
+	const void *Thesholds;
+} PROFILE_TABLE104_PARAM_T;
 
 typedef struct {
 	const uint32_t Value;
@@ -138,43 +121,38 @@ typedef struct {
 	const uint8_t Color;
 } PROFILE_BITMSK_T;
 
+typedef struct {
+	const uint8_t Index;
+	const PROFILE_TABLE_PARAM_T* const *Params;
+	const uint32_t ParamsCnt;
+} PROFILE_TABLE_T;
+
 //=============================================================================
 // список возможных таблиц профиля
 //=============================================================================
-#define PROFILE_TABLE_1					0	//[1] - Информационные параметры
-#define PROFILE_TABLE_2					1	//[2] - Динамические параметры
-#define PROFILE_TABLE_3					2	//[3] - Установочные параметры
-#define PROFILE_TABLE_4					3	//[4] - Статические параметры (пороги)
-#define PROFILE_TABLE_5					4	//[5] - Лампочки передней панели (Все только лампочки и имеют тип данных 4==DC_U32)
-#define PROFILE_TABLE_6					5	//[6] - Калибровка устройства	(Используется для калибровки)
-#define PROFILE_TABLE_7					6	//[7] - Калибровочные коэффициенты (Выводятся калибровочние коэффиценты, или при необходимости устанавливаются)
-#define PROFILE_TABLE_8					7	//[8] - Накопительные динамические параметры
-#define PROFILE_TABLE_100				8	//[100] - Параметры отладки встроенного компьютера (только для блока управления)
-#define PROFILE_TABLE_101				9	//[101] - Сетевые настройки встроенного компьютера (только для блока управления)
-#define PROFILE_TABLE_102				10	//[102] - Настройки встроенного компьютера (только для блока управления)
-#define PROFILE_TABLE_103				11	//[103] - Информация и категории трэпов по портам
-#define PROFILE_TABLES_CNT			12
+#define PROFILE_TABLE_1					1	//[1] - Информационные параметры
+#define PROFILE_TABLE_2					2	//[2] - Динамические параметры
+#define PROFILE_TABLE_3					3	//[3] - Установочные параметры
+#define PROFILE_TABLE_4					4	//[4] - Статические параметры (пороги)
+#define PROFILE_TABLE_5					5	//[5] - Лампочки передней панели (Все только лампочки и имеют тип данных 4==DC_U32)
+#define PROFILE_TABLE_6					6	//[6] - Калибровка устройства	(Используется для калибровки)
+#define PROFILE_TABLE_7					7	//[7] - Калибровочные коэффициенты (Выводятся калибровочние коэффиценты, или при необходимости устанавливаются)
+#define PROFILE_TABLE_8					8	//[8] - Накопительные динамические параметры
+#define PROFILE_TABLE_100				100	//[100] - Параметры отладки встроенного компьютера (только для блока управления)
+#define PROFILE_TABLE_101				101	//[101] - Сетевые настройки встроенного компьютера (только для блока управления)
+#define PROFILE_TABLE_102				102	//[102] - Настройки встроенного компьютера (только для блока управления)
+#define PROFILE_TABLE_103				103	//[103] - Информация и категории трэпов по портам
+#define PROFILE_TABLE_104				104
+#define PROFILE_TABLES_CNT			13
  
 //=============================================================================
 // Структура общего описания профиля
 //=============================================================================
 typedef struct {
 	const char *DeviceClass;
-	const PROFILE_TABLE1_PARAM_T *Table1;	//Указатель на таблицу профиля
-	const uint32_t Table1Size;	//Количество строк (параметров) для таблицы профиля
-	const PROFILE_TABLE2_PARAM_T *Table2;	//Указатель на таблицу профиля
-	const uint32_t Table2Size;	//Количество строк (параметров) для таблицы профиля
-	const PROFILE_TABLE3_PARAM_T *Table3;	//Указатель на таблицу профиля
-	const uint32_t Table3Size;	//Количество строк (параметров) для таблицы профиля
-	const PROFILE_TABLE4_PARAM_T *Table4;	//Указатель на таблицу профиля
-	const uint32_t Table4Size;	//Количество строк (параметров) для таблицы профиля
-	const PROFILE_TABLE5_PARAM_T *Table5;	//Указатель на таблицу профиля
-	const uint32_t Table5Size;	//Количество строк (параметров) для таблицы профиля
-	const PROFILE_TABLE8_PARAM_T *Table8;	//Указатель на таблицу профиля
-	const uint32_t Table8Size;	//Количество строк (параметров) для таблицы профиля
-	const PROFILE_TABLE103_PARAM_T *Table103;	//Указатель на таблицу профиля
-	const uint32_t Table103Size;	//Количество строк (параметров) для таблицы профиля
-	const char 			**Text; //Указатель на файл профиля
+	const PROFILE_TABLE_T* const *Tables;
+	const uint32_t TablesCnt;
+	const char* const *Text; //Указатель на файл профиля
 	const uint32_t	*TextSize;	//Количество строк в профиле
 	const uint32_t	DynamicValuesSize;	//Количество строк в профиле
 	const void 			*StaticDefaultValues; //Указатель на дефолтные значения

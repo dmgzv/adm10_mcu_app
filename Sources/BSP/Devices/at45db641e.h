@@ -34,7 +34,7 @@ typedef struct {
 	SPI_CS_T CS;
 	uint16_t DeviceId;
 	uint8_t ManufId;
-	uint8_t Status;
+	uint16_t Status;
 } AT45DB641E_T;
 
 int32_t AT45DB641E_WaitReady(AT45DB641E_T *dev);

@@ -128,27 +128,25 @@ typedef struct {
 	uint32_t ConfigIdx;
 	uint32_t LangpackIdx;
 	
-	uint32_t SaveEnable;
-	
 	osMessageQId MessageQId;
 	osThreadId ThreadId;
 } PROFILE_FLASH_T;
 
 int32_t PROFILE_FLASH_Init(PROFILE_FLASH_T *ProfileFlash, char *ThreadName, PROFILE_T *Profile);
 
-int32_t PROFILE_FLASH_SaveProfileIdx(PROFILE_FLASH_T *ProfileFlash, uint32_t ProfileIdx);
+int32_t PROFILE_FLASH_UpdateProfileIdx(PROFILE_FLASH_T *ProfileFlash, uint32_t ProfileIdx);
 
 int32_t PROFILE_FLASH_InitCalibs(PROFILE_FLASH_T *ProfileFlash);
-void PROFILE_FLASH_SaveCalibs(PROFILE_FLASH_T *ProfileFlash);
+void PROFILE_FLASH_UpdateCalibs(PROFILE_FLASH_T *ProfileFlash);
 
 int32_t PROFILE_FLASH_InitConfigs(PROFILE_FLASH_T *ProfileFlash);
-void PROFILE_FLASH_SaveConfigs(PROFILE_FLASH_T *ProfileFlash);
+void PROFILE_FLASH_UpdateConfigs(PROFILE_FLASH_T *ProfileFlash);
 
-void PROFILE_FLASH_SaveValue(PROFILE_FLASH_T *ProfileFlash, uint8_t Table, uint16_t Idx);
+void PROFILE_FLASH_UpdateValue(PROFILE_FLASH_T *ProfileFlash, uint8_t Table, uint16_t Idx);
 
-int32_t PROFILE_FLASH_LoadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t *LangpackBlocks, uint32_t *LangpackType);
-int32_t PROFILE_FLASH_SaveLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t LangpackBlocks, uint32_t LangpackType);
-int32_t PROFILE_FLASH_LoadLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize);
-int32_t PROFILE_FLASH_SaveLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize);
+int32_t PROFILE_FLASH_ReadLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t *LangpackBlocks, uint32_t *LangpackType);
+int32_t PROFILE_FLASH_UpdateLangpackHeader(PROFILE_FLASH_T *ProfileFlash, uint32_t LangpackBlocks, uint32_t LangpackType);
+int32_t PROFILE_FLASH_ReadLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize);
+int32_t PROFILE_FLASH_UpdateLangpackData(PROFILE_FLASH_T *ProfileFlash, uint32_t DataAddr, char *Data, uint32_t DataSize);
 
 #endif /* __PROFILE_FLASH_H */

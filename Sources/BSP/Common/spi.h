@@ -22,11 +22,16 @@
 #define SPI1_SCK_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOA_CLK_ENABLE()
 #define SPI1_MISO_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOA_CLK_ENABLE() 
 #define SPI1_MOSI_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOB_CLK_ENABLE()
+#define SPI1_DMA_CLK_ENABLE()            __HAL_RCC_DMA2_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define SPI1_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
+#define SPI1_DMA_TX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
+#define SPI1_DMA_RX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #else
 #define SPI1_IRQ_PRIORITY               0
+#define SPI1_DMA_TX_IRQ_PRIORITY        0
+#define SPI1_DMA_RX_IRQ_PRIORITY        0
 #endif
 
 #define SPI1_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_64
@@ -40,6 +45,18 @@
 #define SPI1_NSS												SPI_NSS_SOFT
 #define SPI1_TIMODE											SPI_TIMODE_DISABLE
 #define	SPI1_MODE												SPI_MODE_MASTER
+
+/* Definition for SPI1's DMA */
+#define SPI1_TX_DMA_CHANNEL              DMA_CHANNEL_3
+#define SPI1_TX_DMA_STREAM               DMA2_Stream3
+#define SPI1_RX_DMA_CHANNEL              DMA_CHANNEL_3
+#define SPI1_RX_DMA_STREAM               DMA2_Stream0
+
+/* Definition for SPI1's NVIC */
+#define SPI1_DMA_TX_IRQn                 DMA2_Stream3_IRQn
+#define SPI1_DMA_RX_IRQn                 DMA2_Stream0_IRQn
+#define SPI1_DMA_TX_IRQHandler           DMA2_Stream3_IRQHandler
+#define SPI1_DMA_RX_IRQHandler           DMA2_Stream0_IRQHandler
 
 /* Definition for SPI2 Pins */
 #define SPI2_SCK_PIN                     GPIO_PIN_13
@@ -55,14 +72,19 @@
 #define SPI2_SCK_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOB_CLK_ENABLE()
 #define SPI2_MISO_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOB_CLK_ENABLE() 
 #define SPI2_MOSI_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOB_CLK_ENABLE()
+#define SPI2_DMA_CLK_ENABLE()            __HAL_RCC_DMA1_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define SPI2_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
+#define SPI2_DMA_TX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
+#define SPI2_DMA_RX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #else
 #define SPI2_IRQ_PRIORITY               0
+#define SPI2_DMA_TX_IRQ_PRIORITY        0
+#define SPI2_DMA_RX_IRQ_PRIORITY        0
 #endif
 
-#define SPI2_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_32
+#define SPI2_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_64
 #define SPI2_DIRECTION									SPI_DIRECTION_2LINES
 #define SPI2_PHASE											SPI_PHASE_2EDGE
 #define SPI2_POLARITY										SPI_POLARITY_HIGH
@@ -73,6 +95,18 @@
 #define SPI2_NSS												SPI_NSS_SOFT
 #define SPI2_TIMODE											SPI_TIMODE_DISABLE
 #define	SPI2_MODE												SPI_MODE_MASTER
+
+/* Definition for SPI2's DMA */
+#define SPI2_TX_DMA_CHANNEL              DMA_CHANNEL_0
+#define SPI2_TX_DMA_STREAM               DMA1_Stream4
+#define SPI2_RX_DMA_CHANNEL              DMA_CHANNEL_0
+#define SPI2_RX_DMA_STREAM               DMA1_Stream3
+
+/* Definition for SPI2's NVIC */
+#define SPI2_DMA_TX_IRQn                 DMA1_Stream4_IRQn
+#define SPI2_DMA_RX_IRQn                 DMA1_Stream3_IRQn
+#define SPI2_DMA_TX_IRQHandler           DMA1_Stream4_IRQHandler
+#define SPI2_DMA_RX_IRQHandler           DMA1_Stream3_IRQHandler
 
 /* Definition for SPI3 Pins */
 #define SPI3_SCK_PIN                     GPIO_PIN_10
@@ -88,14 +122,19 @@
 #define SPI3_SCK_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOC_CLK_ENABLE()
 #define SPI3_MISO_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE() 
 #define SPI3_MOSI_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE()
+#define SPI3_DMA_CLK_ENABLE()            __HAL_RCC_DMA1_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define SPI3_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
+#define SPI3_DMA_TX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
+#define SPI3_DMA_RX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #else
 #define SPI3_IRQ_PRIORITY               0
+#define SPI3_DMA_TX_IRQ_PRIORITY        0
+#define SPI3_DMA_RX_IRQ_PRIORITY        0
 #endif
 
-#define SPI3_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_32
+#define SPI3_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_8
 #define SPI3_DIRECTION									SPI_DIRECTION_2LINES
 #define SPI3_PHASE											SPI_PHASE_2EDGE
 #define SPI3_POLARITY										SPI_POLARITY_HIGH
@@ -106,6 +145,18 @@
 #define SPI3_NSS												SPI_NSS_SOFT
 #define SPI3_TIMODE											SPI_TIMODE_DISABLE
 #define	SPI3_MODE												SPI_MODE_MASTER
+
+/* Definition for SPI3's DMA */
+#define SPI3_TX_DMA_CHANNEL              DMA_CHANNEL_0
+#define SPI3_TX_DMA_STREAM               DMA1_Stream7
+#define SPI3_RX_DMA_CHANNEL              DMA_CHANNEL_0
+#define SPI3_RX_DMA_STREAM               DMA1_Stream0
+
+/* Definition for SPI3's NVIC */
+#define SPI3_DMA_TX_IRQn                 DMA1_Stream7_IRQn
+#define SPI3_DMA_RX_IRQn                 DMA1_Stream0_IRQn
+#define SPI3_DMA_TX_IRQHandler           DMA1_Stream7_IRQHandler
+#define SPI3_DMA_RX_IRQHandler           DMA1_Stream0_IRQHandler
 
 /* Definition for SPI4 Pins */
 #define SPI4_SCK_PIN                     GPIO_PIN_10
@@ -121,11 +172,16 @@
 #define SPI4_SCK_GPIO_CLK_ENABLE()       __HAL_RCC_GPIOC_CLK_ENABLE()
 #define SPI4_MISO_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE() 
 #define SPI4_MOSI_GPIO_CLK_ENABLE()      __HAL_RCC_GPIOC_CLK_ENABLE()
+#define SPI4_DMA_CLK_ENABLE()            __HAL_RCC_DMA2_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define SPI4_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
+#define SPI4_DMA_TX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
+#define SPI4_DMA_RX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #else
 #define SPI4_IRQ_PRIORITY               0
+#define SPI4_DMA_TX_IRQ_PRIORITY        0
+#define SPI4_DMA_RX_IRQ_PRIORITY        0
 #endif
 
 #define SPI4_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_42
@@ -139,6 +195,18 @@
 #define SPI4_NSS												SPI_NSS_SOFT
 #define SPI4_TIMODE											SPI_TIMODE_DISABLE
 #define	SPI4_MODE												SPI_MODE_MASTER
+
+/* Definition for SPI4's DMA */
+#define SPI4_TX_DMA_CHANNEL              DMA_CHANNEL_4
+#define SPI4_TX_DMA_STREAM               DMA2_Stream1
+#define SPI4_RX_DMA_CHANNEL              DMA_CHANNEL_4
+#define SPI4_RX_DMA_STREAM               DMA2_Stream0
+
+/* Definition for SPI4's NVIC */
+#define SPI4_DMA_TX_IRQn                 DMA2_Stream1_IRQn
+#define SPI4_DMA_RX_IRQn                 DMA2_Stream0_IRQn
+#define SPI4_DMA_TX_IRQHandler           DMA2_Stream1_IRQHandler
+#define SPI4_DMA_RX_IRQHandler           DMA2_Stream0_IRQHandler
 
 /* Definition for SPI5 Pins */
 #define SPI5_SCK_PIN                     GPIO_PIN_7
@@ -158,15 +226,15 @@
 
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define SPI5_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
-#define SPI5_DMA_TX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
-#define SPI5_DMA_RX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1)
+#define SPI5_DMA_TX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
+#define SPI5_DMA_RX_IRQ_PRIORITY        (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #else
 #define SPI5_IRQ_PRIORITY               0
 #define SPI5_DMA_TX_IRQ_PRIORITY        0
 #define SPI5_DMA_RX_IRQ_PRIORITY        0
 #endif
 
-#define SPI5_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_128
+#define SPI5_BAUDRATEPRESCALER					SPI_BAUDRATEPRESCALER_16
 #define SPI5_DIRECTION									SPI_DIRECTION_2LINES
 #define SPI5_PHASE											SPI_PHASE_2EDGE
 #define SPI5_POLARITY										SPI_POLARITY_HIGH
@@ -198,7 +266,7 @@ typedef struct {
 typedef struct {
 	SPI_HandleTypeDef handle;
 	DMA_HandleTypeDef hdmatx;
-  DMA_HandleTypeDef hdmarx;
+	DMA_HandleTypeDef hdmarx;
 #ifdef BSP_CONFIG_USE_FREERTOS
 	osMutexId mutex_id;
 	osMessageQId message_queue_id;

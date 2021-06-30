@@ -1,6 +1,7 @@
 #include "fpga_line_agg_2x10_efec.h"
 #include "log.h"
 #include <string.h>
+#include <stdio.h>
 
 #define FPGA_LINE_AGG_2X10_EFEC_ADDR(Dev)									(Dev)->BaseAddr
 
@@ -23,13 +24,13 @@
 
 static void FPGA_LINE_AGG_2X10_EFEC_WriteByte(FPGA_LINE_AGG_2X10_EFEC_T *Dev, uint32_t Addr, uint8_t Data)
 {
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
+	LOG_Info(Dev->DevName, "", "ByteWrite", "0x%08x;0x%02x", Addr, Data);
 	*((uint8_t*)(Addr)) = Data;
 }
 
 static void FPGA_LINE_AGG_2X10_EFEC_WriteCmd(FPGA_LINE_AGG_2X10_EFEC_T *Dev, uint32_t Cmd, uint8_t Opt1, uint8_t Opt2, uint8_t Opt3)
 {
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteCmd: 0x%02x 0x%02x 0x%02x 0x%02x", Cmd, Opt1, Opt2, Opt3);
+	LOG_Info(Dev->DevName, "", "CmdWrite", "0x%02x;0x%02x;0x%02x;0x%02x", Cmd, Opt1, Opt2, Opt3);
 	*((uint8_t*)FPGA_LINE_AGG_2X10_EFEC_CMD_OPT1_ADDR(Dev)) = Opt1;
 	*((uint8_t*)FPGA_LINE_AGG_2X10_EFEC_CMD_OPT2_ADDR(Dev)) = Opt2;
 	*((uint8_t*)FPGA_LINE_AGG_2X10_EFEC_CMD_OPT3_ADDR(Dev)) = Opt3;

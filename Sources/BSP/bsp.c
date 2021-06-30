@@ -85,20 +85,23 @@ const uint32_t ModulesCnt = sizeof(Modules) / sizeof(Modules[0]);
 
 void os_assert_failed(char* file, unsigned int line)
 {
-	LOG_Error("OS", "ASSERT", "", "%s [%d]", file, line);
-	while(1);
+	LOG_Error("OS", "", "ASSERT", "%s [%d]", file, line);
+	osDelay(1000);
+	BSP_Reset();
 }
 
 void hal_assert_failed(char* file, unsigned int line)
 {
-	LOG_Error("HAL", "ASSERT", "", "%s [%d]", file, line);
-	while(1);
+	LOG_Error("HAL", "", "ASSERT", "%s [%d]", file, line);
+	osDelay(1000);
+	BSP_Reset();
 }
 
 void lwip_assert_failed(char* file, unsigned int line)
 {
-	LOG_Error("LWIP", "ASSERT", "", "%s [%d]", file, line);
-	while(1);
+	LOG_Error("LWIP", "", "ASSERT", "%s [%d]", file, line);
+	osDelay(1000);
+	BSP_Reset();
 }
 
 void BSP_Init(void)
@@ -112,6 +115,8 @@ void BSP_Init(void)
 	HAL_Init();
 	/* Configure the system clock */
 	SystemClock_Config();
+	/* Configure the RTC */
+	RTC_Init();
 }
 
 int32_t BSP_InitInterfaces(void)

@@ -29,6 +29,7 @@ typedef struct {
 	uint32_t CommandsLen[PROFILE_IFACE_CMD_QUEUE_SIZE];
 #else
 	osThreadId ThreadId;
+	char Buffer[PROFILE_IFACE_CMD_MAX_SIZE];
 	char Command[PROFILE_IFACE_CMD_MAX_SIZE];
 	uint32_t CommandLen;
 #endif 

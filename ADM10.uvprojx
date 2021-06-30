@@ -561,6 +561,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_hal_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_rtc_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -721,6 +731,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Common\log.c</FilePath>
             </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Common\rtc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -856,11 +871,6 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\stm32f4xx_hal_msp.c</FilePath>
             </File>
-            <File>
-              <FileName>stm32f4xx_hal_timebase_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\stm32f4xx_hal_timebase_tim.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -975,6 +985,11 @@
               <FileName>string_fnc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Utilities\string_fnc.c</FilePath>
+            </File>
+            <File>
+              <FileName>sort.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Utilities\sort.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1196,6 +1211,71 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_files.c</FilePath>
             </File>
+            <File>
+              <FileName>http_server_url.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_auth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_auth.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_devices.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_devices.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_interfaces.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_interfaces.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_modules.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_modules.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_os.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_power.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_power.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_profile.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_profile.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_update.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_update.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_users.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_users.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_files.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_files.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1220,6 +1300,56 @@
               <FileName>tftp_bootloader_fpga.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader_fpga.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User</GroupName>
+          <Files>
+            <File>
+              <FileName>user.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\User\user.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_md5crypt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\User\user_md5crypt.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_snmpcrypt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\User\user_snmpcrypt.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Crypto</GroupName>
+          <Files>
+            <File>
+              <FileName>base64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\crypto-algorithms\base64.c</FilePath>
+            </File>
+            <File>
+              <FileName>md5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\crypto-algorithms\md5.c</FilePath>
+            </File>
+            <File>
+              <FileName>sha1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\crypto-algorithms\sha1.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>JSON</GroupName>
+          <Files>
+            <File>
+              <FileName>tiny-json.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\JSON\tiny-json.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1556,7 +1686,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F427ZI</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web;.\Sources\TFTP</IncludePath>
+              <IncludePath>.\Sources;.\Sources\BSP;.\Sources\BSP\Common;.\Sources\BSP\Devices;.\Sources\CMSIS\Include;.\Sources\CMSIS\Device\ST\STM32F4xx\Include;.\Sources\FreeRTOS\Source\include;.\Sources\FreeRTOS\Source\CMSIS_RTOS;.\Sources\FreeRTOS\Source\portable\RVDS\ARM_CM4F;.\Sources\STM32F4xx_HAL_Driver\Inc;.\Sources\STM32F4xx_HAL_Driver\Inc\Legacy;.\Sources\Profile;.\Sources\ProfileADM10;.\Sources\Utilities;.\Sources\LwIP;.\Sources\LwIP\system;.\Sources\LwIP\src\include;.\Sources\Shell;.\Sources\Web;.\Sources\TFTP;.\Sources\User;.\Sources\crypto-algorithms;.\Sources\JSON</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1780,6 +1910,16 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_tim_ex.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_hal_rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_rtc_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_rtc_ex.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1940,6 +2080,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Common\log.c</FilePath>
             </File>
+            <File>
+              <FileName>rtc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Common\rtc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2075,11 +2220,6 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\stm32f4xx_hal_msp.c</FilePath>
             </File>
-            <File>
-              <FileName>stm32f4xx_hal_timebase_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\stm32f4xx_hal_timebase_tim.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -2194,6 +2334,11 @@
               <FileName>string_fnc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\Utilities\string_fnc.c</FilePath>
+            </File>
+            <File>
+              <FileName>sort.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Utilities\sort.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2415,6 +2560,71 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\Web\http_server_files.c</FilePath>
             </File>
+            <File>
+              <FileName>http_server_url.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_auth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_auth.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_devices.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_devices.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_interfaces.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_interfaces.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_log.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_modules.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_modules.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_os.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_os.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_power.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_power.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_profile.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_profile.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_update.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_update.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_api_v1_users.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_api_v1_users.c</FilePath>
+            </File>
+            <File>
+              <FileName>http_server_url_files.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\Web\http_server_url_files.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2439,6 +2649,56 @@
               <FileName>tftp_bootloader_fpga.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\TFTP\tftp_bootloader_fpga.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>User</GroupName>
+          <Files>
+            <File>
+              <FileName>user.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\User\user.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_md5crypt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\User\user_md5crypt.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_snmpcrypt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\User\user_snmpcrypt.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Crypto</GroupName>
+          <Files>
+            <File>
+              <FileName>base64.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\crypto-algorithms\base64.c</FilePath>
+            </File>
+            <File>
+              <FileName>md5.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\crypto-algorithms\md5.c</FilePath>
+            </File>
+            <File>
+              <FileName>sha1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\crypto-algorithms\sha1.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>JSON</GroupName>
+          <Files>
+            <File>
+              <FileName>tiny-json.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\JSON\tiny-json.c</FilePath>
             </File>
           </Files>
         </Group>

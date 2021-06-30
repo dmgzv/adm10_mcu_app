@@ -3,8 +3,7 @@
 #include "log.h"
 
 DIM3R3400_T __attribute__((section ("CCM_DATA"))) dim3r3400 = {
-	.DevName = DIM3R3400_DEV_NAME,
-	.DevId = BSP_PWR_IN_DIM3R3400_ID,
+	.DevName = DIM3R3400_DEV_NAME"_"BSP_PWR_IN_DIM3R3400_ID,
 	.InitContErrThr = 3,
 	.UpdateContErrThr = 10,
 	.I2C = BSP_PWR_IN_DIM3R3400_I2C,
@@ -74,20 +73,17 @@ void BSP_PWR_IN_Process(void)
 						}
 						if (!dim3r3400_power_reset_timeout)
 						{
-							LOG_Warn("BSP", dim3r3400.DevName, dim3r3400.DevId, "Load Timeout");
+							LOG_Warn(dim3r3400.DevName, "", "PowerResetTimeout", "");
 						}
 #endif
 						if (dim3r3400_power_good != PowerGood)
 						{
 							dim3r3400_power_good = PowerGood;
-							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "PowerGood: 0x%x", dim3r3400_power_good);
-							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
-							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
+							LOG_Info(dim3r3400.DevName, "", "PowerGoodUpdate", "0x%x", dim3r3400_power_good);
+							LOG_Info(dim3r3400.DevName, "", "RailUpdate", "0;%.2f", dim3r3400.Vin[0]);
+							LOG_Info(dim3r3400.DevName, "", "RailUpdate", "1;%.2f", dim3r3400.Vin[1]);
 						}
-						if (((dim3r3400.Vin[0] <= BSP_PWR_IN_MIN_OFF) && (dim3r3400.Vin[1] <= BSP_PWR_IN_MIN_OFF))
-							|| (dim3r3400.Vin[0] >= BSP_PWR_IN_MAX_OFF)
-							|| (dim3r3400.Vin[1] >= BSP_PWR_IN_MAX_OFF)
-						)
+						if (!dim3r3400_power_good)
 						{
 							BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 0);
 						}
@@ -111,9 +107,9 @@ void BSP_PWR_IN_Process(void)
 						if (dim3r3400_power_good != PowerGood)
 						{
 							dim3r3400_power_good = PowerGood;
-							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "PowerGood: 0x%x", dim3r3400_power_good);
-							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail A: %.2f", i, dim3r3400.Vin[0]);
-							LOG_Info("BSP", dim3r3400.DevName, dim3r3400.DevId, "Rail B: %.2f", i, dim3r3400.Vin[1]);
+							LOG_Info(dim3r3400.DevName, "", "PowerGoodUpdate", "0x%x", dim3r3400_power_good);
+							LOG_Info(dim3r3400.DevName, "", "RailUpdate", "0;%.2f", dim3r3400.Vin[0]);
+							LOG_Info(dim3r3400.DevName, "", "RailUpdate", "1;%.2f", dim3r3400.Vin[1]);
 						}
 #ifdef BSP_PWR_IN_POWER_RESET_TIMEOUT	
 						if (!dim3r3400_power_reset_timeout)
@@ -121,10 +117,7 @@ void BSP_PWR_IN_Process(void)
 							dim3r3400_power_reset_timeout = BSP_PWR_IN_POWER_RESET_TIMEOUT;
 						}
 #endif
-						if (((dim3r3400.Vin[0] > BSP_PWR_IN_MIN_ON) || (dim3r3400.Vin[1] > BSP_PWR_IN_MIN_ON))
-							&& (dim3r3400.Vin[0] < BSP_PWR_IN_MAX_ON)
-							&& (dim3r3400.Vin[1] < BSP_PWR_IN_MAX_ON)
-						)
+						if (dim3r3400_power_good)
 						{
 							BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 1);
 						}

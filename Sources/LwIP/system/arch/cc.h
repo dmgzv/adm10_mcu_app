@@ -47,8 +47,6 @@ typedef int sys_prot_t;
 
 #endif
 
-#define LWIP_PLATFORM_DIAG(message)  printf message
-
 /* define compiler specific symbols */
 #if defined (__ICCARM__)
 
@@ -58,18 +56,17 @@ typedef int sys_prot_t;
 #define PACK_STRUCT_FIELD(x) x
 #define PACK_STRUCT_USE_INCLUDES
 
-#elif defined (__CC_ARM)
-
-#define PACK_STRUCT_BEGIN __packed
-#define PACK_STRUCT_STRUCT 
-#define PACK_STRUCT_END
-#define PACK_STRUCT_FIELD(x) x
-
-
 #elif defined (__GNUC__)
 
 #define PACK_STRUCT_BEGIN
 #define PACK_STRUCT_STRUCT __attribute__ ((__packed__))
+#define PACK_STRUCT_END
+#define PACK_STRUCT_FIELD(x) x
+
+#elif defined (__CC_ARM)
+
+#define PACK_STRUCT_BEGIN __packed
+#define PACK_STRUCT_STRUCT
 #define PACK_STRUCT_END
 #define PACK_STRUCT_FIELD(x) x
 
@@ -82,10 +79,11 @@ typedef int sys_prot_t;
 
 #endif
 
-#define LWIP_PLATFORM_ASSERT(x) lwip_assert_failed(__FILE__, __LINE__) //do { if(!(x)) lwip_assert_failed(); } while(0)
+#define LWIP_PLATFORM_ASSERT(x) lwip_assert_failed(__FILE__, __LINE__)
 
 void lwip_assert_failed(char* file, unsigned int line);
 
+/* Define random number generator function */
 #define LWIP_RAND() ((u32_t)rand())
 
 #endif /* __CC_H__ */

@@ -2,6 +2,8 @@
 #include "log.h"
 #include <string.h>
 
+#define KSZ8895_REG_GLOBAL_CONTROL(Idx)	(0x02 + (Idx))
+
 #define KSZ8895_REG_PORT_CONTROL_0(Idx)	(0x10 + (0x10 * (Idx)))
 #define KSZ8895_REG_PORT_CONTROL_1(Idx)	(0x11 + (0x10 * (Idx)))
 #define KSZ8895_REG_PORT_CONTROL_2(Idx)	(0x12 + (0x10 * (Idx)))
@@ -12,7 +14,7 @@
 #define KSZ8895_REG_PORT_STATUS_1(Idx)	(0x1E + (0x10 * (Idx)))
 #define KSZ8895_REG_INDIRECT_ACCESS_CONTROL_0	0x6E
 #define KSZ8895_REG_INDIRECT_ACCESS_CONTROL_1	0x6F
-#define KSZ8895_REG_INDIRECT_DATA_REGISTER(Idx)	(0x70 + (Idx))
+#define KSZ8895_REG_INDIRECT_DATA_REGISTER(Idx)	(0x78 - (Idx))
 
 #ifdef BSP_CONFIG_USE_FREERTOS
 #define	KSZ8895_msDelay(ms) 		osDelay(ms)
@@ -57,9 +59,129 @@ static int32_t __KSZ8895_WriteReg(KSZ8895_T *Dev, uint8_t Addr, uint8_t Data)
 	return 0;
 }
 
+static int32_t __KSZ8895_ReadVLANTable(KSZ8895_T *Dev, uint16_t VID, uint16_t *VIDData)
+{
+	uint8_t Data[7];
+	uint16_t i;
+	uint32_t __Data;
+	uint32_t BitFirst, BitsCnt, ByteFirst, ByteLast, ByteFirstShift;
+	
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_0, (0x01 << 4) | (0x01 << 2) | (((VID >> 2) >> 8) & 0x03)))
+			goto error;
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_1, (VID >> 2) & 0xFF))
+		goto error;
+	for (i = 0; i < sizeof(Data); i++)
+	{
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(i), &Data[i]))
+			goto error;
+	}
+	
+	BitsCnt = 13;
+	if ((VID & 0x03) == 0)
+		BitFirst = 0;
+	else if ((VID & 0x03) == 1)
+		BitFirst = 13;
+	else if ((VID & 0x03) == 2)
+		BitFirst = 26;
+	else
+		BitFirst = 39;
+	
+	ByteFirst = BitFirst / 8;
+	ByteLast = (BitFirst + BitsCnt - 1)  / 8;
+	ByteFirstShift = BitFirst % 8;
+	
+	__Data = 0;
+	for (i = ByteFirst; i <= ByteLast; i++)
+		__Data |= Data[i] << (8 * (i - ByteFirst));
+	
+	*VIDData = (__Data >> ByteFirstShift) & ((1 << BitsCnt) - 1);
+	
+	return 0;
+	
+error:
+	return -1;
+}
+
+static int32_t __KSZ8895_WriteVLANTable(KSZ8895_T *Dev, uint16_t VID, uint16_t VIDData)
+{
+	uint8_t Data[7];
+	uint16_t i;
+	uint32_t __Data;
+	uint32_t BitFirst, BitsCnt, ByteFirst, ByteLast, ByteFirstShift;
+	
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_0, (0x01 << 4) | (0x01 << 2) | (((VID >> 2) >> 8) & 0x03)))
+			goto error;
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_1, (VID >> 2) & 0xFF))
+		goto error;
+	for (i = 0; i < sizeof(Data); i++)
+	{
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(i), &Data[i]))
+			goto error;
+	}
+	
+	BitsCnt = 13;
+	if ((VID & 0x03) == 0)
+		BitFirst = 0;
+	else if ((VID & 0x03) == 1)
+		BitFirst = 13;
+	else if ((VID & 0x03) == 2)
+		BitFirst = 26;
+	else
+		BitFirst = 39;
+	
+	ByteFirst = BitFirst / 8;
+	ByteLast = (BitFirst + BitsCnt - 1)  / 8;
+	ByteFirstShift = BitFirst % 8;
+	
+	__Data = 0;
+	for (i = ByteFirst; i <= ByteLast; i++)
+		__Data |= Data[i] << (8 * (i - ByteFirst));
+	
+	__Data &= ~(((1 << BitsCnt) - 1) << ByteFirstShift);
+	__Data |= ((VIDData & ((1 << BitsCnt) - 1)) << ByteFirstShift);
+	for (i = ByteFirst; i <= ByteLast; i++)
+		Data[i] = (__Data >> (8 * (i - ByteFirst))) & 0xFF;
+	
+	for (i = 0; i < sizeof(Data); i++)
+	{
+		if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(i), Data[i]))
+			goto error;
+	}
+	
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_0, (0x00 << 4) | (0x01 << 2) | (((VID >> 2) >> 8) & 0x03)))
+			goto error;
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_1, (VID >> 2) & 0xFF))
+		goto error;
+	return 0;
+	
+error:
+	return -1;
+}
+
+static int32_t __KSZ8895_EnableVLAN(KSZ8895_T *Dev, uint32_t Enable)
+{
+	uint8_t Data;
+	
+	if (Enable)
+		Data = Dev->GlobalControl[3] | (1 << 7);
+	else
+		Data = Dev->GlobalControl[3] & (1 << 7);
+	if (Data != Dev->GlobalControl[3])
+	{
+		if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_GLOBAL_CONTROL(3), Data))
+			goto error;
+		Dev->GlobalControl[3] = Data;
+	}
+	return 0;
+	
+error:
+	return -1;
+}
+
 int32_t KSZ8895_Init(KSZ8895_T *Dev)
 {
-	uint8_t i, Data;
+	uint32_t i, j;
+	uint8_t Data;
 
 	if ((!Dev) || (!Dev->SPI) || (!Dev->PinCtrl))
 		return -1;
@@ -102,13 +224,13 @@ int32_t KSZ8895_Init(KSZ8895_T *Dev)
 	{
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_0(i), &Data))
 			goto error;
-		Dev->PortControl[i][0] = Data;		
+		Dev->PortControl[i][0] = Data;
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_1(i), &Data))
 			goto error;
 		Dev->PortControl[i][1] = Data;
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_2(i), &Data))
 			goto error;
-		Dev->PortControl[i][2] = Data;		
+		Dev->PortControl[i][2] = Data;
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_3(i), &Data))
 			goto error;
 		Dev->PortControl[i][3] = Data;
@@ -118,13 +240,43 @@ int32_t KSZ8895_Init(KSZ8895_T *Dev)
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_CONTROL_5(i), &Data))
 			goto error;
 		Dev->PortControl[i][5] = Data;
+		
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_0(i), &Data))
 			goto error;
-		Dev->PortStatus[i][0] = Data;		
+		Dev->PortStatus[i][0] = Data;
 		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_PORT_STATUS_1(i), &Data))
 			goto error;
 		Dev->PortStatus[i][1] = Data;
 	}
+	
+	if ((Dev->VLANTable) && (Dev->VLANTableSize))
+	{
+		for (i = 0; i < 4096; i++)
+		{
+			for (j = 0; j < Dev->VLANTableSize; j++)
+			{
+				if (i == Dev->VLANTable[j].VID)
+				{
+					if (__KSZ8895_WriteVLANTable(Dev, Dev->VLANTable[j].VID, Dev->VLANTable[j].Data))
+						goto error;
+					break;
+				}
+			}
+			if (j == Dev->VLANTableSize)
+			{
+				if (__KSZ8895_WriteVLANTable(Dev, i, KSZ8895_VLAN_INVALID))
+					goto error;
+			}
+		}
+		if (__KSZ8895_EnableVLAN(Dev, 1))
+			goto error;
+	}
+	else
+	{
+		if (__KSZ8895_EnableVLAN(Dev, 0))
+			goto error;
+	}
+	
 	
 	BSP_DEV_INIT_OK(Dev);	
 	return 0;
@@ -152,6 +304,13 @@ int32_t KSZ8895_Update(KSZ8895_T *Dev)
 		return -1;
 	
 	BSP_DEV_UPDATE(Dev);
+	
+	for (i = 0; i < KSZ8895_GLOBAL_CONTROL_CNT; i++)
+	{
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_GLOBAL_CONTROL(i), &Data))
+			goto error;
+		Dev->GlobalControl[i] = Data;
+	}		
 	
 	for (i = 0; i < KSZ8895_PORTS_CNT; i++)
 	{
@@ -233,18 +392,27 @@ int32_t KSZ8895_ConfigPortMode(KSZ8895_T *Dev, uint32_t Idx, uint32_t Mode)
 	{
 		case KSZ8895_PORT_MODE_AUTONEG:
 			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 7));
+			Dev->PortControl[Idx][2] |= (1 << 1) | (1 << 2);
 			break;
 		case KSZ8895_PORT_MODE_100M_FULL_DUPLEX:
 			Dev->PortControl[Idx][5] = 0xFF;
+			Dev->PortControl[Idx][2] |= (1 << 1) | (1 << 2);
 			break;
 		case KSZ8895_PORT_MODE_100M_HALF_DUPLEX:
 			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 5));
+			Dev->PortControl[Idx][2] |= (1 << 1) | (1 << 2);
 			break;
 		case KSZ8895_PORT_MODE_10M_FULL_DUPLEX:
 			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 6));
+			Dev->PortControl[Idx][2] |= (1 << 1) | (1 << 2);
 			break;
 		case KSZ8895_PORT_MODE_10M_HALF_DUPLEX:
 			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 6)) & (~(1 << 5));
+			Dev->PortControl[Idx][2] |= (1 << 1) | (1 << 2);
+			break;
+		case KSZ8895_PORT_MODE_DISABLED:
+			Dev->PortControl[Idx][5] = 0xFF & (~(1 << 7));
+			Dev->PortControl[Idx][2] &= ~((1 << 1) | (1 << 2));
 			break;
 		default:
 			goto error;
@@ -255,6 +423,53 @@ int32_t KSZ8895_ConfigPortMode(KSZ8895_T *Dev, uint32_t Idx, uint32_t Mode)
 	
 error:
 	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+int32_t KSZ8895_ConfigPortVLAN(KSZ8895_T *Dev, uint32_t Idx, uint16_t PVID, uint32_t Flags)
+{
+	if ((!Dev) || (Idx > 4))
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	
+	if (Flags & KSZ8895_PORT_VLAN_TAG_INSERTION)
+		Dev->PortControl[Idx][0] |= (1 << 2);
+	else
+		Dev->PortControl[Idx][0] &= ~(1 << 2);
+	
+	if (Flags & KSZ8895_PORT_VLAN_TAG_REMOVAL)
+		Dev->PortControl[Idx][0] |= (1 << 1);
+	else
+		Dev->PortControl[Idx][0] &= ~(1 << 1);
+	
+	Dev->PortControl[Idx][3] = (PVID >> 8) & 0x0F;
+	Dev->PortControl[Idx][4] = PVID & 0xFF;
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+}
+
+int32_t KSZ8895_ReadVLANTable(KSZ8895_T *Dev, uint16_t VID, uint16_t *VIDData)
+{
+	
+	if ((!Dev) || (VID > 4095) || (!VIDData))
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_UPDATE(Dev);
+	
+	if (__KSZ8895_ReadVLANTable(Dev, VID, VIDData))
+			goto error;
+	
+	BSP_DEV_UPDATE_OK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UPDATE_FAIL(Dev);
 	return -1;
 }
 
@@ -346,13 +561,13 @@ int32_t KSZ8895_ReadMACTable(KSZ8895_T *Dev, KSZ8895_MAC_TABLE_T *Table, uint32_
 			goto error;
 	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_1, Idx & 0xFF))
 		goto error;
-	if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(0), &Data[0]))
+	if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(7), &Data[0]))
 				goto error;
-	if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(1), &Data[1]))
+	if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(8), &Data[1]))
 				goto error;
-	if (!(Data[0] & (1 << 7)))
+	if (!(Data[1] & (1 << 7)))
 	{
-		TableSize = ((Data[1] >> 5) & 0x07) + ((Data[0] & 0x7F) << 4) + 1;
+		TableSize = ((Data[1] & 0x7F) << 4) + ((Data[0] >> 5) & 0x07) + 1;
 		if (TableSize >= MaxSize)
 			TableSize = MaxSize;
 		for (Idx = 0; Idx < TableSize; Idx++)
@@ -366,11 +581,76 @@ int32_t KSZ8895_ReadMACTable(KSZ8895_T *Dev, KSZ8895_MAC_TABLE_T *Table, uint32_
 				if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(i), &Data[i]))
 					goto error;
 			}
-			Table[Idx].Port = Data[1] & 0x07;
-			memcpy(Table[Idx].Mac, &Data[3], 6);
+			Table[Idx].Port = Data[7] & 0x07;
+			Table[Idx].FID = Data[6] & 0x7F;
+			memcpy(Table[Idx].Mac, &Data[0], 6);
 		}
 	}
 	*Size = TableSize;
+	BSP_DEV_UPDATE_OK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UPDATE_FAIL(Dev);
+	return -1;
+}
+
+int32_t KSZ8895_ReadPortStat(KSZ8895_T *Dev, uint32_t Idx, uint32_t *Stat)
+{
+	uint8_t Data[4];
+	uint16_t i, j;
+	uint16_t Addr;
+	
+	if ((!Dev) || (!Stat) || (Idx >= KSZ8895_PORTS_CNT))
+		return -1;
+	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_UPDATE(Dev);
+	
+	for (i = 0; i < 0x20; i++)
+	{
+		Addr = (Idx * 0x20) + i;
+		
+		if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_0, (0x01 << 4) | (0x03 << 2) | ((Addr >> 8) & 0x03)))
+			goto error;
+		if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_1, Addr & 0xFF))
+			goto error;
+		for (j = 0; j < 4; j++)
+		{
+			if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(j), &Data[j]))
+				goto error;
+		}
+		Stat[i] += (((Data[3] << 24) | (Data[2] << 16) | (Data[1] << 8) | (Data[0]))) & ((1 << 30) - 1);
+	}
+	
+	Addr = 0x100 + Idx;
+	
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_0, (0x01 << 4) | (0x03 << 2) | ((Addr >> 8) & 0x03)))
+		goto error;
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_1, Addr & 0xFF))
+		goto error;
+	for (j = 0; j < 2; j++)
+	{
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(j), &Data[j]))
+			goto error;
+	}
+	Stat[0x20] = (Data[1] << 8) | (Data[0]);
+	
+	
+	Addr = 0x105 + Idx;
+	
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_0, (0x01 << 4) | (0x03 << 2) | ((Addr >> 8) & 0x03)))
+		goto error;
+	if (__KSZ8895_WriteReg(Dev, KSZ8895_REG_INDIRECT_ACCESS_CONTROL_1, Addr & 0xFF))
+		goto error;
+	for (j = 0; j < 2; j++)
+	{
+		if (__KSZ8895_ReadReg(Dev, KSZ8895_REG_INDIRECT_DATA_REGISTER(j), &Data[j]))
+			goto error;
+	}
+	Stat[0x21] = (Data[1] << 8) | (Data[0]);
+	
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	

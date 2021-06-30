@@ -96,21 +96,6 @@ static int32_t UART_GetHandle( USART_TypeDef* Instance, UART_T **uart)
 	}
 	return 0;
 }
-#if 0
-static void //UART_IDLE_IRQHandler(UART_T *uart)
-{
-	if(RESET != __HAL_UART_GET_FLAG(&uart->handle, UART_FLAG_IDLE))
-	{
-		__HAL_UART_CLEAR_IDLEFLAG(&uart->handle);
-		__HAL_UART_DISABLE_IT(&uart->handle, UART_IT_IDLE);
-		//Stop this DMA transmission
-		HAL_UART_DMAStop(&uart->handle);
-		
-		if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
-			uart->rx_message_queue_overflow_errors++;
-	}
-}
-#endif
 
 #ifdef BSP_CONFIG_USE_UART1
 /**
@@ -140,8 +125,6 @@ void UART1_DMA_TX_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&uart1.handle);
-	
-	//UART_IDLE_IRQHandler(&uart1);
 }
 #endif /*BSP_CONFIG_USE_UART1*/
 
@@ -173,8 +156,6 @@ void UART2_DMA_TX_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&uart2.handle);
-	
-	//UART_IDLE_IRQHandler(&uart2);
 }
 #endif /*BSP_CONFIG_USE_UART2*/
 
@@ -198,6 +179,7 @@ void UART3_DMA_TX_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(uart3.handle.hdmatx);
 }
+
 /**
   * @brief  This function Handles UART3 interrupt request.
   * @param  None
@@ -206,8 +188,6 @@ void UART3_DMA_TX_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&uart3.handle);
-	
-	//UART_IDLE_IRQHandler(&uart3);
 }
 #endif /*BSP_CONFIG_USE_UART3*/
 
@@ -292,8 +272,6 @@ void UART6_DMA_RX_IRQHandler(void)
 void UART6_DMA_TX_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(uart6.handle.hdmatx);
-	
-	//UART_IDLE_IRQHandler(&uart6);
 }
 /**
   * @brief  This function Handles UART6 interrupt request.
@@ -375,7 +353,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		uart1.hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
 		uart1.hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 		uart1.hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-		uart1.hdma_rx.Init.Mode                = DMA_NORMAL;
+		uart1.hdma_rx.Init.Mode                = DMA_CIRCULAR;
 		uart1.hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
 		uart1.hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 		uart1.hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
@@ -459,7 +437,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		uart2.hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
 		uart2.hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 		uart2.hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-		uart2.hdma_rx.Init.Mode                = DMA_NORMAL;
+		uart2.hdma_rx.Init.Mode                = DMA_CIRCULAR;
 		uart2.hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
 		uart2.hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 		uart2.hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
@@ -543,7 +521,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		uart3.hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
 		uart3.hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 		uart3.hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-		uart3.hdma_rx.Init.Mode                = DMA_NORMAL;
+		uart3.hdma_rx.Init.Mode                = DMA_CIRCULAR;
 		uart3.hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
 		uart3.hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 		uart3.hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
@@ -568,6 +546,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		/* NVIC configuration for DMA transfer complete interrupt (USARTx_RX) */
 		HAL_NVIC_SetPriority(UART3_DMA_RX_IRQn, UART3_DMA_IRQ_PRIORITY, 0);
 		HAL_NVIC_EnableIRQ(UART3_DMA_RX_IRQn);
+
 	}
 	else
 #endif /*BSP_CONFIG_USE_UART3*/
@@ -627,7 +606,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		uart4.hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
 		uart4.hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 		uart4.hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-		uart4.hdma_rx.Init.Mode                = DMA_NORMAL;
+		uart4.hdma_rx.Init.Mode                = DMA_CIRCULAR;
 		uart4.hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
 		uart4.hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 		uart4.hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
@@ -711,7 +690,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		uart5.hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
 		uart5.hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 		uart5.hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-		uart5.hdma_rx.Init.Mode                = DMA_NORMAL;
+		uart5.hdma_rx.Init.Mode                = DMA_CIRCULAR;
 		uart5.hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
 		uart5.hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 		uart5.hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
@@ -795,7 +774,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 		uart6.hdma_rx.Init.MemInc              = DMA_MINC_ENABLE;
 		uart6.hdma_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
 		uart6.hdma_rx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-		uart6.hdma_rx.Init.Mode                = DMA_NORMAL;
+		uart6.hdma_rx.Init.Mode                = DMA_CIRCULAR;
 		uart6.hdma_rx.Init.Priority            = DMA_PRIORITY_HIGH;
 		uart6.hdma_rx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
 		uart6.hdma_rx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
@@ -950,11 +929,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hUART)
 	if (UART_GetHandle(hUART->Instance, &uart))
 		return;
 
-	if (uart->rx_buffer_end)
+	if ((uart->rx_mode == UART_RX_MODE_IT) || (uart->rx_mode == UART_RX_MODE_DMA))
 	{
-		if (uart->rx_buffer[uart->rx_buffer_idx] == *uart->rx_buffer_end)
+		if (uart->handle.ErrorCode != HAL_UART_ERROR_NONE)
+		{
+			if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
+				uart->rx_message_queue_overflow_errors++;
+		}
+		else
 		{
 			if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
+				uart->rx_message_queue_overflow_errors++;
+		}
+	}
+	else if (uart->rx_mode == UART_RX_MODE_IT_COMMAND)
+	{
+		/*Receive command*/
+		if (uart->handle.ErrorCode != HAL_UART_ERROR_NONE)
+		{
+			if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
 				uart->rx_message_queue_overflow_errors++;
 		}
 		else if (uart->rx_buffer_idx == (uart->rx_buffer_size - 1))
@@ -962,26 +955,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *hUART)
 			if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
 				uart->rx_message_queue_overflow_errors++;
 		}
-		else if (uart->handle.ErrorCode != HAL_UART_ERROR_NONE)
-		{
-			if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
-				uart->rx_message_queue_overflow_errors++;
-		}
-		else
-		{
-			HAL_UART_Receive_IT(&uart->handle, (uint8_t*)&uart->rx_buffer[++uart->rx_buffer_idx], 1);
-		}
-	}
-	else
-	{
-		if (uart->rx_buffer_idx == (uart->rx_buffer_size - 1))
+		else if (uart->rx_buffer[uart->rx_buffer_idx] == *uart->rx_buffer_end)
 		{
 			if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_COMPLETE, 0) != osOK)
-				uart->rx_message_queue_overflow_errors++;
-		}
-		else if (uart->handle.ErrorCode != HAL_UART_ERROR_NONE)
-		{
-			if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
 				uart->rx_message_queue_overflow_errors++;
 		}
 		else
@@ -1029,12 +1005,6 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *hUART)
 		uart->overrun_errors++;
 	if (uart->handle.ErrorCode & HAL_UART_ERROR_DMA)
 		uart->dma_errors++;
-
-	if (uart->handle.ErrorCode & (HAL_UART_ERROR_DMA | HAL_UART_ERROR_ORE))
-	{
-		if (osMessagePut(uart->rx_message_queue_id, UART_EVENT_ERROR, 0) != osOK)
-			uart->rx_message_queue_overflow_errors++;
-	}
 }
 
 /**
@@ -1314,12 +1284,13 @@ int32_t UART_Receive(USART_TypeDef * Instance, char *Buffer, uint32_t  Size)
 		return -1;
 	}
 
+	uart->rx_mode =  UART_RX_MODE_IT;
 	uart->rx_buffer = (uint8_t*)Buffer;
 	uart->rx_buffer_size = Size;
 	uart->rx_buffer_idx = 0;
 	uart->rx_buffer_end = NULL;
 
-	if(HAL_UART_Receive_IT(&uart->handle, uart->rx_buffer, 1) != HAL_OK)
+	if(HAL_UART_Receive_IT(&uart->handle, uart->rx_buffer, uart->rx_buffer_size) != HAL_OK)
 		goto error;
 
 	evt = osMessageGet(uart->rx_message_queue_id, UART_TIMEOUT);
@@ -1352,7 +1323,7 @@ error:
 }
 
 /**
-  * @brief  Receive an amount of data in blocking mode with Interrupt.
+  * @brief  Receive command with endbyte in blocking mode with Interrupt.
   * @param  Instance: UART instance
   * @param  Buffer: pointer to buffer for received data
   * @param  Size: size of data to receive
@@ -1373,6 +1344,7 @@ int32_t UART_ReceiveCommand(USART_TypeDef *Instance, char *Buffer, uint32_t Size
 		return -1;
 	}
 
+	uart->rx_mode =  UART_RX_MODE_IT_COMMAND;
 	uart->rx_buffer = (uint8_t*)Buffer;
 	uart->rx_buffer_size = Size;
 	uart->rx_buffer_idx = 0;
@@ -1459,65 +1431,99 @@ error:
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 }
 
-#if 0
 /**
-  * @brief  Receive an amount of data in blocking mode with Interrupt.
+  * @brief  Receive an amount of data in blocking mode with DMA.
   * @param  Instance: UART instance
-  * @param  Buffer: pointer to buffer for received data
+  * @param  Buffer: pointer to buffer for data to receive
   * @param  Size: size of data to receive
   * @retval 0 on succes, otherwise -1;
   */
-int32_t UART_DMA_ReceiveCommand(USART_TypeDef *Instance, char *Buffer, uint32_t Size, char End, uint32_t *Len, uint32_t Timeout)
+int32_t UART_DMA_Receive(USART_TypeDef * Instance, char *Buffer, uint32_t  Size)
 {
 #ifdef BSP_CONFIG_USE_FREERTOS
 	UART_T *uart;
 	osEvent evt;
-	uint32_t i;
 
 	if (UART_GetHandle(Instance, &uart))
 		return -1;
 
-	if( osMutexWait( uart->rx_mutex_id, Timeout) != osOK )
+	if( osMutexWait( uart->tx_mutex_id, UART_TIMEOUT ) != osOK )
 	{
 		uart->timeout_errors++;
 		return -1;
 	}
-
+	
+	uart->rx_mode =  UART_RX_MODE_DMA;
 	uart->rx_buffer = (uint8_t*)Buffer;
 	uart->rx_buffer_size = Size;
 	uart->rx_buffer_idx = 0;
-	uart->rx_buffer_end = (uint8_t*)&End;
-	
-	__HAL_UART_ENABLE_IT(&uart->handle, UART_IT_IDLE);
-	if(HAL_UART_Receive_DMA(&uart->handle, uart->rx_buffer, Size) != HAL_OK)
+	uart->rx_buffer_end = NULL;
+
+	if(HAL_UART_Receive_DMA(&uart->handle, uart->rx_buffer, uart->rx_buffer_size) != HAL_OK)
 		goto error;
 
-	evt = osMessageGet(uart->rx_message_queue_id, Timeout);
+	evt = osMessageGet(uart->tx_message_queue_id, UART_TIMEOUT);
 	if (evt.status != osEventMessage)
 		goto timeout;
 
-	if (evt.value.v == UART_EVENT_ERROR)
+	if (evt.value.v != UART_EVENT_COMPLETE)
 		goto abort;
-	
-	*Len = 0;	
-	for (i = 0; i < Size; i++)
+
+	osMutexRelease( uart->tx_mutex_id );
+	return 0;
+
+timeout:
+	uart->tx_timeout_errors++;
+abort:
+	HAL_UART_AbortTransmit(&uart->handle);
+error:
+	osMutexRelease( uart->tx_mutex_id );
+	return -1;
+#else /*BSP_CONFIG_USE_FREERTOS*/
+	UART_T *uart;
+
+	if (UART_GetHandle(Instance, &uart))
+		return -1;
+
+	if(HAL_UART_Receive_DMA(&uart->handle, (uint8_t*)Buffer, Size) != HAL_OK)
+		return -1;
+	return 0;
+#endif /*BSP_CONFIG_USE_FREERTOS*/
+}
+
+/**
+  * @brief  Receive data with DMA into buffer in curcular mode.
+  * @param  Instance: UART instance
+  * @param  Buffer: pointer to buffer for received data
+  * @param  Size: size of buffer
+  * @retval 0 on succes, otherwise -1;
+  */
+int32_t UART_DMA_StartCircularReceive(USART_TypeDef *Instance, char *Buffer, uint32_t Size)
+{
+#ifdef BSP_CONFIG_USE_FREERTOS
+	UART_T *uart;
+
+	if (UART_GetHandle(Instance, &uart))
+		return -1;
+
+	if( osMutexWait( uart->rx_mutex_id, UART_TIMEOUT) != osOK )
 	{
-		if (Buffer[i] == End)
-		{
-			*Len = i + 1;
-		}
+		uart->timeout_errors++;
+		return -1;
 	}
 	
-	if (*Len == 0)
+	uart->rx_mode =  UART_RX_MODE_DMA_CIRCULAR;
+	uart->rx_buffer = (uint8_t*)Buffer;
+	uart->rx_buffer_size = Size;
+	uart->rx_buffer_idx = 0;
+	uart->rx_buffer_end = NULL;
+	
+	if(HAL_UART_Receive_DMA(&uart->handle, uart->rx_buffer, uart->rx_buffer_size) != HAL_OK)
 		goto error;
 
 	osMutexRelease( uart->rx_mutex_id );
 	return 0;
 
-timeout:
-	uart->rx_cmd_timeout_errors++;
-abort:
-	HAL_UART_AbortReceive(&uart->handle);
 error:
 	osMutexRelease( uart->rx_mutex_id );
 	return -1;
@@ -1525,4 +1531,17 @@ error:
 	return -1;
 #endif /*BSP_CONFIG_USE_FREERTOS*/
 }
-#endif
+
+int32_t UART_DMA_GetCircularReceiveIdx(USART_TypeDef *Instance, uint32_t *Idx)
+{
+	UART_T *uart;
+	
+	if (UART_GetHandle(Instance, &uart))
+		return -1;
+	
+	if (uart->handle.RxState != HAL_UART_STATE_BUSY_RX)
+		return -1;
+	
+	*Idx = uart->rx_buffer_size - __HAL_DMA_GET_COUNTER(&uart->hdma_rx);
+	return 0;
+}

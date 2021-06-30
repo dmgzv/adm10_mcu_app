@@ -8,7 +8,6 @@
 FPGA_IFACE_T fpga_iface =
 {
 	.DevName = "FPGA_IFACE",
-	.DevId = "",
 	.InitContErrThr = 10,
 	.UpdateContErrThr = 10,
 };

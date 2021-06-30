@@ -134,6 +134,7 @@ int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveThreadName, char
 #define PROFILE_IFACE_TransmitResponce(Iface) UART_DMA_Transmit((Iface)->Uart, (Iface)->Responce, (Iface)->ResponceLen)
 #define PROFILE_IFACE_ReceiveCommand(Iface) UART_ReceiveCommand((Iface)->Uart, (Iface)->Command, sizeof((Iface)->Command), PROFILE_IFACE_STOP_BYTE, &(Iface)->CommandLen, osWaitForever)
 
+/*
 static void PROFILE_IFACE_Thread(void const *argument)
 {
 	PROFILE_IFACE_T *Iface = (PROFILE_IFACE_T*)argument;
@@ -184,6 +185,95 @@ static void PROFILE_IFACE_Thread(void const *argument)
 		{
 			BSP_Reset();
 		}
+  }	
+}
+
+*/
+
+static void PROFILE_IFACE_Thread(void const *argument)
+{
+	PROFILE_IFACE_T *Iface = (PROFILE_IFACE_T*)argument;
+	uint32_t TimeStart, TimeEnd;
+	uint32_t Complete;
+	uint32_t StartIdx, __StartIdx, EndIdx;
+
+receive_start:
+	UART_DMA_StartCircularReceive((Iface)->Uart, (Iface)->Buffer, sizeof((Iface)->Buffer));
+	
+	StartIdx = EndIdx = 0;
+	
+  for(;;)
+  {
+receive_delay:
+		osDelay(1);
+
+receive_processing:
+		if (UART_DMA_GetCircularReceiveIdx((Iface)->Uart, &EndIdx))
+			goto receive_start;
+		
+		if (StartIdx == EndIdx)
+			goto receive_delay;
+		
+		Iface->CommandLen = 0;
+		__StartIdx = StartIdx;
+		while(1)
+		{
+			Iface->Command[Iface->CommandLen++] = Iface->Buffer[__StartIdx];
+			if (Iface->Buffer[__StartIdx] == 0x0D)
+			{
+				__StartIdx++;
+				if (__StartIdx >= sizeof((Iface)->Buffer))
+						__StartIdx = 0;
+				break;
+			}
+			__StartIdx++;
+			if (__StartIdx >= sizeof((Iface)->Buffer))
+					__StartIdx = 0;
+			if (__StartIdx == EndIdx)
+				goto receive_delay;
+		}
+		StartIdx = __StartIdx;
+		
+		if (Iface->Command[0] != Iface->StartByte)
+			goto receive_processing;
+		
+		Iface->Command[Iface->CommandLen] = 0;
+		TimeStart = osKernelSysTick();
+		Complete = 0;
+		
+		Iface->ResponceLen = PROFILE_PROTOCOL_Command(Iface->Protocol, Iface->Command, Iface->Responce, &Complete);		
+		
+		TimeEnd = osKernelSysTick();		
+		if (Iface->MaxParseTime < (TimeEnd - TimeStart))
+		{
+			Iface->MaxParseTime = TimeEnd - TimeStart;
+			Iface->MaxParseTimeCommand = Iface->Command[1];
+		}
+		
+		if (Iface->MaxResponceLen < Iface->ResponceLen)
+		{
+			Iface->MaxResponceLen = Iface->ResponceLen;
+			Iface->MaxResponceLenCommand = Iface->Command[1];
+		}
+		
+		TimeStart = osKernelSysTick();
+		if (Iface->ResponceLen)
+			PROFILE_IFACE_TransmitResponce(Iface);
+		
+		TimeEnd = osKernelSysTick();
+		
+		if (Iface->MaxTransmitTime < (TimeEnd - TimeStart))
+		{
+			Iface->MaxTransmitTime = TimeEnd - TimeStart;
+			Iface->MaxTransmitTimeCommand = Iface->Command[1];
+		}
+		
+		if (Complete)
+		{
+			BSP_Reset();
+		}
+		
+		goto receive_processing;
   }	
 }
 

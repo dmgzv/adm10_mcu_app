@@ -34,7 +34,7 @@ int32_t SHELL_UART_Transmit(void *Priv, char *Buffer, uint32_t BufferSize)
 {
 	USART_TypeDef *uart = Priv;
 	
-	if (UART_Transmit(uart, Buffer, BufferSize))
+	if (UART_DMA_Transmit(uart, Buffer, BufferSize))
 			return -1;
 	return 0;
 }

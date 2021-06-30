@@ -1,4 +1,7 @@
 #include "fpga_client_adm_2_5.h"
+#include "log.h"
+#include <string.h>
+#include <stdio.h>
 
 #define FPGA_CLIENT_ADM_2_5_ADDR(Dev)		((Dev)->BaseAddr)
 
@@ -78,13 +81,13 @@
 
 static void FPGA_CLIENT_ADM_2_5_WriteByte(FPGA_CLIENT_ADM_2_5_T *Dev, uint32_t Addr, uint8_t Data)
 {
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
+	LOG_Info(Dev->DevName, "", "ByteWrite", "0x%08x;0x%02x", Addr, Data);
 	*((uint8_t*)(Addr)) = Data;
 }
 
 static void FPGA_CLIENT_ADM_2_5_WriteCmd(FPGA_CLIENT_ADM_2_5_T *Dev, uint32_t Cmd, uint8_t Opt1, uint8_t Opt2, uint8_t Opt3)
 {
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteCmd: 0x%02x 0x%02x 0x%02x 0x%02x", Cmd, Opt1, Opt2, Opt3);
+	LOG_Info(Dev->DevName, "", "CmdWrite", "0x%02x;0x%02x;0x%02x;0x%02x", Cmd, Opt1, Opt2, Opt3);
 	*((uint8_t*)FPGA_CLIENT_ADM_2_5_CMD_OPT1_ADDR(Dev)) = Opt1;
 	*((uint8_t*)FPGA_CLIENT_ADM_2_5_CMD_OPT2_ADDR(Dev)) = Opt2;
 	*((uint8_t*)FPGA_CLIENT_ADM_2_5_CMD_OPT3_ADDR(Dev)) = Opt3;
@@ -545,6 +548,5 @@ void FPGA_CLIENT_ADM_2_5_Deinit(FPGA_CLIENT_ADM_2_5_T *Dev)
 {
 	if (!Dev)
 		return;
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Deinit");
-	BSP_DEV_SET_STATE(Dev, BSP_DEV_STATE_RESET);
+	BSP_DEV_DEINIT(Dev);
 }

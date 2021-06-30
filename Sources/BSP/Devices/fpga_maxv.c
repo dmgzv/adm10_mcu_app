@@ -1,6 +1,7 @@
 #include "fpga_maxv.h"
 #include "log.h"
 #include <string.h>
+#include <stdio.h>
 
 #define FPGA_MAXV_BASE_ADDR(Dev) 				((Dev)->BaseAddr)
 #define FPGA_MAXV_SW_VERSION_ADDR(Dev)	(FPGA_MAXV_BASE_ADDR(Dev) + 0x00)
@@ -14,7 +15,7 @@
 
 static void FPGA_MAXV_WriteByte(FPGA_MAXV_T *Dev, uint32_t Addr, uint8_t Data)
 {
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "WriteByte: 0x%08x 0x%02x", Addr, Data);
+	LOG_Info(Dev->DevName, "", "ByteWrite", "0x%08x;0x%02x", Addr, Data);
 	*((uint8_t*)(Addr)) = Data;
 }
 

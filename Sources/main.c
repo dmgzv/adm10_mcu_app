@@ -2,38 +2,43 @@
 #include <string.h>
 #include "cmsis_os.h"
 #include "bsp.h"
+
 #include "profile.h"
 #include "profile_iface.h"
 #include "profile_types.h"
 #include "profile_protocol.h"
 #include "profile_adm10.h"
+
 #include "shell_cmd.h"
 #include "shell_uart.h"
 #include "shell_telnet.h"
+#include "log.h"
+#include "user.h"
+#include "watchdog.h"
+
 #include "http_server.h"
 #include "http_server_files.h"
 #include "tftp_client.h"
 #include "tftp_bootloader.h"
-#include "log.h"
-#include "watchdog.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define PROFILE_IFACE_UART4 UART4
-#ifndef BSP_CONFIG_USE_UART4
-	#error	Define BSP_CONFIG_USE_UART4 in bsp_config.h for PROFILE_IFACE
-#endif
-
-#define PROFILE_IFACE_UART5 UART5
-#ifndef BSP_CONFIG_USE_UART5
-	#error	Define BSP_CONFIG_USE_UART5 in bsp_config.h for PROFILE_IFACE
-#endif
-	
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-SHELL_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnet;
-SHELL_TELNET_PRIV_T /*__attribute__((section ("CCM_DATA")))*/ ShellTelnetPriv;
+SHELL_T ShellUart5;
+const SHELL_IFACE_T ShellUart5Iface = 
+{
+	NULL,
+	NULL,
+	&SHELL_UART_Receive,
+	&SHELL_UART_Transmit,
+	NULL,
+	UART5
+};
+
+SHELL_T __attribute__((section ("CCM_DATA"))) ShellTelnet;
+SHELL_TELNET_PRIV_T __attribute__((section ("CCM_DATA"))) ShellTelnetPriv;
 const SHELL_IFACE_T ShellTelnetIface = 
 {
 	&SHELL_TELNET_Init,
@@ -68,9 +73,9 @@ PROFILE_VALUES_T __attribute__((section ("CCM_DATA"))) ProfileValues = {
 	.Static = &ProfileValuesStatic,
 	.Calib = &ProfileValuesCalib,
 };
-PROFILE_FLASH_T /*__attribute__((section ("CCM_DATA")))*/ ProfileFlash;
-PROFILE_PROTOCOL_T /*__attribute__((section ("CCM_DATA")))*/ ProfileProtocol;
-PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart5;
+PROFILE_FLASH_T __attribute__((section ("CCM_DATA"))) ProfileFlash;
+PROFILE_PROTOCOL_T __attribute__((section ("CCM_DATA"))) ProfileProtocol;
+//PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart5;
 PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart4;
 
 BOOTLOADER_T /*__attribute__((section ("CCM_DATA")))*/ Bootloader;
@@ -149,10 +154,6 @@ static void System_Thread(void const *argument)
 {
 	uint32_t Time = 0;
 	
-	/* Init Log*/	
-	LOG_Init();
-	WATCHDOG_Refresh();
-	
 	/* Init Slot Address */	
 	BSP_InitSlotAddress();
 	WATCHDOG_Refresh();
@@ -169,6 +170,14 @@ static void System_Thread(void const *argument)
 	BSP_InitMemory();
 	WATCHDOG_Refresh();
 	
+	/* Init Log */
+	LOG_Init();
+	WATCHDOG_Refresh();
+	
+	/* Init Users */
+	USER_Init();
+	WATCHDOG_Refresh();
+	
 	/* Init Profile*/
 	PROFILE_Init(&Profile, ProfileDescr, &ProfileValues);
 	WATCHDOG_Refresh();
@@ -180,11 +189,13 @@ static void System_Thread(void const *argument)
 	/* Init Profile Protocol*/
 	PROFILE_PROTOCOL_Init(&ProfileProtocol, &Profile, &Bootloader, &ProfileFlash);
 	
-	/* Init Profile Interfaces*/
-	PROFILE_IFACE_Init(&ProfileIfaceUart5, "Profile UART5", PROFILE_IFACE_UART5, SlotAddress, &ProfileProtocol);
+	/* Init Profile Interface over UART*/
+	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", UART4, SlotAddress, &ProfileProtocol);
 	WATCHDOG_Refresh();
-	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", PROFILE_IFACE_UART4, SlotAddress, &ProfileProtocol);
-	WATCHDOG_Refresh();
+	
+	/* Init Shell Interface over UART*/
+	SHELL_Init(&ShellUart5, "Shell UART5" ,(SHELL_CMD_T*)ShellCmdList, ShellCmdListSize, (SHELL_IFACE_T*)&ShellUart5Iface);
+	WATCHDOG_Refresh();	
 	
 	/*Init Ethernet stack*/
 	BSP_ETH_Init();
@@ -200,7 +211,7 @@ static void System_Thread(void const *argument)
 	HTTP_SERVER_Init();
 	
 	for(;;)
-  {
+	{
 		SystemThreadStage = 0;
 		
 		WATCHDOG_Refresh();
@@ -227,7 +238,7 @@ static void System_Thread(void const *argument)
 		SystemThreadStage++;
 		
 		osDelayUntil(&Time, 1000);
-  }
+	}
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

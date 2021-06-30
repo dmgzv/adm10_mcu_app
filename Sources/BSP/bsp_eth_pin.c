@@ -3,7 +3,6 @@
 
 BSP_ETH_PIN_T bsp_eth_pin = {
 	.DevName = "ETH_PIN",
-	.DevId = "",
 };
 
 static int32_t BSP_ETH_PIN_Init(BSP_ETH_PIN_T *Dev)

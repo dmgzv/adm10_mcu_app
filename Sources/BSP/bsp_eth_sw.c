@@ -15,10 +15,9 @@ const BSP_PIN_CTRL_T ksz8895_pin_ctrl = {
 
 KSZ8895_T ksz8895 = 
 {
-	.DevName = KSZ8895_DEV_NAME,
-	.DevId = BSP_ETH_SW_KSZ8895_ID,
+	.DevName = KSZ8895_DEV_NAME"_"BSP_ETH_SW_KSZ8895_ID,
 	.InitContErrThr = 3,
-	.UpdateContErrThr = 3,
+	.UpdateContErrThr = 10,
 	.SPI = BSP_ETH_SW_KSZ8895_SPI,
 	.PinCtrl = &ksz8895_pin_ctrl,
 };

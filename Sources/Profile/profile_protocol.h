@@ -6,6 +6,7 @@
 #include "profile.h"
 #include "profile_flash.h"
 #include "bootloader_protocol.h"
+#include "user.h"
 
 #define PROFILE_PROTOCOL_LANG_BLOCK_SIZE 256
 
@@ -27,6 +28,9 @@
 #define PROFILE_PROTOCOL_CMD_WRITE_LANG				0x7A
 #define PROFILE_PROTOCOL_CMD_UPDATE_FW				0x0F
 #define PROFILE_PROTOCOL_CMD_CONFIG						0x63
+#define PROFILE_PROTOCOL_CMD_GET_USERS				0x64
+#define PROFILE_PROTOCOL_CMD_GET_USER_ATTR		0x65
+#define PROFILE_PROTOCOL_CMD_SET_USER_ATTR		0x66
 
 #define PROFILE_PROTOCOL_CONFIG_STARTREAD "STARTREAD"
 #define PROFILE_PROTOCOL_CONFIG_READBLOCK "READBLOCK"
@@ -40,6 +44,9 @@ typedef struct {
 	BOOTLOADER_T *Bootloader;
 	PROFILE_FLASH_T *ProfileFlash;
 	
+	uint32_t SaveEnable;
+	uint32_t SetEnable;
+	uint16_t UsersCrc16[USER_MAX_CNT];
 	uint32_t LangpackBlocks;
 	uint32_t LangpackType;
 }PROFILE_PROTOCOL_T;

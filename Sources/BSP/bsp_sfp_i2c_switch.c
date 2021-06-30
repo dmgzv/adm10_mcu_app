@@ -34,8 +34,7 @@ static const PCA9548A_CH_T pca9548a_ch_set[24][BSP_PCA9548A_CNT] =
 PCA9548A_T pca9548a[BSP_PCA9548A_CNT] =
 {
 	{
-		.DevName = PCA9548A_DEV_NAME,
-		.DevId = BSP_PCA9548A_1_ID,
+		.DevName = PCA9548A_DEV_NAME"_"BSP_PCA9548A_1_ID,
 		.InitContErrThr = 3,
 		.UpdateContErrThr = 3,
 		.I2C = BSP_PCA9548A_1_I2C,
@@ -43,8 +42,7 @@ PCA9548A_T pca9548a[BSP_PCA9548A_CNT] =
 		.PinCtrl = NULL,
 	},
 	{
-		.DevName = PCA9548A_DEV_NAME,
-		.DevId = BSP_PCA9548A_2_ID,
+		.DevName = PCA9548A_DEV_NAME"_"BSP_PCA9548A_2_ID,
 		.InitContErrThr = 3,
 		.UpdateContErrThr = 3,
 		.I2C = BSP_PCA9548A_2_I2C,
@@ -52,8 +50,7 @@ PCA9548A_T pca9548a[BSP_PCA9548A_CNT] =
 		.PinCtrl = NULL,
 	},
 	{
-		.DevName = PCA9548A_DEV_NAME,
-		.DevId = BSP_PCA9548A_3_ID,
+		.DevName = PCA9548A_DEV_NAME"_"BSP_PCA9548A_3_ID,
 		.InitContErrThr = 3,
 		.UpdateContErrThr = 3,
 		.I2C = BSP_PCA9548A_3_I2C,

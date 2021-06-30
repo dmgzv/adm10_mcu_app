@@ -456,15 +456,19 @@ static void PROFILE_ADM10_UpdateBlockStateValue(PROFILE_T *Profile)
 static void PROFILE_ADM10_UpdateBlockColorValue(PROFILE_T *Profile)
 {
 	uint32_t i;
+	PROFILE_TABLE_T *Table;
 	uint32_t BlockColor;
 	uint8_t Color;
 	uint8_t State;
 	
 	BlockColor = PROFILE_COLOR_NORMAL;
-	for (i = 1; i <= Profile->Descr[Profile->Idx]->Table2Size; i++)
+	PROFILE_GetTable(Profile, PROFILE_TABLE_2, &Table);
+	for (i = 1; i <= Table->ParamsCnt; i++)
 	{
-		PROFILE_GetColor(Profile, PROFILE_TABLE_2, i, &Color);
-		PROFILE_GetState(Profile, PROFILE_TABLE_2, i, &State);
+		if (PROFILE_GetColor(Profile, PROFILE_TABLE_2, i, &Color))
+			return;
+		if (PROFILE_GetState(Profile, PROFILE_TABLE_2, i, &State))
+			return;
 		if ((State == PROFILE_STATE_IS) && (BlockColor < Color) && (i != PROFILE_ADM10_BLOCKCOLOR_IDX))
 			BlockColor = Color;
 	}

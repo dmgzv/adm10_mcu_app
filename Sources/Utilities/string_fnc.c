@@ -419,9 +419,9 @@ char * IPToStr( char * str, unsigned int IPAddr )
 {
 	int i;
 	
-	for( i = 0; i < 4; i++ )
+	for( i = 3; i >= 0; i-- )
 	{
-		str = ByteToStr( str, ( (unsigned char*)IPAddr )[ i ] );
+		str = ByteToStr( str, (IPAddr >> (i * 8)) & 0xFF);
 		*str++ = '.';
 	}
 	*--str = 0;
@@ -666,6 +666,6 @@ int StrToIP( char * str, unsigned int *pResult )
 		if( ip[ i ] > 255 )
 			return 0;// проверка корректности строкового представления в звпросе и преобразование в число
 	}			
-	*pResult = ip[0] | (ip[1] << 8) | (ip[2] << 16) | (ip[3] << 24);
+	*pResult = ip[3] | (ip[2] << 8) | (ip[1] << 16) | (ip[0] << 24);
 	return 1;
 }

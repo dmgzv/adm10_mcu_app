@@ -16,7 +16,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Stack size of the interface thread */
-#define BSP_NETIF_INPUT_THREAD_STACK_SIZE            ( 256 )
+#define BSP_NETIF_INPUT_THREAD_STACK_SIZE            ( 3 * 128 )
 
 /* Define those to better describe your network interface. */
 #define IFNAME0 's'
@@ -108,9 +108,8 @@ static int32_t BSP_NETIF_Init(struct netif *netif, uint8_t Addr)
   IP_ADDR4(&ipaddr,IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3(Addr));
   IP_ADDR4(&netmask,NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
   IP_ADDR4(&gw,GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
-    
-  //netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &ethernet_input);
-	netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &tcpip_input);
+  
+  netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &tcpip_input);
   
   /*  Registers the default network interface. */
   netif_set_default(netif);
@@ -136,6 +135,12 @@ static void BSP_NETIF_Deinit(struct netif *netif)
 
 int32_t BSP_ETH_CheckConditions(void)
 {	
+	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good))
+		return -1;
+	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
+		return -1;
+	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
+		return -1;
 	if (BSP_DEV_GET_STATE(&ksz8895) != BSP_DEV_STATE_OK)
 		return -1;
 	return 0;

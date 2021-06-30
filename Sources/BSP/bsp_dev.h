@@ -18,7 +18,6 @@ typedef enum {
 	osMutexDef_t DevMutexDef;\
 	osMutexId DevMutexId;\
 	const char *DevName;\
-	const char *DevId;\
 	uint32_t InitCnt;\
 	uint32_t InitErr;\
 	uint32_t InitContErr;\
@@ -57,7 +56,7 @@ do {\
 	{ \
 		if ((Dev)->DevState != BSP_DEV_STATE_FAIL) \
 		{ \
-			LOG_Error("BSP", (Dev)->DevName, (Dev)->DevId, "Init: Fail"); \
+			LOG_Error((Dev)->DevName, "", "InitError", ""); \
 			(Dev)->DevState = BSP_DEV_STATE_FAIL; \
 		} \
 	} \
@@ -66,7 +65,7 @@ do {\
 
 #define BSP_DEV_INIT_OK(Dev)	\
 do {\
-	LOG_Info("BSP", (Dev)->DevName, (Dev)->DevId, "Init: Ok"); \
+	LOG_Info((Dev)->DevName, "", "Init", ""); \
 	(Dev)->DevState = BSP_DEV_STATE_OK; \
 	(Dev)->InitContErr = 0; \
 	osMutexRelease((Dev)->DevMutexId); \
@@ -86,7 +85,7 @@ do {\
 	{ \
 		if ((Dev)->DevState != BSP_DEV_STATE_FAIL) \
 		{ \
-			LOG_Error("BSP", (Dev)->DevName, (Dev)->DevId, "Update: Fail"); \
+			LOG_Error((Dev)->DevName, "", "UpdateError", ""); \
 			(Dev)->DevState = BSP_DEV_STATE_FAIL; \
 		} \
 	} \
@@ -103,7 +102,7 @@ do {\
 do { \
 	if ((Dev)->DevState != BSP_DEV_STATE_RESET) \
 	{ \
-		LOG_Info("BSP", (Dev)->DevName, (Dev)->DevId, "Deinit"); \
+		LOG_Info((Dev)->DevName, "", "Deinit", ""); \
 		(Dev)->DevState = BSP_DEV_STATE_RESET; \
 		(Dev)->InitContErr = 0; \
 		(Dev)->UpdateContErr = 0; \

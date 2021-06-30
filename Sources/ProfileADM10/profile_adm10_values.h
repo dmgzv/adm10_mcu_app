@@ -14,6 +14,7 @@
 #define PROFILE_ADM10_LINE_PORT_ODU2S 1
 #define PROFILE_ADM10_LINE_PORT_ODU1S 4
 #define PROFILE_ADM10_LINE_PORT_ODU0S 8
+#define PROFILE_ADM10_LINE_PORT_ODUFlexS 0
 #define PROFILE_ADM10_CLIENT_PORTS 16
 #define PROFILE_ADM10_CLIENT_PORT_OCHS 0
 #define PROFILE_ADM10_CLIENT_PORT_ODUC4S 0
@@ -24,6 +25,7 @@
 #define PROFILE_ADM10_CLIENT_PORT_ODU2S 0
 #define PROFILE_ADM10_CLIENT_PORT_ODU1S 1
 #define PROFILE_ADM10_CLIENT_PORT_ODU0S 2
+#define PROFILE_ADM10_CLIENT_PORT_ODUFlexS 0
 #define PROFILE_ADM10_ODUC4_XCS 0
 #define PROFILE_ADM10_ODUC3_XCS 0
 #define PROFILE_ADM10_ODUC2_XCS 0
@@ -32,6 +34,7 @@
 #define PROFILE_ADM10_ODU2_XCS 0
 #define PROFILE_ADM10_ODU1_XCS 8
 #define PROFILE_ADM10_ODU0_XCS 16
+#define PROFILE_ADM10_ODUFlex_XCS 0
 #define PROFILE_ADM10_ODUC4_PGS 0
 #define PROFILE_ADM10_ODUC3_PGS 0
 #define PROFILE_ADM10_ODUC2_PGS 0
@@ -40,6 +43,7 @@
 #define PROFILE_ADM10_ODU2_PGS 2
 #define PROFILE_ADM10_ODU1_PGS 4
 #define PROFILE_ADM10_ODU0_PGS 8
+#define PROFILE_ADM10_ODUFlex_PGS 0
 
 typedef struct {
     uint8_t pIdState;
@@ -4264,6 +4268,56 @@ typedef struct {
     float Ln_2_SFP_SetTxFreqThrs[2];
     float Ln_3_SFP_SetTxFreqThrs[2];
     float Ln_4_SFP_SetTxFreqThrs[2];
+    char Location[PROFILE_STRING_MAX_LEN];
+    char sysDescr[PROFILE_STRING_MAX_LEN];
+    char sysObjectID[PROFILE_STRING_MAX_LEN];
+    char sysContact[PROFILE_STRING_MAX_LEN];
+    char sysName[PROFILE_STRING_MAX_LEN];
+    char sysLocation[PROFILE_STRING_MAX_LEN];
+    char sysDevType[PROFILE_STRING_MAX_LEN];
+    uint32_t sysLanguage;
+    uint32_t IPAddress;
+    uint32_t IPMask;
+    uint32_t IPGateway;
+    uint32_t CU1IPAddress;
+    uint32_t CU1IPMask;
+    uint32_t CU1IPGateway;
+    uint32_t CU2IPAddress;
+    uint32_t CU2IPMask;
+    uint32_t CU2IPGateway;
+    uint32_t IPSNMP1;
+    uint32_t IPSNMP2;
+    uint32_t IPSNMP3;
+    uint32_t IPSNMP4;
+    uint32_t IPSNTP1;
+    uint32_t IPSNTP2;
+    uint32_t SetActiveCU;
+    uint32_t LogIdleTime;
+    uint32_t LogDays;
+    uint32_t LogSize;
+    uint32_t LogAlarms;
+    uint32_t LogDebug;
+    char AdminReadCommunity[PROFILE_STRING_MAX_LEN];
+    char AdminWriteCommunity[PROFILE_STRING_MAX_LEN];
+    char MonitorReadCommunity[PROFILE_STRING_MAX_LEN];
+    char MonitorWriteCommunity[PROFILE_STRING_MAX_LEN];
+    char UserReadCommunity[PROFILE_STRING_MAX_LEN];
+    char UserWriteCommunity[PROFILE_STRING_MAX_LEN];
+    char SnmpTrapCommunity[PROFILE_STRING_MAX_LEN];
+    uint32_t HTTPTimeout;
+    uint32_t OpenRoadmConfig;
+    uint32_t SNMP1V;
+    uint32_t SNMP2V;
+    uint32_t SNMP3V;
+    uint32_t SNMP4V;
+    uint32_t SnmpVersion;
+    char SnmpTrapUser[PROFILE_STRING_MAX_LEN];
+    char SnmpTrapPassword[PROFILE_STRING_MAX_LEN];
+    uint32_t AlarmClearanceProfile;
+    uint32_t AlarmAcknowledgmentProfile;
+    uint32_t TrapMask;
+    uint32_t SnmpEncryptionEnable;
+    uint32_t SnmpAuthEnable;
     char ptLine1RxInfo[PROFILE_STRING_MAX_LEN];
     uint32_t ptLine1RxCat;
     char ptLine1TxInfo[PROFILE_STRING_MAX_LEN];
@@ -4354,6 +4408,14 @@ typedef struct {
     uint32_t SI5332_1_SetEFECAdjCap;
     uint32_t SI5332_1_SetRSFECAdjCap;
     uint32_t SI5332_2_SetAdjCap;
+    char ChassisSrNumber[PROFILE_STRING_MAX_LEN];
+    char CopyString[PROFILE_STRING_MAX_LEN];
+    uint32_t SendDelay;
+    uint32_t LogsDiskQuota;
+    uint32_t PollRateLimit;
+    uint32_t ReadTimeout;
+    uint32_t WriteDelay;
+    uint32_t RemovedDevicesStorageTime;
 } PROFILE_ADM10_VALUES_CALIB_T;
 
 

@@ -3,6 +3,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "clock.h"
+#include "rtc.h"
 #include "i2c.h"
 #include "uart.h"
 #include "spi.h"

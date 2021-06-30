@@ -10,7 +10,6 @@
 FPGA_MAXV_T fpga_maxv =
 {
 	.DevName = "FPGA_MAXV",
-	.DevId = "",
 	.InitContErrThr = 10,
 	.UpdateContErrThr = 10,
 	.BaseAddr = BSP_FPGA_MAXV_BASE_ADDR,

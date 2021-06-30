@@ -134,26 +134,29 @@ int32_t TFTP_CLIENT_Init(void)
 		TFTP_CLIENT_MessageQId = osMessageCreate(osMessageQ(TFTP), NULL);
 	
 	if (!TFTP_CLIENT_MessageQId)
-		return TFTP_CLIENT_ERROR;
+		goto error;
 	
   if (!TFTP_CLIENT_udp_pcb)
 		TFTP_CLIENT_udp_pcb = udp_new();
 	
 	if (!TFTP_CLIENT_udp_pcb)
-		return TFTP_CLIENT_ERROR;
+		goto error;
 	
 	/* Bind this PCB to port TFTP_PORT  */
   err = udp_bind(TFTP_CLIENT_udp_pcb, IP_ADDR_ANY, TFTP_PORT);
 	if (err != ERR_OK)
-		goto error;
+		goto remove;
 	
 	udp_recv(TFTP_CLIENT_udp_pcb, __TFTP_CLIENT_ReceiveCallback, NULL);
 	
+	LOG_Info("TFTP_CLIENT", "", "Init", "");
 	return TFTP_CLIENT_OK;
 
-error:
+remove:
 	udp_remove(TFTP_CLIENT_udp_pcb);
 	TFTP_CLIENT_udp_pcb = 0;
+error:
+	LOG_Info("TFTP_CLIENT", "", "InitError", "");
 	return TFTP_CLIENT_ERROR;
 }
 
@@ -165,7 +168,13 @@ int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int (*ReceiveC
 		return TFTP_CLIENT_ERROR;
 	
 	osMutexWait(TFTP_CLIENT_MutexId, osWaitForever);
-	LOG_Info("TFTP", "CLIENT", "", "Download");
+	LOG_Info("TFTP_CLIENT", "", "DownloadStart", "%d.%d.%d.%d;%s",
+		(addr->addr >> 24) & 0xFF,
+		(addr->addr >> 16) & 0xFF,
+		(addr->addr >> 8) & 0xFF,
+		(addr->addr >> 0) & 0xFF,
+		filename
+	);
 	
 	TFTP_CLIENT_Addr = addr;
 	TFTP_CLIENT_Block = 0;
@@ -188,16 +197,14 @@ in_progress:
 	else if (evt.value.v != TFTP_EVENT_COMPLETE)
 		goto error;
 	
-	LOG_Info("TFTP", "CLIENT", "", "Timeouts: %d", TFTP_CLIENT_TimeoutTotalCntr);
-	LOG_Info("TFTP", "CLIENT", "", "Download: Complete");
+	LOG_Info("TFTP_CLIENT", "", "DownloadComplete", "%d", TFTP_CLIENT_TimeoutTotalCntr);
 	osMutexRelease(TFTP_CLIENT_MutexId);
 	return 0;
 	
 error:
 	TFTP_CLIENT_ReceiveCallback = NULL;
 	TFTP_CLIENT_Priv = NULL;
-	LOG_Info("TFTP", "CLIENT", "", "Timeouts: %d", TFTP_CLIENT_TimeoutTotalCntr);
-	LOG_Error("TFTP", "CLIENT", "", "Download: Error");
+	LOG_Error("TFTP_CLIENT", "", "DownloadError", "%d", TFTP_CLIENT_TimeoutTotalCntr);
 	osMutexRelease(TFTP_CLIENT_MutexId);
 	return TFTP_CLIENT_ERROR;
 	
@@ -218,8 +225,7 @@ timeout:
 	}
 	TFTP_CLIENT_ReceiveCallback = NULL;
 	TFTP_CLIENT_Priv = NULL;
-	LOG_Info("TFTP", "CLIENT", "", "Timeouts: %d", TFTP_CLIENT_TimeoutTotalCntr);
-	LOG_Error("TFTP", "CLIENT", "", "Download: Timeout");
+	LOG_Error("TFTP_CLIENT", "", "DownloadTimeout", "%d", TFTP_CLIENT_TimeoutTotalCntr);
 	osMutexRelease(TFTP_CLIENT_MutexId);
 	return TFTP_CLIENT_TIMEOUT;
 }

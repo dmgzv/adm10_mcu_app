@@ -30,19 +30,19 @@ static int32_t TFTP_BOOTLOADER_FPGA_VerifyInfo(char *Data)
 	char *p, *c;
 	uint32_t i, j, len;
 	
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Verify info");
+	LOG_Info("TFTP_BLDR_FPGA", "", "InfoVerifyStart", "");
 	
 	p = strstr(Data, "FPGASwNumber: ");
 	if (!p)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "FPGASwNumber: Not found");
+		LOG_Error("TFTP_BLDR_FPGA", "", "InfoVerifyError", "FPGASwNumber not found");
 		goto error;
 	}
 	p += sizeof("FPGASwNumber: ") - 1;
 	c = strstr(p, "\r\n");
 	if (!c)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "FPGASwNumber: Invalid syntax");
+		LOG_Error("TFTP_BLDR_FPGA", "", "InfoVerifyError", "FPGASwNumber invalid syntax");
 		goto error;
 	}
 	memcpy(&TFTP_BOOTLOADER_FPGA.Version, p, c - p);
@@ -69,10 +69,11 @@ static int32_t TFTP_BOOTLOADER_FPGA_VerifyInfo(char *Data)
 		TFTP_BOOTLOADER_FPGA.Files[i].Status = TFTP_BOOTLOADER_FILE_STATUS_IDLE;
 		TFTP_BOOTLOADER_FPGA.Files[i].MaxSize = TFTP_BOOTLOADER_FPGA_FILE_IMAGE_MAX_SIZE;
 		TFTP_BOOTLOADER_FPGA.Files[i].Data = NULL;
-		LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Update %d: %s", i + 1, TFTP_BOOTLOADER_FPGA_Files[i].Name);
 	}
 	
 	TFTP_BOOTLOADER_FPGA.FilesCnt = TFTP_BOOTLOADER_FPGA_FILES_CNT;	
+	
+	LOG_Info("TFTP_BLDR_FPGA", "", "InfoVerifyComplete", "");
 	return 0;
 	
 error:
@@ -81,9 +82,9 @@ error:
 
 static int32_t TFTP_BOOTLOADER_FPGA_IdleUpdate(uint32_t Idx)
 {
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Idle Update %d", Idx + 1);
+	LOG_Info("TFTP_BLDR_FPGA", "", "UpdateIdleStart", "%d", Idx + 1);
 	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_IDLE;
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Idle Update %d: Complete", Idx + 1);
+	LOG_Info("TFTP_BLDR_FPGA", "", "UpdateIdleComplete", "%d", Idx + 1);
 	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_IDLE_COMPLETE;
 	return 0;
 }
@@ -108,33 +109,33 @@ static int32_t TFTP_BOOTLOADER_FPGA_DownloadUpdate(uint32_t Idx)
 	int32_t result;
 	ip_addr_t ip_addr;
 	
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d", Idx + 1);
+	LOG_Info("TFTP_BLDR_FPGA", "", "UpdateDownloadStart", "%d", Idx + 1);
 	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD;
 	IP_ADDR4(&ip_addr, TFTP_BOOTLOADER_FPGA.Addr[0], TFTP_BOOTLOADER_FPGA.Addr[1], TFTP_BOOTLOADER_FPGA.Addr[2], TFTP_BOOTLOADER_FPGA.Addr[3]);
 	result = TFTP_CLIENT_DownloadFile(TFTP_BOOTLOADER_FPGA_Files[Idx].Name, &ip_addr, TFTP_BOOTLOADER_FPGA_DownloadUpdateReceiveCallback, (void*)Idx);
 	if (result == TFTP_CLIENT_TIMEOUT)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Timeout", Idx + 1);
+		LOG_Error("TFTP_BLDR_FPGA", "", "UpdateDownloadTimeout", "%d", Idx + 1);
 		TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT;
 		return -1;
 	}
 	else if (result != TFTP_CLIENT_OK)
 	{
-		LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Error", Idx + 1);
+		LOG_Error("TFTP_BLDR_FPGA", "", "UpdateDownloadError", "%d", Idx + 1);
 		TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR;
 		return -1;
 	}	
 	
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download Update %d: Complete", Idx + 1);
+	LOG_Info("TFTP_BLDR_FPGA", "", "UpdateDownloadComplete", "%d", Idx + 1);
 	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_COMPLETE;
 	return 0;
 }
 
 static int32_t TFTP_BOOTLOADER_FPGA_VerifyUpdate(uint32_t Idx)
 {
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Verify Update %d", Idx + 1);
-	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;	
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Verify Update %d: Complete", Idx + 1);
+	LOG_Info("TFTP_BLDR_FPGA", "", "UpdateVerifyStart", "%d", Idx + 1);
+	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY;
+	LOG_Info("TFTP_BLDR_FPGA", "", "UpdateVerifyComplete", "%d", Idx + 1);
 	TFTP_BOOTLOADER_FPGA_Files[Idx].Status = TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE;
 	return 0;
 }
@@ -142,7 +143,8 @@ static int32_t TFTP_BOOTLOADER_FPGA_VerifyUpdate(uint32_t Idx)
 static void TFTP_BOOTLOADER_FPGA_Idle(void)
 {
 	uint32_t i;
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Idle");
+	
+	LOG_Info("TFTP_BLDR_FPGA", "", "IdleStart", "");
 	TFTP_BOOTLOADER_FPGA.Status = TFTP_BOOTLOADER_STATUS_IDLE;
 	for (i = 0; i < TFTP_BOOTLOADER_FPGA_FILES_CNT; i++)
 	{
@@ -151,12 +153,12 @@ static void TFTP_BOOTLOADER_FPGA_Idle(void)
 			goto error;
 		}
 	}
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Idle: Complete");
+	LOG_Info("TFTP_BLDR_FPGA", "", "IdleComplete", "");
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_IDLE_COMPLETE(&TFTP_BOOTLOADER_FPGA), 0);
 	return;
 
 error:
-	LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Idle: Error");
+	LOG_Error("TFTP_BLDR_FPGA", "", "IdleError", "");
 	TFTP_BOOTLOADER_FPGA.Status = TFTP_BOOTLOADER_STATUS_ERROR;
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_IDLE_ERROR(&TFTP_BOOTLOADER_FPGA), 0);
 	return;
@@ -165,7 +167,8 @@ error:
 static void TFTP_BOOTLOADER_FPGA_Download(void)
 {
 	uint32_t i;
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download");
+	
+	LOG_Info("TFTP_BLDR_FPGA", "", "DownloadStart", "");
 	TFTP_BOOTLOADER_FPGA.Status = TFTP_BOOTLOADER_STATUS_IN_PROGRESS;
 	for (i = 0; i < TFTP_BOOTLOADER_FPGA_FILES_CNT; i++)
 	{
@@ -178,12 +181,12 @@ static void TFTP_BOOTLOADER_FPGA_Download(void)
 			goto error;
 		}
 	}
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Download: Complete");
+	LOG_Info("TFTP_BLDR_FPGA", "", "DownloadComplete", "");
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_DOWNLOAD_COMPLETE(&TFTP_BOOTLOADER_FPGA), 0);
 	return;
 
 error:
-	LOG_Error("TFTP_BOOTLOADER", "FPGA", "", "Download: Error");
+	LOG_Error("TFTP_BLDR_FPGA", "", "DownloadError", "");
 	TFTP_BOOTLOADER_FPGA.Status = TFTP_BOOTLOADER_STATUS_ERROR;
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_DOWNLOAD_ERROR(&TFTP_BOOTLOADER_FPGA), 0);
 	return;
@@ -191,9 +194,9 @@ error:
 
 static void TFTP_BOOTLOADER_FPGA_Update(void)
 {
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Update");
+	LOG_Info("TFTP_BLDR_FPGA", "", "UpdateStart", "");
 	BSP_FPGA_FLASH_EraseSection(BSP_FLASH_FPGA_BOOT_SECTION);
-	LOG_Info("TFTP_BOOTLOADER", "FPGA", "", "Update: Complete");
+	LOG_Info("TFTP_BLDR_FPGA", "", "UpdateComplete", "");
 	TFTP_BOOTLOADER_FPGA.Status = TFTP_BOOTLOADER_STATUS_COMPLETE;
 	osMessagePut(TFTP_BOOTLOADER_FPGA.MessageQId, TFTP_BOOTLOADER_COMPONENT_MSG_UPDATE_COMPLETE(&TFTP_BOOTLOADER_FPGA), 0);
 }

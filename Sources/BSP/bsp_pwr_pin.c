@@ -2,8 +2,7 @@
 
 PCA9536_T pwr_pca9536 =
 {
-	.DevName = PCA9536_DEV_NAME,
-	.DevId = BSP_PWR_PIN_PCA9536_ID,
+	.DevName = PCA9536_DEV_NAME"_"BSP_PWR_PIN_PCA9536_ID,
 	.InitContErrThr = 3,
 	.UpdateContErrThr = 3,
 	.I2C = BSP_PWR_PIN_PCA9536_I2C,

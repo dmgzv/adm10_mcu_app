@@ -221,10 +221,9 @@ const BSP_PIN_CTRL_T bsp_flash_at45db641e_pin_ctrl =
 	NULL
 };
 
-BSP_FLASH_T at45db641e = 
+BSP_FLASH_T __attribute__((section ("CCM_DATA"))) at45db641e = 
 {
-	.DevName = AT45DB641E_DEV_NAME,
-	.DevId = BSP_FLASH_AT45DB641E_ID,
+	.DevName = AT45DB641E_DEV_NAME"_"BSP_FLASH_AT45DB641E_ID,
 	.InitContErrThr = 0,
 	.UpdateContErrThr = BSP_DEV_CONT_ERR_THR_INF,
 	.SPI = BSP_FLASH_AT45DB641E_SPI,

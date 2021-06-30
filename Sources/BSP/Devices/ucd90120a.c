@@ -1,5 +1,6 @@
 #include "ucd90120a.h"
 #include "log.h"
+#include "sort.h"
 #include <string.h>
 #include <math.h>
 
@@ -124,35 +125,23 @@ static int32_t UCD90120A_ReadThr(UCD90120A_T *Dev)
 static int32_t UCD90120A_UpdateRailMon(UCD90120A_T *Dev, uint8_t Num)
 {
 	uint32_t i;
-	float Min, Max, Avr, Val;
+	float Val[3];
 	uint8_t Data[4];
 	
 	if(PMBUS_WriteByte(Dev->I2C, Dev->Addr, UCD90120A_CMD_PAGE, &Num))
 		return -1;
 	
 	/* This is filter for read Vout value. Sometimes UCD provides incorrect value.*/
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < sizeof(Val) / sizeof(Val[0]); i++)
 	{
 		if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_READ_VOUT, Data))
 			return -1;
-		Val = (Data[0] + (Data[1] << 8)) * pow(2, Dev->Cfg.Rail[Num].VoutExp);
-		if (i == 0)
-		{
-			Max = Val;
-			Min = Val;
-			Avr = Val;
-		}
-		else
-		{
-			if (Val > Max)
-				Max = Val;
-			else if (Val < Min)
-				Min = Val;
-			else
-				Avr = Val;
-		}
+		Val[i] = (Data[0] + (Data[1] << 8)) * pow(2, Dev->Cfg.Rail[Num].VoutExp);
 	}
-	Dev->Mon.Rail[Num].Vout = Avr;
+
+	bubble_sort(float, Val, sizeof(Val) / sizeof(Val[0]));
+	
+	Dev->Mon.Rail[Num].Vout = Val[1];
 	
 	if(PMBUS_ReadWord(Dev->I2C, Dev->Addr, UCD90120A_CMD_READ_IOUT, Data))
 		return -1;
@@ -330,15 +319,17 @@ int32_t UCD90120A_Update(UCD90120A_T *Dev)
 			PowerGood &= ~(1 << i);
 		if (Dev->Mon.Rail[i].Vout < Dev->Thr.Rail[i].Vout[UCD90120A_THR_CMIN])
 			PowerGood &= ~(1 << i);
+		/* Temporrary force rail 0 power good to 1*/
+		PowerGood |= (1 << 0);
 	}
 	if (Dev->PowerGood != PowerGood)
 	{
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "PowerGood: 0x%04x", PowerGood);
+		LOG_Info(Dev->DevName, "", "PowerGoodUpdate", "0x%04x", PowerGood);
 		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 		{
 			if (Dev->Cfg.Rail[i].VoutScale == 0)
 				continue;
-			LOG_Info("BSP", Dev->DevName, Dev->DevId, "Rail %d: %.2f", i, Dev->Mon.Rail[i].Vout);
+			LOG_Info(Dev->DevName, "", "RailVoutUpdate", "%d;%.2f", i, Dev->Mon.Rail[i].Vout);
 		}
 		Dev->PowerGood = PowerGood;
 	}

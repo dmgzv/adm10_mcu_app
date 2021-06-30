@@ -1,12 +1,13 @@
 #include "shell.h"
 #include "string.h"
+#include "user.h"
 #include <stdio.h>
 #include <stdarg.h>
 
 #define SHELL_THREAD_PRIORITY		osPriorityAboveNormal
-#define SHELL_THREAD_STACK_SIZE	512
+#define SHELL_THREAD_STACK_SIZE	(3*128)
 
-#define SHELL_CMD_PARAMS_MAX_CNT	8
+#define SHELL_CMD_PARAMS_MAX_CNT	16
 
 #define SHELL_IFACE_Init(Shell) (Shell)->Iface->Init ? (Shell)->Iface->Init((Shell)->Iface->Priv) : 0
 #define SHELL_IFACE_Connect(Shell) (Shell)->Iface->Connect ? (Shell)->Iface->Connect((Shell)->Iface->Priv) : 0
@@ -14,10 +15,9 @@
 #define SHELL_IFACE_Transmit(Shell, TxBuffer, TxBufferSize) (Shell)->Iface->Transmit((Shell)->Iface->Priv, TxBuffer, TxBufferSize)
 #define SHELL_IFACE_Disconnect(Shell) (Shell)->Iface->Disconnect ? (Shell)->Iface->Disconnect((Shell)->Iface->Priv) : 0
 
-#define SHELL_VERSION	"1.0.0"
-#define SHELL_HELLO 	"Welcome to IPG IRE-Polus Shell (ver. "SHELL_VERSION")\r\n"\
-											"=====================================================\r\n"
+#define SHELL_HELLO 	"Welcome to IPG OneHorizon Shell\r\n"
 
+#define SHELL_INVALID_ARGS 	"Invalid arguments\r\n"
 #define SHELL_UNKNOWN_CMD 	"Unknown command\r\n"
 #define SHELL_GOOD_BYE 			"Good bye...\r\n"
 
@@ -26,6 +26,7 @@
 #define SHELL_IFACE_TransmitHello(Shell) Shell->Iface->Transmit(Shell->Iface->Priv, SHELL_HELLO, sizeof(SHELL_HELLO))
 #define SHELL_IFACE_TransmitGoodBye(Shell) Shell->Iface->Transmit(Shell->Iface->Priv, SHELL_GOOD_BYE, sizeof(SHELL_GOOD_BYE))
 #define SHELL_IFACE_TransmitEmptyCmd(Shell)
+#define SHELL_IFACE_TransmitInvalidArgs(Shell) Shell->Iface->Transmit(Shell->Iface->Priv, SHELL_INVALID_ARGS, sizeof(SHELL_INVALID_ARGS))
 #define SHELL_IFACE_TransmitUnknownCmd(Shell) Shell->Iface->Transmit(Shell->Iface->Priv, SHELL_UNKNOWN_CMD, sizeof(SHELL_UNKNOWN_CMD))
 #define SHELL_IFACE_TransmitPointer(Shell) Shell->Iface->Transmit(Shell->Iface->Priv, SHELL_POINTER, sizeof(SHELL_POINTER))
 
@@ -34,9 +35,9 @@
 #define SHELL_CMD_RESET_NAME	"reset"
 
 #define SHELL_CMD_HELP_HEADER						"Avaliable commands:\r\n"
-#define SHELL_CMD_HELP_HELP_DESCRIPTION	"    "SHELL_CMD_HELP_NAME" - This help\r\n"
-#define SHELL_CMD_HELP_EXIT_DESCRIPTION	"    "SHELL_CMD_EXIT_NAME" - Exit from this shell\r\n"
-#define SHELL_CMD_HELP_RESET_DESCRIPTION	"    "SHELL_CMD_RESET_NAME" - Software reset\r\n"
+#define SHELL_CMD_HELP_HELP_DESCRIPTION	"\t"SHELL_CMD_HELP_NAME" - This help\r\n"
+#define SHELL_CMD_HELP_EXIT_DESCRIPTION	"\t"SHELL_CMD_EXIT_NAME" - Exit from this shell\r\n"
+#define SHELL_CMD_HELP_RESET_DESCRIPTION	"\t"SHELL_CMD_RESET_NAME" - Software reset\r\n"
 
 typedef enum {
 	SHELL_CMD_TYPE_EMPTY,
@@ -54,15 +55,24 @@ static void SHELL_IFACE_TransmitHelp(SHELL_T *Shell)
 	SHELL_IFACE_Transmit(Shell, SHELL_CMD_HELP_HEADER, sizeof(SHELL_CMD_HELP_HEADER));
 	SHELL_IFACE_Transmit(Shell, SHELL_CMD_HELP_HELP_DESCRIPTION, sizeof(SHELL_CMD_HELP_HELP_DESCRIPTION));
 	SHELL_IFACE_Transmit(Shell, SHELL_CMD_HELP_EXIT_DESCRIPTION, sizeof(SHELL_CMD_HELP_EXIT_DESCRIPTION));
-	SHELL_IFACE_Transmit(Shell, SHELL_CMD_HELP_RESET_DESCRIPTION, sizeof(SHELL_CMD_HELP_RESET_DESCRIPTION));
+	if ((!strcmp(Shell->User.Group, USER_GROUP_ADMIN)) || (!strcmp(Shell->User.Group, USER_GROUP_SUPERUSER)))
+		SHELL_IFACE_Transmit(Shell, SHELL_CMD_HELP_RESET_DESCRIPTION, sizeof(SHELL_CMD_HELP_RESET_DESCRIPTION));
 	for (i = 0; i < Shell->CmdListSize; i++)
 	{
-		strcpy(Shell->TxBuffer, "    ");
-		strcat(Shell->TxBuffer, Shell->CmdList[i].Name);
-		strcat(Shell->TxBuffer, " - ");
-		strcat(Shell->TxBuffer, Shell->CmdList[i].Description);
-		strcat(Shell->TxBuffer, "\r\n");
-		SHELL_IFACE_Transmit(Shell, Shell->TxBuffer, strlen(Shell->TxBuffer));
+		if (
+			((!strcmp(Shell->User.Group, USER_GROUP_MONITOR)) && (Shell->CmdList[i].Access == SHELL_ACCESS_MONITOR))
+			|| ((!strcmp(Shell->User.Group, USER_GROUP_USER)) && ((Shell->CmdList[i].Access == SHELL_ACCESS_MONITOR) || (Shell->CmdList[i].Access == SHELL_ACCESS_USER)))
+			|| ((!strcmp(Shell->User.Group, USER_GROUP_ADMIN)) && ((Shell->CmdList[i].Access == SHELL_ACCESS_MONITOR) || (Shell->CmdList[i].Access == SHELL_ACCESS_USER) || (Shell->CmdList[i].Access == SHELL_ACCESS_ADMIN)))
+			|| (!strcmp(Shell->User.Group, USER_GROUP_SUPERUSER))
+		)
+		{
+			strcpy(Shell->TxBuffer, "\t");
+			strcat(Shell->TxBuffer, Shell->CmdList[i].Name);
+			strcat(Shell->TxBuffer, " - ");
+			strcat(Shell->TxBuffer, Shell->CmdList[i].Description);
+			strcat(Shell->TxBuffer, "\r\n");
+			SHELL_IFACE_Transmit(Shell, Shell->TxBuffer, strlen(Shell->TxBuffer));
+		}
 	}
 }
 
@@ -79,19 +89,46 @@ static int32_t SHELL_ParseCmd(SHELL_T *Shell)
 	
 	/*Parse command string*/
 	do {
+		if (*ptr == '\"')
+		{
+			ptr++;
+			CmdParamsList[CmdParamsCnt++] = ptr;
+			ptr = strchr(ptr, '\"');
+			if (!ptr)
+			{
+				SHELL_IFACE_TransmitInvalidArgs(Shell);
+				return 0;
+			}
+			else
+			{
+				*ptr = 0;
+				ptr++;
+			}
+		}
 		if ((*ptr != ' ') && (*ptr != 0))
+		{
 			CmdParamsList[CmdParamsCnt++] = ptr;	
-		ptr = strchr(ptr, ' ');
-		if (!ptr)
+			ptr = strchr(ptr, ' ');
+			if (!ptr)
+				break;
+		}
+		if (*ptr == 0)
 			break;
 		*ptr = 0;
 		ptr++;
 	} while (CmdParamsCnt < SHELL_CMD_PARAMS_MAX_CNT);
 	
+	/* Check command params count*/
+	if (CmdParamsCnt >= SHELL_CMD_PARAMS_MAX_CNT)
+	{
+		SHELL_IFACE_TransmitInvalidArgs(Shell);
+		return 0;
+	}
+	
 	/* Check Empty command*/
 	if (CmdParamsCnt == 0)
 		return 0;
-	
+
 	/* Check Help command*/
 	if (strcmp(CmdParamsList[0], SHELL_CMD_HELP_NAME) == 0)
 	{
@@ -106,18 +143,25 @@ static int32_t SHELL_ParseCmd(SHELL_T *Shell)
 		return 1;
 	}
 	
-	/* Check Exit command*/
-	if (strcmp(CmdParamsList[0], SHELL_CMD_RESET_NAME) == 0)
+	/* Check Reset command*/
+	if ((!strcmp(Shell->User.Group, USER_GROUP_ADMIN)) || (!strcmp(Shell->User.Group, USER_GROUP_SUPERUSER)))
 	{
-		SHELL_IFACE_TransmitGoodBye(Shell);
-		HAL_NVIC_SystemReset();
-		return 1;
+		if (strcmp(CmdParamsList[0], SHELL_CMD_RESET_NAME) == 0)
+		{
+			SHELL_IFACE_TransmitGoodBye(Shell);
+			HAL_NVIC_SystemReset();
+			return 1;
+		}
 	}
 	
 	/* Search for command in list */
 	for (i = 0; i < Shell->CmdListSize; i++)
 	{
-		if (strcmp(CmdParamsList[0], Shell->CmdList[i].Name) == 0)
+		if ((!strcmp(CmdParamsList[0], Shell->CmdList[i].Name))
+			&& (((!strcmp(Shell->User.Group, USER_GROUP_MONITOR)) && (Shell->CmdList[i].Access == SHELL_ACCESS_MONITOR))
+			|| ((!strcmp(Shell->User.Group, USER_GROUP_USER)) && ((Shell->CmdList[i].Access == SHELL_ACCESS_MONITOR) || (Shell->CmdList[i].Access == SHELL_ACCESS_USER)))
+			|| ((!strcmp(Shell->User.Group, USER_GROUP_ADMIN)) && ((Shell->CmdList[i].Access == SHELL_ACCESS_MONITOR) || (Shell->CmdList[i].Access == SHELL_ACCESS_USER) || (Shell->CmdList[i].Access == SHELL_ACCESS_ADMIN)))
+			|| (!strcmp(Shell->User.Group, USER_GROUP_SUPERUSER))))
 		{
 			/* Execute command callback*/
 			Shell->CmdList[i].Callback(Shell, CmdParamsList, CmdParamsCnt);
@@ -128,8 +172,33 @@ static int32_t SHELL_ParseCmd(SHELL_T *Shell)
 	return 0;
 }
 
+static int32_t SHELL_Authorize(SHELL_T *Shell)
+{
+	char Login[USER_LOGIN_SIZE];
+	char PassHash[USER_PASSHASH_SIZE];
+	
+	while (1) {
+		SHELL_Transmit(Shell, "login: ");
+		if (SHELL_IFACE_Receive(Shell, Login, sizeof(Login)))
+			return -1;
+		SHELL_Transmit(Shell, "password: ");
+		if (SHELL_IFACE_Receive(Shell, Shell->RxBuffer, sizeof(Shell->RxBuffer)))
+			return -1;
+		
+		if (USER_GetUserByLogin(Login, &Shell->User))
+			goto invalid_creds;
+		if (USER_MD5CRYPT_GenPassHash(Shell->RxBuffer, Shell->User.PassHash, PassHash))
+			goto invalid_creds;
+		if (!memcmp(Shell->User.PassHash, PassHash, sizeof(PassHash)))
+			return 0;
+		
+invalid_creds:
+		SHELL_Transmit(Shell, "Invalid login or password\r\n");
+	}
+}	
+
 static void SHELL_Thread(void const *argument)
-{	
+{
 	SHELL_T *Shell = (SHELL_T*)argument;
 	
 	if (SHELL_IFACE_Init(Shell))
@@ -141,14 +210,19 @@ static void SHELL_Thread(void const *argument)
 			continue;
 		
 		SHELL_IFACE_TransmitHello(Shell);
-		SHELL_IFACE_TransmitPointer(Shell);
+		
+		if (SHELL_Authorize(Shell))
+			goto disconnect;
+		
 		while (1) {
+			SHELL_IFACE_TransmitPointer(Shell);
 			if (SHELL_IFACE_Receive(Shell, Shell->RxBuffer, sizeof(Shell->RxBuffer)))
 				break;
 			if (SHELL_ParseCmd(Shell))
 				break;
-			SHELL_IFACE_TransmitPointer(Shell);
-		}	
+			
+		}
+disconnect:
 		SHELL_IFACE_Disconnect(Shell);
 	}
 }

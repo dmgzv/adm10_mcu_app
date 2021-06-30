@@ -12,8 +12,7 @@ const BSP_PIN_CTRL_T ucd90120a_pin_ctrl = {
 };
 
 UCD90120A_T ucd90120a = {
-	.DevName = UCD90120A_DEV_NAME,
-	.DevId = BSP_PWR_SEQ_UCD90120A_ID,
+	.DevName = UCD90120A_DEV_NAME"_"BSP_PWR_SEQ_UCD90120A_ID,
 	.InitContErrThr = 3,
 	.UpdateContErrThr = 3,
 	.I2C = BSP_PWR_SEQ_UCD90120A_I2C,

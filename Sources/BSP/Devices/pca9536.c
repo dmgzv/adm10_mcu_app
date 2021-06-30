@@ -22,7 +22,7 @@ int32_t PCA9536_SetPinDir(PCA9536_T *Dev, uint8_t Pin, uint8_t Dir)
 		Dir = Dev->Dirs & ~(1 << Pin);
 	if (Dir != Dev->Dirs)
 	{
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Dir: 0x%02x 0x%02x", pca9536_reg_ioc, Dir);
+		LOG_Info(Dev->DevName, "", "DirWrite", "0x%02x;0x%02x", pca9536_reg_ioc, Dir);
 		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, sizeof(pca9536_reg_ioc), (char*)&Dir, sizeof(Dir)))
 			goto error;
 		Dev->Dirs = Dir;
@@ -51,7 +51,7 @@ int32_t PCA9536_SetPinOut(PCA9536_T *Dev, uint8_t Pin, uint8_t Out)
 		Out = Dev->Outs & ~(1 << Pin);
 	if (Dev->Outs != Out)
 	{
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Out: 0x%02x 0x%02x", pca9536_reg_op, Out);
+		LOG_Info(Dev->DevName, "", "OutWrite", "0x%02x;0x%02x", pca9536_reg_op, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_op, sizeof(pca9536_reg_op), (char*)&Out, sizeof(Out)))
 			goto error;
 		Dev->Outs = Out;
@@ -80,7 +80,7 @@ int32_t PCA9536_SetPinPol(PCA9536_T *Dev, uint8_t Pin, uint8_t Pol)
 		Pol = Dev->Pols & ~(1 << Pin);
 	if (Dev->Pols != Pol)
 	{
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Pol: 0x%02x 0x%02x", pca9536_reg_pl, Pol);
+		LOG_Info(Dev->DevName, "", "PolWrite", "0x%02x;0x%02x", pca9536_reg_pl, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_pl, sizeof(pca9536_reg_pl), (char*)&Pol, sizeof(Pol)))
 			goto error;
 		Dev->Pols = Pol;
@@ -150,7 +150,7 @@ int32_t PCA9536_SetBankDir(PCA9536_T *Dev, uint8_t Dir)
 	
 	if (Dev->Dirs != Dir)
 	{
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Dir: 0x%02x 0x%02x", pca9536_reg_ioc, Dir);
+		LOG_Info(Dev->DevName, "", "DirWrite", "0x%02x;0x%02x", pca9536_reg_ioc, Dir);
 		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_ioc, sizeof(pca9536_reg_ioc), (char*)&Dir, sizeof(Dir)))
 			goto error;
 		Dev->Dirs = Dir;
@@ -198,7 +198,7 @@ int32_t PCA9536_SetBankOut(PCA9536_T *Dev, uint8_t Out)
 	
 	if (Dev->Outs != Out)
 	{
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Out: 0x%02x 0x%02x", pca9536_reg_op, Out);
+		LOG_Info(Dev->DevName, "", "OutWrite", "0x%02x;0x%02x", pca9536_reg_op, Out);
 		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_op, sizeof(pca9536_reg_op), (char*)&Out, sizeof(Out)))
 			goto error;
 		Dev->Outs = Out;
@@ -246,7 +246,7 @@ int32_t PCA9536_SetBankPol(PCA9536_T *Dev, uint8_t Pol)
 	
 	if (Dev->Pols != Pol)
 	{
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Write Pol: 0x%02x 0x%02x", pca9536_reg_pl, Pol);
+		LOG_Info(Dev->DevName, "", "PolWrite", "0x%02x;0x%02x", pca9536_reg_pl, Pol);
 		if (I2C_Sequential_Transmit(Dev->I2C, PCA9536_I2C_ADDR, (uint8_t*)&pca9536_reg_pl, sizeof(pca9536_reg_pl), (char*)&Pol, sizeof(Pol)))
 			goto error;
 		Dev->Pols = Pol;

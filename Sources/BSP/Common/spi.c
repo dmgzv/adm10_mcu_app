@@ -31,11 +31,14 @@ SPI_T spi5;
 
 #if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || defined(BSP_CONFIG_USE_SPI4) || defined(BSP_CONFIG_USE_SPI5)
 #ifdef BSP_CONFIG_USE_FREERTOS
+#ifdef SPI_SINGLE_MUTEX
 static osMutexId spi_com_mutex_id;
+#endif
 osMutexDef(spi);
 osMessageQDef(spi, SPI_MESSAGE_QUEUE_SIZE, uint32_t);
 #endif
 #endif
+
 
 static int32_t SPI_GetHandle(const SPI_TypeDef* Instance, SPI_T **spi)
 {
@@ -82,6 +85,25 @@ static int32_t SPI_GetHandle(const SPI_TypeDef* Instance, SPI_T **spi)
 
 #ifdef BSP_CONFIG_USE_SPI1
 /**
+  * @brief  This function handles DMA Rx interrupt request.  
+  * @param  None
+  * @retval None    
+  */
+void SPI1_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi1.handle.hdmarx);
+}
+
+/**
+  * @brief  This function handles DMA Tx interrupt request.
+  * @param  None
+  * @retval None  
+  */
+void SPI1_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi1.handle.hdmatx);
+}
+/**
   * @brief  SPI1 interrupt Handler.  
   * @param  None
   * @retval None  
@@ -93,6 +115,25 @@ void SPI1_IRQHandler(void)
 #endif /*BSP_CONFIG_USE_SPI1*/
 
 #ifdef BSP_CONFIG_USE_SPI2
+/**
+  * @brief  This function handles DMA Rx interrupt request.  
+  * @param  None
+  * @retval None    
+  */
+void SPI2_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi2.handle.hdmarx);
+}
+
+/**
+  * @brief  This function handles DMA Tx interrupt request.
+  * @param  None
+  * @retval None  
+  */
+void SPI2_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi2.handle.hdmatx);
+}
 /**
   * @brief  SPI3 interrupt Handler.  
   * @param  None
@@ -106,6 +147,25 @@ void SPI2_IRQHandler(void)
 
 #ifdef BSP_CONFIG_USE_SPI3
 /**
+  * @brief  This function handles DMA Rx interrupt request.  
+  * @param  None
+  * @retval None    
+  */
+void SPI3_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi3.handle.hdmarx);
+}
+
+/**
+  * @brief  This function handles DMA Tx interrupt request.
+  * @param  None
+  * @retval None  
+  */
+void SPI3_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi3.handle.hdmatx);
+}
+/**
   * @brief  SPI3 interrupt Handler.  
   * @param  None
   * @retval None  
@@ -117,6 +177,25 @@ void SPI3_IRQHandler(void)
 #endif /*BSP_CONFIG_USE_SPI3*/
 
 #ifdef BSP_CONFIG_USE_SPI4
+/**
+  * @brief  This function handles DMA Rx interrupt request.  
+  * @param  None
+  * @retval None    
+  */
+void SPI4_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi4.handle.hdmarx);
+}
+
+/**
+  * @brief  This function handles DMA Tx interrupt request.
+  * @param  None
+  * @retval None  
+  */
+void SPI4_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(spi4.handle.hdmatx);
+}
 /**
   * @brief  SPI4 interrupt Handler.  
   * @param  None
@@ -166,8 +245,12 @@ void SPI5_IRQHandler(void)
   */
 void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 {
+	SPI_T *spi;
   GPIO_InitTypeDef  GPIO_InitStruct;
-
+	
+	if (SPI_GetHandle(hspi->Instance, &spi))
+		return;
+	
 #ifdef BSP_CONFIG_USE_SPI1
 	if (hspi->Instance == SPI1)
 	{
@@ -176,7 +259,9 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		SPI1_MISO_GPIO_CLK_ENABLE();
 		SPI1_MOSI_GPIO_CLK_ENABLE();
 		/* Enable SPI clock */
-		__HAL_RCC_SPI1_CLK_ENABLE(); 		
+		__HAL_RCC_SPI1_CLK_ENABLE();
+		/* Enable SPI DMA clock */
+		SPI1_DMA_CLK_ENABLE();
 		/* SPI SCK GPIO pin configuration  */
 		GPIO_InitStruct.Pin       = SPI1_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
@@ -192,8 +277,55 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin = SPI1_MOSI_PIN;
 		GPIO_InitStruct.Alternate = SPI1_MOSI_AF;			
 		HAL_GPIO_Init(SPI1_MOSI_GPIO_PORT, &GPIO_InitStruct);				
+		
+		/* Configure the DMA handler for Transmission process */
+		spi1.hdmatx.Instance = SPI1_TX_DMA_STREAM;
+		spi1.hdmatx.Init.Channel = SPI1_TX_DMA_CHANNEL;
+		spi1.hdmatx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+		spi1.hdmatx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi1.hdmatx.Init.MemInc = DMA_MINC_ENABLE;
+		spi1.hdmatx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi1.hdmatx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi1.hdmatx.Init.Mode = DMA_NORMAL;
+		spi1.hdmatx.Init.Priority = DMA_PRIORITY_LOW;
+		spi1.hdmatx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi1.hdmatx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi1.hdmatx.Init.MemBurst = DMA_MBURST_INC4;
+		spi1.hdmatx.Init.PeriphBurst = DMA_PBURST_INC4;
+		
+		HAL_DMA_Init(&spi1.hdmatx);   
+		
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmatx, spi1.hdmatx);
+			
+		/* Configure the DMA handler for Transmission process */
+		spi1.hdmarx.Instance = SPI1_RX_DMA_STREAM;		
+		spi1.hdmarx.Init.Channel = SPI1_RX_DMA_CHANNEL;
+		spi1.hdmarx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+		spi1.hdmarx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi1.hdmarx.Init.MemInc = DMA_MINC_ENABLE;
+		spi1.hdmarx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi1.hdmarx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi1.hdmarx.Init.Mode = DMA_NORMAL;
+		spi1.hdmarx.Init.Priority = DMA_PRIORITY_HIGH;
+		spi1.hdmarx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi1.hdmarx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi1.hdmarx.Init.MemBurst = DMA_MBURST_INC4;
+		spi1.hdmarx.Init.PeriphBurst = DMA_PBURST_INC4; 
+
+		HAL_DMA_Init(&spi1.hdmarx);
+			
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmarx, spi1.hdmarx);
+		
+		/* NVIC configuration for DMA transfer complete interrupt */
+		HAL_NVIC_SetPriority(SPI1_DMA_TX_IRQn, SPI1_DMA_TX_IRQ_PRIORITY, 1);
+		HAL_NVIC_EnableIRQ(SPI1_DMA_TX_IRQn);			
+		/* NVIC configuration for DMA transfer complete interrupt */
+		HAL_NVIC_SetPriority(SPI1_DMA_RX_IRQn, SPI1_DMA_RX_IRQ_PRIORITY, 0);   
+		HAL_NVIC_EnableIRQ(SPI1_DMA_RX_IRQn);
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI1_IRQn, SPI1_IRQ_PRIORITY, 0);
+		HAL_NVIC_SetPriority(SPI1_IRQn, SPI1_IRQ_PRIORITY, 2);
 		HAL_NVIC_EnableIRQ(SPI1_IRQn);
 	}
 	else
@@ -206,7 +338,9 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		SPI2_MISO_GPIO_CLK_ENABLE();
 		SPI2_MOSI_GPIO_CLK_ENABLE();
 		/* Enable SPI clock */
-		__HAL_RCC_SPI2_CLK_ENABLE(); 		
+		__HAL_RCC_SPI2_CLK_ENABLE();
+		/* Enable SPI DMA clock */
+		SPI2_DMA_CLK_ENABLE();
 		/* SPI SCK GPIO pin configuration  */
 		GPIO_InitStruct.Pin       = SPI2_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
@@ -222,8 +356,55 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin = SPI2_MOSI_PIN;
 		GPIO_InitStruct.Alternate = SPI2_MOSI_AF;			
 		HAL_GPIO_Init(SPI2_MOSI_GPIO_PORT, &GPIO_InitStruct);				
+		
+		/* Configure the DMA handler for Transmission process */
+		spi2.hdmatx.Instance = SPI2_TX_DMA_STREAM;
+		spi2.hdmatx.Init.Channel = SPI2_TX_DMA_CHANNEL;
+		spi2.hdmatx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+		spi2.hdmatx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi2.hdmatx.Init.MemInc = DMA_MINC_ENABLE;
+		spi2.hdmatx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi2.hdmatx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi2.hdmatx.Init.Mode = DMA_NORMAL;
+		spi2.hdmatx.Init.Priority = DMA_PRIORITY_LOW;
+		spi2.hdmatx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi2.hdmatx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi2.hdmatx.Init.MemBurst = DMA_MBURST_INC4;
+		spi2.hdmatx.Init.PeriphBurst = DMA_PBURST_INC4;
+		
+		HAL_DMA_Init(&spi2.hdmatx);   
+		
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmatx, spi2.hdmatx);
+			
+		/* Configure the DMA handler for Transmission process */
+		spi2.hdmarx.Instance = SPI2_RX_DMA_STREAM;		
+		spi2.hdmarx.Init.Channel = SPI2_RX_DMA_CHANNEL;
+		spi2.hdmarx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+		spi2.hdmarx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi2.hdmarx.Init.MemInc = DMA_MINC_ENABLE;
+		spi2.hdmarx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi2.hdmarx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi2.hdmarx.Init.Mode = DMA_NORMAL;
+		spi2.hdmarx.Init.Priority = DMA_PRIORITY_HIGH;
+		spi2.hdmarx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi2.hdmarx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi2.hdmarx.Init.MemBurst = DMA_MBURST_INC4;
+		spi2.hdmarx.Init.PeriphBurst = DMA_PBURST_INC4; 
+
+		HAL_DMA_Init(&spi2.hdmarx);
+			
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmarx, spi2.hdmarx);
+		
+		/* NVIC configuration for DMA transfer complete interrupt */
+		HAL_NVIC_SetPriority(SPI2_DMA_TX_IRQn, SPI2_DMA_TX_IRQ_PRIORITY, 1);
+		HAL_NVIC_EnableIRQ(SPI2_DMA_TX_IRQn);			
+		/* NVIC configuration for DMA transfer complete interrupt */
+		HAL_NVIC_SetPriority(SPI2_DMA_RX_IRQn, SPI2_DMA_RX_IRQ_PRIORITY, 0);   
+		HAL_NVIC_EnableIRQ(SPI2_DMA_RX_IRQn);
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI2_IRQn, SPI2_IRQ_PRIORITY, 0);
+		HAL_NVIC_SetPriority(SPI2_IRQn, SPI2_IRQ_PRIORITY, 2);
 		HAL_NVIC_EnableIRQ(SPI2_IRQn);
 	}
 	else
@@ -236,7 +417,9 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		SPI3_MISO_GPIO_CLK_ENABLE();
 		SPI3_MOSI_GPIO_CLK_ENABLE();
 		/* Enable SPI clock */
-		__HAL_RCC_SPI3_CLK_ENABLE(); 		
+		__HAL_RCC_SPI3_CLK_ENABLE();
+		/* Enable SPI DMA clock */
+		SPI3_DMA_CLK_ENABLE();
 		/* SPI SCK GPIO pin configuration  */
 		GPIO_InitStruct.Pin       = SPI3_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
@@ -252,8 +435,55 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin = SPI3_MOSI_PIN;
 		GPIO_InitStruct.Alternate = SPI3_MOSI_AF;			
 		HAL_GPIO_Init(SPI3_MOSI_GPIO_PORT, &GPIO_InitStruct);				
+		
+		/* Configure the DMA handler for Transmission process */
+		spi3.hdmatx.Instance = SPI3_TX_DMA_STREAM;
+		spi3.hdmatx.Init.Channel = SPI3_TX_DMA_CHANNEL;
+		spi3.hdmatx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+		spi3.hdmatx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi3.hdmatx.Init.MemInc = DMA_MINC_ENABLE;
+		spi3.hdmatx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi3.hdmatx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi3.hdmatx.Init.Mode = DMA_NORMAL;
+		spi3.hdmatx.Init.Priority = DMA_PRIORITY_LOW;
+		spi3.hdmatx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi3.hdmatx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi3.hdmatx.Init.MemBurst = DMA_MBURST_INC4;
+		spi3.hdmatx.Init.PeriphBurst = DMA_PBURST_INC4;
+		
+		HAL_DMA_Init(&spi3.hdmatx);   
+		
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmatx, spi3.hdmatx);
+			
+		/* Configure the DMA handler for Transmission process */
+		spi3.hdmarx.Instance = SPI3_RX_DMA_STREAM;		
+		spi3.hdmarx.Init.Channel = SPI3_RX_DMA_CHANNEL;
+		spi3.hdmarx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+		spi3.hdmarx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi3.hdmarx.Init.MemInc = DMA_MINC_ENABLE;
+		spi3.hdmarx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi3.hdmarx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi3.hdmarx.Init.Mode = DMA_NORMAL;
+		spi3.hdmarx.Init.Priority = DMA_PRIORITY_HIGH;
+		spi3.hdmarx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi3.hdmarx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi3.hdmarx.Init.MemBurst = DMA_MBURST_INC4;
+		spi3.hdmarx.Init.PeriphBurst = DMA_PBURST_INC4; 
+
+		HAL_DMA_Init(&spi3.hdmarx);
+			
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmarx, spi3.hdmarx);
+		
+		/* NVIC configuration for DMA transfer complete interrupt */
+		HAL_NVIC_SetPriority(SPI3_DMA_TX_IRQn, SPI3_DMA_TX_IRQ_PRIORITY, 1);
+		HAL_NVIC_EnableIRQ(SPI3_DMA_TX_IRQn);			
+		/* NVIC configuration for DMA transfer complete interrupt */
+		HAL_NVIC_SetPriority(SPI3_DMA_RX_IRQn, SPI3_DMA_RX_IRQ_PRIORITY, 0);   
+		HAL_NVIC_EnableIRQ(SPI3_DMA_RX_IRQn);
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI3_IRQn, SPI3_IRQ_PRIORITY, 0);
+		HAL_NVIC_SetPriority(SPI3_IRQn, SPI3_IRQ_PRIORITY, 2);
 		HAL_NVIC_EnableIRQ(SPI3_IRQn);
 	}
 	else
@@ -266,7 +496,9 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		SPI4_MISO_GPIO_CLK_ENABLE();
 		SPI4_MOSI_GPIO_CLK_ENABLE();
 		/* Enable SPI clock */
-		__HAL_RCC_SPI4_CLK_ENABLE(); 		
+		__HAL_RCC_SPI4_CLK_ENABLE();
+		/* Enable SPI DMA clock */
+		SPI4_DMA_CLK_ENABLE();
 		/* SPI SCK GPIO pin configuration  */
 		GPIO_InitStruct.Pin       = SPI4_SCK_PIN;
 		GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
@@ -282,8 +514,55 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		GPIO_InitStruct.Pin = SPI4_MOSI_PIN;
 		GPIO_InitStruct.Alternate = SPI4_MOSI_AF;			
 		HAL_GPIO_Init(SPI4_MOSI_GPIO_PORT, &GPIO_InitStruct);				
+		
+		/* Configure the DMA handler for Transmission process */
+		spi4.hdmatx.Instance = SPI4_TX_DMA_STREAM;
+		spi4.hdmatx.Init.Channel = SPI4_TX_DMA_CHANNEL;
+		spi4.hdmatx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+		spi4.hdmatx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi4.hdmatx.Init.MemInc = DMA_MINC_ENABLE;
+		spi4.hdmatx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi4.hdmatx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi4.hdmatx.Init.Mode = DMA_NORMAL;
+		spi4.hdmatx.Init.Priority = DMA_PRIORITY_LOW;
+		spi4.hdmatx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi4.hdmatx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi4.hdmatx.Init.MemBurst = DMA_MBURST_INC4;
+		spi4.hdmatx.Init.PeriphBurst = DMA_PBURST_INC4;
+		
+		HAL_DMA_Init(&spi4.hdmatx);   
+		
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmatx, spi4.hdmatx);
+			
+		/* Configure the DMA handler for Transmission process */
+		spi4.hdmarx.Instance = SPI4_RX_DMA_STREAM;		
+		spi4.hdmarx.Init.Channel = SPI4_RX_DMA_CHANNEL;
+		spi4.hdmarx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+		spi4.hdmarx.Init.PeriphInc = DMA_PINC_DISABLE;
+		spi4.hdmarx.Init.MemInc = DMA_MINC_ENABLE;
+		spi4.hdmarx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+		spi4.hdmarx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+		spi4.hdmarx.Init.Mode = DMA_NORMAL;
+		spi4.hdmarx.Init.Priority = DMA_PRIORITY_HIGH;
+		spi4.hdmarx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;         
+		spi4.hdmarx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL;
+		spi4.hdmarx.Init.MemBurst = DMA_MBURST_INC4;
+		spi4.hdmarx.Init.PeriphBurst = DMA_PBURST_INC4; 
+
+		HAL_DMA_Init(&spi4.hdmarx);
+			
+		/* Associate the initialized DMA handle to the the SPI handle */
+		__HAL_LINKDMA(hspi, hdmarx, spi4.hdmarx);
+		
+		/* NVIC configuration for DMA transfer complete interrupt */
+		HAL_NVIC_SetPriority(SPI4_DMA_TX_IRQn, SPI4_DMA_TX_IRQ_PRIORITY, 1);
+		HAL_NVIC_EnableIRQ(SPI4_DMA_TX_IRQn);			
+		/* NVIC configuration for DMA transfer complete interrupt */
+		HAL_NVIC_SetPriority(SPI4_DMA_RX_IRQn, SPI4_DMA_RX_IRQ_PRIORITY, 0);   
+		HAL_NVIC_EnableIRQ(SPI4_DMA_RX_IRQn);
 		/* Configure the NVIC for SPI */
-		HAL_NVIC_SetPriority(SPI4_IRQn, SPI4_IRQ_PRIORITY, 0);
+		HAL_NVIC_SetPriority(SPI4_IRQn, SPI4_IRQ_PRIORITY, 2);
 		HAL_NVIC_EnableIRQ(SPI4_IRQn);
 	}
 	else
@@ -355,16 +634,15 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 		/* Associate the initialized DMA handle to the the SPI handle */
 		__HAL_LINKDMA(hspi, hdmarx, spi5.hdmarx);
 		
-		/* NVIC configuration for DMA transfer complete interrupt (SPI3_TX) */
+		/* NVIC configuration for DMA transfer complete interrupt */
 		HAL_NVIC_SetPriority(SPI5_DMA_TX_IRQn, SPI5_DMA_TX_IRQ_PRIORITY, 1);
 		HAL_NVIC_EnableIRQ(SPI5_DMA_TX_IRQn);			
-		/* NVIC configuration for DMA transfer complete interrupt (SPI3_RX) */
+		/* NVIC configuration for DMA transfer complete interrupt */
 		HAL_NVIC_SetPriority(SPI5_DMA_RX_IRQn, SPI5_DMA_RX_IRQ_PRIORITY, 0);   
 		HAL_NVIC_EnableIRQ(SPI5_DMA_RX_IRQn);
 		/* Configure the NVIC for SPI */
 		HAL_NVIC_SetPriority(SPI5_IRQn, SPI5_IRQ_PRIORITY, 2);
 		HAL_NVIC_EnableIRQ(SPI5_IRQn);
-	
 	}
 	else
 #endif /*BSP_CONFIG_USE_SPI5*/
@@ -564,13 +842,16 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 int32_t SPI_Init(void)
 {
 	int32_t result;
+	
 
 #if defined(BSP_CONFIG_USE_SPI1) || defined(BSP_CONFIG_USE_SPI2) || defined(BSP_CONFIG_USE_SPI3) || defined(BSP_CONFIG_USE_SPI4) || defined(BSP_CONFIG_USE_SPI5)
 #ifdef BSP_CONFIG_USE_FREERTOS
+#ifdef SPI_SINGLE_MUTEX
 	if (!spi_com_mutex_id)
 		spi_com_mutex_id = osMutexCreate(osMutex(spi));
 #endif
-#endif	
+#endif
+#endif
 
 	result = 0;
 #ifdef BSP_CONFIG_USE_SPI1
@@ -590,8 +871,14 @@ int32_t SPI_Init(void)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi1.mutex_id = osMutexCreate(osMutex(spi));
-	spi1.mutex_id = spi_com_mutex_id;
+	if (!spi1.mutex_id)
+	{
+#ifdef SPI_SINGLE_MUTEX
+		spi1.mutex_id = spi_com_mutex_id;
+#else
+		spi1.mutex_id = osMutexCreate(osMutex(spi));
+#endif
+	}
 	if (!spi1.message_queue_id)
 		spi1.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -614,8 +901,14 @@ int32_t SPI_Init(void)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi2.mutex_id = osMutexCreate(osMutex(spi));
-	spi2.mutex_id = spi_com_mutex_id;
+	if (!spi2.mutex_id)
+	{
+#ifdef SPI_SINGLE_MUTEX
+		spi2.mutex_id = spi_com_mutex_id;
+#else
+		spi2.mutex_id = osMutexCreate(osMutex(spi));
+#endif
+	}
 	if (!spi2.message_queue_id)
 		spi2.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -638,8 +931,14 @@ int32_t SPI_Init(void)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi3.mutex_id = osMutexCreate(osMutex(spi));
-	spi3.mutex_id = spi_com_mutex_id;
+	if (!spi3.mutex_id)
+	{
+#ifdef SPI_SINGLE_MUTEX
+		spi3.mutex_id = spi_com_mutex_id;
+#else
+		spi3.mutex_id = osMutexCreate(osMutex(spi));
+#endif
+	}
 	if (!spi3.message_queue_id)
 		spi3.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -662,8 +961,14 @@ int32_t SPI_Init(void)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi4.mutex_id = osMutexCreate(osMutex(spi));
-	spi4.mutex_id = spi_com_mutex_id;
+	if (!spi4.mutex_id)
+	{
+#ifdef SPI_SINGLE_MUTEX
+		spi4.mutex_id = spi_com_mutex_id;
+#else
+		spi4.mutex_id = osMutexCreate(osMutex(spi));
+#endif
+	}
 	if (!spi4.message_queue_id)
 		spi4.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/
@@ -686,8 +991,14 @@ int32_t SPI_Init(void)
 		result = -1;
 	
 #ifdef BSP_CONFIG_USE_FREERTOS
-	//spi5.mutex_id = osMutexCreate(osMutex(spi));
-	spi5.mutex_id = spi_com_mutex_id;
+	if (!spi5.mutex_id)
+	{
+#ifdef SPI_SINGLE_MUTEX
+		spi5.mutex_id = spi_com_mutex_id;
+#else
+		spi5.mutex_id = osMutexCreate(osMutex(spi));
+#endif
+	}
 	if (!spi5.message_queue_id)
 		spi5.message_queue_id = osMessageCreate (osMessageQ(spi), NULL);	
 #endif /*BSP_CONFIG_USE_FREERTOS*/

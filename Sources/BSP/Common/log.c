@@ -1,70 +1,244 @@
 #include "log.h"
+#include "crc.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include "cmsis_os.h"
 
 #ifdef BSP_CONFIG_USE_LOG
 
-LOG_LINE_T __attribute__((section ("CCM_DATA"))) LogLines[LOG_LINES_CNT];
+#ifdef BSP_CONFIG_USE_LOG_RAM
+LOG_T __attribute__((section ("CCM_DATA"))) Log;
 
-static uint32_t LogLineIndex = 0;
-#ifdef BSP_CONFIG_USE_FREERTOS
-static osMutexId LogMutexId;
 osMutexDef(Log);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
 
-void __LOG_Init(void)
-{
-	LogLineIndex = 0;
-	memset(LogLines, 0, sizeof(LogLines));
-#ifdef BSP_CONFIG_USE_FREERTOS
-	LogMutexId = osMutexCreate(osMutex(Log));
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+int32_t __LOG_Init(void)
+{	
+	if (!Log.MutexId)
+		Log.MutexId = osMutexCreate(osMutex(Log));
+	
+	if (!Log.MutexId)
+		return -1;
+
+	osMutexWait( Log.MutexId, osWaitForever);
+
+	Log.LinesIdx = 0;
+	memset(Log.Lines, 0, sizeof(Log.Lines));
+	
+	osMutexRelease( Log.MutexId);
+	
+	return 0;
 }
 
-void __LOG_Add(const char* Category, uint8_t Severity, const char* Object, const char* ObjectId, char *Description, ...)
+void __LOG_Add(const char* Category, uint8_t Access, uint8_t Severity, const char* Object, const char* ObjectId, char *Description, ...)
 {
 	va_list va;
 	
-#ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait( LogMutexId, osWaitForever);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+	if (!Log.MutexId)
+		return;
+	
+	osMutexWait( Log.MutexId, osWaitForever);
+	
 	va_start(va, Description);
-	vsnprintf(LogLines[LogLineIndex % LOG_LINES_CNT].Description, LOG_LINE_DESCRIPTION_SIZE, Description, va);
+	vsnprintf(Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Description, LOG_LINE_DESCRIPTION_SIZE, Description, va);
 	va_end(va);
-	LogLines[LogLineIndex % LOG_LINES_CNT].Description[LOG_LINE_DESCRIPTION_SIZE - 1] = 0;
-	LogLines[LogLineIndex % LOG_LINES_CNT].Object = Object;
-	LogLines[LogLineIndex % LOG_LINES_CNT].ObjectId = ObjectId;
-	LogLines[LogLineIndex % LOG_LINES_CNT].Severity = Severity;
-	LogLines[LogLineIndex % LOG_LINES_CNT].Category = Category;
-#ifdef BSP_CONFIG_USE_FREERTOS
-	LogLines[LogLineIndex % LOG_LINES_CNT].Time = osKernelSysTick();
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	LogLineIndex++;
-#ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease( LogMutexId);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Description[LOG_LINE_DESCRIPTION_SIZE - 1] = 0;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Object = Object;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].ObjectId = ObjectId;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Access = Access;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Severity = Severity;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Category = Category;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Time = osKernelSysTick();
+	Log.LinesIdx++;
+	
+	osMutexRelease( Log.MutexId);
 }
 
 uint32_t __LOG_GetLinesCnt(void)
 {
-	return (LogLineIndex >= LOG_LINES_CNT ? LOG_LINES_CNT : LogLineIndex);
+	return (Log.LinesIdx >= LOG_LINES_CNT ? LOG_LINES_CNT : Log.LinesIdx);
 }
 
-void __LOG_GetLine(uint32_t Index, LOG_LINE_T *Line)
+int32_t __LOG_GetLine(uint32_t Index, LOG_LINE_T *Line)
 {
-	if (Index >= (LogLineIndex >= LOG_LINES_CNT ? LOG_LINES_CNT : LogLineIndex))
-		return;		
-	if (LogLineIndex >= LOG_LINES_CNT)
-		Index = (LogLineIndex + Index) % LOG_LINES_CNT;
-#ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexWait( LogMutexId, osWaitForever);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
-	memcpy(Line, &LogLines[Index], sizeof(LogLines[0]));	
-#ifdef BSP_CONFIG_USE_FREERTOS
-	osMutexRelease( LogMutexId);
-#endif /*BSP_CONFIG_USE_FREERTOS*/
+	if (Index >= (Log.LinesIdx >= LOG_LINES_CNT ? LOG_LINES_CNT : Log.LinesIdx))
+		return -1;	
+	if (Log.LinesIdx >= LOG_LINES_CNT)
+		Index = (Log.LinesIdx - Index) % LOG_LINES_CNT;
+	osMutexWait( Log.MutexId, osWaitForever);
+	memcpy(Line, &Log.Lines[Index], sizeof(Log.Lines[0]));	
+	osMutexRelease( Log.MutexId);
+	return 0;
 }
+#endif
+
+#ifdef BSP_CONFIG_USE_LOG_ROM
+
+#include "bsp_flash.h"
+
+static void __LOG_Thread(void const *argument);
+
+LOG_T __attribute__((section ("CCM_DATA"))) Log;
+
+osMutexDef(LOG);
+osMessageQDef(LOG, LOG_LINES_CNT - 3, uint32_t);
+osThreadDef(LOG, __LOG_Thread, osPriorityBelowNormal, 0, 256);
+
+const uint32_t LOG_LINES_MAX_CNT = BSP_FLASH_LOG_SIZE / BSP_FLASH_PAGE_SIZE;
+
+static int32_t __LOG_ReadLine(uint32_t Index, LOG_LINE_T *Line)
+{
+	uint16_t ReadCrc16, CalcCrc16;
+	
+	if (BSP_FLASH_Read(BSP_FLASH_LOG_ADDR + (Index * BSP_FLASH_PAGE_SIZE),  (char*)Line, sizeof(*Line)))
+		return -1;
+	
+	ReadCrc16 = Line->Crc16;
+	Line->Crc16 = 0;
+	CalcCrc16 = Calc_CRC16((char*)Line, sizeof(*Line), 0);	
+	if (ReadCrc16 != CalcCrc16)
+		return -1;
+	
+	return 0;	
+}
+
+static int32_t __LOG_WriteLine(uint32_t Index, LOG_LINE_T *Line)
+{	
+	if (BSP_FLASH_ProgramPage(BSP_FLASH_LOG_ADDR + (Index * BSP_FLASH_PAGE_SIZE),  (char*)Line, sizeof(*Line)))
+		return -1;	
+	return 0;	
+}
+
+static void __LOG_Thread(void const *argument)
+{
+	osEvent Event;
+	LOG_LINE_T Line;
+	
+	while(1)
+  {
+		Event = osMessageGet(Log.MessageQId, osWaitForever);
+		if (Event.status != osEventMessage)
+			continue;
+		
+		memcpy(&Line, &Log.Lines[Event.value.v % LOG_LINES_CNT], sizeof(Line));
+		
+		__LOG_WriteLine(Event.value.v % (LOG_LINES_MAX_CNT), &Line);
+		Log.LinesFlashIdx = Event.value.v % (LOG_LINES_MAX_CNT);
+		if (Log.LinesFlashCnt < (LOG_LINES_MAX_CNT))
+			Log.LinesFlashCnt++;
+	}
+}
+
+int32_t __LOG_Init(void)
+{
+	uint32_t i;
+	LOG_LINE_T Line;
+	
+	Log.LinesIdx = 0;
+	Log.LinesFlashIdx = 0;
+	Log.LinesFlashCnt = 0;
+	memset(Log.Lines, 0, sizeof(Log.Lines));
+	
+	for (i = 0; i < LOG_LINES_MAX_CNT; i++)
+	{
+		if (__LOG_ReadLine(i, &Line))
+			continue;
+		if ((Log.LinesFlashCnt == 0) || (Line.Index == 0) || (Log.LinesIdx < Line.Index))
+		{
+			Log.LinesIdx = Line.Index;
+			Log.LinesFlashIdx = i;
+		}
+		Log.LinesFlashCnt++;
+	}
+	
+	if (Log.LinesFlashCnt == 0)
+	{
+		Log.LinesIdx = 0xFFFFFFFF;
+		Log.LinesFlashIdx = 0xFFFFFFFF;
+	}
+	
+	Log.MutexId = osMutexCreate(osMutex(LOG));	
+	if (!Log.MutexId)
+		return -1;
+	
+	Log.MessageQId = osMessageCreate (osMessageQ(LOG), NULL);
+	if (!Log.MessageQId)
+		return -1;
+	
+	Log.ThreadId = osThreadCreate (osThread(LOG), NULL);
+	if (!Log.ThreadId)
+		return -1;
+	
+	return 0;
+}
+
+void __LOG_Add(const char* Category, uint8_t Access, uint8_t Severity, const char* Subject, const char* Operation, char *Description, ...)
+{
+	va_list va;
+	
+	if ((!Log.MutexId) || (!Log.MessageQId) || (!Log.ThreadId))
+		return;
+	
+	osMutexWait( Log.MutexId, osWaitForever);
+	
+	Log.LinesIdx++;
+	
+	va_start(va, Description);
+	vsnprintf(Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Description, LOG_LINE_DESCRIPTION_SIZE, Description, va);
+	va_end(va);
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Index = Log.LinesIdx;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Description[LOG_LINE_DESCRIPTION_SIZE - 1] = 0;
+	strncpy(Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Subject, Subject, sizeof(Log.Lines[0].Subject) - 1);
+	strncpy(Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Operation, Operation, sizeof(Log.Lines[0].Operation) - 1);
+	strncpy(Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Category, Category, sizeof(Log.Lines[0].Category) - 1);
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Access = Access;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Severity = Severity;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].TimeTicks = osKernelSysTick();
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Crc16 = 0;
+	Log.Lines[Log.LinesIdx % LOG_LINES_CNT].Crc16 = Calc_CRC16((char*)&Log.Lines[Log.LinesIdx % LOG_LINES_CNT], sizeof(Log.Lines[0]), 0);
+	osMessagePut(Log.MessageQId, Log.LinesIdx, osWaitForever);
+	
+	osMutexRelease( Log.MutexId);
+}
+
+uint32_t __LOG_GetLinesCnt(void)
+{
+	return Log.LinesFlashCnt;
+}
+
+int32_t __LOG_GetLine(uint32_t Index, LOG_LINE_T *Line)
+{
+	if (Index >= Log.LinesFlashCnt)
+		return -1;
+	osMutexWait( Log.MutexId, osWaitForever);
+	__LOG_ReadLine((Log.LinesFlashIdx - Index) % (LOG_LINES_MAX_CNT), Line);
+	osMutexRelease( Log.MutexId);
+	return 0;
+}
+
+int32_t __LOG_Erase(void)
+{
+	uint32_t i;
+	
+	osMutexWait( Log.MutexId, osWaitForever);
+	Log.LinesFlashCnt = 0;
+	Log.LinesIdx = 0xFFFFFFFF;
+	Log.LinesFlashIdx = 0xFFFFFFFF;
+	memset(Log.Lines, 0, sizeof(Log.Lines));
+	
+	for (i = 0; i < (BSP_FLASH_LOG_SIZE / BSP_FLASH_PAGE_SIZE); i++)
+	{
+		if (BSP_FLASH_ErasePage(BSP_FLASH_LOG_ADDR + (i * BSP_FLASH_PAGE_SIZE)))
+			goto error;
+	}
+	
+	osMutexRelease( Log.MutexId);
+	return 0;
+	
+error:
+	osMutexRelease( Log.MutexId);
+	return -1;
+}
+
+#endif
 
 #endif /*BSP_CONFIG_USE_LOG*/

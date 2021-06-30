@@ -2,12 +2,12 @@
 #include <string.h>
 #include "string_fnc.h"
 #include "crc.h"
+#include "user.h"
 
 static uint32_t PROFILE_PROTOCOL_GetClass(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
 {
 	char *p = rsp;
 	
-	// для уменьшения путаницы класс берём прямо из профиля!!!
 	memcpy( p, cmd, 2 );
 	p += 2;
 	strcpy( p, Protocol->Profile->Descr[Protocol->Profile->Idx]->DeviceClass );
@@ -22,14 +22,13 @@ static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_PROTOCOL_T *Protocol, char 
 	char *p = rsp;
 	uint32_t i;
 	
-	// для уменьшения путаницы класс берём прямо из профиля!!!
 	memcpy( p, cmd, 2 );
 	p += 2;
 	strcpy( p, Protocol->Profile->Descr[Protocol->Profile->Idx]->DeviceClass );
 	p += strlen(p);
 	*p++ = ';';
 	
-	if (Protocol->Profile->SetEnable)
+	if (Protocol->SetEnable)
 	{
 		*p++ = 'O';
 		*p++ = 'K';
@@ -41,7 +40,7 @@ static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_PROTOCOL_T *Protocol, char 
 	}
 	*p++ = ';';
 	
-	if (Protocol->ProfileFlash->SaveEnable)
+	if (Protocol->SaveEnable)
 	{
 		*p++ = 'O';
 		*p++ = 'K';
@@ -53,18 +52,15 @@ static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_PROTOCOL_T *Protocol, char 
 	}
 	*p++ = ';';
 	
-	for (i = 0; i < PROFILE_TABLES_CNT; i++)
+	for (i = 0; i < Protocol->Profile->Descr[Protocol->Profile->Idx]->TablesCnt; i++)
 	{
-		if (Protocol->Profile->TablesChanges & (1 << i))
+		if (Protocol->Profile->TablesChanges & PROFILE_TABLE_CNANGE_MASK(Protocol->Profile->Descr[Protocol->Profile->Idx]->Tables[i]->Index))
 		{
-			if (i < PROFILE_TABLE_100)
-				p = UintToStr( p, i + 1 );
-			else
-				p = UintToStr( p, i - PROFILE_TABLE_100 + 100 );
+			p = UintToStr( p, Protocol->Profile->Descr[Protocol->Profile->Idx]->Tables[i]->Index);
 			*p++ = ';'; 
 		}
 	}
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;	
@@ -73,14 +69,14 @@ static uint32_t PROFILE_PROTOCOL_GetClassExt(PROFILE_PROTOCOL_T *Protocol, char 
 static uint32_t PROFILE_PROTOCOL_SetAccess(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
 {
 	if( !strncmp( cmd + 2, "IPG", 3 ) )
-	{//Пароль верный
-		Protocol->Profile->SetEnable = 1;
+	{
+		Protocol->SetEnable = 1;
 		memcpy( rsp, cmd, 2 );
 		strcpy( rsp + 2, "OK\r");
 	}
 	else
-	{//Пароль не верен
-		Protocol->Profile->SetEnable = 0;
+	{
+		Protocol->SetEnable = 0;
 		memcpy( rsp, cmd, 2 );
 		strcpy( rsp + 2, "NA\r");
 	}
@@ -96,11 +92,11 @@ static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_PROTOCOL_T *Protocol, char
 	
 	if( (cmd[2] == 'O') && (cmd[3] == 'K') && (cmd[4] == ';')	)
 	{
-		Protocol->Profile->SetEnable = 1;
+		Protocol->SetEnable = 1;
 	}
 	else if( (cmd[2] == 'N') && (cmd[3] == 'A') && (cmd[4] == ';')	)
 	{
-		Protocol->Profile->SetEnable = 0;
+		Protocol->SetEnable = 0;
 	}
 	else
 	{
@@ -110,13 +106,13 @@ static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_PROTOCOL_T *Protocol, char
 	
 	if( (cmd[5] == 'O') && (cmd[6] == 'K') && (cmd[7] == ';')	)
 	{
-		if (!Protocol->ProfileFlash->SaveEnable)
-			PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
-		Protocol->ProfileFlash->SaveEnable = 1;
+		if (!Protocol->SaveEnable)
+			PROFILE_FLASH_UpdateConfigs(Protocol->ProfileFlash);
+		Protocol->SaveEnable = 1;
 	}
 	else if( (cmd[5] == 'N') && (cmd[6] == 'A') && (cmd[7] == ';')	)
 	{
-		Protocol->ProfileFlash->SaveEnable = 0;
+		Protocol->SaveEnable = 0;
 	}
 	else
 	{
@@ -128,7 +124,7 @@ static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_PROTOCOL_T *Protocol, char
 	p += 2;
 exit:
 	*p++ = ';';
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -143,26 +139,26 @@ static uint32_t PROFILE_PROTOCOL_GetProfile(PROFILE_PROTOCOL_T *Protocol, char *
 	p += 2;
 	
 	if( !StrToUint( &cmd[2], &idx, ';' ) )
-		idx = 0xFFFFFFFF; //номер запрашиваемой строки
+		idx = 0xFFFFFFFF; 
 	
 	p = UintToStr( p, idx );
 	*p++ = ';'; 
 	if( idx == 0 )
-	{//Запрос количетсва строк
+	{
 		p = UintToStr( p, *Protocol->Profile->Descr[Protocol->Profile->Idx]->TextSize ); 
 	}
 	else if( idx <= *Protocol->Profile->Descr[Protocol->Profile->Idx]->TextSize )
-	{//Запрос строки профиля
+	{
 		strcpy( p, Protocol->Profile->Descr[Protocol->Profile->Idx]->Text[ idx - 1 ] );
 		p += strlen( p );
 	}
 	else
-	{//некорректный номер строки
+	{
 		strcpy( p,"NA" );
 		p += 2;
 	}
 	*p++ = ';';
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -170,109 +166,59 @@ static uint32_t PROFILE_PROTOCOL_GetProfile(PROFILE_PROTOCOL_T *Protocol, char *
 
 static uint32_t PROFILE_PROTOCOL_GetParams(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {	
-	uint32_t AddColor = 0;
-	uint32_t TableId;//номер таблицы (секции)
-	uint32_t Item;//номер таблицы (секции)
-	uint32_t TableSize = 0;
+	uint32_t TableIdx;
+	uint32_t ParamIdx;
+	PROFILE_TABLE_T *Table;
+	PROFILE_TABLE_PARAM_T *Param;
+	void *Value;
 	char* p;
 	uint32_t len;
 	uint8_t Color;
 	uint8_t State;
-	char TempValue[PROFILE_STRING_MAX_LEN];
 	
-	if( !StrToUint( cmd + 2, &TableId, ';' ) )
+	if( !StrToUint( cmd + 2, &TableIdx, ';' ) )
 		goto error;
-
-	//начинаем формировать ответ
+	
 	p = rsp;
 	memcpy(p, cmd, 2);
 	p += 2;
-	p = UintToStr( p, TableId );//Номер таблицы
+	p = UintToStr( p, TableIdx );
 	*p++ = ';';
 	
-	switch (TableId)
+	if (PROFILE_GetTable(Protocol->Profile, TableIdx, &Table))
+		goto error;
+	for(ParamIdx = 1 ; ParamIdx <= Table->ParamsCnt; ParamIdx++ )
 	{
-		case 1:
-			TableId = PROFILE_TABLE_1;
-			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table1Size;
-			break;
-		case 2:
-			TableId = PROFILE_TABLE_2;
-			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
-			break;
-		case 3:
-			TableId = PROFILE_TABLE_3;
-			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table3Size;
-			break;
-		case 4:
-			TableId = PROFILE_TABLE_4;
-			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table4Size;
-			break;
-		case 5:
-			TableId = PROFILE_TABLE_5;
-			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table5Size;
-			break;
-		case 8:
-			TableId = PROFILE_TABLE_8;
-			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table8Size;
-			break;
-		case 103:
-			TableId = PROFILE_TABLE_103;
-			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table103Size;
-			break;
-		default:
-			TableId = 0xFFFFFFFF;
-			TableSize = 0;
-		break;
-	}
-	
-	if ((TableId != 0xFFFFFFFF) && (TableSize != 0))
-	{
-		if ((cmd[1] == PROFILE_PROTOCOL_CMD_GET_VALUES_2) && (TableId == PROFILE_TABLE_2))
-			AddColor = 1;
-		
-		for(Item = 1 ; Item <= TableSize; Item++ )//перебор параметров секции	с их печатью
+		if (PROFILE_GetParam(Protocol->Profile, TableIdx, ParamIdx, &Param))
+			goto error;
+		if (PROFILE_GetParamState(Protocol->Profile, Param, &State))
+			goto error;
+		if (State != PROFILE_STATE_OOS)
 		{
-			if (PROFILE_GetState(Protocol->Profile, TableId, Item, &State))
+			if (PROFILE_GetParamValue(Protocol->Profile, Param, &Value))
 				goto error;
-			if (State != PROFILE_STATE_OOS)
+			if (PROFILE_ParamValueToString(Protocol->Profile, Param, Value, p, &len))
+				goto error;
+			p += len;
+			if ((cmd[1] == PROFILE_PROTOCOL_CMD_GET_VALUES_2) && (TableIdx == PROFILE_TABLE_2))
 			{
-				if (PROFILE_GetValue(Protocol->Profile, TableId, Item, TempValue))
-				{
+				if (PROFILE_GetParamColor(Protocol->Profile, Param, Value, &Color))
 					goto error;
-				}
-				else
-				{
-					if (PROFILE_ValueToString(Protocol->Profile, TableId, Item, TempValue, p , &len) == 0)
-						p += len;
-				}
-				if (PROFILE_GetColor(Protocol->Profile, TableId, Item, &Color))
-				{
-					goto error;
-				}
-				if( AddColor && (Color != PROFILE_COLOR_NA))//Добавляем цвет, если секция с цветовой раскраской и цвет не равен NA
-				{
-					if (State != PROFILE_STATE_IS)
-						Color = PROFILE_COLOR_NO;
-					strcpy( p++, "@" );
-					p = ByteToStr( p, Color );
-				}
+				if ((State != PROFILE_STATE_IS) && (Color != PROFILE_COLOR_NA))
+					Color = PROFILE_COLOR_NO;
+				strcpy( p++, "@" );
+				p = ByteToStr( p, Color );
 			}
-			else
-			{
-				*p++ = 0x01;
-			}				
-			
-			*p++ = ';';
 		}
-		Protocol->Profile->TablesChanges &= ~(1 << TableId);
+		else
+		{
+			*p++ = 0x01;
+		}				
+		
+		*p++ = ';';
 	}
-	else
-	{//Нет такой таблицы
-		strcpy( p, "NA;" );
-		p += 3;
-	}
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	Protocol->Profile->TablesChanges &= ~PROFILE_TABLE_CNANGE_MASK(TableIdx);
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -292,7 +238,7 @@ error:
 
 static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
-	uint32_t TableId;//номер таблицы (секции)
+	uint32_t TableId;
 	uint32_t Item = 0;
 	char * p = cmd;
 	uint32_t error = 0;
@@ -301,7 +247,7 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 	char *Value;
 	char TempValue[PROFILE_STRING_MAX_LEN];
 	
-	//проверка и разбор структуры запроса
+	
 	p = cmd + 2;
 	if( !StrToUint( p, &TableId, ';' ) )
 	{
@@ -309,7 +255,7 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 	}
 	if( ( p = strchr( p, ';' ) ) == NULL )
 	{
-		error = 1;		//;Конец таблицы
+		error = 1;		
 	}
 	if( !StrToUint( p + 1, &Item, ';' ) )
 	{
@@ -317,20 +263,20 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 	}
 	if( (  p = strchr(  p + 1, ';' ) ) == NULL )
 	{
-		error = 1;		//;Конец индекса
+		error = 1;		
 	}
-	Value =  p + 1;	  //Указатель на параметр 
+	Value =  p + 1;	  
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
 	{
-		error = 1;		//;Конец параметра
+		error = 1;		
 	}
 	if( strchr( p + 1, ';' ) )
 	{
-		error = 1;		 // ; на конце CRC быть не должно
+		error = 1;		 
 	}
-	if( p && !error )//успешно найдены точно 3 символа ";"
+	if( p && !error )
 	{	
-		//Проверка контрольной суммы	
+		
 		p++;		
 		if( !StrToUint( p, &CRCRead, ';' ) )
 			CRCRead = 0xFFFFFFFF;
@@ -338,7 +284,7 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 		*--p = 0;
 		if( CRCRead != CRCCalc )
 		{
-			error = 1; //Неверная контрольная сумма
+			error = 1; 
 		}
 	}
 	else
@@ -354,68 +300,45 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 	p = UintToStr( p, Item );
 	*p++ = ';';
 	
-	switch (TableId)
-	{
-		case 1:
-			TableId = PROFILE_TABLE_1;
-			break;
-		case 2:
-			TableId = PROFILE_TABLE_2;
-			break;
-		case 3:
-			TableId = PROFILE_TABLE_3;
-			break;
-		case 4:
-			TableId = PROFILE_TABLE_4;
-			break;
-		case 5:
-			TableId = PROFILE_TABLE_5;
-			break;
-		case 8:
-			TableId = PROFILE_TABLE_8;
-			break;
-		case 103:
-			TableId = PROFILE_TABLE_103;
-			break;
-		default:
-			TableId = 0xFFFFFFFF;
-		break;
-	}
-	
-	if ((!error) && (Protocol->Profile->SetEnable) && (TableId != 0xFFFFFFFF))
+	if ((!error) && (Protocol->SetEnable))
 	{	
-		if (PROFILE_StringToValue(Protocol->Profile, TableId, Item, TempValue, Value) == 0)
+		if (PROFILE_StringToValue(Protocol->Profile, TableId, Item, TempValue, Value))
 		{
-			if (PROFILE_CheckValue(Protocol->Profile, TableId, Item, TempValue, 0) == 0)
-			{
-				if (PROFILE_SetValue(Protocol->Profile, TableId, Item, TempValue))
-				{
-					goto error;
-				}
-				if (PROFILE_SetValueDependencies(Protocol->Profile, TableId, Item, TempValue, 0))
-				{
-					goto error;
-				}
-				PROFILE_FLASH_SaveValue(Protocol->ProfileFlash, TableId, Item);
-			}				
+			goto error;
+		}
+		if (PROFILE_CheckValue(Protocol->Profile, TableId, Item, TempValue, 0))
+		{
+			goto error;
+		}
+		if (PROFILE_SetValue(Protocol->Profile, TableId, Item, TempValue))
+		{
+			goto error;
+		}
+		if (PROFILE_SetValueDependencies(Protocol->Profile, TableId, Item, TempValue, 0))
+		{
+			goto error;
+		}
+		if (Protocol->SaveEnable)
+		{
+			PROFILE_FLASH_UpdateValue(Protocol->ProfileFlash, TableId, Item);
 		}
 		if (PROFILE_GetValue(Protocol->Profile, TableId, Item, TempValue))
 		{
 			goto error;
 		}
-		else
+		if (PROFILE_ValueToString(Protocol->Profile, TableId, Item, TempValue, p , &len))
 		{
-			if (PROFILE_ValueToString(Protocol->Profile, TableId, Item, TempValue, p , &len) == 0)
-				p += len;
+			goto error;
 		}
+		p += len;
 	}
-	else//Ошибка установки параметров
+	else 
 	{
 		strcpy( p, "NA" );
 		p += 2;
 	}
 	*p++ = ';';
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -435,79 +358,89 @@ error:
 
 int32_t PROFILE_PROTOCOL_SetColor(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
-	uint32_t TableId = 0;
-	uint32_t Item = 0;
+	uint32_t TableIdx = 0;
+	uint32_t ParamIdx = 0;
 	uint32_t tmp;
-	uint8_t ColorDegrade; //Degrade цвет
-	uint8_t ColorFailure; //Failure цвет
-	uint32_t ParamsCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
+	uint8_t ColorDegrade; 
+	uint8_t ColorFailure; 
+	PROFILE_TABLE_T *Table;
 	int32_t error = 0;
 	char *p = rsp;
 	uint32_t CRCRead, CRCCalc;
-
-	//проверка и разбор структуры запроса
+	
+	
 	p = cmd + 2;
-	if( !StrToUint( p, &TableId, ';' ) )
+	if( !StrToUint( p, &TableIdx, ';' ) )
 		error = 1;
 	if( ( p = strchr( p, ';' ) ) == NULL )
-		error = 1;		//;Конец таблицы
-	if( !StrToUint( p + 1, &Item, ';' ) )
+		error = 1;		
+	if( !StrToUint( p + 1, &ParamIdx, ';' ) )
 		error = 1;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
-		error = 1;		//;Конец индекса
+		error = 1;		
 	if( !StrToUint( p + 1, &tmp, ';' ) )
 		error = 1; 
 	ColorDegrade = tmp;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
-		error = 1;		//;Конец цвета degrade
+		error = 1;		
 	if( !StrToUint( p + 1, &tmp, ';' ) )
 		error = 1;
 	ColorFailure = tmp;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
-		error = 1;		//;Конец цвета failure
+		error = 1;		
 	if( strchr( p + 1, ';' ) )
-		error = 1;			 // ; на конце CRC быть не должно
-	if( p && !error )//успешно найдены точно 4 символа ";"
+		error = 1;			 
+	if( p && !error )
 	{	
-		//Проверка контрольной суммы	
+		
 		p++;
 		if( !StrToUint( p, &CRCRead, ';' ) ) 
 			CRCRead = 0xFFFFFFFF;
 		CRCCalc = Calc_CRC16_ASCII( cmd, p - cmd );
 		*--p = 0;
 		if( CRCRead != CRCCalc )
-			error = 1; //Неверная контрольная сумма
+			error = 1; 
 	}
-	else error = 1;
+	else 
+	{
+		error = 1;
+	}
 
 	memcpy(rsp, cmd, 2);
 	p = rsp + 2;
-	// установка при отсутствии ошибок в запросе
-	if( !error && Protocol->Profile->SetEnable && TableId == 2 && Item && Item <= ParamsCnt)
+	
+	if (PROFILE_GetTable(Protocol->Profile, TableIdx, &Table))
+		goto error;
+	
+	
+	if( !error && Protocol->SetEnable && TableIdx == PROFILE_TABLE_2 && ParamIdx && ParamIdx <= Table->ParamsCnt)
 	{
-		if (PROFILE_SetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure))
+		if (PROFILE_SetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, ParamIdx, ColorDegrade, ColorFailure))
 			goto error;
-		PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
-		if (PROFILE_GetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, Item, &ColorDegrade, &ColorFailure))
+		if (Protocol->SaveEnable)
+		{
+			PROFILE_FLASH_UpdateConfigs(Protocol->ProfileFlash);
+		}
+		if (PROFILE_GetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, ParamIdx, &ColorDegrade, &ColorFailure))
 			goto error;
-		p = UintToStr( p, TableId );
+		p = UintToStr( p, TableIdx );
 		*p++ = ';';
-		p = UintToStr( p, Item );
+		p = UintToStr( p, ParamIdx );
 		*p++ = ';';
 		p = UintToStr( p, ColorDegrade ); 
 		*p++ = ';';
 		p = UintToStr( p, ColorFailure );
 		*p++ = ';';
 	}
-	else//Ошибка установки
+	else
 	{
-		p = UintToStr( p, TableId );
+		p = UintToStr( p, TableIdx );
 		*p++ = ';';
-		p = UintToStr( p, Item );
+		p = UintToStr( p, ParamIdx );
 		strcpy( p, ";NA;" ); 
 		p += 4;
 	}
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -529,28 +462,32 @@ int32_t PROFILE_PROTOCOL_GetColors(PROFILE_PROTOCOL_T *Protocol, char * cmd, cha
 {
 	uint32_t TableId;
 	char* p = rsp;
-	uint32_t ParamsCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
+	PROFILE_TABLE_T *Table;
 	uint32_t i;
-	uint8_t ColorDegrade; //Degrade цвет
-	uint8_t ColorFailure; //Failure цвет
+	uint8_t ColorDegrade; 
+	uint8_t ColorFailure; 
 	
 	if( !StrToUint( cmd + 2, &TableId, ';' ) )
 		goto error;
 	
 	memcpy(p ,cmd ,2);
 	p += 2;	
-	p = UintToStr( p, TableId );//Номер таблицы
+	p = UintToStr( p, TableId );
 	*p++ = ';';
-	if( TableId == 2 )// цвета только для динимических параметров
+	
+	if (PROFILE_GetTable(Protocol->Profile, TableId, &Table))
+		goto error;
+	
+	if( TableId == 2 )
 	{
-		//Выводим для всех параметров
-		for( i = 1; i <= ParamsCnt; i++ )
+		
+		for( i = 1; i <= Table->ParamsCnt; i++ )
 		{
 			if (PROFILE_GetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, i, &ColorDegrade, &ColorFailure))
 				goto error;
-			p = UintToStr( p, ColorDegrade );//Degrade цвет
+			p = UintToStr( p, ColorDegrade );
 			*p++ = '@';
-			p = UintToStr( p, ColorFailure );//Failure цвет
+			p = UintToStr( p, ColorFailure );
 			*p++ = ';';
 		}
 	}
@@ -559,7 +496,7 @@ int32_t PROFILE_PROTOCOL_GetColors(PROFILE_PROTOCOL_T *Protocol, char * cmd, cha
 		strcpy( p, "NA;" ); 
 		p += 3;
 	}
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -585,12 +522,12 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 	uint32_t error = 0;
 	uint32_t LangpackBlocks, LangpackType;
 
-	//проверка и разбор структуры запроса	
+	
 	p = cmd + 2;
 	if( !StrToUint( p, &Item, ';' ) )
 		error = 1;
 	if( ( p = strchr( p, ';' ) ) == NULL )
-		error = 1;		//;Конец индекса
+		error = 1;		
 	LangBlock = p + 1;
 
 	p = rsp;
@@ -615,11 +552,11 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 		}
 		else if (Item <= Protocol->LangpackBlocks)
 		{
-			if (PROFILE_FLASH_SaveLangpackData(Protocol->ProfileFlash, (Item - 1) * PROFILE_PROTOCOL_LANG_BLOCK_SIZE, LangBlock, PROFILE_PROTOCOL_LANG_BLOCK_SIZE))
+			if (PROFILE_FLASH_UpdateLangpackData(Protocol->ProfileFlash, (Item - 1) * PROFILE_PROTOCOL_LANG_BLOCK_SIZE, LangBlock, PROFILE_PROTOCOL_LANG_BLOCK_SIZE))
 				goto error;
 			if (Item == Protocol->LangpackBlocks)
 			{
-				if (PROFILE_FLASH_SaveLangpackHeader(Protocol->ProfileFlash, Protocol->LangpackBlocks, Protocol->LangpackType))
+				if (PROFILE_FLASH_UpdateLangpackHeader(Protocol->ProfileFlash, Protocol->LangpackBlocks, Protocol->LangpackType))
 					goto error;
 			}
 			p = UintToStr( p, Item );
@@ -632,13 +569,13 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 		}
 	}
 	else 
-	{// ответ об ошибке
+	{
 error:
 		p = UintToStr( p, Item );
 		strcpy( p, ";NA;" );
 		p += 4;
 	}
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -657,14 +594,14 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, 
 	p = rsp;
 	memcpy(p, cmd, 2);
 	p += 2;
-	p = UintToStr( p, Item );// начинаем формировать ответ
+	p = UintToStr( p, Item );
 	*p++ = ';';
 	
 	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE )
-	{// читаем блок из флеш, если он доступен
+	{
 		if (Item == 0)
 		{
-			if (PROFILE_FLASH_LoadLangpackHeader(Protocol->ProfileFlash, &LangpackBlocks, &LangpackType))
+			if (PROFILE_FLASH_ReadLangpackHeader(Protocol->ProfileFlash, &LangpackBlocks, &LangpackType))
 				goto error;
 			i = sprintf(p, "%d;%d", LangpackBlocks, LangpackType);
 			for (;i < PROFILE_PROTOCOL_LANG_BLOCK_SIZE; i++)
@@ -675,19 +612,19 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, 
 		}
 		else
 		{
-			if (PROFILE_FLASH_LoadLangpackData(Protocol->ProfileFlash, (Item - 1) * PROFILE_PROTOCOL_LANG_BLOCK_SIZE, p, PROFILE_PROTOCOL_LANG_BLOCK_SIZE))
+			if (PROFILE_FLASH_ReadLangpackData(Protocol->ProfileFlash, (Item - 1) * PROFILE_PROTOCOL_LANG_BLOCK_SIZE, p, PROFILE_PROTOCOL_LANG_BLOCK_SIZE))
 				goto error;
 			p += PROFILE_PROTOCOL_LANG_BLOCK_SIZE;
 		}
 	}
 	else
-	{//блок не доступен - ошибка
+	{
 error:
 		strcpy( p,"NA" );
 		p += 2;
 	}
 	*p++ =';';
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
 	return p - rsp;
@@ -805,21 +742,6 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_PROTOCOL_T *Protocol, char * cmd, cha
 			for (i = 0; i < sizeof(BSP_SW_VERSION); i++)
 			{
 				Data = ByteToHexStr(Data, BSP_SW_VERSION[i]);
-			}
-			
-			for (i = 0; i < sizeof(BSP_MCU_SW_VERSION); i++)
-			{
-				Data = ByteToHexStr(Data, BSP_MCU_SW_VERSION[i]);
-			}
-			
-			for (i = 0; i < sizeof(BSP_SW_DATE); i++)
-			{
-				Data = ByteToHexStr(Data, BSP_SW_DATE[i]);
-			}
-			
-			for (i = 0; i < sizeof(BSP_SW_TIME); i++)
-			{
-				Data = ByteToHexStr(Data, BSP_SW_TIME[i]);
 			}
 			
 			Data = WordToHexStr(Data, Protocol->Profile->ValuesCRC16);
@@ -987,33 +909,6 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_PROTOCOL_T *Protocol, char * cmd, cha
 				Data += 2;
 			}
 			
-			for (i = 0; i < sizeof(BSP_MCU_SW_VERSION); i++)
-			{
-				if (!HexStr2ToByte(Data, (uint8_t*)&c))
-					goto error;
-				if (c != BSP_MCU_SW_VERSION[i])
-					goto error;
-				Data += 2;
-			}
-			
-			for (i = 0; i < sizeof(BSP_SW_DATE); i++)
-			{
-				if (!HexStr2ToByte(Data, (uint8_t*)&c))
-					goto error;
-				if (c != BSP_SW_DATE[i])
-					goto error;
-				Data += 2;
-			}
-			
-			for (i = 0; i < sizeof(BSP_SW_TIME); i++)
-			{
-				if (!HexStr2ToByte(Data, (uint8_t*)&c))
-					goto error;
-				if (c != BSP_SW_TIME[i])
-					goto error;
-				Data += 2;
-			}
-			
 			if (!HexStr4ToWord(Data, (uint16_t*)&CRCRead))
 				goto error;
 			Protocol->Profile->ValuesCRC16 = CRCRead;
@@ -1076,21 +971,14 @@ int32_t PROFILE_PROTOCOL_ConfigExt(PROFILE_PROTOCOL_T *Protocol, char * cmd, cha
 		}
 		else
 		{
-			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table1Size )
-				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_1);
-			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size )
-				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_2);
-			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table3Size )
-				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_3);
-			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table4Size )
-				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_4);
-			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table5Size )
-				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_5);
-			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table8Size )
-				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_8);
-			if (Protocol->Profile->Descr[Protocol->Profile->Idx]->Table103Size )
-				Protocol->Profile->TablesChanges |= (1 << PROFILE_TABLE_103);
-			PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
+			for (i = 0; i < Protocol->Profile->Descr[Protocol->Profile->Idx]->TablesCnt; i++)
+			{
+				Protocol->Profile->TablesChanges |= PROFILE_TABLE_CNANGE_MASK(Protocol->Profile->Descr[Protocol->Profile->Idx]->Tables[i]->Index);
+			}
+			if (Protocol->SaveEnable)
+			{
+				PROFILE_FLASH_UpdateConfigs(Protocol->ProfileFlash);
+			}
 			Protocol->Profile->ValuesLock = 0;			
 			*p++ = 'O';
 			*p++ = 'K';
@@ -1122,62 +1010,263 @@ error:
 	return p - rsp;
 }
 
+static uint32_t PROFILE_PROTOCOL_GetUsers(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
+{
+	USER_T User;
+	char *p = rsp;
+	uint32_t i;
+	uint16_t CalcCRC16;
+	
+	memcpy( p, cmd, 2 );
+	p += 2;
+	
+	p += sprintf(p, "%d;", USER_MAX_CNT);
+	for (i = 0; i < USER_MAX_CNT; i++)
+	{
+		USER_GetUserByIndex(i, &User);
+		CalcCRC16 = Calc_CRC16((char*)&User, sizeof(User), 0);
+		if (Protocol->UsersCrc16[i] != CalcCRC16)
+		{
+			p += sprintf(p, "%d;", i + 1);
+			Protocol->UsersCrc16[i] = CalcCRC16;
+		}
+	}
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+}
+
+static uint32_t PROFILE_PROTOCOL_GetUserAttr(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
+{
+	USER_T User;
+	char *c, *p = rsp;
+	uint32_t UserIdx;
+	
+	memcpy( p, cmd, 2 );
+	p += 2;
+	
+	UserIdx = strtoul(cmd + 2, &c, 10);
+	if( *c != '\r' )
+		goto error;
+	
+	p += sprintf(p, "%d;", UserIdx);
+	if (UserIdx == 0)
+	{
+		p += sprintf(p, "login;passhash;group;name;email;tel;snmphash;");
+	}
+	else if ((UserIdx > 0) & (UserIdx <= USER_MAX_CNT))
+	{
+		USER_GetUserByIndex(UserIdx - 1, &User);
+		p += sprintf(p, "%s;%s;%s;%s;%s;%s;%s;", User.Login, User.PassHash, User.Group, User.Name, User.Email, User.Tel, User.SnmpHash);
+	}
+	else
+	{
+		p += sprintf(p, "NA;");
+	}
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+	
+error:
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ =';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+}
+
+static uint32_t PROFILE_PROTOCOL_SetUserAttr(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp )
+{
+	USER_T User;
+	char *c1, *c2, *p = rsp;
+	uint32_t UserIdx;
+	uint32_t len;
+	uint16_t ReadCrc16, CalcCrc16;
+	
+	memcpy( p, cmd, 2 );
+	p += 2;
+	
+	c1 = cmd + 2;
+	UserIdx = strtoul(cmd + 2, &c2, 10);
+	if( *c2 != ';' )
+		goto error;
+	
+	c1 = c2 + 1;
+	c2 = strchr(c1, ';');
+	if (*c2 != ';')
+		goto error;
+	len = c2 - c1;
+	if (len >= sizeof(User.Login))
+		goto error;
+	memcpy(User.Login, c1, len);
+	User.Login[len] = 0;
+	
+	c1 = c2 + 1;
+	c2 = strchr(c1, ';');
+	if (*c2 != ';')
+		goto error;
+	len = c2 - c1;
+	if (len >= sizeof(User.PassHash))
+		goto error;
+	memcpy(User.PassHash, c1, len);
+	User.PassHash[len] = 0;
+	
+	c1 = c2 + 1;
+	c2 = strchr(c1, ';');
+	if (*c2 != ';')
+		goto error;
+	len = c2 - c1;
+	if (len >= sizeof(User.Group))
+		goto error;
+	memcpy(User.Group, c1, len);
+	User.Group[len] = 0;
+	
+	c1 = c2 + 1;
+	c2 = strchr(c1, ';');
+	if (*c2 != ';')
+		goto error;
+	len = c2 - c1;
+	if (len >= sizeof(User.Name))
+		goto error;
+	memcpy(User.Name, c1, len);
+	User.Name[len] = 0;
+	
+	c1 = c2 + 1;
+	c2 = strchr(c1, ';');
+	if (*c2 != ';')
+		goto error;
+	len = c2 - c1;
+	if (len >= sizeof(User.Email))
+		goto error;
+	memcpy(User.Email, c1, len);
+	User.Email[len] = 0;
+	
+	c1 = c2 + 1;
+	c2 = strchr(c1, ';');
+	if (*c2 != ';')
+		goto error;
+	len = c2 - c1;
+	if (len >= sizeof(User.Tel))
+		goto error;
+	memcpy(User.Tel, c1, len);
+	User.Tel[len] = 0;
+	
+	c1 = c2 + 1;
+	c2 = strchr(c1, ';');
+	if (*c2 != ';')
+		goto error;
+	len = c2 - c1;
+	if (len >= sizeof(User.SnmpHash))
+		goto error;
+	memcpy(User.SnmpHash, c1, len);
+	User.SnmpHash[len] = 0;
+	
+	c1 = c2 + 1;
+	ReadCrc16 = strtoul(c1, &c2, 10);
+	if( *c2 != '\r' )
+		goto error;
+	
+	CalcCrc16 = Calc_CRC16(cmd, c1 - cmd, 0);
+	if (CalcCrc16 != ReadCrc16)
+		goto error;
+	
+	p += sprintf(p, "%d;", UserIdx);
+	if ((UserIdx > 0) & (UserIdx <= USER_MAX_CNT))
+	{
+		if (USER_UpdateUserByIndex(UserIdx - 1, &User))
+			goto error;
+		p += sprintf(p, "OK;");
+	}
+	else
+	{
+		p += sprintf(p, "NA;");
+	}
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+	
+error:
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ =';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+}
+
 void PROFILE_PROTOCOL_Init(PROFILE_PROTOCOL_T *Protocol, PROFILE_T *Profile, BOOTLOADER_T *Bootloader, PROFILE_FLASH_T *ProfileFlash)
 {
 	Protocol->Profile = Profile;
 	Protocol->Bootloader = Bootloader;
 	Protocol->ProfileFlash = ProfileFlash;
+	Protocol->SetEnable = 0;
+	Protocol->SaveEnable = 1;
 }
 
 uint32_t PROFILE_PROTOCOL_Command(PROFILE_PROTOCOL_T *Protocol, char *cmd, char *rsp, uint32_t *complete)
 {
 	uint32_t len = 0;
 	
-	switch( cmd[ 1 ] )//Команда
+	switch( cmd[ 1 ] )
 	{
-		case PROFILE_PROTOCOL_CMD_GET_CLASS://Чтение класса устройства:
+		case PROFILE_PROTOCOL_CMD_GET_CLASS:
 			len = PROFILE_PROTOCOL_GetClass(Protocol, cmd, rsp);
 			break;
-		case PROFILE_PROTOCOL_CMD_GET_CLASS_EXT://Расширенное чтение класса устройства:
+		case PROFILE_PROTOCOL_CMD_GET_CLASS_EXT:
 			len = PROFILE_PROTOCOL_GetClassExt(Protocol, cmd, rsp);
 			break; 
-		case PROFILE_PROTOCOL_CMD_SET_ACCESS://Разрешить запись в устройство
+		case PROFILE_PROTOCOL_CMD_SET_ACCESS:
 			len = PROFILE_PROTOCOL_SetAccess(Protocol, cmd, rsp);
 			break;
-		case PROFILE_PROTOCOL_CMD_SET_ACCESS_EXT://Расширенное разрешение на запись в устройство
+		case PROFILE_PROTOCOL_CMD_SET_ACCESS_EXT:
 			len = PROFILE_PROTOCOL_SetAccessExt(Protocol, cmd, rsp);
 			break;
 		case PROFILE_PROTOCOL_CMD_GET_VALUES_1:
-		case PROFILE_PROTOCOL_CMD_GET_VALUES_2://Чтение параметров без раскраски, с раскраской 
+		case PROFILE_PROTOCOL_CMD_GET_VALUES_2:
 			len = PROFILE_PROTOCOL_GetParams(Protocol, cmd, rsp);
 			break;
 		case PROFILE_PROTOCOL_CMD_SET_VALUE_1:
-		case PROFILE_PROTOCOL_CMD_SET_VALUE_2://Запись парамерта в профиль
+		case PROFILE_PROTOCOL_CMD_SET_VALUE_2:
 			len = PROFILE_PROTOCOL_SetParam(Protocol, cmd, rsp);
 			break;
-		case PROFILE_PROTOCOL_CMD_GET_PROFILE://Запрос строки из профиля
+		case PROFILE_PROTOCOL_CMD_GET_PROFILE:
 			len = PROFILE_PROTOCOL_GetProfile(Protocol, cmd, rsp);
 			break;
-		case PROFILE_PROTOCOL_CMD_SET_COLOR://Запись цветов	состояния
+		case PROFILE_PROTOCOL_CMD_SET_COLOR:
 			len = PROFILE_PROTOCOL_SetColor(Protocol, cmd, rsp);
 			break;
-		case PROFILE_PROTOCOL_CMD_GET_COLORS://Чтение цветов	состояния
+		case PROFILE_PROTOCOL_CMD_GET_COLORS:
 			len = PROFILE_PROTOCOL_GetColors(Protocol, cmd, rsp);
 			break;
-		case PROFILE_PROTOCOL_CMD_WRITE_LANG://Запись языкового пакета
+		case PROFILE_PROTOCOL_CMD_WRITE_LANG:
 			len = PROFILE_PROTOCOL_WriteLangpack(Protocol, cmd, rsp);
 			break;
-		case PROFILE_PROTOCOL_CMD_READ_LANG://Чтение языкового пакета
+		case PROFILE_PROTOCOL_CMD_READ_LANG:
 			len = PROFILE_PROTOCOL_ReadLangpack(Protocol, cmd, rsp);
 			break;
 		case PROFILE_PROTOCOL_CMD_UPDATE_FW:
 			len = BOOTLOADER_PROTOCOL_UpdateFw(Protocol->Bootloader, cmd, rsp, complete);
 			break;
-		case PROFILE_PROTOCOL_CMD_CONFIG://Расширенное чтение/запись конфигурации устройства
+		case PROFILE_PROTOCOL_CMD_CONFIG:
 			len = PROFILE_PROTOCOL_ConfigExt(Protocol, cmd, rsp);
 			break;
+		case PROFILE_PROTOCOL_CMD_GET_USERS:
+			len = PROFILE_PROTOCOL_GetUsers(Protocol, cmd, rsp);
+			break;
+		case PROFILE_PROTOCOL_CMD_GET_USER_ATTR:
+			len = PROFILE_PROTOCOL_GetUserAttr(Protocol, cmd, rsp);
+			break;
+		case PROFILE_PROTOCOL_CMD_SET_USER_ATTR:
+			len = PROFILE_PROTOCOL_SetUserAttr(Protocol, cmd, rsp);
+			break;
 	}
-	if( len == 0 )// если нет ответа, отвечаем об ошибке
+	if( len == 0 )
 	{
 		memcpy(rsp, cmd, 2);
 		strcpy( rsp + 2, "NA\r" );

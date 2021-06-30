@@ -106,7 +106,7 @@ static int32_t SFP_UpdateRDT(SFP_T *Dev)
 	Addr = 131;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)&Data, 2))
 		return -1;
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Update RDT: %.2f", Dev->RDT);
+	LOG_Info(Dev->DevName, "", "RDTUpdate", "%.2f", Dev->RDT);
 	
 	return 0;
 }
@@ -140,7 +140,7 @@ int32_t SFP_SetRDT(SFP_T *Dev, float RDT)
 		goto error;
 	Dev->RDT = RDT;
 	
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Set RDT: %.2f", Dev->RDT);	
+	LOG_Info(Dev->DevName, "", "RDTUpdate", "%.2f", Dev->RDT);
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 
@@ -257,7 +257,7 @@ static int32_t SFP_UpdateFreq(SFP_T *Dev)
 	Addr = 144;
 	if (I2C_Sequential_Transmit(SFP_I2C(Dev),0xA2, &Addr, 1, (char*)Data, 2))
 		return -1;
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Update Freq: %d", Dev->Freq.Cur);
+	LOG_Info(Dev->DevName, "", "FreqUpdate", "%d", Dev->Freq.Cur);
 	
 	return 0;
 }
@@ -295,7 +295,7 @@ int32_t SFP_SetFreq(SFP_T *Dev, uint32_t Freq)
 	Dev->Freq.Channel = Channel;
 	Dev->Freq.Cur = Freq;
 	
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Set Freq: %d", Dev->Freq.Cur);	
+	LOG_Info(Dev->DevName, "", "FreqUpdate", "%d", Dev->Freq.Cur);
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 
@@ -309,7 +309,7 @@ int32_t SFP_ConfigFreq(SFP_T *Dev, uint32_t Freq)
 	if (!Dev)
 		return -1;	
 	if (BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return -1;	
+		return -1;
 	if (!(Dev->Info.ProductOpts & SFP_PRODUCT_OPTS_TX_TUNABLE_MASK))
 		return -1;	
 	if ((Freq < Dev->Freq.Min) || (Freq > Dev->Freq.Max) ||(Freq % Dev->Freq.Spacing))
@@ -476,8 +476,8 @@ static int32_t SFP_UpdateTxDisable(SFP_T *Dev)
 	if (TxDisable != Dev->Pin.TxDisable)
 	{
 		if (SFP_SetPinState(Dev, SFP_PIN_TX_DISABLE, Dev->Pin.TxDisable))
-			return -1;		
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Update TxDisable: %d", Dev->Pin.TxDisable);
+			return -1;	
+		LOG_Info(Dev->DevName, "", "TxDisableUpdate", "%d", Dev->Pin.TxDisable);
 	}
 	
 	return 0;
@@ -495,7 +495,7 @@ int32_t SFP_SetTxDisable(SFP_T *Dev, uint32_t TxDisable)
 	if (SFP_SetPinState(Dev, SFP_PIN_TX_DISABLE, TxDisable))
 		goto error;
 	Dev->Pin.TxDisable = TxDisable;
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Set TxDisable: %d", Dev->Pin.TxDisable);
+	LOG_Info(Dev->DevName, "", "TxDisableUpdate", "%d", Dev->Pin.TxDisable);
 	
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
@@ -531,7 +531,7 @@ static int32_t SFP_UpdateRateSel(SFP_T *Dev)
 	{
 		if (SFP_SetPinState(Dev, SFP_PIN_RATE_SEL, Dev->Pin.RateSel))
 			return -1;
-		LOG_Info("BSP", Dev->DevName, Dev->DevId, "Update RateSel: %d", Dev->Pin.RateSel);
+		LOG_Info(Dev->DevName, "", "RateSelUpdate", "%d", Dev->Pin.RateSel);
 	}
 	
 	return 0;
@@ -549,7 +549,7 @@ int32_t SFP_SetRateSel(SFP_T *Dev, uint32_t RateSel)
 	if (SFP_SetPinState(Dev, SFP_PIN_RATE_SEL, RateSel))
 		goto error;
 	Dev->Pin.RateSel = RateSel;
-	LOG_Info("BSP", Dev->DevName, Dev->DevId, "Set RateSel: %d", Dev->Pin.RateSel);
+	LOG_Info(Dev->DevName, "", "RateSelUpdate", "%d", Dev->Pin.RateSel);
 	
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
@@ -643,7 +643,7 @@ int32_t SFP_Init(SFP_T *Dev)
 		goto reset;
 	
 	if (SFP_InitPin(Dev, SFP_PIN_TX_DISABLE))
-		goto error;
+		goto reset;
 	if (SFP_GetPinState(Dev, SFP_PIN_TX_DISABLE, &Dev->Pin.TxDisable))
 		goto error;
 	

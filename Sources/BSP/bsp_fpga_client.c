@@ -12,14 +12,12 @@ FPGA_CLIENT_ADM_10_T fpga_client_adm_10[BSP_FPGA_CLIENT_CNT] =
 {
 	{
 		.DevName = "FPGA_CLIENT_1_ADM_10",
-		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
 	},
 	{
 		.DevName = "FPGA_CLIENT_2_ADM_10",
-		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(1),
@@ -30,14 +28,12 @@ FPGA_CLIENT_AGG_2X10_BS_T fpga_client_agg_2x10_bs[BSP_FPGA_CLIENT_CNT] =
 {
 	{
 		.DevName = "FPGA_CLIENT_1_AGG_2X10_BS",
-		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
 	},
 	{
 		.DevName = "FPGA_CLIENT_2_AGG_2X10_BS",
-		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(1),
@@ -48,14 +44,12 @@ FPGA_CLIENT_AGG_2X10_EFEC_T fpga_client_agg_2x10_efec[BSP_FPGA_CLIENT_CNT] =
 {
 	{
 		.DevName = "FPGA_CLIENT_1_AGG_2X10_EFEC",
-		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
 	},
 	{
 		.DevName = "FPGA_CLIENT_1_AGG_2X10_EFEC",
-		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(1),
@@ -66,14 +60,12 @@ FPGA_CLIENT_ADM_2_5_T fpga_client_adm_2_5[BSP_FPGA_CLIENT_CNT] =
 {
 	{
 		.DevName = "FPGA_CLIENT_1_ADM_2_5",
-		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(0),
 	},
 	{
 		.DevName = "FPGA_CLIENT_2_ADM_2_5",
-		.DevId = "",
 		.InitContErrThr = 10,
 		.UpdateContErrThr = 10,
 		.BaseAddr = BSP_FPGA_CLIENT_BASE_ADDR(1),

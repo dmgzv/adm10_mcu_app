@@ -101,9 +101,9 @@ if __name__ == "__main__":
     print("Copy " + lng_utf8_file_name + " -> " + copy_file_name)
     copyfile(lng_utf8_file_name, copy_file_name)
 
-    copy_file_name = "Release/Web/" + info.project + "__MCU__Web__" + info.mcu_sw_version.replace(".", "_") + ".bin"
-    print("Copy " + web_file_name + " -> " + copy_file_name)
-    copyfile(web_file_name, copy_file_name)
+##    copy_file_name = "Release/Web/" + info.project + "__MCU__Web__" + info.mcu_sw_version.replace(".", "_") + ".bin"
+##    print("Copy " + web_file_name + " -> " + copy_file_name)
+##    copyfile(web_file_name, copy_file_name)
 
     copy_file_name = "Release/Update/" + info.project + "__MCU__Update__" + info.mcu_sw_version.replace(".", "_") + ".hex"
     print("Copy " + img_hex_file_name + " -> " + copy_file_name)

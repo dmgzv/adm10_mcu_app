@@ -8,8 +8,7 @@
 
 S29GL01GS_T s29gl01gs =
 {
-	.DevName = S29G101GS_DEV_NAME,
-	.DevId = BSP_FLASH_S29GL01GS_ID,
+	.DevName = S29G101GS_DEV_NAME"_"BSP_FLASH_S29GL01GS_ID,
 	.InitContErrThr = 0,
 	.UpdateContErrThr = BSP_DEV_CONT_ERR_THR_INF,
 };

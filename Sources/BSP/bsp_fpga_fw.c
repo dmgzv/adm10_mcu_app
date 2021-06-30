@@ -10,7 +10,6 @@
 FPGA_FW_T fpga_fw =
 {
 	.DevName = "FPGA_FW",
-	.DevId = "",
 	.InitContErrThr = 0,
 	.UpdateContErrThr = 0,
 	.Status = 0,

@@ -11,7 +11,6 @@
 FPGA_LINE_ADM_10_T fpga_line_adm_10  =
 {
 	.DevName = "FPGA_LINE_ADM_10",
-	.DevId = "",
 	.InitContErrThr = 10,
 	.UpdateContErrThr = 10,
 	.BaseAddr = BSP_FPGA_LINE_BASE_ADDR,
@@ -20,7 +19,6 @@ FPGA_LINE_ADM_10_T fpga_line_adm_10  =
 FPGA_LINE_AGG_2X10_BS_T fpga_line_agg_2x10_bs  =
 {
 	.DevName = "FPGA_LINE_AGG_2X10_BS",
-	.DevId = "",
 	.InitContErrThr = 10,
 	.UpdateContErrThr = 10,
 	.BaseAddr = BSP_FPGA_LINE_BASE_ADDR,
@@ -29,7 +27,6 @@ FPGA_LINE_AGG_2X10_BS_T fpga_line_agg_2x10_bs  =
 FPGA_LINE_AGG_2X10_EFEC_T fpga_line_agg_2x10_efec  =
 {
 	.DevName = "FPGA_LINE_AGG_2X10_EFEC",
-	.DevId = "",
 	.InitContErrThr = 10,
 	.UpdateContErrThr = 10,
 	.BaseAddr = BSP_FPGA_LINE_BASE_ADDR,

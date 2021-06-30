@@ -176,16 +176,14 @@ static const uint32_t bsp_clk_si5332_cfg_efec_size[BSP_CLK_SI5332_CNT][BSP_CLK_S
 SI5332_T si5332[BSP_CLK_SI5332_CNT] =
 {
 	{
-		.DevName = SI5332_DEV_NAME,
-		.DevId = BSP_CLK_SI5332_1_ID,
+		.DevName = SI5332_DEV_NAME"_"BSP_CLK_SI5332_1_ID,
 		.InitContErrThr = 3,
 		.UpdateContErrThr = 3,
 		.I2C = BSP_CLK_SI5332_1_I2C,
 		.Addr = BSP_CLK_SI5332_1_I2C_ADDR,
 	},
 	{
-		.DevName = SI5332_DEV_NAME,
-		.DevId = BSP_CLK_SI5332_2_ID,
+		.DevName = SI5332_DEV_NAME"_"BSP_CLK_SI5332_2_ID,
 		.InitContErrThr = 3,
 		.UpdateContErrThr = 3,
 		.I2C = BSP_CLK_SI5332_2_I2C,
