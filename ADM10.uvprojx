@@ -961,6 +961,11 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_enums.c</FilePath>
             </File>
+            <File>
+              <FileName>profile_adm10_ps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_ps.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2309,6 +2314,11 @@
               <FileName>profile_adm10_enums.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_enums.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_ps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_ps.c</FilePath>
             </File>
           </Files>
         </Group>
