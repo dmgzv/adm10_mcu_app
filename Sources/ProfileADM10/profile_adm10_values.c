@@ -1382,7 +1382,7 @@ const PROFILE_ADM10_VALUES_CALIB_T ProfileADM10ValuesCalibDefault = {
     1000,
     20,
     200,
-    1,
+    (192U << 24) | (168U << 16) | (180U << 8) | 1,
 };
 
 

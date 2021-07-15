@@ -4463,7 +4463,7 @@ typedef struct {
     uint32_t PollRateLimit;
     uint32_t ReadTimeout;
     uint32_t WriteDelay;
-    uint32_t RemovedDevicesStorageTime;
+    uint32_t LogServerIP;
 } PROFILE_ADM10_VALUES_CALIB_T;
 
 
