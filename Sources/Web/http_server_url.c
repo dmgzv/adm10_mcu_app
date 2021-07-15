@@ -16,6 +16,42 @@ static const HTTP_SERVER_URL_REDIRECT_T HTTP_SERVER_URL_REDIRECT_Table[] = {
 		.RedirUrl = "/index.html",
 		.RedirUrlSize = sizeof("/index.html") - 1,
 	},
+	{
+		.Url = "/auth",
+		.UrlSize = sizeof("/auth") - 1,
+		.RedirUrl = "/index.html",
+		.RedirUrlSize = sizeof("/index.html") - 1,
+	},
+	{
+		.Url = "/profile",
+		.UrlSize = sizeof("/profile") - 1,
+		.RedirUrl = "/index.html",
+		.RedirUrlSize = sizeof("/index.html") - 1,
+	},
+	{
+		.Url = "/stat",
+		.UrlSize = sizeof("/stat") - 1,
+		.RedirUrl = "/index.html",
+		.RedirUrlSize = sizeof("/index.html") - 1,
+	},
+	{
+		.Url = "/update",
+		.UrlSize = sizeof("/update") - 1,
+		.RedirUrl = "/index.html",
+		.RedirUrlSize = sizeof("/index.html") - 1,
+	},
+	{
+		.Url = "/log",
+		.UrlSize = sizeof("/log") - 1,
+		.RedirUrl = "/index.html",
+		.RedirUrlSize = sizeof("/index.html") - 1,
+	},
+	{
+		.Url = "/users",
+		.UrlSize = sizeof("/users") - 1,
+		.RedirUrl = "/index.html",
+		.RedirUrlSize = sizeof("/index.html") - 1,
+	},
 };
 
 static const uint32_t HTTP_SERVER_URL_REDIRECT_TableSize = sizeof(HTTP_SERVER_URL_REDIRECT_Table) / sizeof(HTTP_SERVER_URL_REDIRECT_Table[0]);
