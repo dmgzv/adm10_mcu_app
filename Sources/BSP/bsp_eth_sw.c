@@ -90,7 +90,7 @@ void BSP_ETH_SW_Process(void)
 		}
 		else
 		{
-			KSZ8895_ConfigPortMode(&ksz8895, 1, KSZ8895_PORT_MODE_100M_FULL_DUPLEX);
+			//KSZ8895_ConfigPortMode(&ksz8895, 1, KSZ8895_PORT_MODE_100M_FULL_DUPLEX);
 			KSZ8895_Update(&ksz8895);
 		}		
 	}
