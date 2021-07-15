@@ -455,6 +455,7 @@ parse_body:
 				netbuf_delete(Inbuf);
 				goto error_400;
 			}
+			//todo: generate random salt
 			if (USER_MD5CRYPT_GenPassHash(c, "bpVng.ZK", User.PassHash))
 			{
 				netbuf_delete(Inbuf);
@@ -465,6 +466,42 @@ parse_body:
 				netbuf_delete(Inbuf);
 				goto error_500;
 			}
+		}
+		
+		jsonProp = json_getProperty( json, "passhash" );
+    if ( jsonProp )
+		{
+			if ( JSON_TEXT != json_getType( jsonProp ) )
+			{
+				netbuf_delete(Inbuf);
+				goto error_400;
+			}		
+			c = (char*)json_getValue( jsonProp );
+			len = strlen(c);
+			if (len >= sizeof(User.PassHash))
+			{
+        netbuf_delete(Inbuf);
+				goto error_400;
+			}
+			strcpy(User.PassHash, c);
+		}
+		
+		jsonProp = json_getProperty( json, "snmphash" );
+    if ( jsonProp )
+		{
+			if ( JSON_TEXT != json_getType( jsonProp ) )
+			{
+				netbuf_delete(Inbuf);
+				goto error_400;
+			}		
+			c = (char*)json_getValue( jsonProp );
+			len = strlen(c);
+			if (len >= sizeof(User.SnmpHash))
+			{
+        netbuf_delete(Inbuf);
+				goto error_400;
+			}
+			strcpy(User.SnmpHash, c);
 		}
 		
 		jsonProp = json_getProperty( json, "tel" );
