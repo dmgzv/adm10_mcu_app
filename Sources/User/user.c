@@ -416,12 +416,12 @@ int32_t USER_UpdateUserByIndex(uint32_t Idx, USER_T *User)
 	osMutexWait(UserMutexId, osWaitForever);
 	if ((Users[Idx].Login[0]) && (User->Login[0]))
 	{
-		if (__USER_UpdateUser((USER_T*)&DefaultUsers[Idx], Idx))
+		if (__USER_UpdateUser(User, Idx))
 			goto error;
 	}
 	else if ((!Users[Idx].Login[0]) && (User->Login[0]))
 	{
-		if (__USER_CreateUser((USER_T*)&DefaultUsers[Idx], Idx))
+		if (__USER_CreateUser(User, Idx))
 			goto error;
 	}
 	else if ((Users[Idx].Login[0]) && (!User->Login[0]))
