@@ -209,6 +209,23 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
  */
 #define LWIP_SO_RCVTIMEO                1
 
+/**
+ * ETHARP_SUPPORT_VLAN==1: support receiving and sending ethernet packets with
+ * VLAN header. See the description of LWIP_HOOK_VLAN_CHECK and
+ * LWIP_HOOK_VLAN_SET hooks to check/set VLAN headers.
+ * Additionally, you can define ETHARP_VLAN_CHECK to an u16_t VLAN ID to check.
+ * If ETHARP_VLAN_CHECK is defined, only VLAN-traffic for this VLAN is accepted.
+ * If ETHARP_VLAN_CHECK is not defined, all traffic is accepted.
+ * Alternatively, define a function/define ETHARP_VLAN_CHECK_FN(eth_hdr, vlan)
+ * that returns 1 to accept a packet or 0 to drop a packet.
+ */
+#define ETHARP_SUPPORT_VLAN             1
+
+extern unsigned short int bsp_eth_pin_vlan_prio_vid;
+
+#define LWIP_HOOK_VLAN_CHECK(netif, eth_hdr, vlan_hdr)		((vlan_hdr)->prio_vid == bsp_eth_pin_vlan_prio_vid)
+#define LWIP_HOOK_VLAN_SET(netif, p, src, dst, eth_type)	bsp_eth_pin_vlan_prio_vid
+
 /*
    ---------------------------------
    ---------- OS options ----------

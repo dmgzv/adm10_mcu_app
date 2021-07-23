@@ -1,6 +1,8 @@
 #include "bsp_eth_pin.h"
 #include "log.h"
 
+unsigned short int bsp_eth_pin_vlan_prio_vid;
+
 BSP_ETH_PIN_T bsp_eth_pin = {
 	.DevName = "ETH_PIN",
 };
@@ -77,10 +79,17 @@ static int32_t BSP_ETH_PIN_Update(BSP_ETH_PIN_T *Dev)
 	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_SEL_GPIO_PORT, BSP_ETH_PIN_SEL_GPIO_PIN) == GPIO_PIN_RESET ? BSP_ETH_PIN_SEL_MASK : 0;
 	
 	if (State & BSP_ETH_PIN_SEL_MASK)
-		HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_SET);
+	{
+		bsp_eth_pin_vlan_prio_vid = 0x01;
+		//HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_SET);
+	}
 	else
-		HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_RESET);
+	{
+		bsp_eth_pin_vlan_prio_vid = 0x02;
+		//HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_RESET);
+	}
 	
+	HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN, GPIO_PIN_RESET);
 	
 	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN) == GPIO_PIN_SET ? BSP_ETH_PIN_EN_MASK : 0;
