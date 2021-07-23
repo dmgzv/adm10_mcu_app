@@ -184,9 +184,25 @@ void BSP_InitSlotAddress(void)
 	{
 		if (HAL_GPIO_ReadPin((GPIO_TypeDef*)SlotAddressGPIOPort[i], SlotAddressGPIOPin[i]) == GPIO_PIN_SET)
 			Addr |= 1 << i;
+	}	
+	//if (Addr)
+	//	Addr = (Addr << 1) - 1;
+	SlotAddress = Addr;
+}
+
+void BSP_UpdateSlotAddress(void)
+{
+	uint32_t i;
+	uint8_t Addr;
+	
+	Addr = 0;
+	for (i = 0; i < BSP_SLOT_ADDR_GPIO_CNT; i++)
+	{
+		if (HAL_GPIO_ReadPin((GPIO_TypeDef*)SlotAddressGPIOPort[i], SlotAddressGPIOPin[i]) == GPIO_PIN_SET)
+			Addr |= 1 << i;
 	}
-	if (Addr)
-		Addr = (Addr << 1) - 1;
+	//if (Addr)
+	//	Addr = (Addr << 1) - 1;
 	SlotAddress = Addr;
 }
 

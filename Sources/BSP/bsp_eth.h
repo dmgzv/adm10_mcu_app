@@ -8,7 +8,7 @@
 #define IP_ADDR0 				((uint8_t) 192)
 #define IP_ADDR1 				((uint8_t) 168)
 #define IP_ADDR2  			((uint8_t) 2)
-#define IP_ADDR3(Addr)  ((uint8_t) (11 + (((Addr) - 1) * 10)))
+#define IP_ADDR3(Addr)  ((uint8_t) (9 + (((Addr) - 1) * 20)))
    
 /*NETMASK*/
 #define NETMASK_ADDR0   ((uint8_t) 255)
@@ -28,7 +28,7 @@
 #define MAC_ADDR2   		0xD5U
 #define MAC_ADDR3   		0x6FU
 #define MAC_ADDR4   		0xE0U
-#define MAC_ADDR5(Addr) (0x0B + (((Addr) - 1) * 10))
+#define MAC_ADDR5(Addr) (0x09 + (((Addr) - 1) * 20))
 
 int32_t BSP_ETH_Init(void);
 void BSP_ETH_Process(uint8_t Addr);

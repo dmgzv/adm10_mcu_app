@@ -72,6 +72,7 @@ void BSP_Init(void);
 int32_t BSP_InitInterfaces(void);
 void BSP_DeinitInterfaces(void);
 void BSP_InitSlotAddress(void);
+void BSP_UpdateSlotAddress(void);
 void BSP_InitLeds(void);
 int32_t BSP_InitMemory(void);
 void BSP_UpdateCard(void);

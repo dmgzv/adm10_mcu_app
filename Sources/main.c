@@ -190,7 +190,7 @@ static void System_Thread(void const *argument)
 	PROFILE_PROTOCOL_Init(&ProfileProtocol, &Profile, &Bootloader, &ProfileFlash);
 	
 	/* Init Profile Interface over UART*/
-	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", UART4, SlotAddress, &ProfileProtocol);
+	PROFILE_IFACE_Init(&ProfileIfaceUart4, "Profile UART4", UART4, 0x03, &ProfileProtocol);
 	WATCHDOG_Refresh();
 	
 	/* Init Shell Interface over UART*/
@@ -216,6 +216,10 @@ static void System_Thread(void const *argument)
 		
 		WATCHDOG_Refresh();
 		Time = osKernelSysTick();
+		
+		SystemThreadStage++;
+		
+		BSP_UpdateSlotAddress();
 		
 		SystemThreadStage++;
 		
