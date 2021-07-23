@@ -633,5 +633,5 @@ void HTTP_SERVER_Init(void)
    if (!sys_thread_new("HTTP", HTTP_SERVER_Thread, NULL, HTTP_SERVER_THREAD_STACK_SIZE, HTTP_SERVER_THREAD_PRIO))
 		 LOG_Error("HTTP_SERVER", "", "InitError", "");
 	 else
-		 LOG_Error("HTTP_SERVER", "", "Init", "");
+		 LOG_Info("HTTP_SERVER", "", "Init", "");
 }
