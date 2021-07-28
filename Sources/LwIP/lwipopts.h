@@ -223,7 +223,7 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 
 extern unsigned short int bsp_eth_pin_vlan_prio_vid;
 
-#define LWIP_HOOK_VLAN_CHECK(netif, eth_hdr, vlan_hdr)		((vlan_hdr)->prio_vid == bsp_eth_pin_vlan_prio_vid)
+#define LWIP_HOOK_VLAN_CHECK(netif, eth_hdr, vlan_hdr)		((vlan_hdr)->prio_vid == lwip_htons((u16_t)bsp_eth_pin_vlan_prio_vid))
 #define LWIP_HOOK_VLAN_SET(netif, p, src, dst, eth_type)	bsp_eth_pin_vlan_prio_vid
 
 /*
