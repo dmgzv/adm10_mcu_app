@@ -3,9 +3,9 @@
 
 #define BSP_PROJECT			"ADM10"
 #define BSP_PT_NUMBER		"ADM-10-SFP/SFP+-H8"
-#define BSP_SW_VERSION	"1.0.2.2-oh"
+#define BSP_SW_VERSION	"1.0.2.3-oh"
 #define BSP_HW_VERSION	"IP1459-1"
-#define BSP_MCU_SW_VERSION	"1.0.2.2-oh"
+#define BSP_MCU_SW_VERSION	"1.0.2.3-oh"
 
 #define BSP_CONFIG_PROFILES_CNT	1
 
