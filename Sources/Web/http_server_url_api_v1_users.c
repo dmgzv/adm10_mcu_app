@@ -65,33 +65,48 @@ static void HTTP_SERVER_URL_API_V1_USERS_Get(struct netconn *Conn, struct netbuf
 		return;
 	
 	UsersCnt = 0;
-	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBody(Conn, "[\r\n");
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "[\r\n"))
+		return;
 	for (i = 0; i < USER_MAX_CNT; i++)
 	{
 		if (!USER_GetUserByIndex(i, &User) && (User.Login[0]))
 		{
 			if (UsersCnt)
-				__HTTP_SERVER_WriteBody(Conn, "\t},\r\n");
-			__HTTP_SERVER_WriteBody(Conn, "\t{\r\n");
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\"login\" : \"%s\",\r\n", User.Login);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\"name\" : \"%s\",\r\n", User.Name);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\"tel\" : \"%s\",\r\n", User.Tel);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\"email\" : \"%s\",\r\n", User.Email);
+				if (__HTTP_SERVER_WriteBody(Conn, "\t},\r\n"))
+					return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t{\r\n"))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"login\" : \"%s\",\r\n", User.Login))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"name\" : \"%s\",\r\n", User.Name))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"tel\" : \"%s\",\r\n", User.Tel))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"email\" : \"%s\",\r\n", User.Email))
+				return;
 #ifndef HTTP_SERVER_HTTP_SERVER
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\"group\" : \"%s\",\r\n", User.Group);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\"passhash\" : \"%s\",\r\n", User.PassHash);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\"snmphash\" : \"%s\"\r\n", User.SnmpHash);
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"group\" : \"%s\",\r\n", User.Group))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"passhash\" : \"%s\",\r\n", User.PassHash))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"snmphash\" : \"%s\"\r\n", User.SnmpHash))
+				return;
 #else
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\"group\" : \"%s\"\r\n", User.Group);
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"group\" : \"%s\"\r\n", User.Group))
+				return;
 #endif
 			UsersCnt++;
 		}
 	}
 	if (UsersCnt)
-		__HTTP_SERVER_WriteBody(Conn, "\t}\r\n");
-	__HTTP_SERVER_WriteBody(Conn, "]\r\n");
-	__HTTP_SERVER_FinishBody(Conn);
+		if (__HTTP_SERVER_WriteBody(Conn, "\t}\r\n"))
+			return;
+	if (__HTTP_SERVER_WriteBody(Conn, "]\r\n"))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_403:
@@ -634,21 +649,33 @@ static void HTTP_SERVER_URL_API_V1_USER_Get(struct netconn *Conn, struct netbuf 
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBody(Conn, "{\r\n");
-	__HTTP_SERVER_WriteBody(Conn, "\t\"login\" : \"%s\",\r\n", User.Login);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"name\" : \"%s\",\r\n", User.Name);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"tel\" : \"%s\",\r\n", User.Tel);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"email\" : \"%s\",\r\n", User.Email);
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "{\r\n"))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"login\" : \"%s\",\r\n", User.Login))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"name\" : \"%s\",\r\n", User.Name))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"tel\" : \"%s\",\r\n", User.Tel))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"email\" : \"%s\",\r\n", User.Email))
+		return;
 #ifndef HTTP_SERVER_HTTP_SERVER
-	__HTTP_SERVER_WriteBody(Conn, "\t\"group\" : \"%s\",\r\n", User.Group);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"passhash\" : \"%s\",\r\n", User.PassHash);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"snmphash\" : \"%s\"\r\n", User.SnmpHash);
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"group\" : \"%s\",\r\n", User.Group))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"passhash\" : \"%s\",\r\n", User.PassHash))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"snmphash\" : \"%s\"\r\n", User.SnmpHash))
+		return;
 #else
-	__HTTP_SERVER_WriteBody(Conn, "\t\"group\" : \"%s\"\r\n", User.Group);
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"group\" : \"%s\"\r\n", User.Group))
+		return;
 #endif
-	__HTTP_SERVER_WriteBody(Conn, "}\r\n");
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_WriteBody(Conn, "}\r\n"))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_400:

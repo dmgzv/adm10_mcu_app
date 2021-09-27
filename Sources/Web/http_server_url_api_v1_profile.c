@@ -135,10 +135,14 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_Get(struct netconn *Conn, struct netb
 		if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 			return;
 		
-		__HTTP_SERVER_StartBody(Conn);
-		__HTTP_SERVER_WriteBodyData(Conn, (char*)Profile.Descr[Profile.Idx]->Text[line], strlen(Profile.Descr[Profile.Idx]->Text[line]));
-		__HTTP_SERVER_WriteBody(Conn, "\r\n");
-		__HTTP_SERVER_FinishBody(Conn);
+		if (__HTTP_SERVER_StartBody(Conn))
+			return;
+		if (__HTTP_SERVER_WriteBodyData(Conn, (char*)Profile.Descr[Profile.Idx]->Text[line], strlen(Profile.Descr[Profile.Idx]->Text[line])))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\r\n"))
+			return;
+		if (__HTTP_SERVER_FinishBody(Conn))
+			return;
 	}
 	else
 	{
@@ -157,13 +161,17 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_Get(struct netconn *Conn, struct netb
 		if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 			return;
 		
-		__HTTP_SERVER_StartBody(Conn);
+		if (__HTTP_SERVER_StartBody(Conn))
+			return;
 		for (i = 0; i < *Profile.Descr[Profile.Idx]->TextSize; i++)
 		{
-			__HTTP_SERVER_WriteBodyData(Conn, (char*)Profile.Descr[Profile.Idx]->Text[i], strlen(Profile.Descr[Profile.Idx]->Text[i]));
-			__HTTP_SERVER_WriteBody(Conn, "\r\n");
+			if (__HTTP_SERVER_WriteBodyData(Conn, (char*)Profile.Descr[Profile.Idx]->Text[i], strlen(Profile.Descr[Profile.Idx]->Text[i])))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\r\n"))
+				return;
 		}
-		__HTTP_SERVER_FinishBody(Conn);
+		if (__HTTP_SERVER_FinishBody(Conn))
+			return;
 	}
 	return;
 	
@@ -199,15 +207,18 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_LANGPACK_Get(struct netconn *Conn, st
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
 	for (i = 0; i < LangpackBlocks; i++)
 	{
 		if (PROFILE_FLASH_ReadLangpackData(&ProfileFlash, i * PROFILE_FLASH_LANG_BLOCK_SIZE, LangpackBlock, PROFILE_FLASH_LANG_BLOCK_SIZE))
 			return;
 		LangpackBlock[PROFILE_FLASH_LANG_BLOCK_SIZE] = 0;
-		__HTTP_SERVER_WriteBody(Conn, LangpackBlock);
+		if (__HTTP_SERVER_WriteBody(Conn, LangpackBlock))
+			return;
 	}
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 
 error_500:
@@ -290,8 +301,8 @@ write_data:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "LangpackUpdate", "");
+	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 	
 error_400:
@@ -377,34 +388,42 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Get(struct netconn *Conn, stru
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
 	
 	for (i = 0; i < sizeof(BSP_PROJECT); i++)
 	{
 		ByteToHexStr(HexStr, BSP_PROJECT[i]);
-		__HTTP_SERVER_WriteBodyData(Conn, HexStr, 2);
+		if (__HTTP_SERVER_WriteBodyData(Conn, HexStr, 2))
+			return;
 	}
 	
 	for (i = 0; i < sizeof(BSP_HW_VERSION); i++)
 	{
 		ByteToHexStr(HexStr, BSP_HW_VERSION[i]);
-		__HTTP_SERVER_WriteBodyData(Conn, HexStr, 2);
+		if (__HTTP_SERVER_WriteBodyData(Conn, HexStr, 2))
+			return;
 	}
 	
 	for (i = 0; i < sizeof(BSP_SW_VERSION); i++)
 	{
 		ByteToHexStr(HexStr, BSP_SW_VERSION[i]);
-		__HTTP_SERVER_WriteBodyData(Conn, HexStr, 2);
+		if (__HTTP_SERVER_WriteBodyData(Conn, HexStr, 2))
+			return;
 	}
 	
 	osMutexWait( Profile.Values->Mutex, osWaitForever );
 	Profile.ValuesCRC16 = Calc_CRC16( Profile.Values->Static, Profile.Descr[Profile.Idx]->StaticValuesSize, 0);
 	WordToHexStr(HexStr, Profile.ValuesCRC16);
-	__HTTP_SERVER_WriteBodyData(Conn, HexStr, 4);
+	if (__HTTP_SERVER_WriteBodyData(Conn, HexStr, 4))
+		goto write_error;
 	
 	i = 2 * (sizeof(BSP_PROJECT) + sizeof(BSP_HW_VERSION) + sizeof(BSP_SW_VERSION)) + 4;
 	for (; i < 512; i++)
-		__HTTP_SERVER_WriteBodyData(Conn, "0", 1);
+	{
+		if (__HTTP_SERVER_WriteBodyData(Conn, "0", 1))
+			goto write_error;
+	}
 	
 	if (Profile.Descr[Profile.Idx]->StaticValuesSize % 256)
 		DataSize = ((Profile.Descr[Profile.Idx]->StaticValuesSize / 256) + 1) * 256;
@@ -415,18 +434,24 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_CONFIG_Get(struct netconn *Conn, stru
 		if (i < Profile.Descr[Profile.Idx]->StaticValuesSize)
 		{
 			ByteToHexStr(HexStr, ((char*)Profile.Values->Static)[i]);
-			__HTTP_SERVER_WriteBodyData(Conn, HexStr, 2);
+			if (__HTTP_SERVER_WriteBodyData(Conn, HexStr, 2))
+				goto write_error;
 		}
 		else
 		{
-			__HTTP_SERVER_WriteBodyData(Conn, "00", 2);
+			if (__HTTP_SERVER_WriteBodyData(Conn, "00", 2))
+				goto write_error;
 		}
 	}
 	osMutexRelease( Profile.Values->Mutex );
 	
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_FinishBody(Conn))
+			return;
 	return;
 	
+write_error:
+	osMutexRelease( Profile.Values->Mutex );
+	return;
 error_403:
 	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "ConfigReadError", "Access denied");
 	__HTTP_SERVER_WriteError403(Conn);
@@ -616,8 +641,8 @@ parse_body:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "ConfigUpdate", "");
+	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 		
 error_400:
@@ -677,7 +702,8 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_Get(struct netconn *Co
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
 	for(i = 1 ; i <= Table->ParamsCnt; i++ )
 	{
 		if (PROFILE_GetState(&Profile, TableIdx, i, &State))
@@ -703,11 +729,16 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_VALUES_Get(struct netconn *Co
 			ValueStr[1] = 0x00;
 			ValueStrLen = 1;
 		}
-		__HTTP_SERVER_WriteBody(Conn, ValueStr);
+		if (__HTTP_SERVER_WriteBody(Conn, ValueStr))
+			return;
 		if (i != Table->ParamsCnt)
-			__HTTP_SERVER_WriteBody(Conn, ";");
+		{
+			if (__HTTP_SERVER_WriteBody(Conn, ";"))
+				return;
+		}
 	}
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_400:
@@ -755,16 +786,22 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_COLORS_Get(struct netconn *Co
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
 	for(i = 1 ; i <= Table->ParamsCnt; i++ )
 	{
 		if (PROFILE_GetAlarmColors(&Profile, TableIdx, i, &ColorDegrade, &ColorFailure))
 			return;
-		__HTTP_SERVER_WriteBody(Conn, "%d@%d", ColorDegrade, ColorFailure);
+		if (__HTTP_SERVER_WriteBody(Conn, "%d@%d", ColorDegrade, ColorFailure))
+			return;
 		if (i != Table->ParamsCnt)
-			__HTTP_SERVER_WriteBody(Conn, ";");
+		{
+			if (__HTTP_SERVER_WriteBody(Conn, ";"))
+				return;
+		}
 	}
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_400:
@@ -917,8 +954,8 @@ write_param:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "ParamValueUpdate", "%s;%s",Param->Name, ValueStr);
+	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 
 error_400:
@@ -1047,16 +1084,16 @@ write_param:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "ParamColorsUpdate", "%s;%d;%d",Param->Name, ColorDegrade, ColorFailure);
+	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 
 error_400:
-	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "UserCreateError", "Invalid request");
+	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "ParamColorsUpdate", "Invalid request");
 	__HTTP_SERVER_WriteError400(Conn);
 	return;
 error_403:
-	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "UserCreateError", "Access denied");
+	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "ParamColorsUpdate", "Access denied");
 	__HTTP_SERVER_WriteError403(Conn);
 	return;
 }

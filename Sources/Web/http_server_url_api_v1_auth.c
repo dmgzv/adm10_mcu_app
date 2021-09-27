@@ -115,15 +115,24 @@ parse_body:
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBody(Conn, "{\r\n");
-	__HTTP_SERVER_WriteBody(Conn, "\t\"login\" : \"%s\",\r\n", User.Login);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"name\" : \"%s\",\r\n", User.Name);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"tel\" : \"%s\",\r\n", User.Tel);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"email\" : \"%s\",\r\n", User.Email);
-	__HTTP_SERVER_WriteBody(Conn, "\t\"group\" : \"%s\"\r\n", User.Group);
-	__HTTP_SERVER_WriteBody(Conn, "}\r\n");
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "{\r\n"))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"login\" : \"%s\",\r\n", User.Login))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"name\" : \"%s\",\r\n", User.Name))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"tel\" : \"%s\",\r\n", User.Tel))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"email\" : \"%s\",\r\n", User.Email))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"group\" : \"%s\"\r\n", User.Group))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "}\r\n"))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	
 	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "Login", "");
 	return;

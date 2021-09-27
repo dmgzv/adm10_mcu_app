@@ -10,7 +10,7 @@
 
 extern BOOTLOADER_T Bootloader;
 
-#define HTTP_SERVER_URL_API_V1_UPDATE_TEMPLATE	"/api/v1/update"
+#define HTTP_SERVER_URL_API_V1_UPDATE_TEMPLATE	"/api/v1/system/update"
 #define HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_TEMPLATE	"/api/v1/update/mcu/software"
 #define HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB_TEMPLATE	"/api/v1/update/mcu/web"
 
@@ -53,48 +53,65 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_UPDATE_MCU_WEB = {
 
 static void HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(struct netconn *Conn, TFTP_BOOTLOADER_FILE_T *File)
 {
-	__HTTP_SERVER_WriteBody(Conn, "\t\t{\r\n");
-	__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"name\" : \"%s\",\r\n", File->Name);
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\t{\r\n"))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"name\" : \"%s\",\r\n", File->Name))
+		return;
 	switch (File->Status)
 	{
 		case TFTP_BOOTLOADER_FILE_STATUS_IDLE:
 		case TFTP_BOOTLOADER_FILE_STATUS_IDLE_COMPLETE:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Idle\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Idle\",\r\n"))
+				return;
 			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_IDLE_TIMEOUT:
 		case TFTP_BOOTLOADER_FILE_STATUS_IDLE_ERROR:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Error\",\r\n");
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"error\" : \"Internal error\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Error\",\r\n"))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"error\" : \"Internal error\",\r\n"))
+				return;
 			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD:
 		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_COMPLETE:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Download\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Download\",\r\n"))
+				return;
 			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_TIMEOUT:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Error\",\r\n");
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"error\" : \"Download timeout\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Error\",\r\n"))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"error\" : \"Download timeout\",\r\n"))
+				return;
 			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_DOWNLOAD_ERROR:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Error\",\r\n");
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"error\" : \"Download error\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Error\",\r\n"))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"error\" : \"Download error\",\r\n"))
+				return;
 			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_VERIFY:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Verify\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Verify\",\r\n"))
+				return;
 			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Complete\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Complete\",\r\n"))
+				return;
 			break;
 		case TFTP_BOOTLOADER_FILE_STATUS_VERIFY_TIMEOUT:
 		case TFTP_BOOTLOADER_FILE_STATUS_VERIFY_ERROR:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Error\",\r\n");
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"error\" : \"Verify error\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Error\",\r\n"))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"error\" : \"Verify error\",\r\n"))
+				return;
 			break;
 		default:
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Unknown\",\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"status\" : \"Unknown\",\r\n"))
+				return;
 			break;
 	}
-	__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"bytes\" : \"%d\"\r\n", File->Size);
-	__HTTP_SERVER_WriteBody(Conn, "\t\t}");
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"bytes\" : \"%d\"\r\n", File->Size))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\t}"))
+		return;
 }
 
 static void HTTP_SERVER_URL_API_V1_UPDATE_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
@@ -124,16 +141,21 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_Get(struct netconn *Conn, struct netbu
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBody(Conn, "{\r\n");
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "{\r\n"))
+		return;
 	if (TFTP_BOOTLOADER.Status == TFTP_BOOTLOADER_STATUS_IDLE)
 	{
-		__HTTP_SERVER_WriteBody(Conn, "\t\"status\" : \"Idle\"\r\n");
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\"status\" : \"Idle\"\r\n"))
+			return;
 	}
 	else if (TFTP_BOOTLOADER.Status == TFTP_BOOTLOADER_STATUS_IN_PROGRESS)
 	{
-		__HTTP_SERVER_WriteBody(Conn, "\t\"status\" : \"Download\",\r\n");
-		__HTTP_SERVER_WriteBody(Conn, "\t\"files\" : [\r\n");
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\"status\" : \"Download\",\r\n"))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\"files\" : [\r\n"))
+			return;
 		HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(Conn, &TFTP_BOOTLOADER.Info);
 		if (TFTP_BOOTLOADER.Info.Status == TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE)
 		{
@@ -141,18 +163,23 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_Get(struct netconn *Conn, struct netbu
 			{
 				for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 				{
-					__HTTP_SERVER_WriteBody(Conn, ",\r\n");
+					if (__HTTP_SERVER_WriteBody(Conn, ",\r\n"))
+						return;
 					HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(Conn, &TFTP_BOOTLOADER.Components[i]->Files[j]);
 				}
 			}
 		}
-		__HTTP_SERVER_WriteBody(Conn, "\r\n");
-		__HTTP_SERVER_WriteBody(Conn, "\t]\r\n");
+		if (__HTTP_SERVER_WriteBody(Conn, "\r\n"))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t]\r\n"))
+			return;
 	}
 	else if (TFTP_BOOTLOADER.Status == TFTP_BOOTLOADER_STATUS_COMPLETE)
 	{
-		__HTTP_SERVER_WriteBody(Conn, "\t\"status\" : \"Complete\",\r\n");
-		__HTTP_SERVER_WriteBody(Conn, "\t\"files\" : [\r\n");
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\"status\" : \"Complete\",\r\n"))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\"files\" : [\r\n"))
+			return;
 		HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(Conn, &TFTP_BOOTLOADER.Info);
 		if (TFTP_BOOTLOADER.Info.Status == TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE)
 		{
@@ -160,18 +187,23 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_Get(struct netconn *Conn, struct netbu
 			{
 				for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 				{
-					__HTTP_SERVER_WriteBody(Conn, ",\r\n");
+					if (__HTTP_SERVER_WriteBody(Conn, ",\r\n"))
+						return;
 					HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(Conn, &TFTP_BOOTLOADER.Components[i]->Files[j]);
 				}
 			}
 		}
-		__HTTP_SERVER_WriteBody(Conn, "\r\n");
-		__HTTP_SERVER_WriteBody(Conn, "\t]\r\n");
+		if (__HTTP_SERVER_WriteBody(Conn, "\r\n"))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t]\r\n"))
+			return;
 	}
 	else
 	{
-		__HTTP_SERVER_WriteBody(Conn, "\t\"status\" : \"Error\",\r\n");
-		__HTTP_SERVER_WriteBody(Conn, "\t\"files\" : [\r\n");
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\"status\" : \"Error\",\r\n"))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\"files\" : [\r\n"))
+			return;
 		HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(Conn, &TFTP_BOOTLOADER.Info);
 		if (TFTP_BOOTLOADER.Info.Status == TFTP_BOOTLOADER_FILE_STATUS_VERIFY_COMPLETE)
 		{
@@ -179,16 +211,21 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_Get(struct netconn *Conn, struct netbu
 			{
 				for (j = 0; j < TFTP_BOOTLOADER.Components[i]->FilesCnt; j++)
 				{
-					__HTTP_SERVER_WriteBody(Conn, ",\r\n");
+					if (__HTTP_SERVER_WriteBody(Conn, ",\r\n"))
+						return;
 					HTTP_SERVER_URL_API_V1_UPDATE_WriteFileStatus(Conn, &TFTP_BOOTLOADER.Components[i]->Files[j]);
 				}
 			}
 		}
-		__HTTP_SERVER_WriteBody(Conn, "\r\n");
-		__HTTP_SERVER_WriteBody(Conn, "\t]\r\n");
+		if (__HTTP_SERVER_WriteBody(Conn, "\r\n"))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t]\r\n"))
+			return;
 	}
-	__HTTP_SERVER_WriteBody(Conn, "}\r\n");
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_WriteBody(Conn, "}\r\n"))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_403:
@@ -397,9 +434,12 @@ static void HTTP_SERVER_URL_API_V1_UPDATE_MCU_SOFTWARE_Get(struct netconn *Conn,
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBodyData(Conn, (char*)BOOTLOADER_FW_ADDR, BOOTLOADER_FW_SIZE);
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	if (__HTTP_SERVER_WriteBodyData(Conn, (char*)BOOTLOADER_FW_ADDR, BOOTLOADER_FW_SIZE))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_403:

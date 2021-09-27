@@ -47,8 +47,10 @@ static void HTTP_SERVER_URL_API_V1_MODULES_Get(struct netconn *Conn, struct netb
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBody(Conn, "[\r\n");
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "[\r\n"))
+		return;
 	for (i = 0; i < ModulesCnt; i++)
 	{
 		if (osMutexWait(Modules[i]->DevMutexId, 1) == osOK)
@@ -60,25 +62,45 @@ static void HTTP_SERVER_URL_API_V1_MODULES_Get(struct netconn *Conn, struct netb
 		{
 			Locked = "locked";
 		}
-		__HTTP_SERVER_WriteBody(Conn, "\t{\r\n");
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"name\" : \"%s\",\r\n", Modules[i]->DevName);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"status\" : \"%s\",\r\n", BSP_DEV_GET_STATE_STR(Modules[i]));
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"init_cnt\" : \"%d\",\r\n", Modules[i]->InitCnt);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"init_err\" : \"%d\",\r\n", Modules[i]->InitErr);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"init_cont_err\" : \"%d\",\r\n", Modules[i]->InitContErr);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"init_cont_err_thr\" : \"%d\",\r\n", Modules[i]->InitContErrThr);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"update_cnt\" : \"%d\",\r\n", Modules[i]->UpdateCnt);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"update_err\" : \"%d\",\r\n", Modules[i]->UpdateErr);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"update_cont_err\" : \"%d\",\r\n", Modules[i]->UpdateContErr);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"update_cont_err_thr\" : \"%d\",\r\n", Modules[i]->UpdateContErrThr);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"lock\" : \"%s\"\r\n", Locked);
+		if (__HTTP_SERVER_WriteBody(Conn, "\t{\r\n"))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"name\" : \"%s\",\r\n", Modules[i]->DevName))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"status\" : \"%s\",\r\n", BSP_DEV_GET_STATE_STR(Modules[i])))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"init_cnt\" : \"%d\",\r\n", Modules[i]->InitCnt))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"init_err\" : \"%d\",\r\n", Modules[i]->InitErr))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"init_cont_err\" : \"%d\",\r\n", Modules[i]->InitContErr))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"init_cont_err_thr\" : \"%d\",\r\n", Modules[i]->InitContErrThr))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"update_cnt\" : \"%d\",\r\n", Modules[i]->UpdateCnt))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"update_err\" : \"%d\",\r\n", Modules[i]->UpdateErr))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"update_cont_err\" : \"%d\",\r\n", Modules[i]->UpdateContErr))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"update_cont_err_thr\" : \"%d\",\r\n", Modules[i]->UpdateContErrThr))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"lock\" : \"%s\"\r\n", Locked))
+			return;
 		if (i == (ModulesCnt - 1))
-			__HTTP_SERVER_WriteBody(Conn, "\t}\r\n");
+		{
+			if (__HTTP_SERVER_WriteBody(Conn, "\t}\r\n"))
+				return;
+		}
 		else
-			__HTTP_SERVER_WriteBody(Conn, "\t},\r\n");
+		{
+			if (__HTTP_SERVER_WriteBody(Conn, "\t},\r\n"))
+				return;
+		}
 	}	
-	__HTTP_SERVER_WriteBody(Conn, "]\r\n");
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_WriteBody(Conn, "]\r\n"))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_403:

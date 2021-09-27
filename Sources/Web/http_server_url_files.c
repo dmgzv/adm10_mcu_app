@@ -172,7 +172,8 @@ static void HTTP_SERVER_URL_FILES_Get(struct netconn *Conn, struct netbuf *Inbuf
 			return;
 	}
 	
-	__HTTP_SERVER_StartBody(Conn);
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
 	while(DataSize)
 	{
 		if (DataSize > sizeof(Buffer))
@@ -186,7 +187,8 @@ static void HTTP_SERVER_URL_FILES_Get(struct netconn *Conn, struct netbuf *Inbuf
 		DataAddr += Size;
 		DataSize -= Size;
 	}
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 }
 
 int32_t HTTP_SERVER_URL_FILES_Process(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)

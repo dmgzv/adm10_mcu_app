@@ -47,21 +47,29 @@ static void HTTP_SERVER_URL_API_V1_POWER_Get(struct netconn *Conn, struct netbuf
 		return;
 	
 	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBody(Conn, "[\r\n");
+	if (__HTTP_SERVER_WriteBody(Conn, "[\r\n"))
+		return;
 	for (i = 0; i < UCD90120A_RAILS_CNT; i++)
 	{
 		if (BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK)
 			break;
-		__HTTP_SERVER_WriteBody(Conn, "\t{\r\n");
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"config\" : \"%.3f\"\r\n,", ucd90120a.Cfg.Rail[i].VoutCmd);
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\"monitor\" : \"%.3f\"\r\n", ucd90120a.Mon.Rail[i].Vout);
+		if (__HTTP_SERVER_WriteBody(Conn, "\t{\r\n"))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"config\" : \"%.3f\"\r\n,", ucd90120a.Cfg.Rail[i].VoutCmd))
+			return;
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"monitor\" : \"%.3f\"\r\n", ucd90120a.Mon.Rail[i].Vout))
+			return;
 		if (i != (UCD90120A_RAILS_CNT - 1))
-			__HTTP_SERVER_WriteBody(Conn, "\t},\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t},\r\n"))
+				return;
 		else
-			__HTTP_SERVER_WriteBody(Conn, "\t}\r\n");
+			if (__HTTP_SERVER_WriteBody(Conn, "\t}\r\n"))
+				return;
 	}
-	__HTTP_SERVER_WriteBody(Conn, "]\r\n");
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_WriteBody(Conn, "]\r\n"))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_403:

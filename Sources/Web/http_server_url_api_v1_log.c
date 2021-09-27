@@ -7,6 +7,7 @@
 #define HTTP_SERVER_URL_API_V1_LOG_TEMPLATE	"/api/v1/log"
 
 static void HTTP_SERVER_URL_API_V1_LOG_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
+static void HTTP_SERVER_URL_API_V1_LOG_Delete(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader);
 
 const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_LOG = {
 	.Template = HTTP_SERVER_URL_API_V1_LOG_TEMPLATE,
@@ -15,7 +16,7 @@ const HTTP_SERVER_URL_T HTTP_SERVER_URL_API_V1_LOG = {
 	.Get = HTTP_SERVER_URL_API_V1_LOG_Get,
 	.Put = NULL,
 	.Post = NULL,
-	.Delete = NULL,
+	.Delete = HTTP_SERVER_URL_API_V1_LOG_Delete,
 };
 
 static void HTTP_SERVER_URL_API_V1_LOG_Get(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
@@ -42,8 +43,10 @@ static void HTTP_SERVER_URL_API_V1_LOG_Get(struct netconn *Conn, struct netbuf *
 	
 	__LinesCnt = 0;
 	LinesCnt = LOG_GetLinesCnt();
-	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBody(Conn, "{\t\"records\" : [\r\n");
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "{\t\"records\" : [\r\n"))
+		return;
 	for (i = 0; i < LinesCnt; i++)
 	{
 		LOG_GetLine(i, &LogLine);
@@ -55,20 +58,73 @@ static void HTTP_SERVER_URL_API_V1_LOG_Get(struct netconn *Conn, struct netbuf *
 		)
 		{
 			if (__LinesCnt != 0)
-				__HTTP_SERVER_WriteBody(Conn, ",\r\n");
-			__HTTP_SERVER_WriteBody(Conn, "\t\t{\r\n");
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"index\" : \"%u\",\r\n", LogLine.Index);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"timestamp\" : \"%llu\",\r\n", LogLine.TimeStamp);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"timeticks\" : \"%u\",\r\n", LogLine.TimeTicks);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"severity\" : \"%d\",\r\n", LogLine.Severity);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"category\" : \"%s\",\r\n", LogLine.Category);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"subject\" : \"%s\",\r\n", LogLine.Subject);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"operation\" : \"%s\",\r\n", LogLine.Operation);
-			__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"description\" : \"%s\"\r\n", LogLine.Description);		
-			__HTTP_SERVER_WriteBody(Conn, "\t\t}");
+				if (__HTTP_SERVER_WriteBody(Conn, ",\r\n"))
+					return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t{\r\n"))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"index\" : \"%u\",\r\n", LogLine.Index))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"timestamp\" : \"%llu\",\r\n", LogLine.TimeStamp))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"timeticks\" : \"%u\",\r\n", LogLine.TimeTicks))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"severity\" : \"%d\",\r\n", LogLine.Severity))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"category\" : \"%s\",\r\n", LogLine.Category))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"subject\" : \"%s\",\r\n", LogLine.Subject))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"operation\" : \"%s\",\r\n", LogLine.Operation))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"description\" : \"%s\"\r\n", LogLine.Description))
+				return;
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t}"))
+				return;
 			__LinesCnt++;
 		}
 	}
-	__HTTP_SERVER_WriteBody(Conn, "\r\n\t],\t\"records_cnt\" : \"%d\",\r\n\t\"records_max_cnt\" : \"%d\"\r\n}\r\n", LinesCnt, LOG_LINES_MAX_CNT);
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_WriteBody(Conn, "\r\n\t],\t\"records_cnt\" : \"%d\",\r\n\t\"records_max_cnt\" : \"%d\"\r\n}\r\n", LinesCnt, LOG_LINES_MAX_CNT))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
+}
+
+static void HTTP_SERVER_URL_API_V1_LOG_Delete(struct netconn *Conn, struct netbuf *Inbuf, HTTP_REQUEST_HEADER_T *ReqHeader)
+{
+	USER_T User;
+	HTTP_RESPONCE_HEADER_T RspHeader;
+	
+	if (__HTTP_SERVER_Authenticate(Conn, Inbuf, ReqHeader, &User))
+		return;
+	
+	if (strcmp(User.Group, USER_GROUP_SUPERUSER))
+	{
+		netbuf_delete(Inbuf);
+		goto error_403;
+	}
+	
+	if (LOG_Erase())
+		goto error_500;
+	
+	netbuf_delete(Inbuf);
+	RspHeader.Code = HTTP_RESPONCE_200_OK;
+	RspHeader.ContentType = NULL;
+	RspHeader.Charset = NULL;
+	RspHeader.ContentLength = 0;
+	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
+	RspHeader.TransferEncoding = NULL;
+	RspHeader.AllowedLen = 0;
+	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "LogDelete", "");
+	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
+		return;
+	return;
+	
+error_403:
+	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "LogDeleteError", "Access denied");
+	__HTTP_SERVER_WriteError403(Conn);
+	return;
+error_500:
+	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "LogDeleteError", "Internal error");
+	__HTTP_SERVER_WriteError500(Conn);
+	return;
 }

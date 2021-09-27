@@ -46,45 +46,65 @@ static void HTTP_SERVER_URL_API_V1_OS_Get(struct netconn *Conn, struct netbuf *I
 	if (__HTTP_SERVER_WriteHeader(Conn, &RspHeader))
 		return;
 	
-	__HTTP_SERVER_StartBody(Conn);
-	__HTTP_SERVER_WriteBody(Conn, "{\r\n");
-	__HTTP_SERVER_WriteBody(Conn, "\t\"heap\" : \"%d\",\r\n", xPortGetFreeHeapSize());
-	__HTTP_SERVER_WriteBody(Conn, "\t\"min_heap\" : \"%d\",\r\n", xPortGetMinimumEverFreeHeapSize());
+	if (__HTTP_SERVER_StartBody(Conn))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "{\r\n"))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"heap\" : \"%d\",\r\n", xPortGetFreeHeapSize()))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"min_heap\" : \"%d\",\r\n", xPortGetMinimumEverFreeHeapSize()))
+		return;
   /* The list of tasks and their status */
 	osThreadList((unsigned char *)(thread));
-  __HTTP_SERVER_WriteBody(Conn, "\t\"threads\" : [\r\n");
+  if (__HTTP_SERVER_WriteBody(Conn, "\t\"threads\" : [\r\n"))
+  	return;
 	s = thread;
 	while (*s) {
-		__HTTP_SERVER_WriteBody(Conn, "\t\t{\r\n");
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t{\r\n"))
+			return;
 		p = strchr(s, '\t');
 		*p++ = 0;
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"name\" : \"%s\",\r\n", s);
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"name\" : \"%s\",\r\n", s))
+			return;
 		s = p;
 		p = strchr(s, '\t');
 		*p++ = 0;
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"state\" : \"%s\",\r\n", s);
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"state\" : \"%s\",\r\n", s))
+			return;
 		s = p;
 		p = strchr(s, '\t');
 		*p = 0;
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"priority\" : \"%s\",\r\n", s);
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"priority\" : \"%s\",\r\n", s))
+			return;
 		s = p + 1;
 		p = strchr(s, '\t');
 		*p++ = 0;
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"stack\" : \"%s\",\r\n", s);
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"stack\" : \"%s\",\r\n", s))
+			return;
 		s = p;
 		p = strchr(s, '\r');
 		*p++ = 0;
 		*p++ = 0;
-		__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"number\" : \"%s\"\r\n", s);
+		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\t\"number\" : \"%s\"\r\n", s))
+			return;
 		s = p;
 		if (*s)
-			__HTTP_SERVER_WriteBody(Conn, "\t\t},\r\n");
+		{
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t},\r\n"))
+				return;
+		}
 		else
-			__HTTP_SERVER_WriteBody(Conn, "\t\t}\r\n");	
+		{
+			if (__HTTP_SERVER_WriteBody(Conn, "\t\t}\r\n"))
+				return;
+		}
 	}
-	__HTTP_SERVER_WriteBody(Conn, "\t]\r\n");
-	__HTTP_SERVER_WriteBody(Conn, "}\r\n");
-	__HTTP_SERVER_FinishBody(Conn);
+	if (__HTTP_SERVER_WriteBody(Conn, "\t]\r\n"))
+		return;
+	if (__HTTP_SERVER_WriteBody(Conn, "}\r\n"))
+		return;
+	if (__HTTP_SERVER_FinishBody(Conn))
+		return;
 	return;
 	
 error_403:
