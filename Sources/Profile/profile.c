@@ -404,6 +404,10 @@ int32_t PROFILE_SetParamValue(PROFILE_T *Profile, PROFILE_TABLE_PARAM_T *Param, 
 					__LOG_Add("PROFILE", __PROFILE_GetLogAccess(Param), NewColor, "", "ParamValueUpdate", "%s;%s", Param->Name, (char*)Value);
 				}
 				((char*)Value)[ PROFILE_STRING_MAX_LEN - 1 ] = 0;
+				if (State != PROFILE_STATE_OOS)
+				{
+					Profile->TablesChanges |= PROFILE_TABLE_CNANGE_MASK(Param->Table);
+				}
 			}
 			osMutexRelease( Profile->Values->Mutex );
 			break;
@@ -1061,6 +1065,8 @@ int32_t PROFILE_StringToValue(PROFILE_T *Profile, uint8_t TableIdx, uint16_t Par
 			break;
 		case PROFILE_TYPE_STRING:
 		case PROFILE_TYPE_OID:
+			if (strlen(Value) >= PROFILE_STRING_MAX_LEN)
+				return -1;
 			strncpy(Value, Str, PROFILE_STRING_MAX_LEN);
 			((char*)Value)[PROFILE_STRING_MAX_LEN - 1] = 0;
 			break;
@@ -1231,6 +1237,13 @@ int32_t PROFILE_CheckConfigValueRange(PROFILE_T *Profile, uint8_t TableIdx, uint
 				if ((*(uint64_t*)Value) < ((uint64_t*)ParamThrValues)[PROFILE_THR_HMIN])
 					return -1;
 				else if ((*(uint64_t*)Value) > ((uint64_t*)ParamThrValues)[PROFILE_THR_HMAX])
+					return -1;
+			}
+			break;
+		case PROFILE_TYPE_STRING:
+			for (i = 0; i < strlen((char*)Value); i++)
+			{
+				if (((char*)Value)[i] == ';')
 					return -1;
 			}
 			break;
