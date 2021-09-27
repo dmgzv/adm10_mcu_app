@@ -251,6 +251,7 @@ int32_t HTTP_SERVER_FILES_WriteDataSize(uint32_t DataSize)
 	Header = HTTP_SERVER_FILES_Header;
 	Header.Idx++;
 	Header.DataSize = DataSize;
+	Header.Crc16 = 0;
 	Header.Crc16 = Calc_CRC16((char*)&Header, sizeof(Header), 0);
 	if (__HTTP_SERVER_FILES_WriteRecordHeader(Header.Idx % HTTP_SERVER_FILES_RECORDS_CNT, &Header))
 		return -1;
