@@ -1241,7 +1241,7 @@ const PROFILE_ADM10_VALUES_STATIC_T ProfileADM10ValuesStaticDefault = {
     "Fryazino",
     "Horizon",
     "Fryazino",
-    "50",
+    "52",
     2,
     (192U << 24) | (168U << 16) | (180U << 8) | 10,
     (255U << 24) | (255U << 16) | (255U << 8) | 0,
