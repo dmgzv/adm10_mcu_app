@@ -655,7 +655,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGTARM</Key>
-          <Name>(1010=2332,190,2782,747,0)(1007=3407,311,3594,586,0)(1008=2962,84,3338,320,0)(1009=-1,-1,-1,-1,0)(1012=2055,169,2532,484,0)</Name>
+          <Name>(1010=990,190,1440,747,0)(1007=1253,311,1440,586,0)(1008=1064,84,1440,320,0)(1009=-1,-1,-1,-1,0)(1012=963,169,1440,484,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -668,7 +668,24 @@
           <Name>(105=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>101</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134550854</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>.\Sources\TFTP\tftp_bootloader_fpga.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\ADM10_Release\Sources/TFTP/tftp_bootloader_fpga.c\101</Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
