@@ -78,15 +78,9 @@ static int32_t BSP_ETH_PIN_Update(BSP_ETH_PIN_T *Dev)
 	State = 0;
 	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_SEL_GPIO_PORT, BSP_ETH_PIN_SEL_GPIO_PIN) == GPIO_PIN_RESET ? BSP_ETH_PIN_SEL_MASK : 0;
 	
-	if (State & BSP_ETH_PIN_SEL_MASK)
+	if ((State & BSP_ETH_PIN_SEL_MASK) != (Dev->State & BSP_ETH_PIN_SEL_MASK))
 	{
-		bsp_eth_pin_vlan_prio_vid = 0x01;
-		//HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_SET);
-	}
-	else
-	{
-		bsp_eth_pin_vlan_prio_vid = 0x02;
-		//HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_RESET);
+		LOG_Info(Dev->DevName, "", "SelPinUpdate", "%d",  (State >> BSP_ETH_PIN_SEL) & 0x01);
 	}
 	
 	HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_SET);

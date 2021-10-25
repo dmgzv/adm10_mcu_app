@@ -664,6 +664,7 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 {
 	uint32_t Mode;
 	uint32_t Si5332_1_SetEfecAdjCap, Si5332_1_SetRsfecAdjCap, Si5332_2_SetAdjCap;
+	uint32_t ChassisAddress = 1;
 	
 	PROFILE_ADM10_UpdateConfigsStage = 0;
 	
@@ -832,6 +833,26 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 		case PROFILE_ADM10_SI5332_1_SET_ADJ_CAP_ENUM_12_0:
 			si5332_cfg[1] = BSP_CLK_SI5332_12P0_CFG;
 			break;
+	}
+	if (BSP_DEV_GET_STATE(&bsp_eth_pin) == BSP_DEV_STATE_OK)
+	{
+		BSP_DEV_LOCK(&bsp_eth_pin);
+		if (SlotAddress == 1)
+		{
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2, 5 + (ChassisAddress - 1) * 20);
+		}
+		else if (SlotAddress == 2)
+		{
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2, 7 + (ChassisAddress - 1) * 20);
+		}
+		else
+		{
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2, 9 + (ChassisAddress - 1) * 20);
+		}
+		IP_ADDR4(&bsp_netif_gw, 192, 168, (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2, 1);
+		IP_ADDR4(&bsp_netif_netmask, 255, 255, 255, 0);
+		bsp_netif_vlan_prio_vid = (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2;
+		BSP_DEV_UNLOCK(&bsp_eth_pin);
 	}
 	
 	PROFILE_ADM10_UpdateConfigsStage++;

@@ -252,7 +252,7 @@ void BSP_UpdateCard(void)
 	
 	BSP_Stage++;
 	
-	BSP_ETH_Process(SlotAddress);
+	BSP_ETH_Process();
 	
 	BSP_Stage++;
 	
