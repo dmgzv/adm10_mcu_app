@@ -6,14 +6,24 @@
 #include "perf.h"
 #include <string.h>
 
-const uint16_t ProfileADM10DynamicPSStateIdx[2] = 
+const uint16_t ProfileADM10DynamicPSBlockStateIdx[2] = 
 {
-	PROFILE_ADM10_PS1STATE_IDX, PROFILE_ADM10_PS2STATE_IDX,
+	PROFILE_ADM10_PS1BLOCKSTATE_IDX, PROFILE_ADM10_PS2BLOCKSTATE_IDX,
 };
 
 const uint16_t ProfileADM10DynamicPSInVIdx[2] = 
 {
 	PROFILE_ADM10_PS1INV_IDX, PROFILE_ADM10_PS2INV_IDX,
+};
+
+const uint16_t ProfileADM10DynamicPSOutVIdx[2] = 
+{
+	PROFILE_ADM10_PS1OUTV_IDX, PROFILE_ADM10_PS2OUTV_IDX,
+};
+
+const uint16_t ProfileADM10DynamicPSOutIIdx[2] = 
+{
+	PROFILE_ADM10_PS1OUTI_IDX, PROFILE_ADM10_PS2OUTI_IDX,
 };
 
 const uint16_t ProfileADM10DynamicPSTempIdx[2] = 
@@ -40,12 +50,6 @@ const uint16_t ProfileADM10InfoPSHwNumberIdx[2] =
 {
 	PROFILE_ADM10_PS1HWNUMBER_IDX, PROFILE_ADM10_PS2HWNUMBER_IDX,
 };
-
-const uint16_t ProfileADM10InfoPSSwNumberIdx[2] = 
-{
-	PROFILE_ADM10_PS1SWNUMBER_IDX, PROFILE_ADM10_PS2SWNUMBER_IDX,
-};
-
 
 const uint16_t ProfileADM10StaticPSInVIdx[2][4] = 
 {
@@ -80,14 +84,13 @@ static void PROFILE_ADM10_PS_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint3
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSSrNumberIdx[Idx], PROFILE_STATE_IS);
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSPtNumberIdx[Idx], PROFILE_STATE_IS);
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSHwNumberIdx[Idx], PROFILE_STATE_IS);
-	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSSwNumberIdx[Idx], PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_PS_UpdateStateValue(PROFILE_T *Profile, uint32_t Idx)
 {
-	uint32_t Value = PROFILE_ADM10_PS_STATE_ENUM_OK;
+	uint32_t Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_OK;
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSStateIdx[Idx], &Value, PROFILE_STATE_IS);
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSBlockStateIdx[Idx], &Value, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_PS_UpdateInVValue(PROFILE_T *Profile, uint32_t Idx)
@@ -95,6 +98,20 @@ static void PROFILE_ADM10_PS_UpdateInVValue(PROFILE_T *Profile, uint32_t Idx)
 	float Value = 48.0f;
 
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSInVIdx[Idx], &Value, PROFILE_STATE_IS);
+}
+
+static void PROFILE_ADM10_PS_UpdateOutVValue(PROFILE_T *Profile, uint32_t Idx)
+{
+	float Value = 12.0f;
+
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSOutVIdx[Idx], &Value, PROFILE_STATE_IS);
+}
+
+static void PROFILE_ADM10_PS_UpdateOutIValue(PROFILE_T *Profile, uint32_t Idx)
+{
+	float Value = 10.0f;
+
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSOutIIdx[Idx], &Value, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_PS_UpdateTempValue(PROFILE_T *Profile, uint32_t Idx)
@@ -108,6 +125,8 @@ static void PROFILE_ADM10_PS_UpdateDynamicValues(PROFILE_T *Profile, uint32_t Id
 {
 	PROFILE_ADM10_PS_UpdateStateValue(Profile, Idx);
 	PROFILE_ADM10_PS_UpdateInVValue(Profile, Idx);
+	PROFILE_ADM10_PS_UpdateOutVValue(Profile, Idx);
+	PROFILE_ADM10_PS_UpdateOutIValue(Profile, Idx);
 	PROFILE_ADM10_PS_UpdateTempValue(Profile, Idx);
 }
 
