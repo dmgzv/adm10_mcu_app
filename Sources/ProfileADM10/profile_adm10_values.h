@@ -984,6 +984,7 @@ typedef struct {
     uint8_t ODU0_PG_8_ActiveODUkState;
     uint8_t SetDefaultState;
     uint8_t ResetState;
+    uint8_t MACAddressState;
     uint8_t SI5332_1_SetEFECAdjCapState;
     uint8_t SI5332_1_SetRSFECAdjCapState;
     uint8_t SI5332_2_SetAdjCapState;
@@ -3147,6 +3148,7 @@ typedef struct {
 } PROFILE_ADM10_VALUES_DYNAMIC_T;
 
 typedef struct {
+    char pId[PROFILE_STRING_MAX_LEN];
     char HwNumber[PROFILE_STRING_MAX_LEN];
     char SwNumber[PROFILE_STRING_MAX_LEN];
     uint32_t FormFactor;
@@ -4529,10 +4531,10 @@ typedef struct {
 } PROFILE_ADM10_VALUES_STATIC_T;
 
 typedef struct {
-    char pId[PROFILE_STRING_MAX_LEN];
     char SrNumber[PROFILE_STRING_MAX_LEN];
     uint32_t SetDefault;
     uint32_t Reset;
+    char MACAddress[PROFILE_STRING_MAX_LEN];
     uint32_t SI5332_1_SetEFECAdjCap;
     uint32_t SI5332_1_SetRSFECAdjCap;
     uint32_t SI5332_2_SetAdjCap;

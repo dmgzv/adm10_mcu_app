@@ -1,14 +1,15 @@
 #include "profile_adm10_values.h"
 
 const PROFILE_ADM10_VALUES_STATIC_T ProfileADM10ValuesStaticDefault = {
+    "ADM-10-SFP/SFP+-H8",
     "IP1459-1",
-    "1.0.1.6",
+    "",
     0,
-    "1.0.0.1",
-    "1.0.0.1",
-    "1.0.0.1",
-    "1.0.0.1",
-    "1.0.0.1",
+    "",
+    "",
+    "",
+    "",
+    "",
     "IPG Photonics",
     "PS",
     "0000-0000-0000",
@@ -1383,10 +1384,10 @@ const PROFILE_ADM10_VALUES_STATIC_T ProfileADM10ValuesStaticDefault = {
 };
 
 const PROFILE_ADM10_VALUES_CALIB_T ProfileADM10ValuesCalibDefault = {
-    "ADM-10-SFP/SFP+-H8",
     "0000-0000-0000",
     0,
     0,
+    "70:B3:D5:6F:E8:00",
     11,
     11,
     11,

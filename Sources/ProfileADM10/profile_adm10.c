@@ -1,18 +1,24 @@
 #include "profile_adm10.h"
 #include "profile_adm10_enums.h"
 #include "profile_adm10_bitmsks.h"
+#include <string.h>
 
 uint32_t PROFILE_ADM10_UpdateConfigsStage = 0;
 uint32_t PROFILE_ADM10_UpdateStateStage = 0;
 
 static void PROFILE_ADM10_UpdatepId(PROFILE_T *Profile)
 {
-	PROFILE_SetState(Profile, PROFILE_TABLE_1, PROFILE_ADM10_PID_IDX, PROFILE_STATE_IS);	
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_PID_IDX, BSP_PT_NUMBER, PROFILE_STATE_IS);	
 }
 
 static void PROFILE_ADM10_UpdateSrNumber(PROFILE_T *Profile)
 {
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, PROFILE_ADM10_SRNUMBER_IDX, PROFILE_STATE_IS);	
+}
+
+static void PROFILE_ADM10_UpdateHwNumber(PROFILE_T *Profile)
+{
+	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_HWNUMBER_IDX, BSP_HW_VERSION, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_UpdateSwNumber(PROFILE_T *Profile)
@@ -532,6 +538,10 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	
 	PROFILE_ADM10_UpdateStateStage++;
 	
+	PROFILE_ADM10_UpdateSwNumber(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_UpdateMCUSwNumber(Profile);
 	
 	PROFILE_ADM10_UpdateStateStage++;
@@ -664,11 +674,15 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 
 void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 {
+	uint32_t i;
 	uint32_t Mode;
 	uint32_t Si5332_1_SetEfecAdjCap, Si5332_1_SetRsfecAdjCap, Si5332_2_SetAdjCap;
 	uint32_t StackChassisIdx;
 	uint32_t SC1IpAddress, SC1IpMask, SC1IpGateway;
 	uint32_t SC2IpAddress, SC2IpMask, SC2IpGateway;
+	char MacAddress[PROFILE_STRING_MAX_LEN];
+	uint8_t mac[6];
+	char *c;
 	
 	PROFILE_ADM10_UpdateConfigsStage = 0;
 	
@@ -839,6 +853,22 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 			break;
 	}
 	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, PROFILE_ADM10_MACADDRESS_IDX, MacAddress))
+		return;
+	
+	c = MacAddress;
+	for (i = 0; i < 6; i++)
+	{
+		mac[i] = strtol(c, &c, 16);
+		if ((i != 5) && (*c != ':'))
+			break;
+		else if ((i == 5) && (*c != 0))
+			break;
+		else if ((i == 5) && (*c == 0))
+			memcpy(bsp_netif_mac, mac, 6);
+		c++;
+	}
+	
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_104, PROFILE_ADM10_STACKCHASSISIDX_IDX, &StackChassisIdx))
 		return;
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_104, PROFILE_ADM10_SC1IPADDRESS_IDX, &SC1IpAddress))
@@ -875,6 +905,7 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 			IP_ADDR4(&bsp_netif_netmask, 255, 255, 255, 0);
 			bsp_netif_vlan_prio_vid = (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2;
 		}
+		/*
 		else if (StackChassisIdx == 0)
 		{
 			if (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK)
@@ -892,6 +923,7 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 				bsp_netif_vlan_prio_vid = 4;
 			}
 		}
+		*/
 		BSP_DEV_UNLOCK(&bsp_eth_pin);
 	}
 	
