@@ -474,38 +474,40 @@ int32_t PROFILE_ADM10_XC_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uin
 {
 	uint32_t i;
 	
-	for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+	if (Table == PROFILE_TABLE_3)
 	{
-		if (Index == ProfileADM10ConfigODU1XCSetSrcIdx[i])
+		for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
 		{
-			if (PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(Profile, Table, Index, Value, i, Restore))
-				return -1;
-			return 0;
+			if (Index == ProfileADM10ConfigODU1XCSetSrcIdx[i])
+			{
+				if (PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(Profile, Table, Index, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			else if (Index == ProfileADM10ConfigODU1XCSetDstIdx[i])
+			{
+				if (PROFILE_ADM10_XC_CheckODU1XCSetDstValue(Profile, Table, Index, Value, i, Restore))
+					return -1;
+				return 0;
+			}
 		}
-		else if (Index == ProfileADM10ConfigODU1XCSetDstIdx[i])
+		
+		for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
 		{
-			if (PROFILE_ADM10_XC_CheckODU1XCSetDstValue(Profile, Table, Index, Value, i, Restore))
-				return -1;
-			return 0;
+			if (Index == ProfileADM10ConfigODU0XCSetSrcIdx[i])
+			{
+				if (PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(Profile, Table, Index, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			else if (Index == ProfileADM10ConfigODU0XCSetDstIdx[i])
+			{
+				if (PROFILE_ADM10_XC_CheckODU0XCSetDstValue(Profile, Table, Index, Value, i, Restore))
+					return -1;
+				return 0;
+			}
 		}
 	}
-	
-	for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
-	{
-		if (Index == ProfileADM10ConfigODU0XCSetSrcIdx[i])
-		{
-			if (PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(Profile, Table, Index, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		else if (Index == ProfileADM10ConfigODU0XCSetDstIdx[i])
-		{
-			if (PROFILE_ADM10_XC_CheckODU0XCSetDstValue(Profile, Table, Index, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-	}
-	
 	return 0;
 }
 
@@ -719,21 +721,24 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 
 int32_t PROFILE_ADM10_XC_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Index, void *Value, uint32_t Restore)
 {	
-	if (Index == PROFILE_ADM10_SETMODE_IDX)
+	if (Table == PROFILE_TABLE_3)
 	{
-		if (PROFILE_ADM10_XC_SetModeValueDependencies(Profile, Table, Index, Value, Restore))
-			return -1;
+		if (Index == PROFILE_ADM10_SETMODE_IDX)
+		{
+			if (PROFILE_ADM10_XC_SetModeValueDependencies(Profile, Table, Index, Value, Restore))
+				return -1;
+		}
+		if (Index == PROFILE_ADM10_ODU1_XC_SETFACTORY_IDX)
+		{
+			if (PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(Profile, Table, Index, Value, Restore))
+				return -1;
+		}	
+		if (Index == PROFILE_ADM10_ODU0_XC_SETFACTORY_IDX)
+		{
+			if (PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(Profile, Table, Index, Value, Restore))
+				return -1;
+		}
 	}
-	if (Index == PROFILE_ADM10_ODU1_XC_SETFACTORY_IDX)
-	{
-		if (PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(Profile, Table, Index, Value, Restore))
-			return -1;
-	}	
-	if (Index == PROFILE_ADM10_ODU0_XC_SETFACTORY_IDX)
-	{
-		if (PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(Profile, Table, Index, Value, Restore))
-			return -1;
-	}	
 	return 0;
 }
 

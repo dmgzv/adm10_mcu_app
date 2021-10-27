@@ -627,24 +627,26 @@ int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16
 
 int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
-	if ((Idx == PROFILE_ADM10_SETDEFAULT_IDX) && (!Restore))
+	if ((Table == PROFILE_TABLE_3) && (Idx == PROFILE_ADM10_SETDEFAULT_IDX) && (!Restore))
 		PROFILE_SetDefault(Profile);
 	
-	if ((Idx == PROFILE_ADM10_SETFACTORY_IDX) && (!Restore))
+	if ((Table == PROFILE_TABLE_3) && (Idx == PROFILE_ADM10_SETFACTORY_IDX) && (!Restore))
 	{
-		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_INFO))
+		if ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL)
+			PROFILE_SetFactory(Profile); 
+		else if ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_INFO)
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_1);
-		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_SETTINGS))
+		else if ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_SETTINGS)
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_3);
-		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_THRESHOLDS))
+		else if ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_THRESHOLDS)
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_4);
-		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_COLORS))
+		else if ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_COLORS)
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_2);
-		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_PORTS))
+		else if ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_PORTS)
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_103);
 	}
 	
-	if ((Idx == PROFILE_ADM10_RESET_IDX) && (!Restore))
+	if ((Table == PROFILE_TABLE_3) && (Idx == PROFILE_ADM10_RESET_IDX) && (!Restore))
 		BSP_Reset();
 	
 	if (PROFILE_ADM10_PS_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))

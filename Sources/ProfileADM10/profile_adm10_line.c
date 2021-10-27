@@ -783,53 +783,56 @@ int32_t PROFILE_ADM10_LINE_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, u
 {
 	uint32_t i, j;
 	
-	for (i = 0; i < PROFILE_ADM10_LINE_PORTS; i++)
+	if (Table == PROFILE_TABLE_3)
 	{
-		if (TableIdx == ProfileADM10ConfigLnSetStateIdx[i])
+		for (i = 0; i < PROFILE_ADM10_LINE_PORTS; i++)
 		{
-			if (PROFILE_ADM10_LINE_CheckLnSetStateValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		else if (TableIdx == ProfileADM10ConfigLnSFPEnableTxIdx[i])
-		{
-			if (PROFILE_ADM10_LINE_CheckLnSFPEnableTxValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		else if (TableIdx == ProfileADM10ConfigLnSetLoopbackIdx[i])
-		{
-			if (PROFILE_ADM10_LINE_CheckLnSetLoopbackValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		else if (TableIdx == ProfileADM10ConfigLnSFPSetFreqIdx[i])
-		{
-			if (PROFILE_ADM10_LINE_CheckLnSFPSetFreqValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		else if (TableIdx == ProfileADM10ConfigLnSFPSetFreqSpIdx[i])
-		{
-			if (PROFILE_ADM10_LINE_CheckLnSFPSetFreqSpValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		else if (TableIdx == ProfileADM10ConfigLnSetFECTypeIdx[i])
-		{
-			if (PROFILE_ADM10_LINE_CheckLnSetFECTypeValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		else
-		{
-			for (j = 0; j < 4; j++)
+			if (TableIdx == ProfileADM10ConfigLnSetStateIdx[i])
 			{
-				if (TableIdx == ProfileADM10ConfigLnOPU1SetPayloadIdx[i][j])
+				if (PROFILE_ADM10_LINE_CheckLnSetStateValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			else if (TableIdx == ProfileADM10ConfigLnSFPEnableTxIdx[i])
+			{
+				if (PROFILE_ADM10_LINE_CheckLnSFPEnableTxValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			else if (TableIdx == ProfileADM10ConfigLnSetLoopbackIdx[i])
+			{
+				if (PROFILE_ADM10_LINE_CheckLnSetLoopbackValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			else if (TableIdx == ProfileADM10ConfigLnSFPSetFreqIdx[i])
+			{
+				if (PROFILE_ADM10_LINE_CheckLnSFPSetFreqValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			else if (TableIdx == ProfileADM10ConfigLnSFPSetFreqSpIdx[i])
+			{
+				if (PROFILE_ADM10_LINE_CheckLnSFPSetFreqSpValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			else if (TableIdx == ProfileADM10ConfigLnSetFECTypeIdx[i])
+			{
+				if (PROFILE_ADM10_LINE_CheckLnSetFECTypeValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			else
+			{
+				for (j = 0; j < 4; j++)
 				{
-					if (PROFILE_ADM10_LINE_CheckLnOPU1SetPayloadValue(Profile, Table, TableIdx, Value, i, j, Restore))
-						return -1;
-					return 0;
+					if (TableIdx == ProfileADM10ConfigLnOPU1SetPayloadIdx[i][j])
+					{
+						if (PROFILE_ADM10_LINE_CheckLnOPU1SetPayloadValue(Profile, Table, TableIdx, Value, i, j, Restore))
+							return -1;
+						return 0;
+					}
 				}
 			}
 		}
@@ -1048,31 +1051,34 @@ int32_t PROFILE_ADM10_LINE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_
 {
 	uint32_t i;
 	
-	if (TableIdx == PROFILE_ADM10_SETMODE_IDX)
+	if (Table == PROFILE_TABLE_3)
 	{
-		if (PROFILE_ADM10_LINE_SetModeValueDependencies(Profile, Table, TableIdx, Value, Restore))
-			return -1;
-	}
-	
-	for (i = 0; i < PROFILE_ADM10_LINE_PORTS; i++)
-	{
-		if (TableIdx == ProfileADM10ConfigLnSetStateIdx[i])
+		if (TableIdx == PROFILE_ADM10_SETMODE_IDX)
 		{
-			if (PROFILE_ADM10_LINE_SetLnSetStateValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
+			if (PROFILE_ADM10_LINE_SetModeValueDependencies(Profile, Table, TableIdx, Value, Restore))
 				return -1;
-			return 0;
 		}
-		if (TableIdx == ProfileADM10ConfigLnOPU2SetPayloadIdx[i])
+		
+		for (i = 0; i < PROFILE_ADM10_LINE_PORTS; i++)
 		{
-			if (PROFILE_ADM10_LINE_SetLnOPU2SetPayloadDependencies(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigLnSetFactoryIdx[i])
-		{
-			if (PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
+			if (TableIdx == ProfileADM10ConfigLnSetStateIdx[i])
+			{
+				if (PROFILE_ADM10_LINE_SetLnSetStateValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			if (TableIdx == ProfileADM10ConfigLnOPU2SetPayloadIdx[i])
+			{
+				if (PROFILE_ADM10_LINE_SetLnOPU2SetPayloadDependencies(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			if (TableIdx == ProfileADM10ConfigLnSetFactoryIdx[i])
+			{
+				if (PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
 		}
 	}
 	return 0;

@@ -1149,37 +1149,40 @@ int32_t PROFILE_ADM10_CLIENT_CheckConfigValue(PROFILE_T *Profile, uint8_t Table,
 {
 	uint32_t i;
 	
-	for (i = 0; i < PROFILE_ADM10_CLIENT_PORTS; i++)
+	if (Table == PROFILE_TABLE_3)
 	{
-		if (TableIdx == ProfileADM10ConfigClSetStateIdx[i])
+		for (i = 0; i < PROFILE_ADM10_CLIENT_PORTS; i++)
 		{
-			if (PROFILE_ADM10_CLIENT_CheckClSetStateValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigClSFPEnableTxIdx[i])
-		{
-			if (PROFILE_ADM10_CLIENT_CheckClSFPEnableTxValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigClSetLoopbackIdx[i])
-		{
-			if (PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigClSetDataTypeIdx[i])
-		{
-			if (PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigClSetALSModeIdx[i])
-		{
-			if (PROFILE_ADM10_CLIENT_CheckClSetALSModeValue(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
+			if (TableIdx == ProfileADM10ConfigClSetStateIdx[i])
+			{
+				if (PROFILE_ADM10_CLIENT_CheckClSetStateValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			if (TableIdx == ProfileADM10ConfigClSFPEnableTxIdx[i])
+			{
+				if (PROFILE_ADM10_CLIENT_CheckClSFPEnableTxValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			if (TableIdx == ProfileADM10ConfigClSetLoopbackIdx[i])
+			{
+				if (PROFILE_ADM10_CLIENT_CheckClSetLoopbackValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			if (TableIdx == ProfileADM10ConfigClSetDataTypeIdx[i])
+			{
+				if (PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			if (TableIdx == ProfileADM10ConfigClSetALSModeIdx[i])
+			{
+				if (PROFILE_ADM10_CLIENT_CheckClSetALSModeValue(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
 		}
 	}
 	return 0;
@@ -1465,32 +1468,35 @@ int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint
 {
 	uint32_t i;
 	
-	if (TableIdx == PROFILE_ADM10_SETMODE_IDX)
+	if (Table == PROFILE_TABLE_3)
 	{
-		if (PROFILE_ADM10_CLIENT_SetModeValueDependencies(Profile, Table, TableIdx, Value, Restore))
-			return -1;
-		return 0;
-	}
-	
-	for (i = 0; i < PROFILE_ADM10_CLIENT_PORTS; i++)
-	{
-		if (TableIdx == ProfileADM10ConfigClSetStateIdx[i])
+		if (TableIdx == PROFILE_ADM10_SETMODE_IDX)
 		{
-			if (PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
+			if (PROFILE_ADM10_CLIENT_SetModeValueDependencies(Profile, Table, TableIdx, Value, Restore))
 				return -1;
 			return 0;
 		}
-		if (TableIdx == ProfileADM10ConfigClSetDataTypeIdx[i])
+		
+		for (i = 0; i < PROFILE_ADM10_CLIENT_PORTS; i++)
 		{
-			if (PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
-		}
-		if (TableIdx == ProfileADM10ConfigClSetFactoryIdx[i])
-		{
-			if (PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
-				return -1;
-			return 0;
+			if (TableIdx == ProfileADM10ConfigClSetStateIdx[i])
+			{
+				if (PROFILE_ADM10_CLIENT_SetClSetStateValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			if (TableIdx == ProfileADM10ConfigClSetDataTypeIdx[i])
+			{
+				if (PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
+			if (TableIdx == ProfileADM10ConfigClSetFactoryIdx[i])
+			{
+				if (PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore))
+					return -1;
+				return 0;
+			}
 		}
 	}
 	return 0;

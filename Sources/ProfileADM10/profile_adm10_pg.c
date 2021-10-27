@@ -1253,64 +1253,67 @@ int32_t PROFILE_ADM10_PG_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uin
 {
 	uint32_t i;
 	
-	for (i = 0; i < PROFILE_ADM10_ODU2_PGS; i++)
+	if (Table == PROFILE_TABLE_3)
 	{
-		if (ProfileADM10ConfigODU2PGSetTypeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU2PGSetTypeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU2PGSetModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU2PGSetModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU2PGSetMonModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU2PGSetMonModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU2PGSetRevModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU2PGSetRevModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU2PGSetPrimaryODUkIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU2PGSetPrimaryODUkValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU2PGSetProtectODUkIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU2PGSetProtectODUkValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU2PGSetWTRTmrIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU2PGSetWTRTmrValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU2PGSetHOTmrIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU2PGSetHOTmrValue(Profile, Table, TableIdx, Value, i, Restore);
-	}
-	
-	for (i = 0; i < PROFILE_ADM10_ODU1_PGS; i++)
-	{
-		if (ProfileADM10ConfigODU1PGSetTypeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU1PGSetTypeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU1PGSetModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU1PGSetModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU1PGSetMonModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU1PGSetMonModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU1PGSetRevModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU1PGSetRevModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU1PGSetPrimaryODUkValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU1PGSetProtectODUkIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU1PGSetProtectODUkValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU1PGSetWTRTmrIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU1PGSetWTRTmrValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU1PGSetHOTmrIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU1PGSetHOTmrValue(Profile, Table, TableIdx, Value, i, Restore);
-	}
-	
-	for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
-	{
-		if (ProfileADM10ConfigODU0PGSetTypeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU0PGSetTypeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU0PGSetModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU0PGSetModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU0PGSetMonModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU0PGSetMonModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU0PGSetRevModeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU0PGSetRevModeValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU0PGSetPrimaryODUkValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU0PGSetProtectODUkIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU0PGSetProtectODUkValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU0PGSetWTRTmrIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU0PGSetWTRTmrValue(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU0PGSetHOTmrIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_CheckConfigODU0PGSetHOTmrValue(Profile, Table, TableIdx, Value, i, Restore);
+		for (i = 0; i < PROFILE_ADM10_ODU2_PGS; i++)
+		{
+			if (ProfileADM10ConfigODU2PGSetTypeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU2PGSetTypeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU2PGSetModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU2PGSetModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU2PGSetMonModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU2PGSetMonModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU2PGSetRevModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU2PGSetRevModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU2PGSetPrimaryODUkIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU2PGSetPrimaryODUkValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU2PGSetProtectODUkIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU2PGSetProtectODUkValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU2PGSetWTRTmrIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU2PGSetWTRTmrValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU2PGSetHOTmrIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU2PGSetHOTmrValue(Profile, Table, TableIdx, Value, i, Restore);
+		}
+		
+		for (i = 0; i < PROFILE_ADM10_ODU1_PGS; i++)
+		{
+			if (ProfileADM10ConfigODU1PGSetTypeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU1PGSetTypeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU1PGSetModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU1PGSetModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU1PGSetMonModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU1PGSetMonModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU1PGSetRevModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU1PGSetRevModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU1PGSetPrimaryODUkValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU1PGSetProtectODUkIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU1PGSetProtectODUkValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU1PGSetWTRTmrIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU1PGSetWTRTmrValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU1PGSetHOTmrIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU1PGSetHOTmrValue(Profile, Table, TableIdx, Value, i, Restore);
+		}
+		
+		for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
+		{
+			if (ProfileADM10ConfigODU0PGSetTypeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU0PGSetTypeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU0PGSetModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU0PGSetModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU0PGSetMonModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU0PGSetMonModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU0PGSetRevModeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU0PGSetRevModeValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU0PGSetPrimaryODUkValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU0PGSetProtectODUkIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU0PGSetProtectODUkValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU0PGSetWTRTmrIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU0PGSetWTRTmrValue(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU0PGSetHOTmrIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_CheckConfigODU0PGSetHOTmrValue(Profile, Table, TableIdx, Value, i, Restore);
+		}
 	}
 	
 	return 0;
@@ -1539,31 +1542,34 @@ int32_t PROFILE_ADM10_PG_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t 
 {
 	uint32_t i;
 	
-	if (TableIdx == PROFILE_ADM10_SETMODE_IDX)
-		return PROFILE_ADM10_PG_SetConfigSetModeValueDependencies(Profile, Table, TableIdx, Value, Restore);
-	
-	for (i = 0; i < PROFILE_ADM10_ODU2_PGS; i++)
+	if (Table == PROFILE_TABLE_3)
 	{
-		if (ProfileADM10ConfigODU2PGSetTypeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_SetConfigODU2PGSetTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU2PGSetFactoryIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_SetConfigODU2PGSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
-	}
-	
-	for (i = 0; i < PROFILE_ADM10_ODU1_PGS; i++)
-	{
-		if (ProfileADM10ConfigODU1PGSetTypeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_SetConfigODU1PGSetTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU1PGSetFactoryIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_SetConfigODU1PGSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
-	}
-	
-	for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
-	{
-		if (ProfileADM10ConfigODU0PGSetTypeIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_SetConfigODU0PGSetTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
-		else if (ProfileADM10ConfigODU0PGSetFactoryIdx[i] == TableIdx)
-			return PROFILE_ADM10_PG_SetConfigODU0PGSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
+		if (TableIdx == PROFILE_ADM10_SETMODE_IDX)
+			return PROFILE_ADM10_PG_SetConfigSetModeValueDependencies(Profile, Table, TableIdx, Value, Restore);
+		
+		for (i = 0; i < PROFILE_ADM10_ODU2_PGS; i++)
+		{
+			if (ProfileADM10ConfigODU2PGSetTypeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_SetConfigODU2PGSetTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU2PGSetFactoryIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_SetConfigODU2PGSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
+		}
+		
+		for (i = 0; i < PROFILE_ADM10_ODU1_PGS; i++)
+		{
+			if (ProfileADM10ConfigODU1PGSetTypeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_SetConfigODU1PGSetTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU1PGSetFactoryIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_SetConfigODU1PGSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
+		}
+		
+		for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
+		{
+			if (ProfileADM10ConfigODU0PGSetTypeIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_SetConfigODU0PGSetTypeValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
+			else if (ProfileADM10ConfigODU0PGSetFactoryIdx[i] == TableIdx)
+				return PROFILE_ADM10_PG_SetConfigODU0PGSetFactoryValueDependencies(Profile, Table, TableIdx, Value, i, Restore);
+		}
 	}
 	return 0;
 }

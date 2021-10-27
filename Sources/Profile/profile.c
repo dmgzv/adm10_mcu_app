@@ -1275,6 +1275,8 @@ int32_t PROFILE_CheckValue(PROFILE_T *Profile, uint8_t TableIdx, uint16_t ParamI
 	{
 		if (PROFILE_CheckConfigValueRange(Profile, TableIdx, ParamIdx, Value, Restore))
 			return -1;
+		if (PROFILE_CheckConfigValue(Profile, TableIdx, ParamIdx, Value, Restore))
+			return -1;
 	}
 	return 0;
 }

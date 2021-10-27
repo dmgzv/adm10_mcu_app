@@ -109,6 +109,7 @@ typedef struct {
 typedef struct {
 	PROFILE_TABLE_PARAM;
 	const void *Thesholds;
+	const uint8_t *State;
 } PROFILE_TABLE104_PARAM_T;
 
 typedef struct {
