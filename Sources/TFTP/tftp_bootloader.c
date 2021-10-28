@@ -263,10 +263,10 @@ int32_t TFTP_BOOTLOADER_Update(char* Dir, char *Addr)
 	strncpy(TFTP_BOOTLOADER.Dir, Dir, sizeof(TFTP_BOOTLOADER.Dir) - 1);
 	TFTP_BOOTLOADER.Dir[sizeof(TFTP_BOOTLOADER.Dir) - 1] = 0;
 	LOG_Info("TFTP_BLDR", "", "UpdateStart", "%d.%d.%d.%d;%s",
-		TFTP_BOOTLOADER.Addr[0],
-		TFTP_BOOTLOADER.Addr[1],
-		TFTP_BOOTLOADER.Addr[2],
 		TFTP_BOOTLOADER.Addr[3],
+		TFTP_BOOTLOADER.Addr[2],
+		TFTP_BOOTLOADER.Addr[1],
+		TFTP_BOOTLOADER.Addr[0],
 		TFTP_BOOTLOADER.Dir
 	);	
 	
