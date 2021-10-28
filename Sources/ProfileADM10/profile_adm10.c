@@ -160,11 +160,6 @@ error:
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_CLIENT2FPGASWNUMBER_IDX, "", PROFILE_STATE_IS);
 }
 
-static void PROFILE_ADM10_UpdateHwNumber(PROFILE_T *Profile)
-{
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_HWNUMBER_IDX, BSP_HW_VERSION, PROFILE_STATE_IS);
-}
-
 static void PROFILE_ADM10_UpdateTimeValue(PROFILE_T *Profile)
 {
 	uint32_t Time;
@@ -534,7 +529,7 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	
 	PROFILE_ADM10_UpdateStateStage++;
 	
-	PROFILE_ADM10_UpdateSwNumber(Profile);
+	PROFILE_ADM10_UpdateHwNumber(Profile);
 	
 	PROFILE_ADM10_UpdateStateStage++;
 	
@@ -559,10 +554,6 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	PROFILE_ADM10_UpdateStateStage++;
 	
 	PROFILE_ADM10_UpdateClient2FPGASwNumber(Profile);
-	
-	PROFILE_ADM10_UpdateStateStage++;
-	
-	PROFILE_ADM10_UpdateHwNumber(Profile);
 	
 	PROFILE_ADM10_UpdateStateStage++;
 
