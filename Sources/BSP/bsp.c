@@ -232,7 +232,7 @@ void BSP_UpdateCard(void)
 
 	BSP_Stage = 0;
 	
-	BSP_PWR_IN_Process();
+	//BSP_PWR_IN_Process();
 	
 	BSP_Stage++;
 	

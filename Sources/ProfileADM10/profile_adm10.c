@@ -173,7 +173,7 @@ static void PROFILE_ADM10_UpdatePowerAlarmsValue(PROFILE_T *Profile)
 	uint32_t Value, i;
 	
 	Value = 0;
-	
+	/*
 	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 	{
 		Value |= PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_A | PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B;
@@ -185,7 +185,7 @@ static void PROFILE_ADM10_UpdatePowerAlarmsValue(PROFILE_T *Profile)
 		if (!(dim3r3400_power_good & (1 << 1)))
 			Value |= PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B;			
 	}
-	
+	*/
 	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 	{
 		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
@@ -215,8 +215,8 @@ static void PROFILE_ADM10_UpdateHwAlarmsValue(PROFILE_T *Profile)
 	
 	if (BSP_DEV_GET_STATE(&at45db641e) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_AT45DB641E_D94;
-	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
-		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_DIM3R3400_A5;
+	//if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
+	//	Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_DIM3R3400_A5;
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9536_D107;
 	if (BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK)
@@ -502,7 +502,7 @@ static void PROFILE_ADM10_UpdateLedsValue(PROFILE_T *Profile)
 		PROFILE_SetValue(Profile, PROFILE_TABLE_5, PROFILE_ADM10_ALARMLED_IDX, &LedColor);
 	}
 	
-	if ((BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) ||
+	if (/*(BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) ||*/
 		(BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 	{
 		BSP_LED_Set(BSP_LED_TYPE_POWER, BSP_LED_COLOR_NO);
