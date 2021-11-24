@@ -8,6 +8,7 @@
 
 //#define PROFILE_IFACE_MULTITHREAD
 
+#define PROFILE_IFACE_START_BYTE(SlotAddress)	(((SlotAddress) == 1) ? 0x81 : (((SlotAddress) == 2) ? 0x82 : 0x83))
 #define PROFILE_IFACE_STOP_BYTE					0x0D
 #define PROFILE_IFACE_CMD_MAX_SIZE			PROFILE_PROTOCOL_CMD_MAX_SIZE
 #define PROFILE_IFACE_RSP_MAX_SIZE			PROFILE_PROTOCOL_RSP_MAX_SIZE
@@ -19,7 +20,7 @@
 typedef struct {
 	PROFILE_PROTOCOL_T *Protocol;
 	USART_TypeDef *Uart;
-	uint8_t StartByte;
+	uint8_t *SlotAddress;
 #ifdef PROFILE_IFACE_MULTITHREAD
 	osThreadId ReceiveThreadId;
 	osThreadId ProcessThreadId;
@@ -46,6 +47,6 @@ typedef struct {
 #ifdef PROFILE_IFACE_MULTITHREAD
 int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ReceiveName, char *ProcessName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_PROTOCOL_T *Protocol);
 #else
-int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ThreadName, USART_TypeDef *Uart, uint8_t SlotAddress, PROFILE_PROTOCOL_T *Protocol);
+int32_t PROFILE_IFACE_Init(PROFILE_IFACE_T *Iface, char *ThreadName, USART_TypeDef *Uart, uint8_t *SlotAddress, PROFILE_PROTOCOL_T *Protocol);
 #endif 
 #endif /* __PROFILE_UART_H */
