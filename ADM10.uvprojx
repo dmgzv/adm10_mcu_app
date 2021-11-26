@@ -686,6 +686,26 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\fpga_iface.c</FilePath>
             </File>
+            <File>
+              <FileName>at24c02c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\at24c02c.c</FilePath>
+            </File>
+            <File>
+              <FileName>pca9538.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\pca9538.c</FilePath>
+            </File>
+            <File>
+              <FileName>ip1562.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\ip1562.c</FilePath>
+            </File>
+            <File>
+              <FileName>seeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\seeprom.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -850,6 +870,11 @@
               <FileName>bsp_fpga_fw.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga_fw.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_seeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_seeprom.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2040,6 +2065,26 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\fpga_iface.c</FilePath>
             </File>
+            <File>
+              <FileName>at24c02c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\at24c02c.c</FilePath>
+            </File>
+            <File>
+              <FileName>pca9538.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\pca9538.c</FilePath>
+            </File>
+            <File>
+              <FileName>ip1562.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\ip1562.c</FilePath>
+            </File>
+            <File>
+              <FileName>seeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\seeprom.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2204,6 +2249,11 @@
               <FileName>bsp_fpga_fw.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_fpga_fw.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_seeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_seeprom.c</FilePath>
             </File>
           </Files>
         </Group>

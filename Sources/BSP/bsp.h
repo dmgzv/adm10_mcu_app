@@ -29,6 +29,7 @@
 #include "bsp_eth.h"
 #include "bsp_eth_pin.h"
 #include "bsp_eth_sw.h"
+#include "bsp_seeprom.h"
 
 #define BSP_SLOT_ADDR_GPIO_CNT	4
 
