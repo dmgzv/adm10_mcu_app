@@ -1,0 +1,19 @@
+#ifndef __IP1562_H
+#define __IP1562_H
+
+#include "pca9538.h"
+
+#define IP1562_HW_NUMBER	"IP1562"
+
+#define IP1562_PCA9538_PS_PRESENT_MASK(Idx)	((Idx) ? 1 : 0)
+#define IP1562_PCA9538_SC_PRESENT_MASK(Idx)	((Idx) ? 2 : 3)
+#define IP1562_PCA9538_MB_PRESENT_MASK			4
+
+typedef struct {
+	PCA9538_T pca9538;
+} IP1562_T;
+
+int32_t IP1562_Process(IP1562_T *Dev);
+void IP1562_Deinit(IP1562_T *Dev);
+
+#endif /*__IP1562_H*/
