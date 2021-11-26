@@ -80,6 +80,9 @@ const BSP_DEV_T *Modules[] = {
 	(BSP_DEV_T*)&sfp[17],
 	(BSP_DEV_T*)&sfp[18],
 	(BSP_DEV_T*)&sfp[19],
+	(BSP_DEV_T*)&seeprom,
+	(BSP_DEV_T*)&ps[0],
+	(BSP_DEV_T*)&ps[1],
 };
 const uint32_t ModulesCnt = sizeof(Modules) / sizeof(Modules[0]);
 
@@ -303,4 +306,12 @@ void BSP_UpdateCard(void)
 		
 		BSP_Stage++;
 	}
+	
+	BSP_SEEPROM_Process();
+	
+	BSP_Stage++;
+	
+	BSP_PS_Process();
+	
+	BSP_Stage++;
 }

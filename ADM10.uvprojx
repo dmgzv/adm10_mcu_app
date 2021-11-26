@@ -706,6 +706,21 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\seeprom.c</FilePath>
             </File>
+            <File>
+              <FileName>max7306.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\max7306.c</FilePath>
+            </File>
+            <File>
+              <FileName>ip1554.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\ip1554.c</FilePath>
+            </File>
+            <File>
+              <FileName>ps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\ps.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -875,6 +890,11 @@
               <FileName>bsp_seeprom.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_seeprom.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_ps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_ps.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2085,6 +2105,21 @@
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\seeprom.c</FilePath>
             </File>
+            <File>
+              <FileName>max7306.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\max7306.c</FilePath>
+            </File>
+            <File>
+              <FileName>ip1554.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\ip1554.c</FilePath>
+            </File>
+            <File>
+              <FileName>ps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\ps.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2254,6 +2289,11 @@
               <FileName>bsp_seeprom.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\bsp_seeprom.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_ps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\bsp_ps.c</FilePath>
             </File>
           </Files>
         </Group>
