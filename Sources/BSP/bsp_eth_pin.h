@@ -41,7 +41,6 @@ typedef struct {
 extern BSP_ETH_PIN_T bsp_eth_pin;
 
 void BSP_ETH_PIN_Process(void);
-int32_t BSP_ETH_PIN_SetState(uint32_t Pin, uint32_t State);
-int32_t BSP_ETH_PIN_GetState(uint32_t Pin, uint32_t *State);
+int32_t BSP_ETH_PIN_ConfigState(uint32_t Pin, uint32_t State);
 
 #endif /* __BSP_ETH_PIN_H */

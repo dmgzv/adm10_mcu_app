@@ -674,6 +674,7 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	char MacAddress[PROFILE_STRING_MAX_LEN];
 	uint8_t mac[6];
 	char *c;
+	uint32_t EthSel;
 	
 	PROFILE_ADM10_UpdateConfigsStage = 0;
 	
@@ -875,48 +876,66 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_104, PROFILE_ADM10_SC1IPGATEWAY_IDX, &SC2IpGateway))
 		return;
 	
-	if (BSP_DEV_GET_STATE(&bsp_eth_pin) == BSP_DEV_STATE_OK)
+	for (i = 0; i < BSP_PS_CNT; i++)
 	{
-		BSP_DEV_LOCK(&bsp_eth_pin);
-		if ((StackChassisIdx >= 1) && (StackChassisIdx <= 12))
-		{
-			if (SlotAddress == 1)
-			{
-				IP_ADDR4(&bsp_netif_ipaddr, 192, 168, (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2, 5 + (StackChassisIdx - 1) * 20);
-			}
-			else if (SlotAddress == 2)
-			{
-				IP_ADDR4(&bsp_netif_ipaddr, 192, 168, (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2, 7 + (StackChassisIdx - 1) * 20);
-			}
-			else
-			{
-				IP_ADDR4(&bsp_netif_ipaddr, 192, 168, (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2, 9 + (StackChassisIdx - 1) * 20);
-			}
-			IP_ADDR4(&bsp_netif_gw, 192, 168, (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2, 1);
-			IP_ADDR4(&bsp_netif_netmask, 255, 255, 255, 0);
-			bsp_netif_vlan_prio_vid = (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK) ? 3 : 2;
-		}
-		/*
-		else if (StackChassisIdx == 0)
-		{
-			if (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK)
-			{
-				IP_ADDR4(&bsp_netif_ipaddr, (SC2IpAddress >> 24) & 0xFF, (SC2IpAddress >> 16) & 0xFF, (SC2IpAddress >> 8) & 0xFF, (SC2IpAddress >> 0) & 0xFF);
-				IP_ADDR4(&bsp_netif_gw, (SC2IpGateway >> 24) & 0xFF, (SC2IpGateway >> 16) & 0xFF, (SC2IpGateway >> 8) & 0xFF, (SC2IpGateway >> 0) & 0xFF);
-				IP_ADDR4(&bsp_netif_netmask, (SC2IpMask >> 24) & 0xFF, (SC2IpMask >> 16) & 0xFF, (SC2IpMask >> 8) & 0xFF, (SC2IpMask >> 0) & 0xFF);
-				bsp_netif_vlan_prio_vid = 5;
-			}
-			else
-			{
-				IP_ADDR4(&bsp_netif_ipaddr, (SC1IpAddress >> 24) & 0xFF, (SC1IpAddress >> 16) & 0xFF, (SC1IpAddress >> 8) & 0xFF, (SC1IpAddress >> 0) & 0xFF);
-				IP_ADDR4(&bsp_netif_gw, (SC1IpGateway >> 24) & 0xFF, (SC1IpGateway >> 16) & 0xFF, (SC1IpGateway >> 8) & 0xFF, (SC1IpGateway >> 0) & 0xFF);
-				IP_ADDR4(&bsp_netif_netmask, (SC1IpMask >> 24) & 0xFF, (SC1IpMask >> 16) & 0xFF, (SC1IpMask >> 8) & 0xFF, (SC1IpMask >> 0) & 0xFF);
-				bsp_netif_vlan_prio_vid = 4;
-			}
-		}
-		*/
-		BSP_DEV_UNLOCK(&bsp_eth_pin);
+		PS_ConfigChassisAddress(&ps[i], StackChassisIdx);
 	}
+	
+	EthSel = 1;
+	if (BSP_DEV_GET_STATE(&seeprom) == BSP_DEV_STATE_OK)
+	{
+		if ((!strcmp(seeprom.PtNumber, SEEPROM_PT_NUMBER)) && (!strcmp(seeprom.HwNumber, IP1562_HW_NUMBER)))
+		{
+			if(BSP_DEV_GET_STATE(&seeprom.ip1562.pca9538) == BSP_DEV_STATE_OK)
+			{
+				if (seeprom.ip1562.pca9538.Ins & IP1562_PCA9538_SC_PRESENT_MASK(i))
+				{
+					EthSel = 0;
+				}
+			}
+		}
+	}
+	
+	BSP_ETH_PIN_ConfigState(BSP_ETH_PIN_EN, 0);
+	BSP_ETH_PIN_ConfigState(BSP_ETH_PIN_SW, EthSel ? 1 : 0);
+	
+	if ((StackChassisIdx >= 1) && (StackChassisIdx <= 12))
+	{
+		if (SlotAddress == 1)
+		{
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, EthSel ? 3 : 2, 5 + (StackChassisIdx - 1) * 20);
+		}
+		else if (SlotAddress == 2)
+		{
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, EthSel ? 3 : 2, 7 + (StackChassisIdx - 1) * 20);
+		}
+		else
+		{
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, EthSel ? 3 : 2, 9 + (StackChassisIdx - 1) * 20);
+		}
+		IP_ADDR4(&bsp_netif_gw, 192, 168, EthSel ? 3 : 2, 1);
+		IP_ADDR4(&bsp_netif_netmask, 255, 255, 255, 0);
+		bsp_netif_vlan_prio_vid = EthSel ? 3 : 2;
+	}
+	/*
+	else if (StackChassisIdx == 0)
+	{
+		if (bsp_eth_pin.State & BSP_ETH_PIN_SEL_MASK)
+		{
+			IP_ADDR4(&bsp_netif_ipaddr, (SC2IpAddress >> 24) & 0xFF, (SC2IpAddress >> 16) & 0xFF, (SC2IpAddress >> 8) & 0xFF, (SC2IpAddress >> 0) & 0xFF);
+			IP_ADDR4(&bsp_netif_gw, (SC2IpGateway >> 24) & 0xFF, (SC2IpGateway >> 16) & 0xFF, (SC2IpGateway >> 8) & 0xFF, (SC2IpGateway >> 0) & 0xFF);
+			IP_ADDR4(&bsp_netif_netmask, (SC2IpMask >> 24) & 0xFF, (SC2IpMask >> 16) & 0xFF, (SC2IpMask >> 8) & 0xFF, (SC2IpMask >> 0) & 0xFF);
+			bsp_netif_vlan_prio_vid = 5;
+		}
+		else
+		{
+			IP_ADDR4(&bsp_netif_ipaddr, (SC1IpAddress >> 24) & 0xFF, (SC1IpAddress >> 16) & 0xFF, (SC1IpAddress >> 8) & 0xFF, (SC1IpAddress >> 0) & 0xFF);
+			IP_ADDR4(&bsp_netif_gw, (SC1IpGateway >> 24) & 0xFF, (SC1IpGateway >> 16) & 0xFF, (SC1IpGateway >> 8) & 0xFF, (SC1IpGateway >> 0) & 0xFF);
+			IP_ADDR4(&bsp_netif_netmask, (SC1IpMask >> 24) & 0xFF, (SC1IpMask >> 16) & 0xFF, (SC1IpMask >> 8) & 0xFF, (SC1IpMask >> 0) & 0xFF);
+			bsp_netif_vlan_prio_vid = 4;
+		}
+	}
+	*/
 	
 	PROFILE_ADM10_UpdateConfigsStage++;
 	

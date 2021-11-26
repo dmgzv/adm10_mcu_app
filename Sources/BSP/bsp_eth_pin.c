@@ -77,19 +77,27 @@ static int32_t BSP_ETH_PIN_Update(BSP_ETH_PIN_T *Dev)
 	
 	State = 0;
 	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_SEL_GPIO_PORT, BSP_ETH_PIN_SEL_GPIO_PIN) == GPIO_PIN_RESET ? BSP_ETH_PIN_SEL_MASK : 0;
+	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN) == GPIO_PIN_SET ? BSP_ETH_PIN_EN_MASK : 0;
+	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN) == GPIO_PIN_SET ? BSP_ETH_PIN_SW_MASK : 0;
 	
 	if ((State & BSP_ETH_PIN_SEL_MASK) != (Dev->State & BSP_ETH_PIN_SEL_MASK))
 	{
 		LOG_Info(Dev->DevName, "", "SelPinUpdate", "%d",  (State >> BSP_ETH_PIN_SEL) & 0x01);
+		if (State) 
+			Dev->State |= BSP_ETH_PIN_SEL_MASK;
+		else
+			Dev->State &= ~BSP_ETH_PIN_SEL_MASK;
 	}
-	
-	HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN, GPIO_PIN_RESET);
-	
-	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN) == GPIO_PIN_SET ? BSP_ETH_PIN_EN_MASK : 0;
-	State |= HAL_GPIO_ReadPin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN) == GPIO_PIN_SET ? BSP_ETH_PIN_SW_MASK : 0;
-	
-	Dev->State = State;
+	if ((State & BSP_ETH_PIN_EN_MASK) != (Dev->State & BSP_ETH_PIN_EN_MASK))
+	{
+		LOG_Info(Dev->DevName, "", "EnPinUpdate", "%d",  (Dev->State >> BSP_ETH_PIN_EN_MASK) & 0x01);
+		HAL_GPIO_WritePin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN, (Dev->State & BSP_ETH_PIN_EN_MASK) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+	}
+	if ((State & BSP_ETH_PIN_SW_MASK) != (Dev->State & BSP_ETH_PIN_SW_MASK))
+	{
+		LOG_Info(Dev->DevName, "", "SwPinUpdate", "%d",  (Dev->State >> BSP_ETH_PIN_SW_MASK) & 0x01);
+		HAL_GPIO_WritePin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN, (Dev->State & BSP_ETH_PIN_SW_MASK) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+	}
 	
 	BSP_DEV_UPDATE_OK(Dev);	
 	return 0;
@@ -125,7 +133,7 @@ void BSP_ETH_PIN_Process(void)
 	}
 }
 
-int32_t BSP_ETH_PIN_SetState(uint32_t Pin, uint32_t State)
+int32_t BSP_ETH_PIN_ConfigState(uint32_t Pin, uint32_t State)
 {
 	if (BSP_DEV_GET_STATE(&bsp_eth_pin) != BSP_DEV_STATE_OK)
 		return -1;
@@ -134,7 +142,7 @@ int32_t BSP_ETH_PIN_SetState(uint32_t Pin, uint32_t State)
 	
 	if (Pin == BSP_ETH_PIN_EN)
 	{
-		HAL_GPIO_WritePin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN, State ? GPIO_PIN_SET : GPIO_PIN_RESET);
+		
 		if (State)
 			bsp_eth_pin.State |= BSP_ETH_PIN_EN_MASK;
 		else
@@ -147,38 +155,6 @@ int32_t BSP_ETH_PIN_SetState(uint32_t Pin, uint32_t State)
 			bsp_eth_pin.State |= BSP_ETH_PIN_SW_MASK;
 		else
 			bsp_eth_pin.State &= ~BSP_ETH_PIN_SW_MASK;
-	}
-	else
-	{
-		goto error;
-	}
-	
-	BSP_DEV_UPDATE_OK(&bsp_eth_pin);	
-	return 0;
-
-error:
-	BSP_DEV_UPDATE_FAIL(&bsp_eth_pin);	
-	return -1;
-}
-
-int32_t BSP_ETH_PIN_GetState(uint32_t Pin, uint32_t *State)
-{
-	if (BSP_DEV_GET_STATE(&bsp_eth_pin) != BSP_DEV_STATE_OK)
-		return -1;
-	
-	BSP_DEV_UPDATE(&bsp_eth_pin);
-	
-	if (Pin == BSP_ETH_PIN_EN)
-	{
-		*State = HAL_GPIO_ReadPin(BSP_ETH_PIN_EN_GPIO_PORT, BSP_ETH_PIN_EN_GPIO_PIN) == GPIO_PIN_SET ? 0 : 1;
-	}	
-	else if (Pin == BSP_ETH_PIN_SW)
-	{
-		*State = HAL_GPIO_ReadPin(BSP_ETH_PIN_SW_GPIO_PORT, BSP_ETH_PIN_SW_GPIO_PIN) == GPIO_PIN_SET ? 0 : 1;
-	}
-	else if (Pin == BSP_ETH_PIN_SEL)
-	{
-		*State = HAL_GPIO_ReadPin(BSP_ETH_PIN_SEL_GPIO_PORT, BSP_ETH_PIN_SEL_GPIO_PIN) == GPIO_PIN_SET ? 0 : 1;
 	}
 	else
 	{
