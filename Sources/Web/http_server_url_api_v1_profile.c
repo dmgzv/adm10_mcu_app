@@ -857,14 +857,7 @@ static void HTTP_SERVER_URL_API_V1_PROFILE_SECTION_PARAM_VALUE_Put(struct netcon
 		goto error_400;
 	}
 	
-	if (((TableIdx != PROFILE_TABLE_1) &&
-		(TableIdx != PROFILE_TABLE_3) &&
-		(TableIdx != PROFILE_TABLE_4) &&
-		(TableIdx != PROFILE_TABLE_4) &&
-		(TableIdx != PROFILE_TABLE_4) &&
-		(TableIdx != PROFILE_TABLE_103) &&
-		(TableIdx != PROFILE_TABLE_104)) ||
-		(PROFILE_GetTable(&Profile, TableIdx, &Table)))
+	if (PROFILE_GetTable(&Profile, TableIdx, &Table))
 	{
 		netbuf_delete(Inbuf);
 		goto error_400;
@@ -954,7 +947,8 @@ write_param:
 	RspHeader.Connection = HTTP_CONNECTION_CLOSE;
 	RspHeader.TransferEncoding = NULL;
 	RspHeader.AllowedLen = 0;
-	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "ParamValueUpdate", "%s;%s",Param->Name, ValueStr);
+	if (!((TableIdx == PROFILE_TABLE_2) && ((!strcmp(Param->Name, "ChassisColor")) || (!strcmp(Param->Name, "StackColor")))))
+		__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "ParamValueUpdate", "%s;%s",Param->Name, ValueStr);
 	__HTTP_SERVER_WriteHeader(Conn, &RspHeader);
 	return;
 

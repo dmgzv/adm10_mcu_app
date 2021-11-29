@@ -150,6 +150,8 @@ typedef struct {
     uint8_t BlockColorState;
     int32_t ChassisColor;
     uint8_t ChassisColorState;
+    int32_t StackColor;
+    uint8_t StackColorState;
     uint32_t BlockState;
     uint8_t BlockStateState;
     uint32_t PowerAlarms;

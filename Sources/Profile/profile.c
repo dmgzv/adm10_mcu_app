@@ -1308,6 +1308,17 @@ int32_t PROFILE_CheckWriteAccess(PROFILE_T *Profile, uint8_t TableIdx, uint16_t 
 	{
 		return 0;
 	}
+	
+	if (Access == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE))
+	{
+		if (TableIdx == PROFILE_TABLE_2)
+		{
+			if (!strcmp(Param->Name, "ChassisColor"))
+				return 0;
+			if (!strcmp(Param->Name, "StackColor"))
+				return 0;
+		}
+	}	
 	return -1;
 }
 
