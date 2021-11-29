@@ -712,6 +712,11 @@
               <FilePath>.\Sources\BSP\Devices\max7306.c</FilePath>
             </File>
             <File>
+              <FileName>dbe0125v2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\dbe0125v2.c</FilePath>
+            </File>
+            <File>
               <FileName>ip1554.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ip1554.c</FilePath>
@@ -2109,6 +2114,11 @@
               <FileName>max7306.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\max7306.c</FilePath>
+            </File>
+            <File>
+              <FileName>dbe0125v2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\dbe0125v2.c</FilePath>
             </File>
             <File>
               <FileName>ip1554.c</FileName>

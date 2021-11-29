@@ -876,11 +876,6 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_104, PROFILE_ADM10_SC1IPGATEWAY_IDX, &SC2IpGateway))
 		return;
 	
-	for (i = 0; i < BSP_PS_CNT; i++)
-	{
-		PS_ConfigChassisAddress(&ps[i], StackChassisIdx);
-	}
-	
 	EthSel = 1;
 	if (BSP_DEV_GET_STATE(&seeprom) == BSP_DEV_STATE_OK)
 	{

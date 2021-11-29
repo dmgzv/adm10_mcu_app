@@ -12,7 +12,9 @@ typedef struct {
 	BSP_DEV;
 	char PtNumber[64];
 	char HwNumber[64];
+	char SrNumber[64];
 	uint8_t ChassisAddress;
+	uint32_t __UpdateFlag;
 	AT24C02C_T at24c02c;
 	IP1554_T ip1554;
 } PS_T;
@@ -22,6 +24,11 @@ void PS_Deinit(PS_T *Dev);
 int32_t PS_Update(PS_T *Dev);
 
 int32_t PS_ConfigChassisAddress(PS_T *Dev, uint8_t ChassisAddress);
-int32_t PS_WriteInventory(PS_T *Dev, char *PtNumber, char *HwNumber);
+int32_t PS_ConfigInventory(PS_T *Dev, char *PtNumber, char *HwNumber, char *SrNumber);
+
+int32_t PS_GetVin(PS_T *Dev, float *Vin);
+int32_t PS_GetVout(PS_T *Dev, float *Vout);
+int32_t PS_GetIout(PS_T *Dev, float *Iout);
+int32_t PS_GetTemp(PS_T *Dev, float *Temp, uint32_t Idx);
 
 #endif /*__PS_H*/

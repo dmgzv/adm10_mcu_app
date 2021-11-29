@@ -23,6 +23,13 @@ PS_T ps[BSP_PS_CNT] =
 				.I2C = BSP_PS_I2C,
 				.Addr = 0x98,
 			},
+			.dbe0125v2 = {
+				.DevName = PS_DEV_NAME"_2""_"DBE0125V2_DEV_NAME"_A5",
+				.InitContErrThr = 3,
+				.UpdateContErrThr = 3,
+				.I2C = BSP_PS_I2C,
+				.Addr = 0x1D,
+			},
 		},
 	},
 	{
@@ -44,26 +51,21 @@ PS_T ps[BSP_PS_CNT] =
 				.I2C = BSP_PS_I2C,
 				.Addr = 0x9A,
 			},
+			.dbe0125v2 = {
+				.DevName = PS_DEV_NAME"_2""_"DBE0125V2_DEV_NAME"_A5",
+				.InitContErrThr = 3,
+				.UpdateContErrThr = 3,
+				.I2C = BSP_PS_I2C,
+				.Addr = 0x1B,
+			},
 		},
 	}
 };
 
 int32_t BSP_PS_CheckConditions(uint32_t i)
 {
-	if(BSP_DEV_GET_STATE(&seeprom) != BSP_DEV_STATE_OK)
+	if(!SEEPROM_GetPSPresent(&seeprom, i))
 		return -1;
-	if ((!strcmp(seeprom.PtNumber, SEEPROM_PT_NUMBER)) && (!strcmp(seeprom.HwNumber, IP1562_HW_NUMBER)))
-	{
-		if(BSP_DEV_GET_STATE(&seeprom.ip1562.pca9538) != BSP_DEV_STATE_OK)
-			return -1;
-		if (!(seeprom.ip1562.pca9538.Ins & IP1562_PCA9538_PS_PRESENT_MASK(i)))
-			return -1;
-	}
-	else
-	{
-		return -1;
-	}
-	
 	return 0;
 }
 

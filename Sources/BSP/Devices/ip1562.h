@@ -16,4 +16,7 @@ typedef struct {
 int32_t IP1562_Process(IP1562_T *Dev);
 void IP1562_Deinit(IP1562_T *Dev);
 
+uint32_t IP1562_GetPSPresent(IP1562_T *Dev, uint32_t Idx);
+uint32_t IP1562_GetSCPresent(IP1562_T *Dev, uint32_t Idx);
+
 #endif /*__IP1562_H*/

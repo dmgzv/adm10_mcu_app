@@ -75,50 +75,142 @@ int32_t PROFILE_ADM10_PS_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t 
 
 void PROFILE_ADM10_PS_UpdateConfigs(PROFILE_T *Profile)
 {
+	uint32_t i;
+	uint32_t StackChassisIdx;
+	char PtNumber[PROFILE_STRING_MAX_LEN];
+	char HwNumber[PROFILE_STRING_MAX_LEN];
+	char SrNumber[PROFILE_STRING_MAX_LEN];
 	
+	if (PROFILE_GetValue(Profile, PROFILE_TABLE_104, PROFILE_ADM10_STACKCHASSISIDX_IDX, &StackChassisIdx))
+		return;	
+	for (i = 0; i < 2; i++)
+	{
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSPtNumberIdx[i], PtNumber))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSSrNumberIdx[i], HwNumber))
+			return;
+		if (PROFILE_GetValue(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSSrNumberIdx[i], SrNumber))
+			return;
+		PS_ConfigInventory(&ps[i], PtNumber, HwNumber, SrNumber);
+		PS_ConfigChassisAddress(&ps[i], StackChassisIdx);
+	}
 }
 
 static void PROFILE_ADM10_PS_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint32_t Idx)
 {
-	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSVendorIdx[Idx], PROFILE_STATE_IS);
-	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSSrNumberIdx[Idx], PROFILE_STATE_IS);
-	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSPtNumberIdx[Idx], PROFILE_STATE_IS);
-	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSHwNumberIdx[Idx], PROFILE_STATE_IS);
+	if (SEEPROM_GetPSPresent(&seeprom, Idx))
+	{
+		if (BSP_DEV_GET_STATE(&ps[Idx]) == BSP_DEV_STATE_OK)
+		{
+			BSP_DEV_LOCK(&ps[Idx]);
+			PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSVendorIdx[Idx], "IPG", PROFILE_STATE_IS);
+			PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSPtNumberIdx[Idx], ps[Idx].PtNumber, PROFILE_STATE_IS);
+			PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSHwNumberIdx[Idx], ps[Idx].HwNumber, PROFILE_STATE_IS);
+			PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSSrNumberIdx[Idx], ps[Idx].SrNumber, PROFILE_STATE_IS);
+			BSP_DEV_UNLOCK(&ps[Idx]);
+			return;
+		}
+	}
+	
+	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSVendorIdx[Idx], PROFILE_STATE_OOS);
+	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSSrNumberIdx[Idx], PROFILE_STATE_OOS);
+	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSPtNumberIdx[Idx], PROFILE_STATE_OOS);
+	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSHwNumberIdx[Idx], PROFILE_STATE_OOS);
 }
 
 static void PROFILE_ADM10_PS_UpdateStateValue(PROFILE_T *Profile, uint32_t Idx)
 {
-	uint32_t Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_OK;
+	uint32_t Value;
+	
+	Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_ABSENT;
+	
+	if (SEEPROM_GetPSPresent(&seeprom, Idx))
+	{
+		Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_FAIL;
+		
+		if (BSP_DEV_GET_STATE(&ps[Idx]) == BSP_DEV_STATE_RESET)
+			Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_ABSENT;
+		else if (BSP_DEV_GET_STATE(&ps[Idx]) == BSP_DEV_STATE_INIT)
+			Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_NOT_READY;
+		else if (BSP_DEV_GET_STATE(&ps[Idx]) == BSP_DEV_STATE_OK)
+		{
+			if ((!strcmp(ps[Idx].PtNumber, PS_PT_NUMBER)) && (!strcmp(seeprom.PtNumber, IP1554_HW_NUMBER)))
+			{
+				if ((BSP_DEV_GET_STATE(&ps[Idx].ip1554.max7306) == BSP_DEV_STATE_FAIL) || (BSP_DEV_GET_STATE(&ps[Idx].ip1554.dbe0125v2) == BSP_DEV_STATE_FAIL))
+					Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_FAIL;
+				else if ((BSP_DEV_GET_STATE(&ps[Idx].ip1554.max7306) == BSP_DEV_STATE_INIT) || (BSP_DEV_GET_STATE(&ps[Idx].ip1554.dbe0125v2) == BSP_DEV_STATE_INIT))
+					Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_NOT_READY;
+				else if ((BSP_DEV_GET_STATE(&ps[Idx].ip1554.max7306) == BSP_DEV_STATE_OK) && (BSP_DEV_GET_STATE(&ps[Idx].ip1554.dbe0125v2) == BSP_DEV_STATE_OK))
+					Value = PROFILE_ADM10_PS_BLOCK_STATE_ENUM_OK;
+			}
+		}
+	}
 
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSBlockStateIdx[Idx], &Value, PROFILE_STATE_IS);
 }
 
 static void PROFILE_ADM10_PS_UpdateInVValue(PROFILE_T *Profile, uint32_t Idx)
 {
-	float Value = 48.0f;
+	float Value;
+	
+	if (SEEPROM_GetPSPresent(&seeprom, Idx))
+	{
+		if (PS_GetVin(&ps[Idx], &Value))
+		{
+			PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSInVIdx[Idx], &Value, PROFILE_STATE_IS);
+			return;
+		}
+	}
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSInVIdx[Idx], &Value, PROFILE_STATE_IS);
+	PROFILE_SetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSInVIdx[Idx], PROFILE_STATE_OOS);
 }
 
 static void PROFILE_ADM10_PS_UpdateOutVValue(PROFILE_T *Profile, uint32_t Idx)
 {
-	float Value = 12.0f;
+	float Value;
+	
+	if (SEEPROM_GetPSPresent(&seeprom, Idx))
+	{
+		if (PS_GetVout(&ps[Idx], &Value))
+		{
+			PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSOutVIdx[Idx], &Value, PROFILE_STATE_IS);
+			return;
+		}
+	}
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSOutVIdx[Idx], &Value, PROFILE_STATE_IS);
+	PROFILE_SetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSOutVIdx[Idx], PROFILE_STATE_OOS);
 }
 
 static void PROFILE_ADM10_PS_UpdateOutIValue(PROFILE_T *Profile, uint32_t Idx)
 {
-	float Value = 10.0f;
+	float Value;
+	
+	if (SEEPROM_GetPSPresent(&seeprom, Idx))
+	{
+		if (PS_GetIout(&ps[Idx], &Value))
+		{
+			PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSOutIIdx[Idx], &Value, PROFILE_STATE_IS);
+			return;
+		}
+	}
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSOutIIdx[Idx], &Value, PROFILE_STATE_IS);
+	PROFILE_SetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSOutIIdx[Idx], PROFILE_STATE_OOS);
 }
 
 static void PROFILE_ADM10_PS_UpdateTempValue(PROFILE_T *Profile, uint32_t Idx)
 {
-	float Value = 36.6f;
+	float Value;
+	
+	if (SEEPROM_GetPSPresent(&seeprom, Idx))
+	{
+		if (PS_GetTemp(&ps[Idx], &Value, 0))
+		{
+			PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSTempIdx[Idx], &Value, PROFILE_STATE_IS);
+			return;
+		}
+	}
 
-	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSTempIdx[Idx], &Value, PROFILE_STATE_IS);
+	PROFILE_SetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSTempIdx[Idx], PROFILE_STATE_OOS);
 }
 
 static void PROFILE_ADM10_PS_UpdateDynamicValues(PROFILE_T *Profile, uint32_t Idx)
