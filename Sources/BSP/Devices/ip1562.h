@@ -2,6 +2,7 @@
 #define __IP1562_H
 
 #include "pca9538.h"
+#include "max31790.h"
 
 #define IP1562_HW_NUMBER	"IP1562"
 
@@ -11,10 +12,14 @@
 
 typedef struct {
 	PCA9538_T pca9538;
+	MAX31790_T max31790;
 } IP1562_T;
 
 int32_t IP1562_Process(IP1562_T *Dev);
 void IP1562_Deinit(IP1562_T *Dev);
+
+int32_t IP1562_ConfigFansSpeed(IP1562_T *Dev, float Speed);
+float IP1562_GetFanSpeed(IP1562_T *Dev, uint32_t Idx);
 
 uint32_t IP1562_GetPSPresent(IP1562_T *Dev, uint32_t Idx);
 uint32_t IP1562_GetSCPresent(IP1562_T *Dev, uint32_t Idx);

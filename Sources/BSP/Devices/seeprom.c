@@ -186,11 +186,53 @@ int32_t SEEPROM_ConfigInventory(SEEPROM_T *Dev, char *PtNumber, char *HwNumber, 
 	return 0;
 }
 
+int32_t SEEPROM_ConfigFansSpeed(SEEPROM_T *Dev, float Speed)
+{
+	if (!Dev)
+		return 0;
+	if(BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return 0;
+	
+	BSP_DEV_LOCK(Dev);
+	if ((!strcmp(Dev->PtNumber, SEEPROM_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IP1562_HW_NUMBER)))
+	{
+		if (IP1562_ConfigFansSpeed(&Dev->ip1562, Speed))
+			goto error;
+	}
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+float SEEPROM_GetFanSpeed(SEEPROM_T *Dev, uint32_t Idx)
+{
+	float Speed;
+	
+	if ((!Dev) || (Idx >= 8))
+		return 0;
+	if(BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return 0;
+	
+	Speed = 0;
+	BSP_DEV_LOCK(Dev);
+	if ((!strcmp(Dev->PtNumber, SEEPROM_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IP1562_HW_NUMBER)))
+	{
+		Speed = IP1562_GetFanSpeed(&Dev->ip1562, Idx);
+	}
+	BSP_DEV_UNLOCK(Dev);
+	
+	return Speed;
+}
+
 uint32_t SEEPROM_GetPSPresent(SEEPROM_T *Dev, uint32_t Idx)
 {
 	uint32_t Present;
 	
-	if (!Dev)
+	if ((!Dev) || (Idx >= 2))
 		return 0;
 	if(BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return 0;
@@ -210,7 +252,7 @@ uint32_t SEEPROM_GetSCPresent(SEEPROM_T *Dev, uint32_t Idx)
 {
 	uint32_t Present;
 	
-	if (!Dev)
+	if ((!Dev) || (Idx >= 2))
 		return 0;
 	if(BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
 		return 0;

@@ -6,6 +6,7 @@
 #include "profile_adm10_idx.h"
 #include "profile_adm10_values.h"
 #include "profile_adm10_ps.h"
+#include "profile_adm10_fan.h"
 #include "profile_adm10_line.h"
 #include "profile_adm10_client.h"
 #include "profile_adm10_xc.h"

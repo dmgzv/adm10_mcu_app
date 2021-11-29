@@ -23,7 +23,9 @@ void SEEPROM_Deinit(SEEPROM_T *Dev);
 int32_t SEEPROM_Update(SEEPROM_T *Dev);
 
 int32_t SEEPROM_ConfigInventory(SEEPROM_T *Dev, char *PtNumber, char *HwNumber, char *SrNumber);
-int32_t SEEPROM_WriteInventory(SEEPROM_T *Dev, char *PtNumber, char *HwNumber, char *SrNumber);
+
+int32_t SEEPROM_ConfigFansSpeed(SEEPROM_T *Dev, float Speed);
+float SEEPROM_GetFanSpeed(SEEPROM_T *Dev, uint32_t Idx);
 
 uint32_t SEEPROM_GetPSPresent(SEEPROM_T *Dev, uint32_t Idx);
 uint32_t SEEPROM_GetSCPresent(SEEPROM_T *Dev, uint32_t Idx);

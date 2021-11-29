@@ -1,9 +1,6 @@
 #include "profile_adm10_ps.h"
-#include "profile_adm10_pg.h"
 #include "profile_adm10_enums.h"
 #include "profile_adm10_bitmsks.h"
-#include "als.h"
-#include "perf.h"
 #include <string.h>
 
 const uint16_t ProfileADM10DynamicPSBlockStateIdx[2] = 

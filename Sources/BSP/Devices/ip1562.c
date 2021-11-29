@@ -1,6 +1,6 @@
 #include "ip1562.h"
 
-int32_t IP1562_Process(IP1562_T *Dev)
+int32_t IP1562_PCA9538_Process(IP1562_T *Dev)
 {
 	if (!Dev)
 		return -1;
@@ -18,16 +18,86 @@ int32_t IP1562_Process(IP1562_T *Dev)
 	return 0;
 }
 
+int32_t IP1562_MAX31790_Process(IP1562_T *Dev)
+{
+	if (!Dev)
+		return -1;
+	
+	if (BSP_DEV_GET_STATE(&Dev->max31790) != BSP_DEV_STATE_OK)
+	{
+		MAX31790_Init(&Dev->max31790);
+	}
+	else
+	{
+		MAX31790_Update(&Dev->max31790);
+	}
+	
+	return 0;
+}
+
+int32_t IP1562_Process(IP1562_T *Dev)
+{
+	if (!Dev)
+		return -1;
+	
+	IP1562_PCA9538_Process(Dev);
+	IP1562_MAX31790_Process(Dev);
+	
+	return 0;
+}
+
 void IP1562_Deinit(IP1562_T *Dev)
 {
 	if (!Dev)
 		return;
 	PCA9538_Deinit(&Dev->pca9538);
+	MAX31790_Deinit(&Dev->max31790);
+}
+
+int32_t IP1562_ConfigFansSpeed(IP1562_T *Dev, float Speed)
+{
+	if (!Dev)
+		return -1;
+	
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
+		return -1;
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_TACH, 0, 0))
+		return -1;
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
+		return -1;
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
+		return -1;
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_TACH, 0, 0))
+		return -1;
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
+		return -1;
+	
+	return 0;
+}
+
+float IP1562_GetFanSpeed(IP1562_T *Dev, uint32_t Idx)
+{
+	float Speed;
+	
+	if ((!Dev) || (Idx >= 8))
+		return 0;
+	
+	Speed = 0;
+	if (BSP_DEV_GET_STATE(&Dev->max31790) == BSP_DEV_STATE_OK)
+	{
+		BSP_DEV_LOCK(&Dev->max31790);
+		Speed = 8192.0f * 60.0f * 4.0f * 100.0f / (4.0f * Dev->max31790.TachCount[Idx] * 20000.0f);
+		BSP_DEV_UNLOCK(&Dev->max31790);
+	}
+	return Speed;
 }
 
 uint32_t IP1562_GetPSPresent(IP1562_T *Dev, uint32_t Idx)
 {
 	uint32_t Present;
+	
+	if ((!Dev) || (Idx >= 2))
+		return 0;
 	
 	Present = 0;
 	if (BSP_DEV_GET_STATE(&Dev->pca9538) == BSP_DEV_STATE_OK)
@@ -43,6 +113,9 @@ uint32_t IP1562_GetPSPresent(IP1562_T *Dev, uint32_t Idx)
 uint32_t IP1562_GetSCPresent(IP1562_T *Dev, uint32_t Idx)
 {
 	uint32_t Present;
+	
+	if ((!Dev) || (Idx >= 2))
+		return 0;
 	
 	Present = 0;
 	if (BSP_DEV_GET_STATE(&Dev->pca9538) == BSP_DEV_STATE_OK)

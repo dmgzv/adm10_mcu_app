@@ -692,6 +692,11 @@
               <FilePath>.\Sources\BSP\Devices\at24c02c.c</FilePath>
             </File>
             <File>
+              <FileName>max31790.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\max31790.c</FilePath>
+            </File>
+            <File>
               <FileName>pca9538.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\pca9538.c</FilePath>
@@ -1015,6 +1020,11 @@
               <FileName>profile_adm10_ps.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_ps.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_fan.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_fan.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2096,6 +2106,11 @@
               <FilePath>.\Sources\BSP\Devices\at24c02c.c</FilePath>
             </File>
             <File>
+              <FileName>max31790.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\max31790.c</FilePath>
+            </File>
+            <File>
               <FileName>pca9538.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\pca9538.c</FilePath>
@@ -2419,6 +2434,11 @@
               <FileName>profile_adm10_ps.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_ps.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_fan.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_fan.c</FilePath>
             </File>
           </Files>
         </Group>

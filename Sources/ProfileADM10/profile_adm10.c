@@ -589,6 +589,10 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	
 	PROFILE_ADM10_UpdateStateStage++;
 	
+	PROFILE_ADM10_FAN_UpdateValues(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_LINE_UpdateValues(Profile);
 	
 	PROFILE_ADM10_UpdateStateStage++;
@@ -613,6 +617,8 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
 	if (PROFILE_ADM10_PS_CheckConfigValue(Profile, Table, Idx, Value, Restore))
+		return -1;
+	if (PROFILE_ADM10_FAN_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
 	if (PROFILE_ADM10_LINE_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
@@ -651,6 +657,8 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 		BSP_Reset();
 	
 	if (PROFILE_ADM10_PS_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
+		return -1;
+	if (PROFILE_ADM10_FAN_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
 	if (PROFILE_ADM10_LINE_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
@@ -935,6 +943,10 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	PROFILE_ADM10_UpdateConfigsStage++;
 	
 	PROFILE_ADM10_PS_UpdateConfigs(Profile);
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
+	
+	PROFILE_ADM10_FAN_UpdateConfigs(Profile);
 	
 	PROFILE_ADM10_UpdateConfigsStage++;
 	
