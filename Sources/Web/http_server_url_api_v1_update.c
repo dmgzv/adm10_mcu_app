@@ -537,6 +537,7 @@ write_data:
 error_400:
 	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "MCUSoftwareUpdateError", "Invalid request");
 	__HTTP_SERVER_WriteError400(Conn);
+	return;
 error_403:
 	__LOG_Add("HTTP_SERVER", LOG_ACCESS_ADMIN, LOG_SEVERITY_INFO, User.Login, "MCUSoftwareUpdateError", "Access denied");
 	__HTTP_SERVER_WriteError403(Conn);

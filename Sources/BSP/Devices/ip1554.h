@@ -2,8 +2,10 @@
 #define __IP1554_H
 
 #include "max7306.h"
-#include "dbe0125V2.h"
+#include "dbe0125v2.h"
 
+#define IP1554_VENDOR			"IPG"
+#define IP1554_PT_NUMBER	"ONH011C400"
 #define IP1554_HW_NUMBER	"IP1554"
 
 typedef struct {

@@ -2,6 +2,7 @@
 #include "bsp_pwr_pin.h"
 #include "log.h"
 
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE
 DIM3R3400_T __attribute__((section ("CCM_DATA"))) dim3r3400 = {
 	.DevName = DIM3R3400_DEV_NAME"_"BSP_PWR_IN_DIM3R3400_ID,
 	.InitContErrThr = 3,
@@ -14,6 +15,7 @@ int32_t dim3r3400_power_12v_init;
 #ifdef BSP_PWR_IN_POWER_RESET_TIMEOUT
 uint32_t dim3r3400_power_reset_timeout = BSP_PWR_IN_POWER_RESET_TIMEOUT;
 #endif
+#endif
 
 static int32_t BSP_PWR_IN_CheckConditions(void)
 {
@@ -24,11 +26,14 @@ static int32_t BSP_PWR_IN_CheckConditions(void)
 
 void BSP_PWR_IN_Process(void)
 {
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE
 	uint32_t i, State, PowerGood;
+#endif
 	
 	if (BSP_PWR_IN_CheckConditions())
 	{
 		/* External faults present */
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE
 		if(BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_RESET)
 		{
 			dim3r3400_power_good = 0;
@@ -36,9 +41,11 @@ void BSP_PWR_IN_Process(void)
 			DIM3R3400_Deinit(&dim3r3400);
 			BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 0);
 		}
+#endif
 	}
 	else
 	{
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE
 		/* External faults absent */
 		if(BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 		{
@@ -125,6 +132,10 @@ void BSP_PWR_IN_Process(void)
 				}
 			}
 		}
+#else
+		BSP_PWR_PIN_Init(BSP_PWR_PIN_12V_PWR);
+		BSP_PWR_PIN_SetState(BSP_PWR_PIN_12V_PWR, 1);
+#endif
 	}
 }
 

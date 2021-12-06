@@ -7,7 +7,9 @@ uint8_t SlotAddress;
 const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&at45db641e,
 	(BSP_DEV_T*)&mt48lc16m16a2,
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE 
 	(BSP_DEV_T*)&dim3r3400,
+#endif
 	(BSP_DEV_T*)&pwr_pca9536,
 	(BSP_DEV_T*)&ucd90120a,
 	(BSP_DEV_T*)&ksz8895,
@@ -56,6 +58,10 @@ const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&pca9536[17],
 	(BSP_DEV_T*)&pca9536[18],
 	(BSP_DEV_T*)&pca9536[19],
+	(BSP_DEV_T*)&seeprom,
+	(BSP_DEV_T*)&seeprom.at24c02c,
+	(BSP_DEV_T*)&seeprom.ip1562.pca9538,
+	(BSP_DEV_T*)&seeprom.ip1562.max31790,
 };
 const uint32_t DevicesCnt = sizeof(Devices) / sizeof(Devices[0]);
 
@@ -80,9 +86,18 @@ const BSP_DEV_T *Modules[] = {
 	(BSP_DEV_T*)&sfp[17],
 	(BSP_DEV_T*)&sfp[18],
 	(BSP_DEV_T*)&sfp[19],
-	(BSP_DEV_T*)&seeprom,
 	(BSP_DEV_T*)&ps[0],
+	(BSP_DEV_T*)&ps[0].at24c02c,
+	(BSP_DEV_T*)&ps[0].ip1554.dbe0125v2,
+	(BSP_DEV_T*)&ps[0].ip1554.max7306,
 	(BSP_DEV_T*)&ps[1],
+	(BSP_DEV_T*)&ps[1].at24c02c,
+	(BSP_DEV_T*)&ps[1].ip1554.dbe0125v2,
+	(BSP_DEV_T*)&ps[1].ip1554.max7306,
+	(BSP_DEV_T*)&sc[0],
+	(BSP_DEV_T*)&sc[0].at24c02c,
+	(BSP_DEV_T*)&sc[1],
+	(BSP_DEV_T*)&sc[1].at24c02c,
 };
 const uint32_t ModulesCnt = sizeof(Modules) / sizeof(Modules[0]);
 
@@ -235,7 +250,7 @@ void BSP_UpdateCard(void)
 
 	BSP_Stage = 0;
 	
-	//BSP_PWR_IN_Process();
+	BSP_PWR_IN_Process();
 	
 	BSP_Stage++;
 	
@@ -312,6 +327,10 @@ void BSP_UpdateCard(void)
 	BSP_Stage++;
 	
 	BSP_PS_Process();
+	
+	BSP_Stage++;
+	
+	BSP_SC_Process();
 	
 	BSP_Stage++;
 }

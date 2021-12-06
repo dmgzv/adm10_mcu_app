@@ -36,7 +36,9 @@ static void SHELL_CMD_USERCallback(void *Shell, char **CmdParamsList, uint32_t C
 static void SHELL_CMD_PROFILECallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_FLASHCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_FPGACallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE 
 static void SHELL_CMD_DIM3RCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
+#endif
 static void SHELL_CMD_UCDCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_GDTCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
 static void SHELL_CMD_SFPCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt);
@@ -68,7 +70,9 @@ const SHELL_CMD_T ShellCmdList[] =
 	{ "user", 		"User control", LOG_ACCESS_ADMIN, &SHELL_CMD_USERCallback},
 	{ "profile", 	"Profile control", LOG_ACCESS_MONITOR, &SHELL_CMD_PROFILECallback},
 	{ "flash", 		"External flash control", SHELL_ACCESS_SU, &SHELL_CMD_FLASHCallback},
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE 
 	{ "dim3r", 		"DIM3R3400 control", SHELL_ACCESS_SU, &SHELL_CMD_DIM3RCallback},
+#endif
 	{ "ucd", 			"UCD90120A control", SHELL_ACCESS_SU, &SHELL_CMD_UCDCallback},
 	{ "gdt", 			"GDT080A control", SHELL_ACCESS_SU, &SHELL_CMD_GDTCallback},
 	{ "sfp", 			"SFP control", SHELL_ACCESS_SU, &SHELL_CMD_SFPCallback},
@@ -1279,6 +1283,7 @@ invalid_ip_addr:
 	return;
 }
 
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE 
 #define SHELL_CMD_DIM3R_HELP \
 "Usage:\r\n"\
 "\tdim3r <cmd> [<data1> <data2> ...]\r\n"\
@@ -1334,6 +1339,7 @@ command_error:
 	SHELL_TransmitBuffer(Shell, "Error: command error\r\n", sizeof("Error: command error\r\n") - 1);
 	return;
 }
+#endif
 
 #define SHELL_CMD_PCA9536_HELP \
 "Usage:\r\n"\

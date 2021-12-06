@@ -20,14 +20,15 @@ int32_t MAX31790_ConfigPWMOUT(MAX31790_T *Dev, uint32_t Idx, uint8_t Mode, uint1
 	
 	if (Mode == MAX31790_PWMOUT_MODE_PWM)
 	{
-		if (Dev->FanConfig[Idx] != 0x10)
+		if (Dev->FanConfig[Idx] != 0x08)
 		{
-			Dev->FanConfig[Idx] = 0x10;
+			Dev->FanConfig[Idx] = 0x08;
 			Dev->__FanUpdate[Idx] = 1;
 		}
 		if (Dev->PwmTargetDutyCycle[Idx] != PwmTargetDutyCycle)
 		{
-			Dev->PwmTargetDutyCycle[Idx] = PwmTargetDutyCycle;
+			Dev->PwmTargetDutyCycle[Idx] = PwmTargetDutyCycle << 7;
+			Dev->TachTargetCount[Idx] = 0xFFE0;
 			Dev->__FanUpdate[Idx] = 1;
 		}
 	}
@@ -40,15 +41,15 @@ int32_t MAX31790_ConfigPWMOUT(MAX31790_T *Dev, uint32_t Idx, uint8_t Mode, uint1
 		}
 		if (Dev->TachTargetCount[Idx] != TachTargetCount)
 		{
-			Dev->TachTargetCount[Idx] = TachTargetCount;
+			Dev->TachTargetCount[Idx] = TachTargetCount << 5;
 			Dev->__FanUpdate[Idx] = 1;
 		}
 	}
 	else if (Mode == MAX31790_PWMOUT_MODE_TACH)
 	{
-		if (Dev->FanConfig[Idx] != 0x11)
+		if (Dev->FanConfig[Idx] != 0x19)
 		{
-			Dev->FanConfig[Idx] = 0x11;
+			Dev->FanConfig[Idx] = 0x19;
 			Dev->__FanUpdate[Idx] = 1;
 		}
 	}
@@ -61,6 +62,7 @@ int32_t MAX31790_Init(MAX31790_T *Dev)
 {
 	uint32_t i;
 	uint8_t Addr;
+	uint8_t Data[2];
 	
 	if (!Dev)
 		return -1;
@@ -84,21 +86,27 @@ int32_t MAX31790_Init(MAX31790_T *Dev)
 		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->FanDynamics[i], 1))
 			goto error;
 		Addr = MAX31790_REG_PWM_DUTY_CYCLE(i);
-		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->PwmDutyCycle[i], 2))
+		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)Data, 2))
 			goto error;
+		Dev->PwmDutyCycle[i] = (Data[0] << 8) | Data[1];
+		
 		Addr = MAX31790_REG_PWM_TARGET_DUTY_CYCLE(i);
-		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->PwmTargetDutyCycle[i], 2))
+		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)Data, 2))
 			goto error;
+		Dev->PwmTargetDutyCycle[i] = (Data[0] << 8) | Data[1];
+		
 		Addr = MAX31790_REG_TACH_TARGET_COUNT(i);
-		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->TachTargetCount[i], 2))
+		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)Data, 2))
 			goto error;
+		Dev->TachTargetCount[i] = (Data[0] << 8) | Data[1];
 	}
 	
 	for (i = 0; i < MAX31790_TACHS_CNT; i++)
 	{
 		Addr = MAX31790_REG_TACH_COUNT(i);
-		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->TachCount[i], 2))
+		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)Data, 2))
 			goto error;
+		Dev->TachCount[i] = (Data[0] << 8) | Data[1];
 	}
 	
 	BSP_DEV_INIT_OK(Dev);
@@ -118,6 +126,7 @@ void MAX31790_Deinit(MAX31790_T *Dev)
 
 int32_t MAX31790_Update(MAX31790_T *Dev)
 {
+	uint8_t Data[2];
 	uint32_t i;
 	uint8_t Addr;
 	
@@ -138,24 +147,30 @@ int32_t MAX31790_Update(MAX31790_T *Dev)
 			Addr = MAX31790_REG_FAN_DYNAMICS(i);
 			if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->FanDynamics[i], 1))
 				goto error;
+			Data[0] = Dev->PwmTargetDutyCycle[i] >> 8;
+			Data[1] = Dev->PwmTargetDutyCycle[i];
 			Addr = MAX31790_REG_PWM_TARGET_DUTY_CYCLE(i);
-			if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->PwmTargetDutyCycle[i], 2))
+			if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Addr, 1, (char*)Data, 2))
 				goto error;
+			Data[0] = Dev->TachTargetCount[i] >> 8;
+			Data[1] = Dev->TachTargetCount[i];
 			Addr = MAX31790_REG_TACH_TARGET_COUNT(i);
-			if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->TachTargetCount[i], 2))
+			if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Addr, 1, (char*)Data, 2))
 				goto error;
 			Dev->__FanUpdate[i] = 0;
 		}
 		Addr = MAX31790_REG_PWM_DUTY_CYCLE(i);
-		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->PwmDutyCycle[i], 2))
+		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)Data, 2))
 			goto error;
+		Dev->PwmDutyCycle[i] = (Data[0] << 8) | Data[1];
 	}
 	
 	for (i = 0; i < MAX31790_TACHS_CNT; i++)
 	{
 		Addr = MAX31790_REG_TACH_COUNT(i);
-		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)&Dev->TachCount[i], 2))
+		if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, 1, (char*)Data, 2))
 			goto error;
+		Dev->TachCount[i] = (Data[0] << 8) | Data[1];
 	}	
 	
 	BSP_DEV_UPDATE_OK(Dev);

@@ -18,9 +18,9 @@ typedef struct {
 } DBE0125V2_READ_T;
 
 typedef struct {
-	char Id[64];
-	char Model[64];
-	char Revision[64];
+	char Id[23];
+	char Model[13];
+	char Revision[4];
 } DBE0125V2_MFR_T;
 
 typedef struct {

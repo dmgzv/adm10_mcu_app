@@ -30,7 +30,7 @@ int32_t IP1554_MAX7306_Process(IP1554_T *Dev, uint8_t ChassisAddress)
 	{
 		for (i = 0; i < MAX7306_PINS_CNT; i++)
 		{
-			if (ChassisAddress & (1 << 0))
+			if (ChassisAddress & (1 << i))
 				Pin = 0x7F;
 			else
 				Pin = 0x40;

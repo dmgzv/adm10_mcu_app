@@ -4,11 +4,13 @@
 #include "pca9538.h"
 #include "max31790.h"
 
+#define IP1562_VENDOR			"IPG"
+#define IP1562_PT_NUMBER	"SEEPROM"
 #define IP1562_HW_NUMBER	"IP1562"
 
-#define IP1562_PCA9538_PS_PRESENT_MASK(Idx)	((Idx) ? 1 : 0)
-#define IP1562_PCA9538_SC_PRESENT_MASK(Idx)	((Idx) ? 2 : 3)
-#define IP1562_PCA9538_MB_PRESENT_MASK			4
+#define IP1562_PCA9538_PS_PRESENT_MASK(Idx)	((Idx) ? (1 << 1) : (1 << 0))
+#define IP1562_PCA9538_SC_PRESENT_MASK(Idx)	((Idx) ? (1 << 2) : (1 << 3))
+#define IP1562_PCA9538_MB_PRESENT_MASK			(1 << 4)
 
 typedef struct {
 	PCA9538_T pca9538;

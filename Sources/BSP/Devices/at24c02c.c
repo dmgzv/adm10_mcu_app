@@ -10,8 +10,10 @@ int32_t AT24C02C_Write(AT24C02C_T *Dev, uint8_t Addr, char *Buffer, uint32_t Siz
 		return -1;
 	BSP_DEV_UPDATE(Dev);
 	
-	if (!I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Addr, sizeof(Addr), Buffer, Size))
+	if (I2C_Sequential_Transmit(Dev->I2C, Dev->Addr, &Addr, sizeof(Addr), Buffer, Size))
 		goto error;
+	
+	osDelay(5);
 	
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
@@ -31,7 +33,7 @@ int32_t AT24C02C_Read(AT24C02C_T *Dev, uint8_t Addr, char *Buffer, uint32_t Size
 		return -1;
 	BSP_DEV_UPDATE(Dev);
 	
-	if (!I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, sizeof(Addr), Buffer, Size))
+	if (I2C_Sequential_Receive(Dev->I2C, Dev->Addr, &Addr, sizeof(Addr), Buffer, Size))
 		goto error;
 	
 	BSP_DEV_UPDATE_OK(Dev);
@@ -47,7 +49,7 @@ int32_t AT24C02C_Init(AT24C02C_T *Dev)
 	uint8_t Addr;
 	char Buffer[8];
 	
-	if ((!Dev) || (!Dev->I2C) || ((Dev->Addr != 0xA0) && (Dev->Addr != 0xA8)))
+	if ((!Dev) || (!Dev->I2C) || ((Dev->Addr < 0xA0) && (Dev->Addr > 0xAE)))
 		return -1;
 	
 	BSP_DEV_INIT(Dev);

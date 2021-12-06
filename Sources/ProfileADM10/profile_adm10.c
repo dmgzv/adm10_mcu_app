@@ -173,7 +173,7 @@ static void PROFILE_ADM10_UpdatePowerAlarmsValue(PROFILE_T *Profile)
 	uint32_t Value, i;
 	
 	Value = 0;
-	/*
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE 
 	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
 	{
 		Value |= PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_A | PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B;
@@ -185,7 +185,7 @@ static void PROFILE_ADM10_UpdatePowerAlarmsValue(PROFILE_T *Profile)
 		if (!(dim3r3400_power_good & (1 << 1)))
 			Value |= PROFILE_ADM10_POWER_ALARMS_BITMSK_48V_B;			
 	}
-	*/
+#endif
 	if ((BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 	{
 		for (i = 0; i < UCD90120A_RAILS_CNT; i++)
@@ -215,8 +215,10 @@ static void PROFILE_ADM10_UpdateHwAlarmsValue(PROFILE_T *Profile)
 	
 	if (BSP_DEV_GET_STATE(&at45db641e) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_AT45DB641E_D94;
-	//if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
-	//	Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_DIM3R3400_A5;
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE 
+	if (BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK)
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_DIM3R3400_A5;
+#endif
 	if (BSP_DEV_GET_STATE(&pwr_pca9536) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCA9536_D107;
 	if (BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK)
@@ -295,6 +297,12 @@ static void PROFILE_ADM10_UpdateHwAlarmsValue(PROFILE_T *Profile)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_PCAL6624_D57;
 	if (BSP_DEV_GET_STATE(&ksz8895) != BSP_DEV_STATE_OK)
 		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_KSZ8895_D99;
+	if (BSP_DEV_GET_STATE(&seeprom.at24c02c) != BSP_DEV_STATE_OK)
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_AT24C02C;
+	if (BSP_DEV_GET_STATE(&seeprom.ip1562.pca9538) != BSP_DEV_STATE_OK)
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_IP1562_PCA9538_D1;
+	if (BSP_DEV_GET_STATE(&seeprom.ip1562.max31790) != BSP_DEV_STATE_OK)
+		Value |= PROFILE_ADM10_HW_ALARMS_BITMSK_IP1562_MAX31890_D4;
 	
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_HWALARMS_IDX, &Value, PROFILE_STATE_IS);
 }
@@ -502,7 +510,10 @@ static void PROFILE_ADM10_UpdateLedsValue(PROFILE_T *Profile)
 		PROFILE_SetValue(Profile, PROFILE_TABLE_5, PROFILE_ADM10_ALARMLED_IDX, &LedColor);
 	}
 	
-	if (/*(BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) ||*/
+	if (
+#ifdef BSP_PWR_IN_DIM3R3400_ENABLE 
+		(BSP_DEV_GET_STATE(&dim3r3400) != BSP_DEV_STATE_OK) || (!dim3r3400_power_good) ||
+#endif
 		(BSP_DEV_GET_STATE(&ucd90120a) != BSP_DEV_STATE_OK) || (!UCD90120A_POWER_GOOD(&ucd90120a)))
 	{
 		BSP_LED_Set(BSP_LED_TYPE_POWER, BSP_LED_COLOR_NO);
@@ -585,6 +596,10 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	
 	PROFILE_ADM10_UpdateStateStage++;
 	
+	PROFILE_ADM10_SC_UpdateValues(Profile);
+	
+	PROFILE_ADM10_UpdateStateStage++;
+	
 	PROFILE_ADM10_PS_UpdateValues(Profile);
 	
 	PROFILE_ADM10_UpdateStateStage++;
@@ -616,6 +631,8 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 
 int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
+	if (PROFILE_ADM10_SC_CheckConfigValue(Profile, Table, Idx, Value, Restore))
+		return -1;
 	if (PROFILE_ADM10_PS_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
 	if (PROFILE_ADM10_FAN_CheckConfigValue(Profile, Table, Idx, Value, Restore))
@@ -656,6 +673,8 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 	if ((Table == PROFILE_TABLE_3) && (Idx == PROFILE_ADM10_RESET_IDX) && (!Restore))
 		BSP_Reset();
 	
+	if (PROFILE_ADM10_SC_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
+		return -1;
 	if (PROFILE_ADM10_PS_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
 	if (PROFILE_ADM10_FAN_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
@@ -682,7 +701,7 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	char MacAddress[PROFILE_STRING_MAX_LEN];
 	uint8_t mac[6];
 	char *c;
-	uint32_t EthSel;
+	uint32_t SC1Present;
 	
 	PROFILE_ADM10_UpdateConfigsStage = 0;
 	
@@ -884,41 +903,28 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	if (PROFILE_GetValue(Profile, PROFILE_TABLE_104, PROFILE_ADM10_SC1IPGATEWAY_IDX, &SC2IpGateway))
 		return;
 	
-	EthSel = 1;
-	if (BSP_DEV_GET_STATE(&seeprom) == BSP_DEV_STATE_OK)
-	{
-		if ((!strcmp(seeprom.PtNumber, SEEPROM_PT_NUMBER)) && (!strcmp(seeprom.HwNumber, IP1562_HW_NUMBER)))
-		{
-			if(BSP_DEV_GET_STATE(&seeprom.ip1562.pca9538) == BSP_DEV_STATE_OK)
-			{
-				if (seeprom.ip1562.pca9538.Ins & IP1562_PCA9538_SC_PRESENT_MASK(i))
-				{
-					EthSel = 0;
-				}
-			}
-		}
-	}
+	SC1Present = SEEPROM_GetSCPresent(&seeprom, 0);
 	
 	BSP_ETH_PIN_ConfigState(BSP_ETH_PIN_EN, 0);
-	BSP_ETH_PIN_ConfigState(BSP_ETH_PIN_SW, EthSel ? 1 : 0);
+	BSP_ETH_PIN_ConfigState(BSP_ETH_PIN_SW, SC1Present ? 0 : 1);
 	
 	if ((StackChassisIdx >= 1) && (StackChassisIdx <= 12))
 	{
 		if (SlotAddress == 1)
 		{
-			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, EthSel ? 3 : 2, 5 + (StackChassisIdx - 1) * 20);
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, SC1Present ? 2 : 3, 5 + (StackChassisIdx - 1) * 20);
 		}
 		else if (SlotAddress == 2)
 		{
-			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, EthSel ? 3 : 2, 7 + (StackChassisIdx - 1) * 20);
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, SC1Present ? 2 : 3, 7 + (StackChassisIdx - 1) * 20);
 		}
 		else
 		{
-			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, EthSel ? 3 : 2, 9 + (StackChassisIdx - 1) * 20);
+			IP_ADDR4(&bsp_netif_ipaddr, 192, 168, SC1Present ? 2 : 3, 9 + (StackChassisIdx - 1) * 20);
 		}
-		IP_ADDR4(&bsp_netif_gw, 192, 168, EthSel ? 3 : 2, 1);
+		IP_ADDR4(&bsp_netif_gw, 192, 168, SC1Present ? 2 : 3, 1);
 		IP_ADDR4(&bsp_netif_netmask, 255, 255, 255, 0);
-		bsp_netif_vlan_prio_vid = EthSel ? 3 : 2;
+		bsp_netif_vlan_prio_vid = SC1Present ? 2 : 3;
 	}
 	/*
 	else if (StackChassisIdx == 0)
@@ -939,6 +945,10 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 		}
 	}
 	*/
+	
+	PROFILE_ADM10_UpdateConfigsStage++;
+	
+	PROFILE_ADM10_SC_UpdateConfigs(Profile);
 	
 	PROFILE_ADM10_UpdateConfigsStage++;
 	

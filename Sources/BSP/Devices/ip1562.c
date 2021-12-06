@@ -61,15 +61,15 @@ int32_t IP1562_ConfigFansSpeed(IP1562_T *Dev, float Speed)
 	
 	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
 		return -1;
-	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_TACH, 0, 0))
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 1, MAX31790_PWMOUT_MODE_TACH, 0, 0))
 		return -1;
-	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 2, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
 		return -1;
-	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 3, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
 		return -1;
-	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_TACH, 0, 0))
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 4, MAX31790_PWMOUT_MODE_TACH, 0, 0))
 		return -1;
-	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 0, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
+	if (MAX31790_ConfigPWMOUT(&Dev->max31790, 5, MAX31790_PWMOUT_MODE_PWM, (Speed * 511) / 100, 0))
 		return -1;
 	
 	return 0;
@@ -86,7 +86,10 @@ float IP1562_GetFanSpeed(IP1562_T *Dev, uint32_t Idx)
 	if (BSP_DEV_GET_STATE(&Dev->max31790) == BSP_DEV_STATE_OK)
 	{
 		BSP_DEV_LOCK(&Dev->max31790);
-		Speed = 8192.0f * 60.0f * 4.0f * 100.0f / (4.0f * Dev->max31790.TachCount[Idx] * 20000.0f);
+		if (Dev->max31790.TachCount[Idx] < 0xFFE0)
+		{
+			Speed = 8192.0f * 60.0f * 4.0f * 100.0f / (2.0f * (Dev->max31790.TachCount[Idx] >> 5) * 25000.0f);
+		}
 		BSP_DEV_UNLOCK(&Dev->max31790);
 	}
 	return Speed;

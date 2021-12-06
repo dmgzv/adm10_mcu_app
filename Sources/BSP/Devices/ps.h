@@ -6,10 +6,10 @@
 #include "ip1554.h"
 
 #define PS_DEV_NAME 	"PS"
-#define PS_PT_NUMBER	"PS"
 
 typedef struct {
 	BSP_DEV;
+	char Vendor[64];
 	char PtNumber[64];
 	char HwNumber[64];
 	char SrNumber[64];
@@ -24,7 +24,11 @@ void PS_Deinit(PS_T *Dev);
 int32_t PS_Update(PS_T *Dev);
 
 int32_t PS_ConfigChassisAddress(PS_T *Dev, uint8_t ChassisAddress);
-int32_t PS_ConfigInventory(PS_T *Dev, char *PtNumber, char *HwNumber, char *SrNumber);
+
+int32_t PS_ConfigVendor(PS_T *Dev, char *Vendor);
+int32_t PS_ConfigPtNumber(PS_T *Dev, char *PtNumber);
+int32_t PS_ConfigHwNumber(PS_T *Dev, char *HwNumber);
+int32_t PS_ConfigSrNumber(PS_T *Dev, char *SrNumber);
 
 int32_t PS_GetVin(PS_T *Dev, float *Vin);
 int32_t PS_GetVout(PS_T *Dev, float *Vout);

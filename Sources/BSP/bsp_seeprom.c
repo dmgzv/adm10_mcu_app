@@ -20,6 +20,13 @@ SEEPROM_T seeprom =
 			.I2C = BSP_SEEPROM_I2C,
 			.Addr = 0xE0,
 		},
+		.max31790 = {
+			.DevName = SEEPROM_DEV_NAME"_"MAX31790_DEV_NAME"_D4",
+			.InitContErrThr = 3,
+			.UpdateContErrThr = 3,
+			.I2C = BSP_SEEPROM_I2C,
+			.Addr = 0x40,
+		},
 	},
 };
 
