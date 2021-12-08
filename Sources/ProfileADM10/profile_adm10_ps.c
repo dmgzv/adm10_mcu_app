@@ -3,6 +3,7 @@
 #include "profile_adm10_bitmsks.h"
 #include <string.h>
 
+/*
 const uint16_t ProfileADM10DynamicPSBlockStateIdx[2] = 
 {
 	PROFILE_ADM10_PS1BLOCKSTATE_IDX, PROFILE_ADM10_PS2BLOCKSTATE_IDX,
@@ -12,6 +13,7 @@ const uint16_t ProfileADM10DynamicPSHwAlarmsIdx[2] =
 {
 	PROFILE_ADM10_PS1HWALARMS_IDX, PROFILE_ADM10_PS2HWALARMS_IDX,
 };
+*/
 
 const uint16_t ProfileADM10DynamicPSInVIdx[2] = 
 {
@@ -123,7 +125,7 @@ static void PROFILE_ADM10_PS_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint3
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSPtNumberIdx[Idx], PROFILE_STATE_OOS);
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoPSHwNumberIdx[Idx], PROFILE_STATE_OOS);
 }
-
+/*
 static void PROFILE_ADM10_PS_UpdateBlockStateValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t Value;
@@ -176,7 +178,7 @@ static void PROFILE_ADM10_PS_UpdateHwAlarmsValue(PROFILE_T *Profile, uint32_t Id
 	
 	PROFILE_SetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSHwAlarmsIdx[Idx], PROFILE_STATE_OOS);
 }
-
+*/
 static void PROFILE_ADM10_PS_UpdateInVValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	float Value;
@@ -243,8 +245,8 @@ static void PROFILE_ADM10_PS_UpdateTempValue(PROFILE_T *Profile, uint32_t Idx)
 
 static void PROFILE_ADM10_PS_UpdateDynamicValues(PROFILE_T *Profile, uint32_t Idx)
 {
-	PROFILE_ADM10_PS_UpdateBlockStateValue(Profile, Idx);
-	PROFILE_ADM10_PS_UpdateHwAlarmsValue(Profile, Idx);
+	//PROFILE_ADM10_PS_UpdateBlockStateValue(Profile, Idx);
+	//PROFILE_ADM10_PS_UpdateHwAlarmsValue(Profile, Idx);
 	PROFILE_ADM10_PS_UpdateInVValue(Profile, Idx);
 	PROFILE_ADM10_PS_UpdateOutVValue(Profile, Idx);
 	PROFILE_ADM10_PS_UpdateOutIValue(Profile, Idx);

@@ -3,6 +3,7 @@
 #include "profile_adm10_bitmsks.h"
 #include <string.h>
 
+/*
 const uint16_t ProfileADM10DynamicSCBlockStateIdx[2] = 
 {
 	PROFILE_ADM10_SC1BLOCKSTATE_IDX, PROFILE_ADM10_SC2BLOCKSTATE_IDX,
@@ -12,6 +13,7 @@ const uint16_t ProfileADM10DynamicSCHwAlarmsIdx[2] =
 {
 	PROFILE_ADM10_SC1HWALARMS_IDX, PROFILE_ADM10_SC2HWALARMS_IDX,
 };
+*/
 
 const uint16_t ProfileADM10InfoSCVendorIdx[2] = 
 {
@@ -91,7 +93,7 @@ static void PROFILE_ADM10_SC_UpdateInfoAndStaticValues(PROFILE_T *Profile, uint3
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoSCPtNumberIdx[Idx], PROFILE_STATE_OOS);
 	PROFILE_SetState(Profile, PROFILE_TABLE_1, ProfileADM10InfoSCHwNumberIdx[Idx], PROFILE_STATE_OOS);
 }
-
+/*
 static void PROFILE_ADM10_SC_UpdateBlockStateValue(PROFILE_T *Profile, uint32_t Idx)
 {
 	uint32_t Value;
@@ -135,11 +137,11 @@ static void PROFILE_ADM10_SC_UpdateHwAlarmsValue(PROFILE_T *Profile, uint32_t Id
 	
 	PROFILE_SetState(Profile, PROFILE_TABLE_2, ProfileADM10DynamicSCHwAlarmsIdx[Idx], PROFILE_STATE_OOS);
 }
-
+*/
 static void PROFILE_ADM10_SC_UpdateDynamicValues(PROFILE_T *Profile, uint32_t Idx)
 {
-	PROFILE_ADM10_SC_UpdateBlockStateValue(Profile, Idx);
-	PROFILE_ADM10_SC_UpdateHwAlarmsValue(Profile, Idx);
+	//PROFILE_ADM10_SC_UpdateBlockStateValue(Profile, Idx);
+	//PROFILE_ADM10_SC_UpdateHwAlarmsValue(Profile, Idx);
 }
 
 void PROFILE_ADM10_SC_UpdateValues(PROFILE_T *Profile)

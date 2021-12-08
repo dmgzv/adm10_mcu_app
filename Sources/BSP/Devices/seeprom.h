@@ -33,4 +33,8 @@ float SEEPROM_GetFanSpeed(SEEPROM_T *Dev, uint32_t Idx);
 uint32_t SEEPROM_GetPSPresent(SEEPROM_T *Dev, uint32_t Idx);
 uint32_t SEEPROM_GetSCPresent(SEEPROM_T *Dev, uint32_t Idx);
 
+int32_t SEEPROM_ConfigOutState(SEEPROM_T *Dev, uint32_t Idx, uint32_t State);
+uint32_t SEEPROM_GetOutState(SEEPROM_T *Dev, uint32_t Idx);
+uint32_t SEEPROM_GetInState(SEEPROM_T *Dev, uint32_t Idx);
+
 #endif /*__SEEPROM_H*/

@@ -258,9 +258,9 @@ int32_t SEEPROM_ConfigSrNumber(SEEPROM_T *Dev, char *SrNumber)
 int32_t SEEPROM_ConfigFansSpeed(SEEPROM_T *Dev, float Speed)
 {
 	if (!Dev)
-		return 0;
+		return -1;
 	if(BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
-		return 0;
+		return -1;
 	
 	BSP_DEV_LOCK(Dev);
 	if ((!strcmp(Dev->Vendor, IP1562_VENDOR)) && (!strcmp(Dev->PtNumber, IP1562_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IP1562_HW_NUMBER)))
@@ -335,4 +335,66 @@ uint32_t SEEPROM_GetSCPresent(SEEPROM_T *Dev, uint32_t Idx)
 	BSP_DEV_UNLOCK(Dev);
 	
 	return Present;
+}
+
+int32_t SEEPROM_ConfigOutState(SEEPROM_T *Dev, uint32_t Idx, uint32_t State)
+{
+	if (!Dev)
+		return -1;
+	if(BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return -1;
+	
+	BSP_DEV_LOCK(Dev);
+	if ((!strcmp(Dev->Vendor, IP1562_VENDOR)) && (!strcmp(Dev->PtNumber, IP1562_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IP1562_HW_NUMBER)))
+	{
+		if (IP1562_ConfigOutState(&Dev->ip1562, Idx, State))
+			goto error;
+	}
+	
+	BSP_DEV_UNLOCK(Dev);
+	return 0;
+	
+error:
+	BSP_DEV_UNLOCK(Dev);
+	return -1;
+}
+
+uint32_t SEEPROM_GetOutState(SEEPROM_T *Dev, uint32_t Idx)
+{
+	uint32_t OutState;
+	
+	if ((!Dev) || (Idx >= 2))
+		return 0;
+	if(BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return 0;
+	
+	OutState = 0;
+	BSP_DEV_LOCK(Dev);
+	if ((!strcmp(Dev->Vendor, IP1562_VENDOR)) && (!strcmp(Dev->PtNumber, IP1562_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IP1562_HW_NUMBER)))
+	{
+		OutState = IP1562_GetOutState(&Dev->ip1562, Idx);
+	}
+	BSP_DEV_UNLOCK(Dev);
+	
+	return OutState;
+}
+
+uint32_t SEEPROM_GetInState(SEEPROM_T *Dev, uint32_t Idx)
+{
+	uint32_t InState;
+	
+	if ((!Dev) || (Idx >= 2))
+		return 0;
+	if(BSP_DEV_GET_STATE(Dev) != BSP_DEV_STATE_OK)
+		return 0;
+	
+	InState = 0;
+	BSP_DEV_LOCK(Dev);
+	if ((!strcmp(Dev->Vendor, IP1562_VENDOR)) && (!strcmp(Dev->PtNumber, IP1562_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IP1562_HW_NUMBER)))
+	{
+		InState = IP1562_GetInState(&Dev->ip1562, Idx);
+	}
+	BSP_DEV_UNLOCK(Dev);
+	
+	return InState;
 }

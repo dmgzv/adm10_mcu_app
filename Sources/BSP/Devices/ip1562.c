@@ -1,5 +1,26 @@
 #include "ip1562.h"
 
+int32_t IP1562_PCA9536_Process(IP1562_T *Dev)
+{
+	if (!Dev)
+		return -1;
+	
+	if (BSP_DEV_GET_STATE(&Dev->pca9536) != BSP_DEV_STATE_OK)
+	{
+		PCA9536_Init(&Dev->pca9536);
+	}
+	else
+	{
+		PCA9536_SetBankDir(&Dev->pca9536, 0x03);
+		PCA9536_GetBankIn(&Dev->pca9536);
+		Dev->PinsState &= ~0x03;
+		Dev->PinsState |= Dev->pca9536.Ins & 0x03;
+		PCA9536_SetBankOut(&Dev->pca9536, Dev->PinsState & (0x03 << 2));
+	}
+	
+	return 0;
+}
+
 int32_t IP1562_PCA9538_Process(IP1562_T *Dev)
 {
 	if (!Dev)
@@ -40,6 +61,7 @@ int32_t IP1562_Process(IP1562_T *Dev)
 	if (!Dev)
 		return -1;
 	
+	//IP1562_PCA9536_Process(Dev);
 	IP1562_PCA9538_Process(Dev);
 	IP1562_MAX31790_Process(Dev);
 	
@@ -129,4 +151,25 @@ uint32_t IP1562_GetSCPresent(IP1562_T *Dev, uint32_t Idx)
 		BSP_DEV_UNLOCK(&Dev->pca9538);
 	}
 	return Present;
+}
+
+int32_t IP1562_ConfigOutState(IP1562_T *Dev, uint32_t Idx, uint32_t State)
+{
+	if (!Dev)
+		return -1;
+	
+	if (!State)
+		Dev->PinsState &= ~(1 << (Idx + 2));
+	else
+		Dev->PinsState |= (1 << (Idx + 2));
+	
+	return 0;
+}
+uint32_t IP1562_GetOutState(IP1562_T *Dev, uint32_t Idx)
+{
+	return ((Dev->PinsState >> (Idx + 2)) & 0x01);
+}
+uint32_t IP1562_GetInState(IP1562_T *Dev, uint32_t Idx)
+{
+	return ((Dev->PinsState >> Idx) & 0x01);
 }

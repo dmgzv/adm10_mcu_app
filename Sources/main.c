@@ -121,6 +121,11 @@ int main(void)
   for(;;);
 }
 
+void __PROFILE_GetStringColor(PROFILE_T *Profile, uint8_t TableIdx, uint16_t ParamIdx, uint8_t *Color, uint8_t DegradeColor, uint8_t FailureColor)
+{
+	PROFILE_ADM10_GetStringColor(Profile, TableIdx, ParamIdx, Color, DegradeColor, FailureColor);
+}
+
 void PROFILE_UpdateValues(void)
 {
 	PROFILE_ADM10_UpdateValues(&Profile);	

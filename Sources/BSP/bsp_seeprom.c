@@ -13,6 +13,12 @@ SEEPROM_T seeprom =
 		.Addr = 0xA4,
 	},
 	.ip1562 = {
+		.pca9536 = {
+			.DevName = SEEPROM_DEV_NAME"_"PCA9536_DEV_NAME"_D3",
+			.InitContErrThr = 3,
+			.UpdateContErrThr = 3,
+			.I2C = BSP_SEEPROM_I2C,
+		},
 		.pca9538 = {
 			.DevName = SEEPROM_DEV_NAME"_"PCA9538_DEV_NAME"_D1",
 			.InitContErrThr = 3,

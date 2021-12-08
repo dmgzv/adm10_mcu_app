@@ -2,9 +2,10 @@
 #define __IP1562_H
 
 #include "pca9538.h"
+#include "pca9536.h"
 #include "max31790.h"
 
-#define IP1562_VENDOR			"IPG"
+#define IP1562_VENDOR			"IPG Photonics"
 #define IP1562_PT_NUMBER	"SEEPROM"
 #define IP1562_HW_NUMBER	"IP1562"
 
@@ -13,6 +14,8 @@
 #define IP1562_PCA9538_MB_PRESENT_MASK			(1 << 4)
 
 typedef struct {
+	uint8_t PinsState;
+	PCA9536_T pca9536;
 	PCA9538_T pca9538;
 	MAX31790_T max31790;
 } IP1562_T;
@@ -25,5 +28,9 @@ float IP1562_GetFanSpeed(IP1562_T *Dev, uint32_t Idx);
 
 uint32_t IP1562_GetPSPresent(IP1562_T *Dev, uint32_t Idx);
 uint32_t IP1562_GetSCPresent(IP1562_T *Dev, uint32_t Idx);
+
+int32_t IP1562_ConfigOutState(IP1562_T *Dev, uint32_t Idx, uint32_t State);
+uint32_t IP1562_GetOutState(IP1562_T *Dev, uint32_t Idx);
+uint32_t IP1562_GetInState(IP1562_T *Dev, uint32_t Idx);
 
 #endif /*__IP1562_H*/

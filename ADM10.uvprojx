@@ -1032,14 +1032,14 @@
               <FilePath>.\Sources\ProfileADM10\profile_adm10_ps.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm10_fan.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_fan.c</FilePath>
-            </File>
-            <File>
               <FileName>profile_adm10_sc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_sc.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_seeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_seeprom.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2461,14 +2461,14 @@
               <FilePath>.\Sources\ProfileADM10\profile_adm10_ps.c</FilePath>
             </File>
             <File>
-              <FileName>profile_adm10_fan.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Sources\ProfileADM10\profile_adm10_fan.c</FilePath>
-            </File>
-            <File>
               <FileName>profile_adm10_sc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\ProfileADM10\profile_adm10_sc.c</FilePath>
+            </File>
+            <File>
+              <FileName>profile_adm10_seeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\ProfileADM10\profile_adm10_seeprom.c</FilePath>
             </File>
           </Files>
         </Group>

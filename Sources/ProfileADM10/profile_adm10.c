@@ -6,6 +6,13 @@
 uint32_t PROFILE_ADM10_UpdateConfigsStage = 0;
 uint32_t PROFILE_ADM10_UpdateStateStage = 0;
 
+void PROFILE_ADM10_GetStringColor(PROFILE_T *Profile, uint8_t TableIdx, uint16_t ParamIdx, uint8_t *Color, uint8_t DegradeColor, uint8_t FailureColor)
+{
+	*Color = PROFILE_COLOR_NA;
+	
+	PROFILE_ADM10_SEEPROM_GetStringColor(Profile, TableIdx, ParamIdx, Color, DegradeColor, FailureColor);
+}
+
 static void PROFILE_ADM10_UpdatepId(PROFILE_T *Profile)
 {
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_1, PROFILE_ADM10_PID_IDX, BSP_PT_NUMBER, PROFILE_STATE_IS);	
@@ -604,7 +611,7 @@ void PROFILE_ADM10_UpdateValues(PROFILE_T *Profile)
 	
 	PROFILE_ADM10_UpdateStateStage++;
 	
-	PROFILE_ADM10_FAN_UpdateValues(Profile);
+	PROFILE_ADM10_SEEPROM_UpdateValues(Profile);
 	
 	PROFILE_ADM10_UpdateStateStage++;
 	
@@ -635,7 +642,7 @@ int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16
 		return -1;
 	if (PROFILE_ADM10_PS_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
-	if (PROFILE_ADM10_FAN_CheckConfigValue(Profile, Table, Idx, Value, Restore))
+	if (PROFILE_ADM10_SEEPROM_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
 	if (PROFILE_ADM10_LINE_CheckConfigValue(Profile, Table, Idx, Value, Restore))
 		return -1;
@@ -677,7 +684,7 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 		return -1;
 	if (PROFILE_ADM10_PS_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
-	if (PROFILE_ADM10_FAN_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
+	if (PROFILE_ADM10_SEEPROM_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
 	if (PROFILE_ADM10_LINE_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore))
 		return -1;
@@ -956,7 +963,7 @@ void PROFILE_ADM10_UpdateConfigs(PROFILE_T *Profile)
 	
 	PROFILE_ADM10_UpdateConfigsStage++;
 	
-	PROFILE_ADM10_FAN_UpdateConfigs(Profile);
+	PROFILE_ADM10_SEEPROM_UpdateConfigs(Profile);
 	
 	PROFILE_ADM10_UpdateConfigsStage++;
 	

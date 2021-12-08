@@ -2338,8 +2338,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_fan.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm10_fan.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_sc.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_sc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -2350,8 +2350,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_sc.c</PathWithFileName>
-      <FilenameWithoutPath>profile_adm10_sc.c</FilenameWithoutPath>
+      <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_seeprom.c</PathWithFileName>
+      <FilenameWithoutPath>profile_adm10_seeprom.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

@@ -4,8 +4,8 @@
 #include "max7306.h"
 #include "dbe0125v2.h"
 
-#define IP1554_VENDOR			"IPG"
-#define IP1554_PT_NUMBER	"ONH011C400"
+#define IP1554_VENDOR			"IPG Photonics"
+#define IP1554_PT_NUMBER	"ONH-01-1C-300"
 #define IP1554_HW_NUMBER	"IP1554"
 
 typedef struct {
