@@ -732,6 +732,16 @@
               <FilePath>.\Sources\BSP\Devices\ps.c</FilePath>
             </File>
             <File>
+              <FileName>mcp23008.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\mcp23008.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipgp966.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\ipgp966.c</FilePath>
+            </File>
+            <File>
               <FileName>sc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\sc.c</FilePath>
@@ -2159,6 +2169,16 @@
               <FileName>ps.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\ps.c</FilePath>
+            </File>
+            <File>
+              <FileName>mcp23008.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\mcp23008.c</FilePath>
+            </File>
+            <File>
+              <FileName>ipgp966.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\ipgp966.c</FilePath>
             </File>
             <File>
               <FileName>sc.c</FileName>

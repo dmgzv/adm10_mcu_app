@@ -3,6 +3,7 @@
 
 #include "bsp_dev.h"
 #include "at24c02c.h"
+#include "ipgp966.h"
 #include "ipgp967.h"
 
 #define SC_DEV_NAME 	"SC"
@@ -16,6 +17,7 @@ typedef struct {
 	uint8_t ChassisAddress;
 	uint32_t __UpdateFlag;
 	AT24C02C_T at24c02c;
+	IPGP966_T ipgp966;
 } SC_T;
 
 int32_t SC_Init(SC_T *Dev);

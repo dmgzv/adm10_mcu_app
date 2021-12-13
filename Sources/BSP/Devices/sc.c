@@ -176,6 +176,11 @@ int32_t SC_Update(SC_T *Dev)
 		Dev->__UpdateFlag = 0;
 	}
 	
+	if ((!strcmp(Dev->Vendor, IPGP966_VENDOR)) && (!strcmp(Dev->PtNumber, IPGP966_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IPGP966_HW_NUMBER)))
+	{
+		IPGP966_Process(&Dev->ipgp966, Dev->ChassisAddress);
+	}
+	
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
