@@ -196,9 +196,9 @@ typedef struct {
     uint8_t In1State;
     char In2[PROFILE_STRING_MAX_LEN];
     uint8_t In2State;
-    char Out1[PROFILE_STRING_MAX_LEN];
+    uint32_t Out1;
     uint8_t Out1State;
-    char Out2[PROFILE_STRING_MAX_LEN];
+    uint32_t Out2;
     uint8_t Out2State;
     float Fan1Speed;
     uint8_t Fan1SpeedState;

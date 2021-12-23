@@ -443,12 +443,12 @@ static void PROFILE_ADM10_SEEPROM_UpdateOutValue(PROFILE_T *Profile, uint32_t Id
 	
 	if (SEEPROM_GetOutState(&seeprom, Idx))
 	{
-		Value = 1;
+		Value = PROFILE_ADM10_OUT_ENUM_CLOSE;
 		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicOutIdx[Idx], &Value, PROFILE_STATE_IS);
 	}
 	else
 	{
-		Value = 0;
+		Value = PROFILE_ADM10_OUT_ENUM_OPEN;
 		PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicOutIdx[Idx], &Value, PROFILE_STATE_IS);
 	}
 }
