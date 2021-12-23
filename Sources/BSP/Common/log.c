@@ -7,7 +7,7 @@
 #ifdef BSP_CONFIG_USE_LOG
 
 #ifdef BSP_CONFIG_USE_LOG_RAM
-LOG_T __attribute__((section ("CCM_DATA"))) Log;
+LOG_T __attribute__((section (".ccmram"))) Log;
 
 osMutexDef(Log);
 
@@ -77,7 +77,7 @@ int32_t __LOG_GetLine(uint32_t Index, LOG_LINE_T *Line)
 
 static void __LOG_Thread(void const *argument);
 
-LOG_T __attribute__((section ("CCM_DATA"))) Log;
+LOG_T __attribute__((section (".ccmram"))) Log;
 
 osMutexDef(LOG);
 osMessageQDef(LOG, LOG_LINES_CNT - 3, uint32_t);

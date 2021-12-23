@@ -11,7 +11,7 @@
 osMessageQDef(TFTP, TFTP_MESSAGE_QUEUE_SIZE, uint32_t);
 osMutexDef(TFTP);
 static struct udp_pcb *TFTP_CLIENT_udp_pcb;
-static int (*TFTP_CLIENT_ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size);
+static int32_t (*TFTP_CLIENT_ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size);
 static void *TFTP_CLIENT_Priv;
 static osMessageQId TFTP_CLIENT_MessageQId;
 static osMutexId TFTP_CLIENT_MutexId;
@@ -160,7 +160,7 @@ error:
 	return TFTP_CLIENT_ERROR;
 }
 
-int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void *Priv)
+int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int32_t (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void *Priv)
 {
 	osEvent evt;	
 	/* TFTP is not initialized*/

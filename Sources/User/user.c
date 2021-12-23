@@ -5,6 +5,7 @@
 #include "tiny-json.h"
 #include <string.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 #define USER_BUFFER_SIZE		(2 * BSP_FLASH_PAGE_SIZE)
 #define USER_ADDR(UserIdx)	(BSP_FLASH_USER_ADDR + ((UserIdx) * USER_BUFFER_SIZE))
@@ -13,7 +14,7 @@ static osMutexId UserMutexId;
 static osMutexDef(USER);
 static char UserBuffer[USER_BUFFER_SIZE];
 
-static USER_T __attribute__((section ("CCM_DATA"))) Users[USER_MAX_CNT];
+static USER_T __attribute__((section (".ccmram"))) Users[USER_MAX_CNT];
 
 static const USER_T DefaultUsers[] = {
 	{
@@ -286,7 +287,7 @@ int32_t USER_Init(void)
 			memcpy(&Users[i], &User, sizeof(User));
 			if (User.Login[0])
 			{
-				sprintf(IdxStr, "%d", i);
+				sprintf(IdxStr, PRIu32, i);
 				LOG_Info("USER", "", "UserInit", "%d;%s", i, User.Login);
 			}
 		}

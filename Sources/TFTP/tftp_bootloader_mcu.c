@@ -120,7 +120,7 @@ static int32_t TFTP_BOOTLOADER_MCU_IdleWeb(void)
 	return 0;	
 }
 
-static int TFTP_BOOTLOADER_MCU_DownloadWebReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
+static int32_t TFTP_BOOTLOADER_MCU_DownloadWebReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
 	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_WEB].Size += DataSize;
 	if (HTTP_SERVER_FILES_WriteData(((Block - 1) * TFTP_DATA_LEN_MAX), Data, DataSize))
@@ -173,7 +173,7 @@ static int32_t TFTP_BOOTLOADER_MCU_IdleLangpack(void)
 	return 0;	
 }
 
-static int TFTP_BOOTLOADER_MCU_DownloadLangpackReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
+static int32_t TFTP_BOOTLOADER_MCU_DownloadLangpackReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
 	TFTP_BOOTLOADER_MCU_Files[TFTP_BOOTLOADER_MCU_FILE_LANGPACK].Size += DataSize;
 	if (PROFILE_FLASH_UpdateLangpackData(&ProfileFlash, (Block - 1) * TFTP_DATA_LEN_MAX, Data, DataSize))

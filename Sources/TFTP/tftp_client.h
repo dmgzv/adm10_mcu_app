@@ -31,5 +31,5 @@ typedef enum {
 #define TFTP_CLIENT_TIMEOUT  		(-2)
 
 int32_t TFTP_CLIENT_Init(void);
-int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void *Priv);
+int32_t TFTP_CLIENT_DownloadFile(char *filename, ip_addr_t *addr, int32_t (*ReceiveCallback)(void *Priv, uint16_t Block, char *Data, uint32_t Size), void *Priv);
 #endif /*TFTP_CLIENT_H*/

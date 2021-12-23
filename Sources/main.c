@@ -37,8 +37,8 @@ const SHELL_IFACE_T ShellUart5Iface =
 	UART5
 };
 
-SHELL_T __attribute__((section ("CCM_DATA"))) ShellTelnet;
-SHELL_TELNET_PRIV_T __attribute__((section ("CCM_DATA"))) ShellTelnetPriv;
+SHELL_T __attribute__((section (".ccmram"))) ShellTelnet;
+SHELL_TELNET_PRIV_T __attribute__((section (".ccmram"))) ShellTelnetPriv;
 const SHELL_IFACE_T ShellTelnetIface = 
 {
 	&SHELL_TELNET_Init,
@@ -62,24 +62,24 @@ typedef union {
 }PROFILE_VALUES_CALIB_T;
 
 extern PROFILE_DESCR_T ProfileADM10Descr;
-PROFILE_DESCR_T __attribute__((section ("CCM_DATA"))) *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADM10Descr};
+PROFILE_DESCR_T __attribute__((section (".ccmram"))) *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADM10Descr};
 
-PROFILE_T __attribute__((section ("CCM_DATA"))) Profile;
-PROFILE_VALUES_STATIC_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValuesStatic;
-PROFILE_VALUES_DYNAMIC_T __attribute__((section ("CCM_DATA"))) ProfileValuesDynamic;
-PROFILE_VALUES_CALIB_T /*__attribute__((section ("CCM_DATA")))*/ ProfileValuesCalib;
-PROFILE_VALUES_T __attribute__((section ("CCM_DATA"))) ProfileValues = {
+PROFILE_T __attribute__((section (".ccmram"))) Profile;
+PROFILE_VALUES_STATIC_T /*__attribute__((section (".ccmram")))*/ ProfileValuesStatic;
+PROFILE_VALUES_DYNAMIC_T __attribute__((section (".ccmram"))) ProfileValuesDynamic;
+PROFILE_VALUES_CALIB_T /*__attribute__((section (".ccmram")))*/ ProfileValuesCalib;
+PROFILE_VALUES_T __attribute__((section (".ccmram"))) ProfileValues = {
 	.Dynamic = &ProfileValuesDynamic,
 	.Static = &ProfileValuesStatic,
 	.Calib = &ProfileValuesCalib,
 };
-PROFILE_FLASH_T __attribute__((section ("CCM_DATA"))) ProfileFlash;
-PROFILE_PROTOCOL_T __attribute__((section ("CCM_DATA"))) ProfileProtocol;
-//PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart5;
-PROFILE_IFACE_T /*__attribute__((section ("CCM_DATA")))*/ ProfileIfaceUart4;
+PROFILE_FLASH_T __attribute__((section (".ccmram"))) ProfileFlash;
+PROFILE_PROTOCOL_T __attribute__((section (".ccmram"))) ProfileProtocol;
+//PROFILE_IFACE_T /*__attribute__((section (".ccmram")))*/ ProfileIfaceUart5;
+PROFILE_IFACE_T /*__attribute__((section (".ccmram")))*/ ProfileIfaceUart4;
 
-BOOTLOADER_T /*__attribute__((section ("CCM_DATA")))*/ Bootloader;
-const BOOTLOADER_INFO_T __attribute__((at(BOOTLOADER_FW_INFO))) BootloaderInfo= {
+BOOTLOADER_T /*__attribute__((section (".ccmram")))*/ Bootloader;
+const BOOTLOADER_INFO_T __attribute__((section(".bldr_info"))) BootloaderInfo= {
 	BSP_PROJECT,
 	BSP_HW_VERSION,
 	BSP_SW_VERSION,

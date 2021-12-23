@@ -430,7 +430,7 @@ int32_t __HTTP_SERVER_WriteHeader(struct netconn *Conn, HTTP_RESPONCE_HEADER_T *
 	}
 	
 	if (Header->ContentLength)
-		HTTP_SERVER_BufferLen += sprintf(&HTTP_SERVER_Buffer[HTTP_SERVER_BufferLen], "Content-Length: %d\r\n", Header->ContentLength);
+		HTTP_SERVER_BufferLen += sprintf(&HTTP_SERVER_Buffer[HTTP_SERVER_BufferLen], "Content-Length: "PRIu32"\r\n", Header->ContentLength);
 	
 	if (Header->TransferEncoding)
 		HTTP_SERVER_BufferLen += sprintf(&HTTP_SERVER_Buffer[HTTP_SERVER_BufferLen], "Transfer-Encoding: %s\r\n", Header->TransferEncoding);
@@ -476,7 +476,7 @@ int32_t __HTTP_SERVER_WriteBody(struct netconn *Conn, char *str, ...)
 	va_end(va);
 	if (HTTP_SERVER_BufferLen >= 1024)
 	{
-		snprintf (ChunkSize, sizeof(ChunkSize), "%X\r\n", HTTP_SERVER_BufferLen);
+		snprintf (ChunkSize, sizeof(ChunkSize), PRIX32"\r\n", HTTP_SERVER_BufferLen);
 		if (HTTP_SERVER_Write(Conn, ChunkSize, strlen(ChunkSize), NETCONN_COPY | NETCONN_MORE))
 			return -1;	
 		HTTP_SERVER_Buffer[HTTP_SERVER_BufferLen++] = '\r';
@@ -500,7 +500,7 @@ int32_t __HTTP_SERVER_WriteBodyData(struct netconn *Conn, char *Data, uint32_t D
 			DataShift = 1024 - HTTP_SERVER_BufferLen;
 			memcpy(&HTTP_SERVER_Buffer[HTTP_SERVER_BufferLen], Data, DataShift);
 			HTTP_SERVER_BufferLen = 1024;
-			snprintf(ChunkSize, sizeof(ChunkSize), "%X\r\n", HTTP_SERVER_BufferLen);
+			snprintf(ChunkSize, sizeof(ChunkSize), PRIX32"\r\n", HTTP_SERVER_BufferLen);
 			if (HTTP_SERVER_Write(Conn, ChunkSize, strlen(ChunkSize), NETCONN_COPY | NETCONN_MORE))
 				return -1;	
 			HTTP_SERVER_Buffer[HTTP_SERVER_BufferLen++] = '\r';
@@ -528,7 +528,7 @@ int32_t __HTTP_SERVER_FinishBody(struct netconn *Conn)
 	
 	if (HTTP_SERVER_BufferLen)
 	{
-		snprintf (ChunkSize, sizeof(ChunkSize), "%X\r\n", HTTP_SERVER_BufferLen);
+		snprintf (ChunkSize, sizeof(ChunkSize), PRIX32"\r\n", HTTP_SERVER_BufferLen);
 		if (HTTP_SERVER_Write(Conn, ChunkSize, strlen(ChunkSize), NETCONN_COPY | NETCONN_MORE))
 			return -1;	
 		HTTP_SERVER_Buffer[HTTP_SERVER_BufferLen++] = '\r';

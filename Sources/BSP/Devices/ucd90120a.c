@@ -439,7 +439,7 @@ int32_t UCD90120A_ReadFaultLogRecord(UCD90120A_T *Dev, uint32_t RecordIdx, UCD90
 	Record->Time = (Data[0] << 24) + (Data[1] << 16) + (Data[2] << 8) + (Data[3] << 0);
 	Record->Day = ((Data[4] << 24) + (Data[5] << 16) + (Data[6] << 8) + (Data[7] << 0)) & 0x7FFFFF;
 	Record->Type = (Data[4] >> 3) & 0x0F;
-	Record->Rail = ((Data[4] << 1) & 0x0E) + (Data[3] >> 7) & 0x01;
+	Record->Rail = ((Data[4] << 1) & 0x0E) + ((Data[3] >> 7) & 0x01);
 	
 	switch (Record->Type)
 	{

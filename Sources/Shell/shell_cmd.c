@@ -1914,7 +1914,7 @@ invalid_state:
 "\t\tExample: fpga w 0x01 0x10\r\n"\
 "\tupdate <file1> <file2> <ip> - Update FPGA firmware via TFTP.\r\n"\
 
-static int SHELL_CMD_FPGADownloadImageReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
+static int32_t SHELL_CMD_FPGADownloadImageReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
 	uint32_t Idx;
 	Idx = (uint32_t)Priv;
@@ -2434,7 +2434,7 @@ static void SHELL_CMD_KSZCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 		{
 			if (KSZ8895_ReadMACTable(&ksz8895, ksz_mac_table, KSZ8895_MAC_TABLE_SIZE, &ksz_mac_table_size))
 				goto cmd_err;
-			SHELL_Transmit(Shell, "Idx    Port    Mac\r\n", i);
+			SHELL_Transmit(Shell, "Idx    Port    Mac\r\n");
 			for (i = 0; i < ksz_mac_table_size; i++)
 			{
 				SHELL_Transmit(Shell, "%3d    %4d    %02X:%02X:%02X:%02X:%02X:%02X\r\n", i, ksz_mac_table[i].Port, ksz_mac_table[i].Mac[0],

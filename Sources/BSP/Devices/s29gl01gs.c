@@ -278,7 +278,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 		
 		(ADDSET + (DATAST + 1)) x tHCLK >= max (tWC, tRC)
 		DATAST x tHCLK >= tWP
-		DATAST >= (tAVQV + tsu(Data_NE) + tv(A_NE)) / tHCLK – ADDSET
+		DATAST >= (tAVQV + tsu(Data_NE) + tv(A_NE)) / tHCLK ï¿½ ADDSET
 		
 	*/
   Timing.AddressSetupTime = 6;
@@ -305,7 +305,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
     goto error;
   }
 	
-	if (HAL_NOR_ReturnToReadMode(&Dev->hnor[0]) != HAL_NOR_STATUS_SUCCESS)
+	if (HAL_NOR_ReturnToReadMode(&Dev->hnor[0]) != HAL_OK)
 		goto error;
 
   /** Perform the NOR2 memory initialization sequence
@@ -341,7 +341,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
 		
 		(ADDSET + (DATAST + 1)) x tHCLK >= max (tWC, tRC)
 		DATAST x tHCLK >= tWP
-		DATAST >= (tAVQV + tsu(Data_NE) + tv(A_NE)) / tHCLK – ADDSET
+		DATAST >= (tAVQV + tsu(Data_NE) + tv(A_NE)) / tHCLK ï¿½ ADDSET
 		
 	*/
   Timing.AddressSetupTime = 6;
@@ -368,7 +368,7 @@ int32_t S29GL01GS_Init(S29GL01GS_T *Dev)
     goto error;
   }
 	
-	if (HAL_NOR_ReturnToReadMode(&Dev->hnor[1]) != HAL_NOR_STATUS_SUCCESS)
+	if (HAL_NOR_ReturnToReadMode(&Dev->hnor[1]) != HAL_OK)
 		goto error;
 	
 	BSP_DEV_INIT_OK(Dev);

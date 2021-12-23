@@ -54,10 +54,10 @@ static void HTTP_SERVER_URL_API_V1_OS_Get(struct netconn *Conn, struct netbuf *I
 		return;
 	if (__HTTP_SERVER_WriteBody(Conn, "\t\"min_heap\" : \"%d\",\r\n", xPortGetMinimumEverFreeHeapSize()))
 		return;
-  /* The list of tasks and their status */
+	/* The list of tasks and their status */
 	osThreadList((unsigned char *)(thread));
-  if (__HTTP_SERVER_WriteBody(Conn, "\t\"threads\" : [\r\n"))
-  	return;
+	if (__HTTP_SERVER_WriteBody(Conn, "\t\"threads\" : [\r\n"))
+		return;
 	s = thread;
 	while (*s) {
 		if (__HTTP_SERVER_WriteBody(Conn, "\t\t{\r\n"))

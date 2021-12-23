@@ -89,7 +89,7 @@ static int32_t TFTP_BOOTLOADER_FPGA_IdleUpdate(uint32_t Idx)
 	return 0;
 }
 
-static int TFTP_BOOTLOADER_FPGA_DownloadUpdateReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
+static int32_t TFTP_BOOTLOADER_FPGA_DownloadUpdateReceiveCallback(void *Priv, uint16_t Block, char *Data, uint32_t DataSize)
 {
 	uint32_t Idx;
 	Idx = (uint32_t)Priv;

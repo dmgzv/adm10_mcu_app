@@ -1,14 +1,5 @@
 # Ignore project object files
 
-
-Objects/*
-
-DebugConfig/*
-
-Listings/*
-
-*.uvguix.*
-
-*.TMP
-*.tmp
-EventRecorderStub.scvd
+Debug/*
+Update/*
+*.launch

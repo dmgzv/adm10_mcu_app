@@ -74,11 +74,11 @@ class ProjectInfo:
 
 if __name__ == "__main__":
     
-    cfg_file_name = "Sources/BSP/bsp_config.h"
-    img_hex_file_name = "Objects/ADM10_Release.hex"
-    lng_win1251_file_name = "Sources/ProfileADM10/langpack_adm10_win1251.lng"
-    lng_utf8_file_name = "Sources/ProfileADM10/langpack_adm10_utf8.lng"
-    web_file_name = "Sources/Web/web.bin"
+    cfg_file_name = "../Sources/BSP/bsp_config.h"
+    img_hex_file_name = "../Update/ADM10.hex"
+    lng_win1251_file_name = "../Sources/ProfileADM10/langpack_adm10_win1251.lng"
+    lng_utf8_file_name = "../Sources/ProfileADM10/langpack_adm10_utf8.lng"
+    web_file_name = "../Sources/Web/web.bin"
     img_hex_app_size = 0x081FFF00
     
     info = ProjectInfo()

@@ -4,12 +4,13 @@
 #include <stdlib.h>
 
 static const char md5_salt_prefix[] = "$1$";
+/*
 static const char salt_alphabet[] =
     "0123456789"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "./";
-
+*/
 void b64_from_24bit(
     char** cp, int* buflen, unsigned int b2, unsigned int b1, unsigned int b0, int n)
 {

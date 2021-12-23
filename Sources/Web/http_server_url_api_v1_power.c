@@ -60,11 +60,15 @@ static void HTTP_SERVER_URL_API_V1_POWER_Get(struct netconn *Conn, struct netbuf
 		if (__HTTP_SERVER_WriteBody(Conn, "\t\t\"monitor\" : \"%.3f\"\r\n", ucd90120a.Mon.Rail[i].Vout))
 			return;
 		if (i != (UCD90120A_RAILS_CNT - 1))
+		{
 			if (__HTTP_SERVER_WriteBody(Conn, "\t},\r\n"))
 				return;
+		}
 		else
+		{
 			if (__HTTP_SERVER_WriteBody(Conn, "\t}\r\n"))
 				return;
+		}
 	}
 	if (__HTTP_SERVER_WriteBody(Conn, "]\r\n"))
 		return;
