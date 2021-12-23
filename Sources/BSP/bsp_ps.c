@@ -13,7 +13,7 @@ PS_T ps[BSP_PS_CNT] =
 			.InitContErrThr = 3,
 			.UpdateContErrThr = 3,
 			.I2C = BSP_PS_I2C,
-			.Addr = 0xA2,
+			.Addr = 0xA0,
 		},
 		.ip1554 = {
 			.max7306 = {
@@ -21,14 +21,14 @@ PS_T ps[BSP_PS_CNT] =
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_PS_I2C,
-				.Addr = 0x9A,
+				.Addr = 0x98,
 			},
 			.dbe0125v2 = {
 				.DevName = PS_DEV_NAME"_1""_"DBE0125V2_DEV_NAME"_A5",
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_PS_I2C,
-				.Addr = 28 << 1,
+				.Addr = 27 << 1,
 			},
 		},
 	},
@@ -41,7 +41,7 @@ PS_T ps[BSP_PS_CNT] =
 			.InitContErrThr = 3,
 			.UpdateContErrThr = 3,
 			.I2C = BSP_PS_I2C,
-			.Addr = 0xA0,
+			.Addr = 0xA2,
 		},
 		.ip1554 = {
 			.max7306 = {
@@ -49,14 +49,14 @@ PS_T ps[BSP_PS_CNT] =
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_PS_I2C,
-				.Addr = 0x98,
+				.Addr = 0x9A,
 			},
 			.dbe0125v2 = {
 				.DevName = PS_DEV_NAME"_2""_"DBE0125V2_DEV_NAME"_A5",
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_PS_I2C,
-				.Addr = 27 << 1,
+				.Addr = 28 << 1,
 			},
 		},
 	},

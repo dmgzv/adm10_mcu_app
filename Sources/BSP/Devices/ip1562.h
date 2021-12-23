@@ -5,11 +5,11 @@
 #include "pca9536.h"
 #include "max31790.h"
 
-#define IP1562_VENDOR			"IPG Photonics"
+#define IP1562_VENDOR		"IPG Photonics"
 #define IP1562_PT_NUMBER	"SEEPROM"
 #define IP1562_HW_NUMBER	"IP1562"
 
-#define IP1562_PCA9538_PS_PRESENT_MASK(Idx)	((Idx) ? (1 << 1) : (1 << 0))
+#define IP1562_PCA9538_PS_PRESENT_MASK(Idx)	((Idx) ? (1 << 0) : (1 << 1))
 #define IP1562_PCA9538_SC_PRESENT_MASK(Idx)	((Idx) ? (1 << 2) : (1 << 3))
 #define IP1562_PCA9538_MB_PRESENT_MASK			(1 << 4)
 
