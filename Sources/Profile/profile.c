@@ -102,6 +102,7 @@ static int32_t PROFILE_InitValues(PROFILE_T *Profile)
 	if ( !Profile->Values->Mutex )
 		return -1;
 	
+	memset(Profile->Values->Dynamic, 0, Profile->Descr[Profile->Idx]->DynamicValuesSize);
 	PROFILE_InitStates(Profile);
 	PROFILE_SetDefault(Profile);
 	
@@ -389,8 +390,8 @@ int32_t PROFILE_SetParamValue(PROFILE_T *Profile, PROFILE_TABLE_PARAM_T *Param, 
 			}
 			osMutexRelease( Profile->Values->Mutex );
 			break;
-		case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-		case PROFILE_TYPE_STRING:// произвольная строка
+		case PROFILE_TYPE_OID:// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "."
+		case PROFILE_TYPE_STRING:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			osMutexWait( Profile->Values->Mutex, osWaitForever );
 			if (strncmp((char*)Value, (char*)NewValue, PROFILE_STRING_MAX_LEN))
 			{
@@ -470,40 +471,40 @@ int32_t PROFILE_ParamValueToString(PROFILE_T *Profile, PROFILE_TABLE_PARAM_T *Pa
 	
 	switch( Param->Type )
 	{
-		//разная печать в зависимости от типа параметра
+		//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		case PROFILE_TYPE_BOOL:
 		case PROFILE_TYPE_UINT32:
-		case PROFILE_TYPE_CNT://счётчик без знака
+		case PROFILE_TYPE_CNT://пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		case PROFILE_TYPE_BITMSK:
 			p = UintToStr(p, *(unsigned int*)Value);
 			break;
-		case PROFILE_TYPE_ENUM://перечисление Без знака
-		case PROFILE_TYPE_INT32:// со знаком
-			p = IntToStr(p, *(int*)Value);// печать
+		case PROFILE_TYPE_ENUM://пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+		case PROFILE_TYPE_INT32:// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			p = IntToStr(p, *(int*)Value);// пїЅпїЅпїЅпїЅпїЅпїЅ
 			break;
-		case PROFILE_TYPE_HEX32:// шестнадцатеричный формат печати
+		case PROFILE_TYPE_HEX32:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			p = UintToHexStr(p, *(unsigned int*)Value);
 			break;
-		case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-		case PROFILE_TYPE_STRING:// произвольная строка
+		case PROFILE_TYPE_OID:// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "."
+		case PROFILE_TYPE_STRING:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			strncpy(p, Value, PROFILE_STRING_MAX_LEN);
 			p[PROFILE_STRING_MAX_LEN - 1] = 0;
 			p += strlen(p);
 			break;
-		case PROFILE_TYPE_FLOAT_1:// плавающая точка формата (+/-)ххх.х
+		case PROFILE_TYPE_FLOAT_1:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (+/-)пїЅпїЅпїЅ.пїЅ
 			p = FloatToStr( p, *(float*)Value, 1 );
 			break;
-		case PROFILE_TYPE_FLOAT_2:// плавающая точка формата (+/-)ххх.хx
+		case PROFILE_TYPE_FLOAT_2:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (+/-)пїЅпїЅпїЅ.пїЅx
 			p = FloatToStr( p, *(float*)Value, 2 );
 			break;
-		case PROFILE_TYPE_FLOAT_3:// плавающая точка формата (+/-)ххх.хxx
+		case PROFILE_TYPE_FLOAT_3:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (+/-)пїЅпїЅпїЅ.пїЅxx
 			p = FloatToStr( p, *(float*)Value, 2 );
 			break;
-		case PROFILE_TYPE_FLOAT_E:// плавающая точка формата (+/-)x.xxe-xx
+		case PROFILE_TYPE_FLOAT_E:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (+/-)x.xxe-xx
 			sprintf( p, "%.2e", *(float*)Value );
 			p += strlen(Str);
 			break;
-		case PROFILE_TYPE_IP://массив из 4 байтов, выводится на печать в формате ххх.ххх.ххх.ххх
+		case PROFILE_TYPE_IP://пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ.пїЅпїЅпїЅ.пїЅпїЅпїЅ.пїЅпїЅпїЅ
 			p = IPToStr( p, *(unsigned int*)Value);
 			break;
 		case PROFILE_TYPE_UINT64:
@@ -513,7 +514,7 @@ int32_t PROFILE_ParamValueToString(PROFILE_T *Profile, PROFILE_TABLE_PARAM_T *Pa
 		default:
 			return -1;		
 	}
-	*Len = p - Str; // длина напечатанного
+	*Len = p - Str; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	return 0;
 }
 
@@ -528,17 +529,17 @@ int32_t PROFILE_StringToParamValue(PROFILE_T *Profile, PROFILE_TABLE_PARAM_T *Pa
 		case PROFILE_TYPE_ENUM:
 		case PROFILE_TYPE_BITMSK:
 		case PROFILE_TYPE_UINT32:
-		case PROFILE_TYPE_CNT://счётчик - беззнаковое
+		case PROFILE_TYPE_CNT://пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			if( !StrToUint( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
-		case PROFILE_TYPE_INT32://Со знаком
+		case PROFILE_TYPE_INT32://пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			if( !StrToInt( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
 		case PROFILE_TYPE_HEX32:
 			if( !HexStrToUint( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
 		case PROFILE_TYPE_STRING:
 		case PROFILE_TYPE_OID:
@@ -550,11 +551,11 @@ int32_t PROFILE_StringToParamValue(PROFILE_T *Profile, PROFILE_TABLE_PARAM_T *Pa
 		case PROFILE_TYPE_FLOAT_3:
 		case PROFILE_TYPE_FLOAT_E:
 			if( !StrToFloat( Str, Value, 0 ) ) 
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
 		case PROFILE_TYPE_IP:		
 			if( !StrToIP( Str, Value ))
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
 		case PROFILE_TYPE_UINT64:
 			*(uint64_t*)Value = strtoull(Str, &Str, 10);
@@ -989,40 +990,40 @@ int32_t PROFILE_ValueToString(PROFILE_T *Profile, uint8_t TableIdx, uint16_t Par
 	
 	switch( Param->Type )
 	{
-		//разная печать в зависимости от типа параметра
+		//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		case PROFILE_TYPE_BOOL:
 		case PROFILE_TYPE_UINT32:
-		case PROFILE_TYPE_CNT://счётчик без знака
+		case PROFILE_TYPE_CNT://пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		case PROFILE_TYPE_BITMSK:
 			p = UintToStr(p, *(unsigned int*)Value);
 			break;
-		case PROFILE_TYPE_ENUM://перечисление Без знака
-		case PROFILE_TYPE_INT32:// со знаком
-			p = IntToStr(p, *(int*)Value);// печать
+		case PROFILE_TYPE_ENUM://пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+		case PROFILE_TYPE_INT32:// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			p = IntToStr(p, *(int*)Value);// пїЅпїЅпїЅпїЅпїЅпїЅ
 			break;
-		case PROFILE_TYPE_HEX32:// шестнадцатеричный формат печати
+		case PROFILE_TYPE_HEX32:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			p = UintToHexStr(p, *(unsigned int*)Value);
 			break;
-		case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-		case PROFILE_TYPE_STRING:// произвольная строка
+		case PROFILE_TYPE_OID:// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "."
+		case PROFILE_TYPE_STRING:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			strncpy(p, Value, PROFILE_STRING_MAX_LEN);
 			p[PROFILE_STRING_MAX_LEN - 1] = 0;
 			p += strlen(p);
 			break;
-		case PROFILE_TYPE_FLOAT_1:// плавающая точка формата (+/-)ххх.х
+		case PROFILE_TYPE_FLOAT_1:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (+/-)пїЅпїЅпїЅ.пїЅ
 			p = FloatToStr( p, *(float*)Value, 1 );
 			break;
-		case PROFILE_TYPE_FLOAT_2:// плавающая точка формата (+/-)ххх.хx
+		case PROFILE_TYPE_FLOAT_2:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (+/-)пїЅпїЅпїЅ.пїЅx
 			p = FloatToStr( p, *(float*)Value, 2 );
 			break;
-		case PROFILE_TYPE_FLOAT_3:// плавающая точка формата (+/-)ххх.хxx
+		case PROFILE_TYPE_FLOAT_3:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (+/-)пїЅпїЅпїЅ.пїЅxx
 			p = FloatToStr( p, *(float*)Value, 2 );
 			break;
-		case PROFILE_TYPE_FLOAT_E:// плавающая точка формата (+/-)x.xxe-xx
+		case PROFILE_TYPE_FLOAT_E:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (+/-)x.xxe-xx
 			sprintf( p, "%.2e", *(float*)Value );
 			p += strlen(Str);
 			break;
-		case PROFILE_TYPE_IP://массив из 4 байтов, выводится на печать в формате ххх.ххх.ххх.ххх
+		case PROFILE_TYPE_IP://пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ.пїЅпїЅпїЅ.пїЅпїЅпїЅ.пїЅпїЅпїЅ
 			p = IPToStr( p, *(unsigned int*)Value);
 			break;
 		case PROFILE_TYPE_UINT64:
@@ -1032,7 +1033,7 @@ int32_t PROFILE_ValueToString(PROFILE_T *Profile, uint8_t TableIdx, uint16_t Par
 		default:
 			return -1;		
 	}
-	*Len = p - Str; // длина напечатанного
+	*Len = p - Str; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	return 0;
 }
 
@@ -1051,17 +1052,17 @@ int32_t PROFILE_StringToValue(PROFILE_T *Profile, uint8_t TableIdx, uint16_t Par
 		case PROFILE_TYPE_ENUM:
 		case PROFILE_TYPE_BITMSK:
 		case PROFILE_TYPE_UINT32:
-		case PROFILE_TYPE_CNT://счётчик - беззнаковое
+		case PROFILE_TYPE_CNT://пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			if( !StrToUint( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
-		case PROFILE_TYPE_INT32://Со знаком
+		case PROFILE_TYPE_INT32://пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			if( !StrToInt( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
 		case PROFILE_TYPE_HEX32:
 			if( !HexStrToUint( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
 		case PROFILE_TYPE_STRING:
 		case PROFILE_TYPE_OID:
@@ -1075,11 +1076,11 @@ int32_t PROFILE_StringToValue(PROFILE_T *Profile, uint8_t TableIdx, uint16_t Par
 		case PROFILE_TYPE_FLOAT_3:
 		case PROFILE_TYPE_FLOAT_E:
 			if( !StrToFloat( Str, Value, 0 ) ) 
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
 		case PROFILE_TYPE_IP:		
 			if( !StrToIP( Str, Value ))
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 			break;
 		case PROFILE_TYPE_UINT64:
 			*(uint64_t*)Value = strtoull(Str, &Str, 10);
@@ -1365,8 +1366,8 @@ int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t TableIdx, uint16_t ParamIdx
 			memcpy(GetValue, Value, sizeof(uint64_t));
 			osMutexRelease( Profile->Values->Mutex );
 			break;
-		case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-		case PROFILE_TYPE_STRING:// произвольная строка
+		case PROFILE_TYPE_OID:// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "."
+		case PROFILE_TYPE_STRING:// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			osMutexWait( Profile->Values->Mutex, osWaitForever );
 			strncpy( (char*)GetValue, (char*)Value, PROFILE_STRING_MAX_LEN);
 			((char*)GetValue)[ PROFILE_STRING_MAX_LEN - 1 ] = 0;
