@@ -14,6 +14,11 @@ static osMutexId UserMutexId;
 static osMutexDef(USER);
 static char UserBuffer[USER_BUFFER_SIZE];
 
+/*
+  * IMPORTANT NOTE!
+  * Data in ccmram section are not initialized in startup code.
+  * Data in ccmram section could not be used in DMA transfers.
+  */
 static USER_T __attribute__((section (".ccmram"))) Users[USER_MAX_CNT];
 
 static const USER_T DefaultUsers[] = {
@@ -287,8 +292,8 @@ int32_t USER_Init(void)
 			memcpy(&Users[i], &User, sizeof(User));
 			if (User.Login[0])
 			{
-				sprintf(IdxStr, PRIu32, i);
-				LOG_Info("USER", "", "UserInit", "%d;%s", i, User.Login);
+				sprintf(IdxStr, "%"PRIu32, i);
+				LOG_Info("USER", "", "UserInit", "%"PRIu32";%s", i, User.Login);
 			}
 		}
 	}

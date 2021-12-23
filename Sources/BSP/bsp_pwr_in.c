@@ -3,7 +3,7 @@
 #include "log.h"
 
 #ifdef BSP_PWR_IN_DIM3R3400_ENABLE
-DIM3R3400_T __attribute__((section (".ccmram"))) dim3r3400 = {
+DIM3R3400_T dim3r3400 = {
 	.DevName = DIM3R3400_DEV_NAME"_"BSP_PWR_IN_DIM3R3400_ID,
 	.InitContErrThr = 3,
 	.UpdateContErrThr = 10,

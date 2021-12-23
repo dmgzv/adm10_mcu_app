@@ -603,7 +603,7 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, 
 		{
 			if (PROFILE_FLASH_ReadLangpackHeader(Protocol->ProfileFlash, &LangpackBlocks, &LangpackType))
 				goto error;
-			i = sprintf(p, PRIu32";"PRIu32, LangpackBlocks, LangpackType);
+			i = sprintf(p, "%"PRIu32";%"PRIu32, LangpackBlocks, LangpackType);
 			for (;i < PROFILE_PROTOCOL_LANG_BLOCK_SIZE; i++)
 			{
 				p[i] = '\x03';
@@ -1027,7 +1027,7 @@ static uint32_t PROFILE_PROTOCOL_GetUsers(PROFILE_PROTOCOL_T *Protocol, char * c
 		CalcCRC16 = Calc_CRC16((char*)&User, sizeof(User), 0);
 		if (Protocol->UsersCrc16[i] != CalcCRC16)
 		{
-			p += sprintf(p, PRIu32";", i + 1);
+			p += sprintf(p, "%"PRIu32";", i + 1);
 			Protocol->UsersCrc16[i] = CalcCRC16;
 		}
 	}
@@ -1050,7 +1050,7 @@ static uint32_t PROFILE_PROTOCOL_GetUserAttr(PROFILE_PROTOCOL_T *Protocol, char 
 	if( *c != '\r' )
 		goto error;
 	
-	p += sprintf(p, PRIu32";", UserIdx);
+	p += sprintf(p, "%"PRIu32";", UserIdx);
 	if (UserIdx == 0)
 	{
 		p += sprintf(p, "login;passhash;group;name;email;tel;snmphash;");
@@ -1174,7 +1174,7 @@ static uint32_t PROFILE_PROTOCOL_SetUserAttr(PROFILE_PROTOCOL_T *Protocol, char 
 	if (CalcCrc16 != ReadCrc16)
 		goto error;
 	
-	p += sprintf(p, PRIu32";", UserIdx);
+	p += sprintf(p, "%"PRIu32";", UserIdx);
 	if ((UserIdx > 0) & (UserIdx <= USER_MAX_CNT))
 	{
 		if (USER_UpdateUserByIndex(UserIdx - 1, &User))

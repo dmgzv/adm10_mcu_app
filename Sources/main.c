@@ -37,8 +37,8 @@ const SHELL_IFACE_T ShellUart5Iface =
 	UART5
 };
 
-SHELL_T __attribute__((section (".ccmram"))) ShellTelnet;
-SHELL_TELNET_PRIV_T __attribute__((section (".ccmram"))) ShellTelnetPriv;
+SHELL_T ShellTelnet;
+SHELL_TELNET_PRIV_T ShellTelnetPriv;
 const SHELL_IFACE_T ShellTelnetIface = 
 {
 	&SHELL_TELNET_Init,
@@ -62,23 +62,28 @@ typedef union {
 }PROFILE_VALUES_CALIB_T;
 
 extern PROFILE_DESCR_T ProfileADM10Descr;
-PROFILE_DESCR_T __attribute__((section (".ccmram"))) *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADM10Descr};
+PROFILE_DESCR_T *ProfileDescr[BSP_CONFIG_PROFILES_CNT] = {&ProfileADM10Descr};
 
-PROFILE_T __attribute__((section (".ccmram"))) Profile;
-PROFILE_VALUES_STATIC_T /*__attribute__((section (".ccmram")))*/ ProfileValuesStatic;
+PROFILE_T Profile;
+PROFILE_VALUES_STATIC_T ProfileValuesStatic;
+/*
+  * IMPORTANT NOTE!
+  * Data in ccmram section are not initialized in startup code.
+  * Data in ccmram section could not be used in DMA transfers.
+  */
 PROFILE_VALUES_DYNAMIC_T __attribute__((section (".ccmram"))) ProfileValuesDynamic;
-PROFILE_VALUES_CALIB_T /*__attribute__((section (".ccmram")))*/ ProfileValuesCalib;
-PROFILE_VALUES_T __attribute__((section (".ccmram"))) ProfileValues = {
+PROFILE_VALUES_CALIB_T ProfileValuesCalib;
+PROFILE_VALUES_T ProfileValues = {
 	.Dynamic = &ProfileValuesDynamic,
 	.Static = &ProfileValuesStatic,
 	.Calib = &ProfileValuesCalib,
 };
-PROFILE_FLASH_T __attribute__((section (".ccmram"))) ProfileFlash;
-PROFILE_PROTOCOL_T __attribute__((section (".ccmram"))) ProfileProtocol;
-//PROFILE_IFACE_T /*__attribute__((section (".ccmram")))*/ ProfileIfaceUart5;
-PROFILE_IFACE_T /*__attribute__((section (".ccmram")))*/ ProfileIfaceUart4;
+PROFILE_FLASH_T ProfileFlash;
+PROFILE_PROTOCOL_T ProfileProtocol;
+//PROFILE_IFACE_T ProfileIfaceUart5;
+PROFILE_IFACE_T ProfileIfaceUart4;
 
-BOOTLOADER_T /*__attribute__((section (".ccmram")))*/ Bootloader;
+BOOTLOADER_T Bootloader;
 const BOOTLOADER_INFO_T __attribute__((section(".bldr_info"))) BootloaderInfo= {
 	BSP_PROJECT,
 	BSP_HW_VERSION,
