@@ -125,15 +125,15 @@ static int32_t BOOTLOADER_UpdateFw(BOOTLOADER_T *Bootloader)
 
 void BOOTLOADER_StartFw(BOOTLOADER_T *Bootloader)
 {
-	// ¬ нормальном режиме копи¤ равна оригиналу и обе целостные, попадаем сюда
+	// пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 	uint32_t SP = *(uint32_t*)( BSP_FLASH_FW_ADDR );
 	uint32_t FwAddr;
 	if( ( SP & 0x2FFE0000 ) == 0x20000000 )
 	{
 		__disable_irq();
-		__set_MSP( SP );// инициализируем SP значением из основной программы (первые 4 байта)
-		FwAddr = *(uint32_t*)( BSP_FLASH_FW_ADDR + 4 );//стартовый адрес в следующих 4 байтах
-		( (void (*)(void))FwAddr )();//«апуск программы
+		__set_MSP( SP );// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SP пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅ)
+		FwAddr = *(uint32_t*)( BSP_FLASH_FW_ADDR + 4 );//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 4 пїЅпїЅпїЅпїЅпїЅпїЅ
+		( (void (*)(void))FwAddr )();//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	}
 }
 
@@ -232,7 +232,7 @@ int32_t BOOTLOADER_UpdateNewFwFinish(BOOTLOADER_T *Bootloader)
 	if (Bootloader->FlashAddr == BSP_FLASH_FW_INFO)
 	{
 		FwInfo = (BOOTLOADER_INFO_T*)Bootloader->Buffer;
-		FwInfo->CRC16 = Bootloader->FwCRC16;
+		//FwInfo->CRC16 = Bootloader->FwCRC16;
 		if (BSP_FLASH_ProgramPage(Bootloader->FlashAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
 			return -1;
 	}
