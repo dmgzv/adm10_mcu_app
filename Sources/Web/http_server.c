@@ -14,7 +14,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-static char HTTP_SERVER_Buffer[4096];
+static char __attribute__((section (".ccmram"))) HTTP_SERVER_Buffer[4096];
 static uint32_t HTTP_SERVER_BufferLen;
 
 static int32_t HTTP_SERVER_Write(struct netconn *Conn, const void *Data, size_t Size, u8_t Flags)
