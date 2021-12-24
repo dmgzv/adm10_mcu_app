@@ -89,29 +89,29 @@ if __name__ == "__main__":
     print ("SW Version: " + info.sw_version)
     print ("MCU SW Version: " + info.mcu_sw_version)
     
-    Path('Release/Update').mkdir(parents=True, exist_ok=True)
-    Path('Release/Langpack').mkdir(parents=True, exist_ok=True)
-    Path('Release/Web').mkdir(parents=True, exist_ok=True)
+    Path('../Release/Update').mkdir(parents=True, exist_ok=True)
+    Path('../Release/Langpack').mkdir(parents=True, exist_ok=True)
+    Path('../Release/Web').mkdir(parents=True, exist_ok=True)
 
-    copy_file_name = "Release/Langpack/" + info.project + "__MCU__Langpack__" + info.mcu_sw_version.replace(".", "_") + ".lng"
+    copy_file_name = "../Release/Langpack/" + info.project + "__MCU__Langpack__" + info.mcu_sw_version.replace(".", "_") + ".lng"
     print("Copy " + lng_win1251_file_name + " -> " + copy_file_name)
     copyfile(lng_win1251_file_name, copy_file_name)
 
-    copy_file_name = "Release/Langpack/" + info.project + "__MCU__Langpack__" + info.mcu_sw_version.replace(".", "_") + "_UTF8.lng"
+    copy_file_name = "../Release/Langpack/" + info.project + "__MCU__Langpack__" + info.mcu_sw_version.replace(".", "_") + "_UTF8.lng"
     print("Copy " + lng_utf8_file_name + " -> " + copy_file_name)
     copyfile(lng_utf8_file_name, copy_file_name)
 
-##    copy_file_name = "Release/Web/" + info.project + "__MCU__Web__" + info.mcu_sw_version.replace(".", "_") + ".bin"
+##    copy_file_name = "../Release/Web/" + info.project + "__MCU__Web__" + info.mcu_sw_version.replace(".", "_") + ".bin"
 ##    print("Copy " + web_file_name + " -> " + copy_file_name)
 ##    copyfile(web_file_name, copy_file_name)
 
-    copy_file_name = "Release/Update/" + info.project + "__MCU__Update__" + info.mcu_sw_version.replace(".", "_") + ".hex"
+    copy_file_name = "../Release/Update/" + info.project + "__MCU__Update__" + info.mcu_sw_version.replace(".", "_") + ".hex"
     print("Copy " + img_hex_file_name + " -> " + copy_file_name)
     copyfile(img_hex_file_name, copy_file_name)
 
     
-    ihex_hex_file_name = "Release/Update/" + info.project + "__MCU__Update__" + info.mcu_sw_version.replace(".", "_") + ".hex"
-    ihex_bin_file_name = "Release/Update/" + info.project + "__MCU__Update__" + info.mcu_sw_version.replace(".", "_") + ".bin"
+    ihex_hex_file_name = "../Release/Update/" + info.project + "__MCU__Update__" + info.mcu_sw_version.replace(".", "_") + ".hex"
+    ihex_bin_file_name = "../Release/Update/" + info.project + "__MCU__Update__" + info.mcu_sw_version.replace(".", "_") + ".bin"
     print("Calculate CRC16 " + ihex_hex_file_name)
     ihex = IntelHex(ihex_hex_file_name)
     ihex_data = ihex.todict()
