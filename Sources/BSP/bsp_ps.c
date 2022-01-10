@@ -78,7 +78,7 @@ void BSP_PS_Process(void)
 		if (BSP_PS_CheckConditions(i))
 		{
 			/* External faults present */
-			if(BSP_DEV_GET_STATE(&ps[i]) != BSP_DEV_STATE_OK)
+			if(BSP_DEV_GET_STATE(&ps[i]) != BSP_DEV_STATE_RESET)
 			{
 				PS_Deinit(&ps[i]);
 			}

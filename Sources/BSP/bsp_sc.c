@@ -46,7 +46,7 @@ void BSP_SC_Process(void)
 		if (BSP_SC_CheckConditions(i))
 		{
 			/* External faults present */
-			if(BSP_DEV_GET_STATE(&sc[i]) != BSP_DEV_STATE_OK)
+			if(BSP_DEV_GET_STATE(&sc[i]) != BSP_DEV_STATE_RESET)
 			{
 				SC_Deinit(&sc[i]);
 			}
