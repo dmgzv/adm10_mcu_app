@@ -69,11 +69,11 @@ typedef struct {
     uint8_t SC2SrNumberState;
     uint8_t SC2HwNumberState;
     uint8_t PS1VendorState;
-    uint8_t PS1PtNumberState;
+    uint8_t PS1pIdState;
     uint8_t PS1SrNumberState;
     uint8_t PS1HwNumberState;
     uint8_t PS2VendorState;
-    uint8_t PS2PtNumberState;
+    uint8_t PS2pIdState;
     uint8_t PS2SrNumberState;
     uint8_t PS2HwNumberState;
     uint8_t Ln_1_DestinationState;
@@ -4629,11 +4629,11 @@ typedef struct {
     char SC2SrNumber[PROFILE_STRING_MAX_LEN];
     char SC2HwNumber[PROFILE_STRING_MAX_LEN];
     char PS1Vendor[PROFILE_STRING_MAX_LEN];
-    char PS1PtNumber[PROFILE_STRING_MAX_LEN];
+    char PS1pId[PROFILE_STRING_MAX_LEN];
     char PS1SrNumber[PROFILE_STRING_MAX_LEN];
     char PS1HwNumber[PROFILE_STRING_MAX_LEN];
     char PS2Vendor[PROFILE_STRING_MAX_LEN];
-    char PS2PtNumber[PROFILE_STRING_MAX_LEN];
+    char PS2pId[PROFILE_STRING_MAX_LEN];
     char PS2SrNumber[PROFILE_STRING_MAX_LEN];
     char PS2HwNumber[PROFILE_STRING_MAX_LEN];
     uint32_t SetDefault;

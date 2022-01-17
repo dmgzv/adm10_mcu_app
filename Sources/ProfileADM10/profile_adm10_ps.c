@@ -42,7 +42,7 @@ const uint16_t ProfileADM10InfoPSVendorIdx[2] =
 
 const uint16_t ProfileADM10InfoPSPtNumberIdx[2] = 
 {
-	PROFILE_ADM10_PS1PTNUMBER_IDX, PROFILE_ADM10_PS2PTNUMBER_IDX,
+	PROFILE_ADM10_PS1PID_IDX, PROFILE_ADM10_PS2PID_IDX,
 };
 
 const uint16_t ProfileADM10InfoPSSrNumberIdx[2] = 
