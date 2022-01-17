@@ -485,7 +485,9 @@ static void PROFILE_ADM10_UpdateBlockColorValue(PROFILE_T *Profile)
 			return;
 		if (PROFILE_GetState(Profile, PROFILE_TABLE_2, i, &State))
 			return;
-		if ((State == PROFILE_STATE_IS) && (BlockColor < Color) && (i != PROFILE_ADM10_BLOCKCOLOR_IDX))
+		if ((State == PROFILE_STATE_IS) && (BlockColor < Color) && (i != PROFILE_ADM10_BLOCKCOLOR_IDX)
+				&& (i != PROFILE_ADM10_PS1INV_IDX) && (i != PROFILE_ADM10_PS1OUTV_IDX) && (i != PROFILE_ADM10_PS1OUTI_IDX) && (i != PROFILE_ADM10_PS1TEMP_IDX)
+				&& (i != PROFILE_ADM10_PS2INV_IDX) && (i != PROFILE_ADM10_PS2OUTV_IDX) && (i != PROFILE_ADM10_PS2OUTI_IDX) && (i != PROFILE_ADM10_PS2TEMP_IDX))
 			BlockColor = Color;
 	}
 	PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, PROFILE_ADM10_BLOCKCOLOR_IDX, &BlockColor, PROFILE_STATE_IS);
