@@ -180,6 +180,10 @@ int32_t SC_Update(SC_T *Dev)
 	{
 		IPGP966_Process(&Dev->ipgp966, Dev->ChassisAddress);
 	}
+	else if ((!strcmp(Dev->Vendor, IP1575_VENDOR)) && (!strcmp(Dev->PtNumber, IP1575_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IP1575_HW_NUMBER)))
+	{
+		IP1575_Process(&Dev->ip1575, Dev->ChassisAddress);
+	}
 	
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;

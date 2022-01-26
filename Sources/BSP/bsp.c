@@ -96,8 +96,12 @@ const BSP_DEV_T *Modules[] = {
 	(BSP_DEV_T*)&ps[1].ip1554.max7306,
 	(BSP_DEV_T*)&sc[0],
 	(BSP_DEV_T*)&sc[0].at24c02c,
+	(BSP_DEV_T*)&sc[0].ipgp966.mcp23008,
+	(BSP_DEV_T*)&sc[0].ip1575.pca9538,
 	(BSP_DEV_T*)&sc[1],
 	(BSP_DEV_T*)&sc[1].at24c02c,
+	(BSP_DEV_T*)&sc[1].ipgp966.mcp23008,
+	(BSP_DEV_T*)&sc[1].ip1575.pca9538,
 };
 const uint32_t ModulesCnt = sizeof(Modules) / sizeof(Modules[0]);
 

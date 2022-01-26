@@ -5,6 +5,7 @@
 #include "at24c02c.h"
 #include "ipgp966.h"
 #include "ipgp967.h"
+#include "ip1575.h"
 
 #define SC_DEV_NAME 	"SC"
 
@@ -18,6 +19,7 @@ typedef struct {
 	uint32_t __UpdateFlag;
 	AT24C02C_T at24c02c;
 	IPGP966_T ipgp966;
+	IP1575_T ip1575;
 } SC_T;
 
 int32_t SC_Init(SC_T *Dev);
