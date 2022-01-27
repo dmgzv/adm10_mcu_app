@@ -56,7 +56,7 @@ PS_T ps[BSP_PS_CNT] =
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_PS_I2C,
-				.Addr = 28 << 1,
+				.Addr = 29 << 1,
 			},
 		},
 	},
