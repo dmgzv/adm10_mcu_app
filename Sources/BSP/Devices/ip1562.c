@@ -128,7 +128,7 @@ uint32_t IP1562_GetPSPresent(IP1562_T *Dev, uint32_t Idx)
 	if (BSP_DEV_GET_STATE(&Dev->pca9538) == BSP_DEV_STATE_OK)
 	{
 		BSP_DEV_LOCK(&Dev->pca9538);
-		if (Dev->pca9538.Ins & IP1562_PCA9538_PS_PRESENT_MASK(Idx))
+		if ((Dev->pca9538.Ins & IP1562_PCA9538_PS_PRESENT_MASK(Idx)) == 0)
 			Present = 1;
 		BSP_DEV_UNLOCK(&Dev->pca9538);
 	}
@@ -146,7 +146,7 @@ uint32_t IP1562_GetSCPresent(IP1562_T *Dev, uint32_t Idx)
 	if (BSP_DEV_GET_STATE(&Dev->pca9538) == BSP_DEV_STATE_OK)
 	{
 		BSP_DEV_LOCK(&Dev->pca9538);
-		if (Dev->pca9538.Ins & IP1562_PCA9538_SC_PRESENT_MASK(Idx))
+		if ((Dev->pca9538.Ins & IP1562_PCA9538_SC_PRESENT_MASK(Idx)) == 0)
 			Present = 1;
 		BSP_DEV_UNLOCK(&Dev->pca9538);
 	}
