@@ -13,7 +13,7 @@ SC_T sc[BSP_SC_CNT] =
 			.InitContErrThr = 3,
 			.UpdateContErrThr = 3,
 			.I2C = BSP_SC_I2C,
-			.Addr = 0xAA,
+			.Addr = 0xAA ^0x02,
 		},
 		.ipgp966 = {
 			.mcp23008 = {
@@ -21,7 +21,7 @@ SC_T sc[BSP_SC_CNT] =
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_SC_I2C,
-				.Addr = 0x40,
+				.Addr = 0x40 ^ 0x02,
 			},
 		},
 		.ip1575 = {
@@ -30,7 +30,7 @@ SC_T sc[BSP_SC_CNT] =
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_SC_I2C,
-				.Addr = 0xE4,
+				.Addr = 0xE4 ^ 0x02,
 			},
 		},
 	},
@@ -43,24 +43,24 @@ SC_T sc[BSP_SC_CNT] =
 			.InitContErrThr = 3,
 			.UpdateContErrThr = 3,
 			.I2C = BSP_SC_I2C,
-			.Addr = 0xAE,
+			.Addr = 0xAE ^ 0x02,
 		},
 		.ipgp966 = {
 			.mcp23008 = {
-				.DevName = SC_DEV_NAME"_1""_"PCA9538_DEV_NAME"_U26",
+				.DevName = SC_DEV_NAME"_2""_"PCA9538_DEV_NAME"_U26",
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_SC_I2C,
-				.Addr = 0x44,
+				.Addr = 0x44^ 0x02,
 			},
 		},
 		.ip1575 = {
 			.pca9538 = {
-				.DevName = SC_DEV_NAME"_1""_"PCA9538_DEV_NAME"_D8",
+				.DevName = SC_DEV_NAME"_2""_"PCA9538_DEV_NAME"_D8",
 				.InitContErrThr = 3,
 				.UpdateContErrThr = 3,
 				.I2C = BSP_SC_I2C,
-				.Addr = 0xE6,
+				.Addr = 0xE6 ^ 0x02,
 			},
 		},
 	},

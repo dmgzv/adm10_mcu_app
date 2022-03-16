@@ -10,7 +10,7 @@ SEEPROM_T seeprom =
 		.InitContErrThr = 3,
 		.UpdateContErrThr = 3,
 		.I2C = BSP_SEEPROM_I2C,
-		.Addr = 0xA4,
+		.Addr = 0xA4 ^ 0x02,
 	},
 	.ip1562 = {
 		.pca9536 = {
@@ -18,20 +18,21 @@ SEEPROM_T seeprom =
 			.InitContErrThr = 3,
 			.UpdateContErrThr = 3,
 			.I2C = BSP_SEEPROM_I2C,
+			.Addr = PCA9536_I2C_ADDR ^ 0x02,
 		},
 		.pca9538 = {
 			.DevName = SEEPROM_DEV_NAME"_"PCA9538_DEV_NAME"_D1",
 			.InitContErrThr = 3,
 			.UpdateContErrThr = 3,
 			.I2C = BSP_SEEPROM_I2C,
-			.Addr = 0xE0,
+			.Addr = 0xE0 ^ 0x02,
 		},
 		.max31790 = {
 			.DevName = SEEPROM_DEV_NAME"_"MAX31790_DEV_NAME"_D4",
 			.InitContErrThr = 3,
 			.UpdateContErrThr = 3,
 			.I2C = BSP_SEEPROM_I2C,
-			.Addr = 0x40,
+			.Addr = 0x40 ^ 0x02,
 		},
 	},
 };

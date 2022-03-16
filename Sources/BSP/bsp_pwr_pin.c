@@ -6,6 +6,7 @@ PCA9536_T pwr_pca9536 =
 	.InitContErrThr = 3,
 	.UpdateContErrThr = 3,
 	.I2C = BSP_PWR_PIN_PCA9536_I2C,
+	.Addr = PCA9536_I2C_ADDR,
 };
 
 int32_t BSP_PWR_PIN_SetState(uint32_t Pin, uint32_t State)

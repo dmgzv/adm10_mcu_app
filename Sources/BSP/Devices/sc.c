@@ -184,12 +184,20 @@ int32_t SC_Update(SC_T *Dev)
 	{
 		IP1575_Process(&Dev->ip1575, Dev->ChassisAddress);
 	}
-	
+	else if ((!strcmp(Dev->Vendor, IPGP967_VENDOR)) && (!strcmp(Dev->PtNumber, IPGP967_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IPGP967_HW_NUMBER)))
+	{
+		if (!AT24C02C_Init(&Dev->at24c02c))
+			goto reset;
+	}
 	BSP_DEV_UPDATE_OK(Dev);
 	return 0;
 	
 error:
 	BSP_DEV_UPDATE_FAIL(Dev);
+	return 0;
+reset:
+	BSP_DEV_UNLOCK(Dev);
+	BSP_DEV_DEINIT(Dev);
 	return 0;
 }
 

@@ -11,6 +11,7 @@
 typedef struct {
 	BSP_DEV;
 	const I2C_TypeDef *I2C;
+	uint8_t Addr;
 	uint8_t Ins;
 	uint8_t Outs;
 	uint8_t Dirs;

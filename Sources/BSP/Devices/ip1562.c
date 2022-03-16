@@ -61,7 +61,7 @@ int32_t IP1562_Process(IP1562_T *Dev)
 	if (!Dev)
 		return -1;
 	
-	//IP1562_PCA9536_Process(Dev);
+	IP1562_PCA9536_Process(Dev);
 	IP1562_PCA9538_Process(Dev);
 	IP1562_MAX31790_Process(Dev);
 	
@@ -104,6 +104,11 @@ float IP1562_GetFanSpeed(IP1562_T *Dev, uint32_t Idx)
 	if ((!Dev) || (Idx >= 8))
 		return 0;
 	
+	if (Idx == 6)
+		Idx = 7;
+	else if (Idx == 7)
+		Idx = 10;
+
 	Speed = 0;
 	if (BSP_DEV_GET_STATE(&Dev->max31790) == BSP_DEV_STATE_OK)
 	{
