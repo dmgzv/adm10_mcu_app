@@ -62,6 +62,7 @@ const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&seeprom.at24c02c,
 	(BSP_DEV_T*)&seeprom.ip1562.pca9538,
 	(BSP_DEV_T*)&seeprom.ip1562.max31790,
+	(BSP_DEV_T*)&seeprom.ip1562.pca9536,
 };
 const uint32_t DevicesCnt = sizeof(Devices) / sizeof(Devices[0]);
 
