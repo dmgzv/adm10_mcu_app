@@ -79,7 +79,7 @@ if __name__ == "__main__":
     lng_win1251_file_name = "../Sources/ProfileADM10/langpack_adm10_win1251.lng"
     lng_utf8_file_name = "../Sources/ProfileADM10/langpack_adm10_utf8.lng"
     web_file_name = "../Sources/Web/web.bin"
-    img_hex_app_size = 0x081FFF00
+    img_hex_app_size = 0x08200000
     
     info = ProjectInfo()
     info.Read(cfg_file_name)
@@ -115,15 +115,18 @@ if __name__ == "__main__":
     print("Calculate CRC16 " + ihex_hex_file_name)
     ihex = IntelHex(ihex_hex_file_name)
     ihex_data = ihex.todict()
+    ihex_data_new = {}
     idx = 0x08010000
     crc16 = 0
     while idx < img_hex_app_size:
         ihex_item = ihex_data.get(idx, 0xFF)
-        crc16 = ((crc16 >> 8) ^ CRC16_TABLE[(crc16 ^ (ihex_item & 0xFF)) & 0xFF]) & 0xFFFF
+        ihex_data_new[idx] = ihex_item
+        if idx < (img_hex_app_size - 0x100):
+            crc16 = ((crc16 >> 8) ^ CRC16_TABLE[(crc16 ^ (ihex_item & 0xFF)) & 0xFF]) & 0xFFFF
         idx = idx + 1
-    ihex[img_hex_app_size + 0x30] = crc16 & 0xFF
-    ihex[img_hex_app_size + 0x31] = (crc16 >> 8) & 0xFF
-
+    ihex_data_new[img_hex_app_size - 0x100 + 0x30] = crc16 & 0xFF
+    ihex_data_new[img_hex_app_size - 0x100 + 0x31] = (crc16 >> 8) & 0xFF
+    ihex = IntelHex(ihex_data_new)
     print("Replace " + ihex_hex_file_name)
     ihex.tofile(ihex_hex_file_name, format='hex')
     print("Generate " + ihex_bin_file_name)
