@@ -1500,7 +1500,7 @@ error:
 #define PROFILE_FLASH_MESSAGE_QUEUE_SIZE 2
 int32_t PROFILE_FLASH_Init(PROFILE_FLASH_T *ProfileFlash, char *ThreadName, PROFILE_T *Profile)
 {
-	osThreadDef_t ProfileFlash_osThreadDef = { ThreadName, PROFILE_FLASH_Thread, osPriorityNormal, 0, 256};
+	osThreadDef_t ProfileFlash_osThreadDef = { ThreadName, PROFILE_FLASH_Thread, osPriorityNormal, 0, 320};
 	osMessageQDef_t ProfileFlash_osMessageQDef = {PROFILE_FLASH_MESSAGE_QUEUE_SIZE, sizeof(uint32_t)};
 	
 	if ((!ProfileFlash) || (!Profile))

@@ -102,7 +102,7 @@ uint32_t SystemThreadMaxPeriod = 0;
 /* Private function prototypes -----------------------------------------------*/
 static void System_Thread(void const *argument);
 /* System Thread definition */
-osThreadDef(System, System_Thread, osPriorityNormal, 0, 400);
+osThreadDef(System, System_Thread, osPriorityNormal, 0, 448);
 
 /* Private functions ---------------------------------------------------------*/
 
