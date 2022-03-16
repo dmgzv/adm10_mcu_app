@@ -125,15 +125,21 @@ static int32_t BOOTLOADER_UpdateFw(BOOTLOADER_T *Bootloader)
 
 void BOOTLOADER_StartFw(BOOTLOADER_T *Bootloader)
 {
-	// � ���������� ������ ���� ����� ��������� � ��� ���������, �������� ����
 	uint32_t SP = *(uint32_t*)( BSP_FLASH_FW_ADDR );
 	uint32_t FwAddr;
-	if( ( SP & 0x2FFE0000 ) == 0x20000000 )
+
+#if defined(STM32F407xx)
+	if (( SP >= 0x20000000 ) && ( SP <= 0x20020000 ))
+#elif defined(STM32F427xx)
+	if (( SP >= 0x20000000 ) && ( SP <= 0x20030000 ))
+#else
+#error Invalid MCU type
+#endif
 	{
 		__disable_irq();
-		__set_MSP( SP );// �������������� SP ��������� �� �������� ��������� (������ 4 �����)
-		FwAddr = *(uint32_t*)( BSP_FLASH_FW_ADDR + 4 );//��������� ����� � ��������� 4 ������
-		( (void (*)(void))FwAddr )();//������ ���������
+		__set_MSP( SP );
+		FwAddr = *(uint32_t*)( BSP_FLASH_FW_ADDR + 4 );
+		( (void (*)(void))FwAddr )();
 	}
 }
 
@@ -235,10 +241,6 @@ int32_t BOOTLOADER_UpdateNewFwFinish(BOOTLOADER_T *Bootloader)
 		//FwInfo->CRC16 = Bootloader->FwCRC16;
 		if (BSP_FLASH_ProgramPage(Bootloader->FlashAddr, (char*)Bootloader->Buffer, BSP_FLASH_PAGE_SIZE))
 			return -1;
-	}
-	else
-	{
-		return -1;
 	}
 	return 0;
 }
