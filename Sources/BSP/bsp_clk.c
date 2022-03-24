@@ -259,7 +259,7 @@ SI5332_T si5332[BSP_CLK_SI5332_CNT] =
 	},
 };
 
-uint32_t si5332_mode[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_MODE_RSFEC, BSP_CLK_SI5332_MODE_RSFEC};
+uint32_t si5332_mode[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_MODE_AGG_RSFEC, BSP_CLK_SI5332_MODE_AGG_RSFEC};
 static uint32_t __si5332_mode[BSP_CLK_SI5332_CNT];
 uint32_t si5332_cfg[BSP_CLK_SI5332_CNT] = {BSP_CLK_SI5332_1_DEF_CFG, BSP_CLK_SI5332_2_DEF_CFG};
 static uint32_t __si5332_cfg[BSP_CLK_SI5332_CNT];
@@ -330,10 +330,10 @@ void BSP_CLK_Process(void)
 							cfg = (SI5332_CFG_T*)bsp_clk_si5332_efec_cfg[i][si5332_cfg[i]];
 							cfg_size = bsp_clk_si5332_cfg_efec_size[i][si5332_cfg[i]];
 						}
-						else if (si5332_mode[i] == BSP_CLK_SI5332_MODE_AGG_EFEC_I_4)
+						else if (si5332_mode[i] == BSP_CLK_SI5332_MODE_TP_RSFEC)
 						{
 							cfg = (SI5332_CFG_T*)bsp_clk_si5332_tp_cfg[i][si5332_cfg[i]];
-							cfg_size = bsp_clk_si5332_cfg_tp_size[i][si5332_cfg[i]];
+							cfg_size = bsp_clk_si5332_tp_cfg_size[i][si5332_cfg[i]];
 						}
 						else
 						{

@@ -61,6 +61,12 @@ static void FPGA_MAXV_UpdateMode(FPGA_MAXV_T *Dev)
 			Client1PageSelect = 1;
 			Client2PageSelect = 7;
 		}
+		else if (Dev->Mode == FPGA_MAXV_MODE_TP_10_ADM_2_5)
+		{
+			LinePageSelect = 6;
+			Client1PageSelect = 7;
+			Client2PageSelect = 7;
+		}
 		else
 		{
 			return;

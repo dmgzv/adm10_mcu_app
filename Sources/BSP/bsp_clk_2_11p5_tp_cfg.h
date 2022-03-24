@@ -22,7 +22,7 @@
 
 #include "si5332.h"
 
-#define SI5332-BSP_CLK_2_11P5_TP_CFG_NUM_REGS				103
+#define BSP_CLK_2_11P5_TP_CFG_NUM_REGS				101
 
 const SI5332_CFG_T bsp_clk_2_11p5_tp_cfg[BSP_CLK_2_11P5_TP_CFG_NUM_REGS] =
 {
