@@ -252,6 +252,7 @@ void BSP_UpdateCard(void)
 	
 	BSP_Stage++;
 	
+	/*
 	BSP_FPGA_IFACE_Process();
 	
 	BSP_Stage++;
@@ -275,6 +276,7 @@ void BSP_UpdateCard(void)
 	BSP_FPGA_CLIENT_Process();
 	
 	BSP_Stage++;
+	*/
 	
 	for (i = 0; i < BSP_SFP_CNT; i++)
 	{
