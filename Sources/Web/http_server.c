@@ -1164,6 +1164,9 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 			goto error;
 	}
 	
+	if (RESPONCE_BODY[header_len] != ';')
+		goto error;
+	
 	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
 		goto error;
 	
@@ -1172,6 +1175,9 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 		if (REQUEST_BODY[header_len + 1 + i] != RESPONCE_BODY[header_len + 1 + i])
 			goto error;
 	}
+	
+	if (RESPONCE_BODY[header_len + 1 + bodylen] != ';')
+		goto error;
 		
 	while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
 	{
