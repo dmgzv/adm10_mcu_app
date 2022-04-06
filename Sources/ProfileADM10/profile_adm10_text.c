@@ -2812,7 +2812,7 @@ const char *const ProfileADM10Text[] = {
 "SnmpVersion;Disabled@0|SNMPv2c@1|SNMPv3@2",
 "AlarmClearanceProfile;Auto@0|Manual@1",
 "AlarmAcknowledgmentProfile;Manual@0|Auto@1",
-"TrapMask;None@0|Trap@1|Log@2|Trap+Logs@3",
+"TrapMask;None@0|Trap@1|Log@2|Both@3",
 "SnmpEncryptionEnable;Disabled@0|Enabled@1",
 "SnmpAuthEnable;Disabled@0|Enabled@1",
 "Mode;Chassis@0|Stack@1",
