@@ -233,7 +233,7 @@ static void PROFILE_ADM10_PS_UpdateTempValue(PROFILE_T *Profile, uint32_t Idx)
 	
 	if (SEEPROM_GetPSPresent(&seeprom, Idx))
 	{
-		if (!PS_GetTemp(&ps[Idx], &Value, 0))
+		if (!PS_GetTemp(&ps[Idx], &Value))
 		{
 			PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicPSTempIdx[Idx], &Value, PROFILE_STATE_IS);
 			return;

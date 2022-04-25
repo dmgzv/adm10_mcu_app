@@ -14,7 +14,7 @@ typedef struct {
 	float Vin;
 	float Vout;
 	float Iout;
-	float Temp[2];
+	float Temp;
 } DBE0125V2_READ_T;
 
 typedef struct {

@@ -19,6 +19,6 @@ void IP1554_Deinit(IP1554_T *Dev);
 int32_t IP1554_GetVin(IP1554_T *Dev, float *Vin);
 int32_t IP1554_GetVout(IP1554_T *Dev, float *Vout);
 int32_t IP1554_GetIout(IP1554_T *Dev, float *Iout);
-int32_t IP1554_GetTemp(IP1554_T *Dev, float *Temp, uint32_t Idx);
+int32_t IP1554_GetTemp(IP1554_T *Dev, float *Temp);
 
 #endif /*__IP1554_H*/

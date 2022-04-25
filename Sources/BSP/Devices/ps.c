@@ -338,7 +338,7 @@ error:
 	return -1;
 }
 
-int32_t PS_GetTemp(PS_T *Dev, float *Temp, uint32_t Idx)
+int32_t PS_GetTemp(PS_T *Dev, float *Temp)
 {
 	if ((!Dev) || (!Temp))
 		return -1;
@@ -349,7 +349,7 @@ int32_t PS_GetTemp(PS_T *Dev, float *Temp, uint32_t Idx)
 	*Temp = 0.0f;
 	if ((!strcmp(Dev->Vendor, IP1554_VENDOR)) && (!strcmp(Dev->PtNumber, IP1554_PT_NUMBER)) && (!strcmp(Dev->HwNumber, IP1554_HW_NUMBER)))
 	{
-		if (IP1554_GetTemp(&Dev->ip1554, Temp, Idx))
+		if (IP1554_GetTemp(&Dev->ip1554, Temp))
 			goto error;
 	}
 	

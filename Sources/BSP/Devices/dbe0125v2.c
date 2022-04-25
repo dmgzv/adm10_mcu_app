@@ -1,16 +1,17 @@
 #include "dbe0125v2.h"
+#include "sort.h"
 #include <string.h>
 
 #define DBE0125V2_ADDR_STATUS_WORD 0x79
 #define DBE0125V2_ADDR_VIN 0x88
 #define DBE0125V2_ADDR_VOUT 0x8B
 #define DBE0125V2_ADDR_IOUT 0x8C
-#define DBE0125V2_ADDR_TEMP(Idx) ((Idx) ? 0x8E : 0x8D)
+#define DBE0125V2_ADDR_TEMP 0x8D
 #define DBE0125V2_ADDR_MFR_ID 0x99
 #define DBE0125V2_ADDR_MFR_MODEL 0x9A
 #define DBE0125V2_ADDR_MFR_REVISION 0x9B
 
-static int32_t DBE0125V2_GetMfr(DBE0125V2_T *Dev)
+/*static int32_t DBE0125V2_GetMfr(DBE0125V2_T *Dev)
 {
 	uint8_t Register;
 	
@@ -27,7 +28,7 @@ static int32_t DBE0125V2_GetMfr(DBE0125V2_T *Dev)
 		return -1;
 	
 	return 0;
-}
+}*/
 
 static int32_t DBE0125V2_GetStatus(DBE0125V2_T *Dev)
 {
@@ -41,6 +42,10 @@ static int32_t DBE0125V2_GetStatus(DBE0125V2_T *Dev)
 	{
 		Dev->Status.Word = Data[0] + (Data[1] << 8);
 	}
+	else
+	{
+		return -1;
+	}
 	return 0;
 }
 
@@ -48,47 +53,82 @@ static int32_t DBE0125V2_GetRead(DBE0125V2_T *Dev)
 {
 	uint32_t i;
 	uint16_t LinearData;
+	float FloatData[3];
 	uint8_t Register;
 	uint8_t Data[2];
 
-	Register = DBE0125V2_ADDR_VIN;
-	if (PMBUS_ReadWord(Dev->I2C, Dev->Addr, Register, Data))
-		return -1;
-	if (!((Data[0] == 0xFF) && (Data[1] == 0xFF)))
+	for (i = 0; i < sizeof(FloatData) / sizeof(FloatData[0]); i++)
 	{
-		LinearData = Data[0] + (Data[1] << 8);
-		Dev->Read.Vin = PMBUS_LinearToFloat(LinearData);
-	}
-
-	Register = DBE0125V2_ADDR_VOUT;
-	if (PMBUS_ReadWord(Dev->I2C, Dev->Addr, Register, Data))
-		return -1;
-	if (!((Data[0] == 0xFF) && (Data[1] == 0xFF)))
-	{
-		LinearData = Data[0] + (Data[1] << 8);
-		Dev->Read.Vout = LinearData * 0.00195f; /*LinearData * 2 ^ (-9)*/
-	}
-
-	Register = DBE0125V2_ADDR_IOUT;
-	if (PMBUS_ReadWord(Dev->I2C, Dev->Addr, Register, Data))
-		return -1;
-	if (!((Data[0] == 0xFF) && (Data[1] == 0xFF)))
-	{
-		LinearData = Data[0] + (Data[1] << 8);
-		Dev->Read.Iout = PMBUS_LinearToFloat(LinearData);
-	}
-
-	for (i = 0; i < 2; i++)
-	{
-		Register = DBE0125V2_ADDR_TEMP(i);
+		Register = DBE0125V2_ADDR_VIN;
 		if (PMBUS_ReadWord(Dev->I2C, Dev->Addr, Register, Data))
 			return -1;
 		if (!((Data[0] == 0xFF) && (Data[1] == 0xFF)))
 		{
 			LinearData = Data[0] + (Data[1] << 8);
-			Dev->Read.Temp[i] = PMBUS_LinearToFloat(LinearData);
+			FloatData[i] = PMBUS_LinearToFloat(LinearData);
+		}
+		else
+		{
+			return -1;
 		}
 	}
+	bubble_sort_float(FloatData, sizeof(FloatData) / sizeof(FloatData[0]));
+	Dev->Read.Vin =  FloatData[sizeof(FloatData) / sizeof(FloatData[0]) / 2];
+
+	for (i = 0; i < sizeof(FloatData) / sizeof(FloatData[0]); i++)
+	{
+		Register = DBE0125V2_ADDR_VOUT;
+		if (PMBUS_ReadWord(Dev->I2C, Dev->Addr, Register, Data))
+			return -1;
+		if (!((Data[0] == 0xFF) && (Data[1] == 0xFF)))
+		{
+			LinearData = Data[0] + (Data[1] << 8);
+			FloatData[i] = LinearData * 0.00195f; /*LinearData * 2 ^ (-9)*/
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	bubble_sort_float(FloatData, sizeof(FloatData) / sizeof(FloatData[0]));
+	Dev->Read.Vout =  FloatData[sizeof(FloatData) / sizeof(FloatData[0]) / 2];
+
+	for (i = 0; i < sizeof(FloatData) / sizeof(FloatData[0]); i++)
+	{
+		Register = DBE0125V2_ADDR_IOUT;
+		if (PMBUS_ReadWord(Dev->I2C, Dev->Addr, Register, Data))
+			return -1;
+		if (!((Data[0] == 0xFF) && (Data[1] == 0xFF)))
+		{
+			LinearData = Data[0] + (Data[1] << 8);
+			FloatData[i] = PMBUS_LinearToFloat(LinearData);
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	bubble_sort_float(FloatData, sizeof(FloatData) / sizeof(FloatData[0]));
+	Dev->Read.Iout =  FloatData[sizeof(FloatData) / sizeof(FloatData[0]) / 2];
+
+	for (i = 0; i < sizeof(FloatData) / sizeof(FloatData[0]); i++)
+	{
+		Register = DBE0125V2_ADDR_TEMP;
+		if (PMBUS_ReadWord(Dev->I2C, Dev->Addr, Register, Data))
+			return -1;
+		if (!((Data[0] == 0xFF) && (Data[1] == 0xFF)))
+		{
+			LinearData = Data[0] + (Data[1] << 8);
+			FloatData[i] = PMBUS_LinearToFloat(LinearData);
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	bubble_sort_float(FloatData, sizeof(FloatData) / sizeof(FloatData[0]));
+	Dev->Read.Temp =  FloatData[sizeof(FloatData) / sizeof(FloatData[0]) / 2];
+
 	return 0;
 }
 

@@ -101,15 +101,15 @@ int32_t IP1554_GetIout(IP1554_T *Dev, float *Iout)
 	return 0;
 }
 
-int32_t IP1554_GetTemp(IP1554_T *Dev, float *Temp, uint32_t Idx)
+int32_t IP1554_GetTemp(IP1554_T *Dev, float *Temp)
 {
-	if ((!Dev) || (!Temp) || (Idx >= 2))
+	if ((!Dev) || (!Temp))
 		return -1;
 	if (BSP_DEV_GET_STATE(&Dev->dbe0125v2) != BSP_DEV_STATE_OK)
 		return -1;
 	
 	BSP_DEV_LOCK(&Dev->dbe0125v2);
-	*Temp = Dev->dbe0125v2.Read.Temp[Idx];
+	*Temp = Dev->dbe0125v2.Read.Temp;
 	BSP_DEV_UNLOCK(&Dev->dbe0125v2);
 	
 	return 0;

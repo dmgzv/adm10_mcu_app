@@ -33,6 +33,6 @@ int32_t PS_ConfigSrNumber(PS_T *Dev, char *SrNumber);
 int32_t PS_GetVin(PS_T *Dev, float *Vin);
 int32_t PS_GetVout(PS_T *Dev, float *Vout);
 int32_t PS_GetIout(PS_T *Dev, float *Iout);
-int32_t PS_GetTemp(PS_T *Dev, float *Temp, uint32_t Idx);
+int32_t PS_GetTemp(PS_T *Dev, float *Temp);
 
 #endif /*__PS_H*/
