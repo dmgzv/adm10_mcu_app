@@ -143,24 +143,20 @@ static void SHELL_CMD_InfoCallback(void *Shell, char **CmdParamsList, uint32_t C
 "Commands:\r\n"\
 "\thelp - Display this help.\r\n"\
 "\terase - Erase log records.\r\n"\
+"\tlines [<data>] - Erase log records.\r\n"\
 
 static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t CmdParamsCnt)
 {
 	uint32_t i, LinesCnt;
 	float Time;
 	LOG_LINE_T LogLine;
+	char *c;
 	
 	if (CmdParamsCnt == 1)
 	{
 		LinesCnt = LOG_GetLinesCnt();
-		SHELL_Transmit(Shell, "Records Count: %d\r\n", LinesCnt);
-		SHELL_Transmit(Shell, "Records Max Count: %d\r\n", LOG_LINES_MAX_CNT);
-		for (i = 0; i < LinesCnt; i++)
-		{
-			LOG_GetLine(i, &LogLine);
-			Time = (float)LogLine.TimeTicks / osKernelSysTickFrequency;
-			SHELL_Transmit(Shell, "[%4.4f] %s %s %s %s\r\n", Time, LogLine.Category, LogLine.Subject, LogLine.Operation, LogLine.Description);
-		}
+		SHELL_Transmit(Shell, "Lines Count: %d\r\n", LinesCnt);
+		SHELL_Transmit(Shell, "Lines Max Count: %d\r\n", LOG_LINES_MAX_CNT);
 	}
 	else if (CmdParamsCnt == 2)
 	{
@@ -173,22 +169,54 @@ static void SHELL_CMD_LOGCallback(void *Shell, char **CmdParamsList, uint32_t Cm
 			if (LOG_Erase())
 				goto command_error;
 		}
+		else if (!strcmp(CmdParamsList[1], "lines"))
+		{
+			LinesCnt = LOG_GetLinesCnt();
+			for (i = 0; i < LinesCnt; i++)
+			{
+				LOG_GetLine(i, &LogLine);
+				Time = (float)LogLine.TimeTicks / osKernelSysTickFrequency;
+				SHELL_Transmit(Shell, "[%4.4f] %s %s %s %s\r\n", Time, LogLine.Category, LogLine.Subject, LogLine.Operation, LogLine.Description);
+			}
+		}
 		else
 		{
 			goto invalid_command;
 		}
 	}
+	else if (CmdParamsCnt == 3)
+		{
+			if (!strcmp(CmdParamsList[1], "lines"))
+			{
+				LinesCnt = strtoul(CmdParamsList[2], &c, 10);
+				if (LinesCnt > LOG_GetLinesCnt())
+					goto invalid_lines_cnt;
+				for (i = 0; i < LinesCnt; i++)
+				{
+					LOG_GetLine(i, &LogLine);
+					Time = (float)LogLine.TimeTicks / osKernelSysTickFrequency;
+					SHELL_Transmit(Shell, "[%4.4f] %s %s %s %s\r\n", Time, LogLine.Category, LogLine.Subject, LogLine.Operation, LogLine.Description);
+				}
+			}
+			else
+			{
+				goto invalid_command;
+			}
+		}
 	else
 	{
 		goto invalid_command;
 	}
 	return;
 	
+invalid_lines_cnt:
+	SHELL_Transmit(Shell, "Error: Invalid lines count");
+	return;
 invalid_command:
-	SHELL_TransmitBuffer(Shell, "Error: Invalid command", sizeof("Error: Invalid command") - 1);
+	SHELL_Transmit(Shell, "Error: Invalid command");
 	return;
 command_error:
-	SHELL_TransmitBuffer(Shell, "Error: Command error", sizeof("Error: Command error") - 1);
+	SHELL_Transmit(Shell, "Error: Command error");
 	return;
 }
 #endif
