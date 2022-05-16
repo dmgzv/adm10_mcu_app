@@ -158,6 +158,8 @@ void SC_Deinit(SC_T *Dev)
 	if (!Dev)
 		return;
 	AT24C02C_Deinit(&Dev->at24c02c);
+	IPGP966_Deinit(&Dev->ipgp966);
+	IP1575_Deinit(&Dev->ip1575);
 	BSP_DEV_DEINIT(Dev);
 }
 
