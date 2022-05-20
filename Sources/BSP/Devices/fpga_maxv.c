@@ -162,7 +162,7 @@ int32_t FPGA_MAXV_Init(FPGA_MAXV_T *Dev)
 	Client1PageSelect =  *((uint8_t*)FPGA_MAXV_FPGA_CLIENT_1_PAGE_SELECT_ADDR(Dev));
 	Client2PageSelect =  *((uint8_t*)FPGA_MAXV_FPGA_CLIENT_2_PAGE_SELECT_ADDR(Dev));
 	
-	if (Dev->Status != ((1 << 1) || (1 << 2) || (1 << 3)))
+	if (Dev->Status != ((1 << 1) | (1 << 2) | (1 << 3)))
 	{
 		Dev->Mode = Dev->__Mode = FPGA_MAXV_MODE_NONE;
 	}
