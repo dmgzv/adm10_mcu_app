@@ -252,11 +252,11 @@ void BSP_UpdateCard(void)
 	
 	BSP_Stage++;
 	
-	/*
+	
 	BSP_FPGA_IFACE_Process();
 	
 	BSP_Stage++;
-	
+	/*
 	BSP_FPGA_MAXV_Process();
 	
 	BSP_Stage++;
