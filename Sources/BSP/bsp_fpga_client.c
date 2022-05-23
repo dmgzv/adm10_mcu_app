@@ -251,6 +251,29 @@ void BSP_FPGA_CLIENT_Process(void)
 					}
 				}
 			}
+			else if (fpga_maxv.Mode == FPGA_MAXV_MODE_TP_10_ADM_2_5)
+			{
+				if(BSP_DEV_GET_STATE(&fpga_client_adm_10[i]) != BSP_DEV_STATE_RESET)
+				{
+					FPGA_CLIENT_ADM_10_Deinit(&fpga_client_adm_10[i]);
+				}
+				if(BSP_DEV_GET_STATE(&fpga_client_agg_2x10_bs[i]) != BSP_DEV_STATE_RESET)
+				{
+					FPGA_CLIENT_AGG_2X10_BS_Deinit(&fpga_client_agg_2x10_bs[i]);
+				}
+				if(BSP_DEV_GET_STATE(&fpga_client_agg_2x10_efec[i]) != BSP_DEV_STATE_RESET)
+				{
+					FPGA_CLIENT_AGG_2X10_EFEC_Deinit(&fpga_client_agg_2x10_efec[i]);
+				}
+				if (BSP_DEV_GET_STATE(&fpga_client_adm_2_5[i]) != BSP_DEV_STATE_OK)
+				{
+					FPGA_CLIENT_ADM_2_5_Init(&fpga_client_adm_2_5[i]);
+				}
+				else
+				{
+					FPGA_CLIENT_ADM_2_5_Update(&fpga_client_adm_2_5[i]);
+				}
+			}
 			else
 			{
 				if(BSP_DEV_GET_STATE(&fpga_client_adm_10[i]) != BSP_DEV_STATE_RESET)

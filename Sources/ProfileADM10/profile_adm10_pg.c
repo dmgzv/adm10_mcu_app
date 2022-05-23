@@ -186,6 +186,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU2PGSetTypeValue(PROFILE_T *Profile, uint8
 					return -1;
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 ODU2PG 1, 2 type is always Disabled*/
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_PG_SET_TYPE_ENUM_DISABLED)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -226,6 +231,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU2PGSetModeValue(PROFILE_T *Profile, uint8
 					return -1;
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 ODU2PG 1, 2 mode is always Auto*/
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_PG_SET_MODE_ENUM_AUTO)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -256,6 +266,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU2PGSetMonModeValue(PROFILE_T *Profile, ui
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			/*In AGG-10-BS+ADM-2.5 ODU2PG 1, 2 monitor mode is always SNCP/Ne*/
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_PG_SET_MON_MODE_ENUM_SNC_NE)
+				return -1;
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 ODU2PG 1, 2 monitor mode is always SNCP/Ne*/
 			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_PG_SET_MON_MODE_ENUM_SNC_NE)
 				return -1;
 			break;
@@ -298,6 +313,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU2PGSetRevModeValue(PROFILE_T *Profile, ui
 				if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_PG_SET_REV_MODE_ENUM_REVERTIVE)
 					return -1;
 			}
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 ODU2PG 1, 2 revert mode is always Revertive*/
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_PG_SET_REV_MODE_ENUM_REVERTIVE)
+				return -1;
 			break;
 		default:
 			return -1;
@@ -346,6 +366,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU2PGSetPrimaryODUkValue(PROFILE_T *Profile
 					return -1;
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 ODU2PG 1, 2 Primary ODUk is always None*/
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_PG_SET_PRIMARY_ODUK_ENUM_NONE)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -393,6 +418,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU2PGSetProtectODUkValue(PROFILE_T *Profile
 					return -1;
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 ODU2PG 1, 2 Protect ODUk is always None*/
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_PG_SET_PROTECT_ODUK_ENUM_NONE)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -432,6 +462,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU2PGSetWTRTmrValue(PROFILE_T *Profile, uin
 				if (*(uint32_t*)Value != 0)
 					return -1;
 			}
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 ODU2PG 1, 2 WTR timer is always 0*/
+			if (*(uint32_t*)Value != 0)
+				return -1;
 			break;
 		default:
 			return -1;
@@ -477,6 +512,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU2PGSetHOTmrValue(PROFILE_T *Profile, uint
 					return -1;
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 HO timer is always 0*/
+			if (*(uint32_t*)Value != 0)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -508,6 +548,9 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetTypeValue(PROFILE_T *Profile, uint8
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			/*In AGG-10-BS+ADM-2.5 type is Disabled or Unidirerctional 1+1*/
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 type is Disabled or Unidirerctional 1+1*/
+			break;
 		default:
 			return -1;
 	}	
@@ -538,6 +581,9 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetModeValue(PROFILE_T *Profile, uint8
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			/*In AGG-10-BS+ADM-2.5 mode is Auto, Lockout, Forced or Manual*/
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 mode is Auto, Lockout, Forced or Manual*/
 			break;
 		default:
 			return -1;
@@ -574,6 +620,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetMonModeValue(PROFILE_T *Profile, ui
 			if (*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_MON_MODE_ENUM_SNC_NE)
 				return -1;
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 monitor mode is always SNCP/Ne*/
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_MON_MODE_ENUM_SNC_NE)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -604,6 +655,9 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetRevModeValue(PROFILE_T *Profile, ui
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			/*In AGG-10-BS+ADM-2.5 revert mode is Revertive or Non-Revertive*/
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 revert mode is Revertive or Non-Revertive*/
 			break;
 		default:
 			return -1;
@@ -697,6 +751,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetPrimaryODUkValue(PROFILE_T *Profile
 				if (*(uint32_t*)Value == ProtectODUk)
 					return -1;
 			}
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
 			break;
 		default:
 			return -1;
@@ -792,6 +848,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetProtectODUkValue(PROFILE_T *Profile
 				}
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			break;
 		default:
 			return -1;
 	}	
@@ -821,6 +879,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetWTRTmrValue(PROFILE_T *Profile, uin
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			break;
 		default:
 			return -1;
 	}	
@@ -842,12 +902,12 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetHOTmrValue(PROFILE_T *Profile, uint
 				return -1;	
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
-			/*In AGG-2x10-BS WTR timer is always 0*/
+			/*In AGG-2x10-BS HO timer is always 0*/
 			if (*(uint32_t*)Value != 0)
 				return -1;
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
-			/*In AGG-2x10-EFEC WTR timer is always 0*/
+			/*In AGG-2x10-EFEC HO timer is always 0*/
 			if (*(uint32_t*)Value != 0)
 				return -1;
 			break;
@@ -855,6 +915,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetHOTmrValue(PROFILE_T *Profile, uint
 			/*In AGG-10-BS+ADM-2.5 HO timer grid is 100ms*/
 			if ((*(uint32_t*)Value % 100))
 				return -1;	
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 HO timer grid is 100ms*/
+			if ((*(uint32_t*)Value % 100))
+				return -1;
 			break;
 		default:
 			return -1;
@@ -887,6 +952,9 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetTypeValue(PROFILE_T *Profile, uint8
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			/*In AGG-10-BS+ADM-2.5 type is Disabled or Unidirerctional 1+1*/
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 type is Disabled or Unidirerctional 1+1*/
+			break;
 		default:
 			return -1;
 	}	
@@ -917,6 +985,9 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetModeValue(PROFILE_T *Profile, uint8
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			/*In AGG-10-BS+ADM-2.5 mode is Auto, Lockout, Forced or Manual*/
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 mode is Auto, Lockout, Forced or Manual*/
 			break;
 		default:
 			return -1;
@@ -953,6 +1024,11 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetMonModeValue(PROFILE_T *Profile, ui
 			if (*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_MON_MODE_ENUM_SNC_NE)
 				return -1;
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 monitor mode is always SNCP/Ne*/
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_MON_MODE_ENUM_SNC_NE)
+				return -1;
+			break;
 		default:
 			return -1;
 	}	
@@ -983,6 +1059,9 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetRevModeValue(PROFILE_T *Profile, ui
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			/*In AGG-10-BS+ADM-2.5 revert mode is Revertive or Non-Revertive*/
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 revert mode is Revertive or Non-Revertive*/
 			break;
 		default:
 			return -1;
@@ -1080,6 +1159,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetPrimaryODUkValue(PROFILE_T *Profile
 				if (*(uint32_t*)Value == ProtectODUk)
 					return -1;
 			}
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
 			break;
 		default:
 			return -1;
@@ -1179,6 +1260,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetProtectODUkValue(PROFILE_T *Profile
 				}				
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			break;
 		default:
 			return -1;
 	}	
@@ -1208,6 +1291,8 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetWTRTmrValue(PROFILE_T *Profile, uin
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			break;
 		default:
 			return -1;
 	}	
@@ -1229,17 +1314,22 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetHOTmrValue(PROFILE_T *Profile, uint
 				return -1;	
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
-			/*In AGG-2x10-BS WTR timer is always 0*/
+			/*In AGG-2x10-BS HO timer is always 0*/
 			if (*(uint32_t*)Value != 0)
 				return -1;
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
-			/*In AGG-2x10-EFEC WTR timer is always 0*/
+			/*In AGG-2x10-EFEC HO timer is always 0*/
 			if (*(uint32_t*)Value != 0)
 				return -1;
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			/*In AGG-10-BS+ADM-2.5 HO timer grid is 100ms*/
+			if ((*(uint32_t*)Value % 100))
+				return -1;	
+			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			/*In TP-10 HO timer grid is 100ms*/
 			if ((*(uint32_t*)Value % 100))
 				return -1;	
 			break;
@@ -1383,6 +1473,16 @@ static int32_t PROFILE_ADM10_ODU2PG_SetFactoryValue(PROFILE_T *Profile, uint32_t
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetHOTmrIdx[ODU2PGIdx]);
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetTypeIdx[ODU2PGIdx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetModeIdx[ODU2PGIdx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetMonModeIdx[ODU2PGIdx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetRevModeIdx[ODU2PGIdx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetPrimaryODUkIdx[ODU2PGIdx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetProtectODUkIdx[ODU2PGIdx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetWTRTmrIdx[ODU2PGIdx]);
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetHOTmrIdx[ODU2PGIdx]);
+			break;
 		default:
 			return -1;
 	}
@@ -1397,6 +1497,7 @@ static int32_t PROFILE_ADM10_ODU1PG_SetFactoryValue(PROFILE_T *Profile, uint32_t
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetTypeIdx[ODU1PGIdx]);
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetModeIdx[ODU1PGIdx]);
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetMonModeIdx[ODU1PGIdx]);
@@ -1420,6 +1521,7 @@ static int32_t PROFILE_ADM10_ODU0PG_SetFactoryValue(PROFILE_T *Profile, uint32_t
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetTypeIdx[ODU0PGIdx]);
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetModeIdx[ODU0PGIdx]);
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetMonModeIdx[ODU0PGIdx]);

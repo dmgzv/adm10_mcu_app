@@ -31,7 +31,7 @@
 #define PROFILE_ADM10_ODUC2_XCS 0
 #define PROFILE_ADM10_ODUC1_XCS 0
 #define PROFILE_ADM10_ODU4_XCS 0
-#define PROFILE_ADM10_ODU2_XCS 0
+#define PROFILE_ADM10_ODU2_XCS 2
 #define PROFILE_ADM10_ODU1_XCS 8
 #define PROFILE_ADM10_ODU0_XCS 16
 #define PROFILE_ADM10_ODUFlex_XCS 0
@@ -160,6 +160,10 @@ typedef struct {
     uint8_t Ln_1_SFP_RxPwrState;
     float Ln_1_SFP_TxPwr;
     uint8_t Ln_1_SFP_TxPwrState;
+    uint32_t Ln_1_SDH_RS_Alarms;
+    uint8_t Ln_1_SDH_RS_AlarmsState;
+    uint32_t Ln_1_Eth_Alarms;
+    uint8_t Ln_1_Eth_AlarmsState;
     uint32_t Ln_1_OTU2_Alarms;
     uint8_t Ln_1_OTU2_AlarmsState;
     float Ln_1_OTU2_FECBER;
@@ -226,6 +230,10 @@ typedef struct {
     uint8_t Ln_2_SFP_RxPwrState;
     float Ln_2_SFP_TxPwr;
     uint8_t Ln_2_SFP_TxPwrState;
+    uint32_t Ln_2_SDH_RS_Alarms;
+    uint8_t Ln_2_SDH_RS_AlarmsState;
+    uint32_t Ln_2_Eth_Alarms;
+    uint8_t Ln_2_Eth_AlarmsState;
     uint32_t Ln_2_OTU2_Alarms;
     uint8_t Ln_2_OTU2_AlarmsState;
     float Ln_2_OTU2_FECBER;
@@ -292,6 +300,10 @@ typedef struct {
     uint8_t Ln_3_SFP_RxPwrState;
     float Ln_3_SFP_TxPwr;
     uint8_t Ln_3_SFP_TxPwrState;
+    uint32_t Ln_3_SDH_RS_Alarms;
+    uint8_t Ln_3_SDH_RS_AlarmsState;
+    uint32_t Ln_3_Eth_Alarms;
+    uint8_t Ln_3_Eth_AlarmsState;
     uint32_t Ln_3_OTU2_Alarms;
     uint8_t Ln_3_OTU2_AlarmsState;
     float Ln_3_OTU2_FECBER;
@@ -358,6 +370,10 @@ typedef struct {
     uint8_t Ln_4_SFP_RxPwrState;
     float Ln_4_SFP_TxPwr;
     uint8_t Ln_4_SFP_TxPwrState;
+    uint32_t Ln_4_SDH_RS_Alarms;
+    uint8_t Ln_4_SDH_RS_AlarmsState;
+    uint32_t Ln_4_Eth_Alarms;
+    uint8_t Ln_4_Eth_AlarmsState;
     uint32_t Ln_4_OTU2_Alarms;
     uint8_t Ln_4_OTU2_AlarmsState;
     float Ln_4_OTU2_FECBER;
@@ -1143,6 +1159,11 @@ typedef struct {
     uint8_t Cl_16_SetLoopbackState;
     uint8_t Cl_16_SetALSModeState;
     uint8_t Cl_16_SetFactoryState;
+    uint8_t ODU2_XC_1_SetSrcState;
+    uint8_t ODU2_XC_1_SetDstState;
+    uint8_t ODU2_XC_2_SetSrcState;
+    uint8_t ODU2_XC_2_SetDstState;
+    uint8_t ODU2_XC_SetFactoryState;
     uint8_t ODU1_XC_1_SetSrcState;
     uint8_t ODU1_XC_1_SetDstState;
     uint8_t ODU1_XC_2_SetSrcState;
@@ -1521,6 +1542,28 @@ typedef struct {
     uint8_t Ln_1_ODU0_7_UASState;
     uint64_t Ln_1_ODU0_8_UAS;
     uint8_t Ln_1_ODU0_8_UASState;
+    uint64_t Ln_1_SDH_RS_EB;
+    uint8_t Ln_1_SDH_RS_EBState;
+    uint64_t Ln_1_SDH_RS_ES;
+    uint8_t Ln_1_SDH_RS_ESState;
+    uint64_t Ln_1_SDH_RS_SES;
+    uint8_t Ln_1_SDH_RS_SESState;
+    uint64_t Ln_1_SDH_RS_BBE;
+    uint8_t Ln_1_SDH_RS_BBEState;
+    uint64_t Ln_1_SDH_RS_UAS;
+    uint8_t Ln_1_SDH_RS_UASState;
+    uint64_t Ln_1_Eth_RxPkts;
+    uint8_t Ln_1_Eth_RxPktsState;
+    uint64_t Ln_1_Eth_RxOcts;
+    uint8_t Ln_1_Eth_RxOctsState;
+    uint64_t Ln_1_Eth_RxErrs;
+    uint8_t Ln_1_Eth_RxErrsState;
+    uint64_t Ln_1_Eth_TxPkts;
+    uint8_t Ln_1_Eth_TxPktsState;
+    uint64_t Ln_1_Eth_TxOcts;
+    uint8_t Ln_1_Eth_TxOctsState;
+    uint64_t Ln_1_Eth_TxErrs;
+    uint8_t Ln_1_Eth_TxErrsState;
     uint64_t Ln_2_OTU2_FEC_Corr;
     uint8_t Ln_2_OTU2_FEC_CorrState;
     uint64_t Ln_2_OTU2_FEC_Uncorr;
@@ -1681,6 +1724,28 @@ typedef struct {
     uint8_t Ln_2_ODU0_7_UASState;
     uint64_t Ln_2_ODU0_8_UAS;
     uint8_t Ln_2_ODU0_8_UASState;
+    uint64_t Ln_2_SDH_RS_EB;
+    uint8_t Ln_2_SDH_RS_EBState;
+    uint64_t Ln_2_SDH_RS_ES;
+    uint8_t Ln_2_SDH_RS_ESState;
+    uint64_t Ln_2_SDH_RS_SES;
+    uint8_t Ln_2_SDH_RS_SESState;
+    uint64_t Ln_2_SDH_RS_BBE;
+    uint8_t Ln_2_SDH_RS_BBEState;
+    uint64_t Ln_2_SDH_RS_UAS;
+    uint8_t Ln_2_SDH_RS_UASState;
+    uint64_t Ln_2_Eth_RxPkts;
+    uint8_t Ln_2_Eth_RxPktsState;
+    uint64_t Ln_2_Eth_RxOcts;
+    uint8_t Ln_2_Eth_RxOctsState;
+    uint64_t Ln_2_Eth_RxErrs;
+    uint8_t Ln_2_Eth_RxErrsState;
+    uint64_t Ln_2_Eth_TxPkts;
+    uint8_t Ln_2_Eth_TxPktsState;
+    uint64_t Ln_2_Eth_TxOcts;
+    uint8_t Ln_2_Eth_TxOctsState;
+    uint64_t Ln_2_Eth_TxErrs;
+    uint8_t Ln_2_Eth_TxErrsState;
     uint64_t Ln_3_OTU2_FEC_Corr;
     uint8_t Ln_3_OTU2_FEC_CorrState;
     uint64_t Ln_3_OTU2_FEC_Uncorr;
@@ -1841,6 +1906,28 @@ typedef struct {
     uint8_t Ln_3_ODU0_7_UASState;
     uint64_t Ln_3_ODU0_8_UAS;
     uint8_t Ln_3_ODU0_8_UASState;
+    uint64_t Ln_3_SDH_RS_EB;
+    uint8_t Ln_3_SDH_RS_EBState;
+    uint64_t Ln_3_SDH_RS_ES;
+    uint8_t Ln_3_SDH_RS_ESState;
+    uint64_t Ln_3_SDH_RS_SES;
+    uint8_t Ln_3_SDH_RS_SESState;
+    uint64_t Ln_3_SDH_RS_BBE;
+    uint8_t Ln_3_SDH_RS_BBEState;
+    uint64_t Ln_3_SDH_RS_UAS;
+    uint8_t Ln_3_SDH_RS_UASState;
+    uint64_t Ln_3_Eth_RxPkts;
+    uint8_t Ln_3_Eth_RxPktsState;
+    uint64_t Ln_3_Eth_RxOcts;
+    uint8_t Ln_3_Eth_RxOctsState;
+    uint64_t Ln_3_Eth_RxErrs;
+    uint8_t Ln_3_Eth_RxErrsState;
+    uint64_t Ln_3_Eth_TxPkts;
+    uint8_t Ln_3_Eth_TxPktsState;
+    uint64_t Ln_3_Eth_TxOcts;
+    uint8_t Ln_3_Eth_TxOctsState;
+    uint64_t Ln_3_Eth_TxErrs;
+    uint8_t Ln_3_Eth_TxErrsState;
     uint64_t Ln_4_OTU2_FEC_Corr;
     uint8_t Ln_4_OTU2_FEC_CorrState;
     uint64_t Ln_4_OTU2_FEC_Uncorr;
@@ -2001,6 +2088,28 @@ typedef struct {
     uint8_t Ln_4_ODU0_7_UASState;
     uint64_t Ln_4_ODU0_8_UAS;
     uint8_t Ln_4_ODU0_8_UASState;
+    uint64_t Ln_4_SDH_RS_EB;
+    uint8_t Ln_4_SDH_RS_EBState;
+    uint64_t Ln_4_SDH_RS_ES;
+    uint8_t Ln_4_SDH_RS_ESState;
+    uint64_t Ln_4_SDH_RS_SES;
+    uint8_t Ln_4_SDH_RS_SESState;
+    uint64_t Ln_4_SDH_RS_BBE;
+    uint8_t Ln_4_SDH_RS_BBEState;
+    uint64_t Ln_4_SDH_RS_UAS;
+    uint8_t Ln_4_SDH_RS_UASState;
+    uint64_t Ln_4_Eth_RxPkts;
+    uint8_t Ln_4_Eth_RxPktsState;
+    uint64_t Ln_4_Eth_RxOcts;
+    uint8_t Ln_4_Eth_RxOctsState;
+    uint64_t Ln_4_Eth_RxErrs;
+    uint8_t Ln_4_Eth_RxErrsState;
+    uint64_t Ln_4_Eth_TxPkts;
+    uint8_t Ln_4_Eth_TxPktsState;
+    uint64_t Ln_4_Eth_TxOcts;
+    uint8_t Ln_4_Eth_TxOctsState;
+    uint64_t Ln_4_Eth_TxErrs;
+    uint8_t Ln_4_Eth_TxErrsState;
     uint64_t Cl_1_OTU1_FEC_Corr;
     uint8_t Cl_1_OTU1_FEC_CorrState;
     uint64_t Cl_1_OTU1_FEC_Uncorr;
@@ -3158,6 +3267,10 @@ typedef struct {
     uint8_t Ln_1_SFP_RxPwrFailureColor;
     uint8_t Ln_1_SFP_TxPwrDegradeColor;
     uint8_t Ln_1_SFP_TxPwrFailureColor;
+    uint8_t Ln_1_SDH_RS_AlarmsDegradeColor;
+    uint8_t Ln_1_SDH_RS_AlarmsFailureColor;
+    uint8_t Ln_1_Eth_AlarmsDegradeColor;
+    uint8_t Ln_1_Eth_AlarmsFailureColor;
     uint8_t Ln_1_OTU2_AlarmsDegradeColor;
     uint8_t Ln_1_OTU2_AlarmsFailureColor;
     uint8_t Ln_1_ODU2_AlarmsDegradeColor;
@@ -3220,6 +3333,10 @@ typedef struct {
     uint8_t Ln_2_SFP_RxPwrFailureColor;
     uint8_t Ln_2_SFP_TxPwrDegradeColor;
     uint8_t Ln_2_SFP_TxPwrFailureColor;
+    uint8_t Ln_2_SDH_RS_AlarmsDegradeColor;
+    uint8_t Ln_2_SDH_RS_AlarmsFailureColor;
+    uint8_t Ln_2_Eth_AlarmsDegradeColor;
+    uint8_t Ln_2_Eth_AlarmsFailureColor;
     uint8_t Ln_2_OTU2_AlarmsDegradeColor;
     uint8_t Ln_2_OTU2_AlarmsFailureColor;
     uint8_t Ln_2_ODU2_AlarmsDegradeColor;
@@ -3282,6 +3399,10 @@ typedef struct {
     uint8_t Ln_3_SFP_RxPwrFailureColor;
     uint8_t Ln_3_SFP_TxPwrDegradeColor;
     uint8_t Ln_3_SFP_TxPwrFailureColor;
+    uint8_t Ln_3_SDH_RS_AlarmsDegradeColor;
+    uint8_t Ln_3_SDH_RS_AlarmsFailureColor;
+    uint8_t Ln_3_Eth_AlarmsDegradeColor;
+    uint8_t Ln_3_Eth_AlarmsFailureColor;
     uint8_t Ln_3_OTU2_AlarmsDegradeColor;
     uint8_t Ln_3_OTU2_AlarmsFailureColor;
     uint8_t Ln_3_ODU2_AlarmsDegradeColor;
@@ -3344,6 +3465,10 @@ typedef struct {
     uint8_t Ln_4_SFP_RxPwrFailureColor;
     uint8_t Ln_4_SFP_TxPwrDegradeColor;
     uint8_t Ln_4_SFP_TxPwrFailureColor;
+    uint8_t Ln_4_SDH_RS_AlarmsDegradeColor;
+    uint8_t Ln_4_SDH_RS_AlarmsFailureColor;
+    uint8_t Ln_4_Eth_AlarmsDegradeColor;
+    uint8_t Ln_4_Eth_AlarmsFailureColor;
     uint8_t Ln_4_OTU2_AlarmsDegradeColor;
     uint8_t Ln_4_OTU2_AlarmsFailureColor;
     uint8_t Ln_4_ODU2_AlarmsDegradeColor;
@@ -4000,6 +4125,11 @@ typedef struct {
     uint32_t Cl_16_SetLoopback;
     uint32_t Cl_16_SetALSMode;
     uint32_t Cl_16_SetFactory;
+    uint32_t ODU2_XC_1_SetSrc;
+    uint32_t ODU2_XC_1_SetDst;
+    uint32_t ODU2_XC_2_SetSrc;
+    uint32_t ODU2_XC_2_SetDst;
+    uint32_t ODU2_XC_SetFactory;
     uint32_t ODU1_XC_1_SetSrc;
     uint32_t ODU1_XC_1_SetDst;
     uint32_t ODU1_XC_2_SetSrc;

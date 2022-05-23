@@ -20,15 +20,16 @@ const BSP_DEV_T *Devices[] = {
 	(BSP_DEV_T*)&fpga_maxv,
 	(BSP_DEV_T*)&fpga_fw,
 	(BSP_DEV_T*)&fpga_line_adm_10,
-	(BSP_DEV_T*)&fpga_client_adm_10[0],
-	(BSP_DEV_T*)&fpga_client_adm_10[1],
 	(BSP_DEV_T*)&fpga_line_agg_2x10_bs,
-	(BSP_DEV_T*)&fpga_client_agg_2x10_bs[0],
-	(BSP_DEV_T*)&fpga_client_agg_2x10_bs[1],
 	(BSP_DEV_T*)&fpga_line_agg_2x10_efec,
+	(BSP_DEV_T*)&fpga_line_tp_10,
+	(BSP_DEV_T*)&fpga_client_adm_10[0],
+	(BSP_DEV_T*)&fpga_client_agg_2x10_bs[0],
 	(BSP_DEV_T*)&fpga_client_agg_2x10_efec[0],
-	(BSP_DEV_T*)&fpga_client_agg_2x10_efec[1],
 	(BSP_DEV_T*)&fpga_client_adm_2_5[0],
+	(BSP_DEV_T*)&fpga_client_adm_10[1],
+	(BSP_DEV_T*)&fpga_client_agg_2x10_bs[1],	
+	(BSP_DEV_T*)&fpga_client_agg_2x10_efec[1],
 	(BSP_DEV_T*)&fpga_client_adm_2_5[1],
 	(BSP_DEV_T*)&pca9548a[0],
 	(BSP_DEV_T*)&pca9548a[1],
@@ -256,7 +257,7 @@ void BSP_UpdateCard(void)
 	BSP_FPGA_IFACE_Process();
 	
 	BSP_Stage++;
-	/*
+	
 	BSP_FPGA_MAXV_Process();
 	
 	BSP_Stage++;
@@ -276,7 +277,6 @@ void BSP_UpdateCard(void)
 	BSP_FPGA_CLIENT_Process();
 	
 	BSP_Stage++;
-	*/
 	
 	for (i = 0; i < BSP_SFP_CNT; i++)
 	{
