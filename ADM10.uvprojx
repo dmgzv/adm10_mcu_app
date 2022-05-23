@@ -667,6 +667,11 @@
               <FilePath>.\Sources\BSP\Devices\fpga_line_agg_2x10_efec.c</FilePath>
             </File>
             <File>
+              <FileName>fpga_line_tp_10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_line_tp_10.c</FilePath>
+            </File>
+            <File>
               <FileName>fpga_maxv.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\fpga_maxv.c</FilePath>
@@ -1884,6 +1889,11 @@
               <FileName>fpga_line_agg_2x10_efec.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Sources\BSP\Devices\fpga_line_agg_2x10_efec.c</FilePath>
+            </File>
+            <File>
+              <FileName>fpga_line_tp_10.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Sources\BSP\Devices\fpga_line_tp_10.c</FilePath>
             </File>
             <File>
               <FileName>fpga_maxv.c</FileName>

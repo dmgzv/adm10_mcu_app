@@ -35,6 +35,15 @@ FPGA_LINE_AGG_2X10_EFEC_T fpga_line_agg_2x10_efec  =
 	.BaseAddr = BSP_FPGA_LINE_BASE_ADDR,
 };
 
+FPGA_LINE_TP_10_T fpga_line_tp_10  =
+{
+	.DevName = "FPGA_LINE_TP_10",
+	.DevId = "",
+	.InitContErrThr = 10,
+	.UpdateContErrThr = 10,
+	.BaseAddr = BSP_FPGA_LINE_BASE_ADDR,
+};
+
 static int32_t BSP_FPGA_LINE_CheckConditions(void)
 {
 	uint32_t i;
@@ -76,6 +85,10 @@ void BSP_FPGA_LINE_Process(void)
 		{
 			FPGA_LINE_AGG_2X10_EFEC_Deinit(&fpga_line_agg_2x10_efec);
 		}
+		if(BSP_DEV_GET_STATE(&fpga_line_tp_10) != BSP_DEV_STATE_RESET)
+		{
+			FPGA_LINE_TP_10_Deinit(&fpga_line_tp_10);
+		}
 	}
 	else
 	{
@@ -89,6 +102,10 @@ void BSP_FPGA_LINE_Process(void)
 			if(BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_RESET)
 			{
 				FPGA_LINE_AGG_2X10_EFEC_Deinit(&fpga_line_agg_2x10_efec);
+			}
+			if(BSP_DEV_GET_STATE(&fpga_line_tp_10) != BSP_DEV_STATE_RESET)
+			{
+				FPGA_LINE_TP_10_Deinit(&fpga_line_tp_10);
 			}
 			if (BSP_DEV_GET_STATE(&fpga_line_adm_10)  != BSP_DEV_STATE_OK)
 			{
@@ -108,6 +125,10 @@ void BSP_FPGA_LINE_Process(void)
 			if(BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_RESET)
 			{
 				FPGA_LINE_AGG_2X10_EFEC_Deinit(&fpga_line_agg_2x10_efec);
+			}
+			if(BSP_DEV_GET_STATE(&fpga_line_tp_10) != BSP_DEV_STATE_RESET)
+			{
+				FPGA_LINE_TP_10_Deinit(&fpga_line_tp_10);
 			}
 			if (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs)  != BSP_DEV_STATE_OK)
 			{
@@ -132,6 +153,10 @@ void BSP_FPGA_LINE_Process(void)
 			{
 				FPGA_LINE_AGG_2X10_EFEC_Init(&fpga_line_agg_2x10_efec);
 			}
+			if(BSP_DEV_GET_STATE(&fpga_line_tp_10) != BSP_DEV_STATE_RESET)
+			{
+				FPGA_LINE_TP_10_Deinit(&fpga_line_tp_10);
+			}
 			else
 			{
 				FPGA_LINE_AGG_2X10_EFEC_Update(&fpga_line_agg_2x10_efec);
@@ -147,6 +172,10 @@ void BSP_FPGA_LINE_Process(void)
 			{
 				FPGA_LINE_AGG_2X10_EFEC_Deinit(&fpga_line_agg_2x10_efec);
 			}
+			if(BSP_DEV_GET_STATE(&fpga_line_tp_10) != BSP_DEV_STATE_RESET)
+			{
+				FPGA_LINE_TP_10_Deinit(&fpga_line_tp_10);
+			}
 			if (BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs)  != BSP_DEV_STATE_OK)
 			{
 				FPGA_LINE_AGG_2X10_BS_Init(&fpga_line_agg_2x10_bs);
@@ -154,6 +183,29 @@ void BSP_FPGA_LINE_Process(void)
 			else
 			{
 				FPGA_LINE_AGG_2X10_BS_Update(&fpga_line_agg_2x10_bs);
+			}
+		}
+		else if (fpga_maxv.Mode == FPGA_MAXV_MODE_TP_10_ADM_2_5)
+		{
+			if(BSP_DEV_GET_STATE(&fpga_line_adm_10) != BSP_DEV_STATE_RESET)
+			{
+				FPGA_LINE_ADM_10_Deinit(&fpga_line_adm_10);
+			}
+			if(BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_RESET)
+			{
+				FPGA_LINE_AGG_2X10_EFEC_Deinit(&fpga_line_agg_2x10_efec);
+			}
+			if(BSP_DEV_GET_STATE(&fpga_line_agg_2x10_bs) != BSP_DEV_STATE_RESET)
+			{
+				FPGA_LINE_AGG_2X10_BS_Deinit(&fpga_line_agg_2x10_bs);
+			}
+			if (BSP_DEV_GET_STATE(&fpga_line_tp_10)  != BSP_DEV_STATE_OK)
+			{
+				FPGA_LINE_TP_10_Init(&fpga_line_tp_10);
+			}
+			else
+			{
+				FPGA_LINE_TP_10_Update(&fpga_line_tp_10);
 			}
 		}
 		else
@@ -169,6 +221,10 @@ void BSP_FPGA_LINE_Process(void)
 			if(BSP_DEV_GET_STATE(&fpga_line_agg_2x10_efec) != BSP_DEV_STATE_RESET)
 			{
 				FPGA_LINE_AGG_2X10_EFEC_Deinit(&fpga_line_agg_2x10_efec);
+			}
+			if(BSP_DEV_GET_STATE(&fpga_line_tp_10) != BSP_DEV_STATE_RESET)
+			{
+				FPGA_LINE_TP_10_Deinit(&fpga_line_tp_10);
 			}
 		}
 	}
