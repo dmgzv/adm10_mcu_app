@@ -1528,7 +1528,7 @@ void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 		}
 		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5)
 		{
-			if (i < 2)
+			if (i < FPGA_LINE_TP_10_LINE_CNT)
 			{
 				if (Loopback == PROFILE_ADM10_LN_SET_LOOPBACK_ENUM_DISABLED)
 				{
@@ -1552,7 +1552,7 @@ void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile)
 					FPGA_LINE_TP_10_LINE_CTRL_SET(&fpga_line_tp_10, i, FPGA_LINE_TP_10_LINE_CTRL_CNTR_EN_MASK);
 				}
 			}
-			else if (i < FPGA_LINE_TP_10_LINE_CNT)
+			else if ((i >= 2) && ((i - 2) < FPGA_LINE_TP_10_CLIENT_CNT))
 			{
 				if (DataType == PROFILE_ADM10_LN_SET_DATA_TYPE_ENUM_STM64)
 				{

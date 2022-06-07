@@ -188,7 +188,7 @@ int32_t FPGA_LINE_TP_10_Update(FPGA_LINE_TP_10_T *Dev)
 		ODU2BIP = *((uint16_t*)(FPGA_LINE_TP_10_LINE_ODU2_BIP_ADDR(Dev, i)));
 		Dev->Line[i].ODU2.BIP = ODU2BIP - Dev->Line[i].ODU2.__BIP;
 		Dev->Line[i].ODU2.__BIP = ODU2BIP;
-		/*
+		
 		if ( Dev->Line[i].Ctrl != Dev->Line[i].__Ctrl )
 		{
 			FPGA_LINE_TP_10_WriteByte(Dev, FPGA_LINE_TP_10_LINE_CTRL_ADDR(Dev, i), Dev->Line[i].Ctrl);
@@ -201,17 +201,17 @@ int32_t FPGA_LINE_TP_10_Update(FPGA_LINE_TP_10_T *Dev)
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x00, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x00, i + 2, 0x00);
 				osDelay(5);
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x01, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x01, i + 2, 0x00);
 				osDelay(5);
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x03, 0x00, i, 0x01);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x03, 0x00, i + 2, 0x01);
 				osDelay(5);
 			}
 			else if (Dev->Line[i].PMAStatus & FPGA_LINE_TP_10_LINE_PMASTATUS_LOOPBACK_POST_CDR_MASK)
@@ -219,17 +219,17 @@ int32_t FPGA_LINE_TP_10_Update(FPGA_LINE_TP_10_T *Dev)
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x03, 0x00, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x03, 0x00, i + 2, 0x00);
 				osDelay(5);
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x00, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x00, i + 2, 0x00);
 				osDelay(5);
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x01, i, 0x01);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x01, i + 2, 0x01);
 				osDelay(5);
 			}
 			else if (Dev->Line[i].PMAStatus & FPGA_LINE_TP_10_LINE_PMASTATUS_LOOPBACK_PRE_CDR_MASK)
@@ -237,17 +237,17 @@ int32_t FPGA_LINE_TP_10_Update(FPGA_LINE_TP_10_T *Dev)
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x03, 0x00, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x03, 0x00, i + 2, 0x00);
 				osDelay(5);
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x01, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x01, i + 2, 0x00);
 				osDelay(5);
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x00, i, 0x01);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x00, i + 2, 0x01);
 				osDelay(5);
 			}
 			else
@@ -255,20 +255,20 @@ int32_t FPGA_LINE_TP_10_Update(FPGA_LINE_TP_10_T *Dev)
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x00, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x00, i + 2, 0x00);
 				osDelay(5);
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x01, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x02, 0x01, i + 2, 0x00);
 				osDelay(5);
 				Status = *((uint8_t*)FPGA_LINE_TP_10_STATUS_ADDR(Dev));
 				if (Status == 0)
 					continue;
-				FPGA_LINE_TP_10_WriteCmd(Dev, 0x03, 0x00, i, 0x00);
+				FPGA_LINE_TP_10_WriteCmd(Dev, 0x03, 0x00, i + 2, 0x00);
 				osDelay(5);
 			}
-		}*/
+		}
 	}
 	
 	for (i = 0; i < FPGA_LINE_TP_10_CLIENT_CNT; i++)
@@ -311,7 +311,7 @@ int32_t FPGA_LINE_TP_10_Update(FPGA_LINE_TP_10_T *Dev)
 		EthRxErrs = *((uint16_t*)(FPGA_LINE_TP_10_CLIENT_ETH_RX_ERRS_ADDR(Dev, i)));
 		Dev->Client[i].Eth.RxErrs = EthRxErrs - Dev->Client[i].Eth.__RxErrs;
 		Dev->Client[i].Eth.__RxErrs = EthRxErrs;
-		/*		
+		
 		if (Dev->Client[i].__Ctrl !=  Dev->Client[i].Ctrl)
 		{
 			FPGA_LINE_TP_10_WriteByte(Dev, FPGA_LINE_TP_10_CLIENT_CTRL_ADDR(Dev, i), Dev->Client[i].Ctrl);
@@ -400,7 +400,6 @@ int32_t FPGA_LINE_TP_10_Update(FPGA_LINE_TP_10_T *Dev)
 				osDelay(5);
 			}
 		}
-		*/
 	}
 	
 	BSP_DEV_UPDATE_OK(Dev);
