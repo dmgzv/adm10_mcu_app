@@ -1046,7 +1046,10 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetStateValue(PROFILE_T *Profile, uin
 				return -1;
 		}
 	}
-	
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5)
+	{
+		
+	}
 	return 0;
 }
 
@@ -1128,7 +1131,20 @@ static int32_t PROFILE_ADM10_CLIENT_CheckClSetDataTypeValue(PROFILE_T *Profile, 
 					return -1;
 			}
 		}
-	}	
+	}
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5)
+	{
+		if (Idx % 2)
+		{
+			if (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1)
+				return -1;
+		}
+		else
+		{
+			if (*(uint32_t*)Value != PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1)
+				return -1;
+		}
+	}
 	return 0;
 }
 
@@ -1220,6 +1236,18 @@ static int32_t PROFILE_ADM10_CLIENT_SetModeValueDependencies(PROFILE_T *Profile,
 				}					
 			}
 		}
+		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5)
+		{
+			if ((i % 2) == 0)
+			{
+				DataType = PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1;
+				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[i], &DataType);
+			}
+			else
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[i]);
+			}
+		}
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[i]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetALSModeIdx[i]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetFactoryIdx[i]);
@@ -1236,7 +1264,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetFactoryConfigValues(PROFILE_T *Profile, u
 	
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetStateIdx[Idx]);
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSFPEnableTxIdx[Idx]);
-	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS))
+	if ((Mode == PROFILE_ADM10_SET_MODE_ENUM_ADM_10) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS) || (Mode == PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC))
 	{
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx]);
 	}
@@ -1257,6 +1285,18 @@ static int32_t PROFILE_ADM10_CLIENT_SetFactoryConfigValues(PROFILE_T *Profile, u
 			{
 				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx]);
 			}					
+		}
+	}
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5)
+	{
+		if ((Idx % 2) == 0)
+		{
+			DataType = PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_OTU1;
+			PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx], &DataType);
+		}
+		else
+		{
+			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetDataTypeIdx[Idx]);
 		}
 	}
 	PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigClSetLoopbackIdx[Idx]);
@@ -1373,6 +1413,10 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 				PROFILE_SetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[(Idx / 8) + 2][(Idx % 8) / 2], &OPU1Payload);
 			}
 		}
+	}
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5)
+	{
+		
 	}
 	return 0;
 }
@@ -1840,6 +1884,69 @@ void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile)
 				}
 			}
 			else if ((i >= 8) && (i < 16) && ((i % 2) == 0))
+			{				
+				if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED)
+				{
+					FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, 0);
+				}
+				else if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_NEAR_END)
+				{
+					FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_POST_CDR_MASK);
+				}
+				else if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_FAR_END)
+				{
+					FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_LINE_PMASTATUS_LOOPBACK_SERIAL_MASK);
+				}
+				
+				if (FECType == PROFILE_ADM10_CL_SET_FEC_TYPE_ENUM_ZEROFEC)
+				{
+					FPGA_CLIENT_ADM_2_5_LINE_CTRL_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_LINE_CTRL_FEC_DISABLED_MASK | FPGA_CLIENT_ADM_2_5_LINE_CTRL_EN_MASK);
+				}
+				else
+				{
+					FPGA_CLIENT_ADM_2_5_LINE_CTRL_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_LINE_CTRL_EN_MASK);
+				}
+			}
+		}
+		else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5)
+		{
+			if ((i < 16) && ((i % 2) != 0))
+			{
+				if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1)
+				{
+					FPGA_CLIENT_ADM_2_5_CLIENT_MODE_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_CLIENT_MODE_STM1);
+					SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
+				}
+				else if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4)
+				{
+					FPGA_CLIENT_ADM_2_5_CLIENT_MODE_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_CLIENT_MODE_STM4);
+					SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
+				}
+				else if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
+				{
+					FPGA_CLIENT_ADM_2_5_CLIENT_MODE_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_CLIENT_MODE_STM16);
+					SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 1);
+				}
+				else if (DataType == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE)
+				{
+					FPGA_CLIENT_ADM_2_5_CLIENT_MODE_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_CLIENT_MODE_1GE);
+					SFP_ConfigRateSel(&sfp[BSP_SFP_CLIENT_IDX(i)], 0);
+				}
+				
+				if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED)
+				{
+					FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, 0);
+				}
+				else if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_NEAR_END)
+				{
+					FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_POST_CDR_MASK);
+				}
+				else if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_FAR_END)
+				{
+					FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_SET(&fpga_client_adm_2_5[i / 8], (i % 8) / 2, FPGA_CLIENT_ADM_2_5_CLIENT_PMASTATUS_LOOPBACK_SERIAL_MASK);
+				}
+			}
+			else if ((i < 16) && ((i % 2) == 0))
 			{				
 				if (Loopback == PROFILE_ADM10_CL_SET_LOOPBACK_ENUM_DISABLED)
 				{

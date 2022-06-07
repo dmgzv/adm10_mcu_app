@@ -753,6 +753,77 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetPrimaryODUkValue(PROFILE_T *Profile
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_NONE)
+			{
+				/*In TP-10+2xADM-2.5 always allow to set PrimaryODUk to None */
+				return 0;
+			}
+			
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetProtectODUkIdx[ODU1PGIdx], &ProtectODUk))
+					return -1;
+			if (ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_NONE)
+			{
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU1))
+				{
+					/*In TP-10+2xADM-2.5 and if ProtectODUk is None then allow to set PrimaryODUk to Client 1, 3, 5, 7, 9, 11, 13, 15 ODU1 */
+					return -1;
+				}
+			}
+			else if ((ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU1) ||
+				(ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU1) ||
+				(ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU1) ||
+				(ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU1))
+			{
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU1))
+				{
+					/*In TP-10+2xADM-2.5 and if ProtectODUk is Client 1, 3, 5, 7 then allow to set PrimaryODUk to Client 1, 3, 5, 7 ODU1 */
+					return -1;
+				}
+			}
+			else if ((ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU1) ||
+				(ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU1) ||
+				(ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU1) ||
+				(ProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU1))
+			{
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU1))
+				{
+					/*In TP-10+2xADM-2.5 and if ProtectODUk is Client 9, 11, 13, 15 then allow to set PrimaryODUk to Client 9, 11, 13, 15 ODU1 */
+					return -1;
+				}
+			}
+			else
+			{
+				return -1;
+			}
+			
+			/*In TP-10+2xADM-2.5 ODUk could be used only once as ProtectODUk or PrimaryODUk*/
+			for (i = 0; i < PROFILE_ADM10_ODU1_PGS; i++)
+			{
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetProtectODUkIdx[i], &ProtectODUk))
+					return -1;
+				if (*(uint32_t*)Value == ProtectODUk)
+					return -1;
+				if (i != ODU1PGIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[i], &PrimaryODUk))
+						return -1;
+					if (*(uint32_t*)Value == PrimaryODUk)
+						return -1;
+				}
+			}
 			break;
 		default:
 			return -1;
@@ -849,6 +920,77 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU1PGSetProtectODUkValue(PROFILE_T *Profile
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_NONE)
+			{
+				/*In TP-10+2xADM-2.5 always allow to set ProtectODUk to None */
+				return 0;
+			}
+			
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[ODU1PGIdx], &PrimaryODUk))
+					return -1;
+			if (PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_NONE)
+			{
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU1))
+				{
+					/*In TP-10+2xADM-2.5 and if PrimaryODUk is None then allow to set ProtectODUk to Client 1, 3, 5, 7, 9, 11, 13, 15 ODU1 */
+					return -1;
+				}
+			}
+			else if ((PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU1) ||
+				(PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU1) ||
+				(PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU1) ||
+				(PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU1))
+			{
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU1))
+				{
+					/*In TP-10+2xADM-2.5 and if PrimaryODUk is Client 1, 3, 5, 7 then allow to set ProtectODUk to Client 1, 3, 5, 7 ODU1 */
+					return -1;
+				}
+			}
+			else if ((PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU1) ||
+				(PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU1) ||
+				(PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU1) ||
+				(PrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU1))
+			{
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU1) &&
+						(*(uint32_t*)Value != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU1))
+				{
+					/*In TP-10+2xADM-2.5 and if PrimaryODUk is Client 9, 11, 13, 15 then allow to set ProtectODUk to Client 9, 11, 13, 15 ODU1 */
+					return -1;
+				}
+			}
+			else
+			{
+				return -1;
+			}
+			
+			/*In AGG-10-BS+ADM-2.5 ODUk could be used only once as PrimaryODUk or ProtectODUk*/
+			for (i = 0; i < PROFILE_ADM10_ODU1_PGS; i++)
+			{
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[i], &PrimaryODUk))
+					return -1;
+				if (*(uint32_t*)Value == PrimaryODUk)
+					return -1;
+				if (i != ODU1PGIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetProtectODUkIdx[i], &ProtectODUk))
+						return -1;
+					if (*(uint32_t*)Value == ProtectODUk)
+						return -1;
+				}
+			}
 			break;
 		default:
 			return -1;
@@ -1161,6 +1303,101 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetPrimaryODUkValue(PROFILE_T *Profile
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_NONE)
+			{
+				/*In TP-10-BS+2xADM-2.5 always allow to set PrimaryODUk to None */
+				return 0;
+			}
+			
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetProtectODUkIdx[ODU0PGIdx], &ProtectODUk))
+				return -1;
+			if (ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_NONE)
+			{
+				/*In TP-10-BS+2xADM-2.5 if ProtectODUk is None then allow to set PrimaryODUk to Client 1, 3, 5, 7, 9, 11, 13, 15 ODU0 1, 2 */
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU0_2))
+				{
+					return -1;
+				}
+			}
+			else if ((ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU0_1) ||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU0_2)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU0_1)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU0_2)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU0_1)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU0_2)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU0_1)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU0_2))
+			{
+				/*In TP-10-BS+2xADM-2.5 if ProtectODUk is Client 1, 3, 5, 7 then allow to set PrimaryODUk to Client 1, 3, 5, 7 ODU0 1, 2 */
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU0_2))
+				{
+					return -1;
+				}
+			}
+			else if ((ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU0_1) ||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU0_2)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU0_1)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU0_2)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU0_1)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU0_2)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU0_1)||
+					(ProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU0_2))
+			{
+				/*In TP-10-BS+2xADM-2.5 if ProtectODUk is Client 9, 11, 13, 15 then allow to set PrimaryODUk to Client 9, 11, 13, 15 ODU0 1, 2 */
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU0_2))
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				return -1;
+			}
+			
+			/*In TP-10-BS+2xADM-2.5 ODUk could be used only once as PrimaryODUk or ProtectODUk*/
+			for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
+			{
+				if (i != ODU0PGIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[i], &PrimaryODUk))
+						return -1;
+					if (*(uint32_t*)Value == PrimaryODUk)
+						return -1;
+				}
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetProtectODUkIdx[i], &ProtectODUk))
+					return -1;
+				if (*(uint32_t*)Value == ProtectODUk)
+					return -1;
+			}
 			break;
 		default:
 			return -1;
@@ -1261,6 +1498,102 @@ int32_t PROFILE_ADM10_PG_CheckConfigODU0PGSetProtectODUkValue(PROFILE_T *Profile
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_NONE)
+			{
+				/*In TP-10-BS+2xADM-2.5 always allow to set ProtectODUk to None */
+				return 0;
+			}
+			
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[ODU0PGIdx], &PrimaryODUk))
+				return -1;
+			if (PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_NONE)
+			{
+				/*In TP-10-BS+2xADM-2.5 if PrimaryODUk is None then allow to set ProtectODUk to Client 1, 3, 5, 7, 9, 11, 13, 15 ODU0 1, 2 */
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU0_2))
+				{
+					return -1;
+				}
+			}
+			else if ((PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_1) ||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_2)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU0_1)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_3_ODU0_2)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU0_1)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_5_ODU0_2)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU0_1)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_7_ODU0_2))
+			{
+				/*In TP-10-BS+2xADM-2.5 if PrimaryODUk is Client 1, 3, 5, 7 then allow to set ProtectODUk to Client 1, 3, 5, 7 ODU0 1, 2 */
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_1_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_3_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_5_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_7_ODU0_2))
+				{
+					return -1;
+				}
+			}
+			else if ((PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_1) ||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_9_ODU0_2)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU0_1)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_11_ODU0_2)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU0_1)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_13_ODU0_2)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU0_1)||
+					(PrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_15_ODU0_2))
+			{
+				/*In TP-10-BS+2xADM-2.5 if PrimaryODUk is Client 9, 11, 13, 15 then allow to set ProtectODUk to Client 9, 11, 13, 15 ODU0 1, 2 */
+				if ((*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_9_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_11_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_13_ODU0_2) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU0_1) &&
+					(*(uint32_t*)Value != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_CL_15_ODU0_2))
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				return -1;
+			}
+			
+			/*In TP-10-BS+2xADM-2.5 ODUk could be used only once as PrimaryODUk or ProtectODUk*/
+			for (i = 0; i < PROFILE_ADM10_ODU0_PGS; i++)
+			{
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[i], &PrimaryODUk))
+					return -1;
+				if (*(uint32_t*)Value == PrimaryODUk)
+					return -1;
+				
+				if (i != ODU0PGIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetProtectODUkIdx[i], &ProtectODUk))
+						return -1;
+					if (*(uint32_t*)Value == ProtectODUk)
+						return -1;
+				}
+			}
 			break;
 		default:
 			return -1;
@@ -1796,6 +2129,17 @@ static void PROFILE_ADM10_ODU2PG_UpdateConfigs(PROFILE_T *Profile)
 					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetFactoryIdx[i], PROFILE_STATE_OOS);
 				}
 				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetTypeIdx[i], PROFILE_STATE_OOS);
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetModeIdx[i], PROFILE_STATE_OOS);
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetMonModeIdx[i], PROFILE_STATE_OOS);
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetRevModeIdx[i], PROFILE_STATE_OOS);
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetPrimaryODUkIdx[i], PROFILE_STATE_OOS);
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetProtectODUkIdx[i], PROFILE_STATE_OOS);
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetWTRTmrIdx[i], PROFILE_STATE_OOS);
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetHOTmrIdx[i], PROFILE_STATE_OOS);
+				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU2PGSetFactoryIdx[i], PROFILE_STATE_OOS);
+				break;
 		}
 	}
 	
@@ -1872,6 +2216,8 @@ static void PROFILE_ADM10_ODU2PG_UpdateConfigs(PROFILE_T *Profile)
 					FPGA_LINE_AGG_2X10_BS_AGG_HO_SET(&fpga_line_agg_2x10_bs, i, ODU2PGHOTmr[i] / 100);
 				}
 				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+				break;
 		}
 	}
 }
@@ -1880,6 +2226,7 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 {
 	uint32_t i, j;
 	uint32_t Mode;
+	uint32_t FPGAIdx;
 	uint32_t PrimaryLineIdx, PrimaryODU1Idx, ProtectLineIdx, ProtectODU1Idx;
 	uint32_t ODU1FramerOPU1PayloadType, ODU1FramerOPU1Mux;
 	uint32_t ODU1XCSrc, ODU1XCDst;
@@ -1967,6 +2314,32 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 				PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetFactoryIdx[i], PROFILE_STATE_OOS);
 				break;
 			case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
+				if (ODU1PGType[i] == PROFILE_ADM10_ODU1_PG_SET_TYPE_ENUM_DISABLED)
+				{
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetTypeIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetModeIdx[i], PROFILE_STATE_OOS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetMonModeIdx[i], PROFILE_STATE_OOS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetRevModeIdx[i], PROFILE_STATE_OOS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[i], PROFILE_STATE_OOS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetProtectODUkIdx[i], PROFILE_STATE_OOS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetWTRTmrIdx[i], PROFILE_STATE_OOS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetHOTmrIdx[i], PROFILE_STATE_OOS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetFactoryIdx[i], PROFILE_STATE_OOS);
+				}
+				else
+				{
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetTypeIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetModeIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetMonModeIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetRevModeIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetProtectODUkIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetWTRTmrIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetHOTmrIdx[i], PROFILE_STATE_IS);
+					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetFactoryIdx[i], PROFILE_STATE_IS);
+				}
+				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
 				if (ODU1PGType[i] == PROFILE_ADM10_ODU1_PG_SET_TYPE_ENUM_DISABLED)
 				{
 					PROFILE_SetState(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetTypeIdx[i], PROFILE_STATE_IS);
@@ -2120,10 +2493,7 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 						}
 					}
 					
-					if ((Target == PROFILE_ADM10_XC_CLIENT_ODU1(9)) ||
-							(Target == PROFILE_ADM10_XC_CLIENT_ODU1(11)) || 
-							(Target == PROFILE_ADM10_XC_CLIENT_ODU1(13)) || 
-							(Target == PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU1(8)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU1(15)))
 					{
 						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ODU1FramerOPU1PayloadType);
 						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_SET(&fpga_client_adm_2_5[1], ProtectLineIdx, ODU1FramerOPU1Mux);
@@ -2163,6 +2533,79 @@ static void PROFILE_ADM10_ODU1PG_UpdateConfigs(PROFILE_T *Profile)
 					}
 				}
 				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+				if ((ODU1PGType[i] != PROFILE_ADM10_ODU1_PG_SET_TYPE_ENUM_DISABLED) &&
+						(ODU1PGPrimaryODUk[i] != PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_NONE) &&
+						(ODU1PGProtectODUk[i] != PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_NONE))
+				{
+					
+					FPGAIdx = (ODU1PGPrimaryODUk[i] - PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU1) / 8;
+					PrimaryLineIdx = ((ODU1PGPrimaryODUk[i] - PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU1) % 8) / 2;
+					ProtectLineIdx = ((ODU1PGProtectODUk[i] - PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU1) % 8) / 2;
+					
+					ODU1FramerOPU1PayloadType = FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_GET(&fpga_client_adm_2_5[FPGAIdx], PrimaryLineIdx);
+					ODU1FramerOPU1Mux = FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_GET(&fpga_client_adm_2_5[FPGAIdx], PrimaryLineIdx);
+					
+					Target = 0xFFFFFFFF;
+					
+					for (j = 0; j < PROFILE_ADM10_ODU1_XCS; j++)
+					{
+						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[j], &ODU1XCSrc))
+							return;
+						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[j], &ODU1XCDst))
+							return;
+						if (ODU1XCSrc == PROFILE_ADM10_XC_CLIENT_ODU1((8 * FPGAIdx) + (PrimaryLineIdx * 2)))
+						{
+							Target = ODU1XCDst;
+							break;
+						}
+						if (ODU1XCDst == PROFILE_ADM10_XC_CLIENT_ODU1((8 * FPGAIdx) + (PrimaryLineIdx * 2)))
+						{
+							Target = ODU1XCSrc;
+							break;
+						}
+					}
+					
+					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU1(0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+					{
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[FPGAIdx], ProtectLineIdx, ODU1FramerOPU1PayloadType);
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_SET(&fpga_client_adm_2_5[FPGAIdx], ProtectLineIdx, ODU1FramerOPU1Mux);
+						
+						Client = ((Target - PROFILE_ADM10_XC_CLIENT_ODU1(0)) % 8) / 2;
+						FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_PROTECT_ODU1_SET(&fpga_client_adm_2_5[FPGAIdx], Client, ProtectLineIdx);
+						
+						if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_AUTO) /*Auto*/
+						{
+							if (ODU1PGRevMode[i] == PROFILE_ADM10_ODU1_PG_SET_REV_MODE_ENUM_REVERTIVE) /*Revertive*/
+								FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_AUTO_REVERTIVE);
+							else
+								FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_AUTO_NON_REVERTIVE);
+						}
+						else if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_LOCKOUT) /*Lockout*/
+						{
+							FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_MANUAL_PRIMARY);
+						}
+						else if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_FORCED) /*Forced*/
+						{
+							FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_MANUAL_PROTECT);
+						}
+						else if (ODU1PGMode[i] == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
+						{
+							if ((!((fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU1Alarms & (FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_LOF_MASK | FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_LOM_MASK)) || \
+								(fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU1Alarms & FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_AIS_MASK) || \
+								((fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU1Alarms & FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_STAT_OCI_MASK) || \
+								((fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU1Alarms & FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_STAT_MASK) == FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_STAT_LCK_MASK))) && \
+								(!(fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU1Alarms & FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_SD_MASK)) && \
+								(!(fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU1Alarms & FPGA_CLIENT_ADM_2_5_LINE_ODU1_ALARMS_OPUCSF_MASK)))
+							{
+								FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_MANUAL_PROTECT);
+							}
+						}
+						FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_WTR_SET(&fpga_client_adm_2_5[FPGAIdx], Client, ODU1PGWTRTmr[i]);
+						FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_HO_SET(&fpga_client_adm_2_5[FPGAIdx], Client, ODU1PGHOTmr[i] / 100);
+					}
+				}
+				break;
 		}
 	}
 }
@@ -2171,6 +2614,7 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 {
 	uint32_t i, j;
 	uint32_t Mode;
+	uint32_t FPGAIdx;
 	uint32_t PrimaryLineIdx, PrimaryODU1Idx, PrimaryODU0Idx, ProtectLineIdx, ProtectODU1Idx, ProtectODU0Idx;
 	uint32_t ODU1FramerOPU1PayloadType, ODU1FramerODU0Mux;
 	uint32_t ODU0XCSrc, ODU0XCDst;
@@ -2209,6 +2653,7 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 		
 		switch (Mode)
 		{
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
 			case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 			case PROFILE_ADM10_SET_MODE_ENUM_ADM_10:
 				if (ODU0PGType[i] == PROFILE_ADM10_ODU0_PG_SET_TYPE_ENUM_DISABLED)
@@ -2432,6 +2877,80 @@ static void PROFILE_ADM10_ODU0PG_UpdateConfigs(PROFILE_T *Profile)
 					}
 				}
 				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+				if ((ODU0PGType[i] != PROFILE_ADM10_ODU0_PG_SET_TYPE_ENUM_DISABLED) &&
+						(ODU0PGPrimaryODUk[i] != PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_NONE) &&
+						(ODU0PGProtectODUk[i] != PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_NONE))
+				{
+					FPGAIdx = (ODU0PGPrimaryODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_1) / 16;
+					PrimaryLineIdx = (((ODU0PGPrimaryODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_1) % 16) / 2) / 2;
+					PrimaryODU0Idx = ((ODU0PGPrimaryODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_1) % 16) % 2;
+					ProtectLineIdx = (((ODU0PGProtectODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_1) % 16) / 2) / 2;
+					ProtectODU0Idx = ((ODU0PGProtectODUk[i] - PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_CL_1_ODU0_1) % 16) % 2;
+					
+					ODU1FramerOPU1PayloadType = FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_GET(&fpga_client_adm_2_5[FPGAIdx], PrimaryLineIdx);
+					ODU1FramerODU0Mux = FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_GET(&fpga_client_adm_2_5[FPGAIdx], PrimaryLineIdx, PrimaryODU0Idx);
+					
+					Target = 0xFFFFFFFF;
+					
+					for (j = 0; j < PROFILE_ADM10_ODU0_XCS; j++)
+					{
+						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[j], &ODU0XCSrc))
+							return;
+						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[j], &ODU0XCDst))
+							return;
+						if (ODU0XCSrc == PROFILE_ADM10_XC_CLIENT_ODU0((FPGAIdx * 8) + (PrimaryLineIdx * 2), PrimaryODU0Idx))
+						{
+							Target = ODU0XCDst;
+							break;
+						}
+						if (ODU0XCDst == PROFILE_ADM10_XC_CLIENT_ODU0((FPGAIdx * 8) + (PrimaryLineIdx * 2), PrimaryODU0Idx))
+						{
+							Target = ODU0XCSrc;
+							break;
+						}
+					}
+					
+					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
+					{
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[FPGAIdx], ProtectLineIdx, ODU1FramerOPU1PayloadType);
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_SET(&fpga_client_adm_2_5[FPGAIdx], ProtectLineIdx, ProtectODU0Idx, ODU1FramerODU0Mux);
+						
+						Client = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) % 16) / 2) / 2;
+						FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PROTECT_ODU0_SET(&fpga_client_adm_2_5[FPGAIdx], Client, ProtectLineIdx, ProtectODU0Idx);
+						
+						if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_AUTO) /*Auto*/
+						{
+							if (ODU0PGRevMode[i] == PROFILE_ADM10_ODU0_PG_SET_REV_MODE_ENUM_REVERTIVE) /*Revertive*/
+								FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_AUTO_REVERTIVE);
+							else
+								FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_AUTO_NON_REVERTIVE);
+						}
+						else if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_LOCKOUT) /*Lockout*/
+						{
+							FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_MANUAL_PRIMARY);
+						}
+						else if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_FORCED) /*Forced*/
+						{
+							FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_MANUAL_PROTECT);
+						}
+						else if (ODU0PGMode[i] == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
+						{
+							if ((!((fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU0Alarms[ProtectODU0Idx] & (FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_LOF_MASK | FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_LOM_MASK)) || \
+								(fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU0Alarms[ProtectODU0Idx] & FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_AIS_MASK) || \
+								((fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU0Alarms[ProtectODU0Idx] & FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_STAT_OCI_MASK) || \
+								((fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU0Alarms[ProtectODU0Idx] & FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_STAT_MASK) == FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_STAT_LCK_MASK))) && \
+								(!(fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU0Alarms[ProtectODU0Idx] & FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_SD_MASK)) && \
+								(!(fpga_client_adm_2_5[FPGAIdx].Line[ProtectLineIdx].__ODU0Alarms[ProtectODU0Idx] & FPGA_CLIENT_ADM_2_5_LINE_ODU0_ALARMS_OPUCSF_MASK)))
+							{
+								FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_SET(&fpga_client_adm_2_5[FPGAIdx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_MODE_MANUAL_PROTECT);
+							}
+						}
+						FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_WTR_SET(&fpga_client_adm_2_5[FPGAIdx], Client, ODU0PGWTRTmr[i]);
+						FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_HO_SET(&fpga_client_adm_2_5[FPGAIdx], Client, ODU0PGHOTmr[i] / 100);
+					}
+				}
+				break;
 		}
 	}
 }
@@ -2587,6 +3106,12 @@ static void PROFILE_ADM10_ODU2PG_UpdateValues(PROFILE_T *Profile)
 					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
 					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				}				
+				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+				PGState = PROFILE_ADM10_ODU2_PG_STATE_ENUM_NORMAL;
+				PGActiveODUk = PROFILE_ADM10_ODU2_PG_ACTIVE_ODUK_ENUM_NONE;
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+				PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU2PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
 				break;
 		}
 	}
@@ -2749,6 +3274,83 @@ static void PROFILE_ADM10_ODU1PG_UpdateValues(PROFILE_T *Profile)
 						Client = (Target - PROFILE_ADM10_XC_CLIENT_ODU1(8)) / 2;
 						
 						FPGAPGStatus = FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_STATUS_GET(&fpga_client_adm_2_5[1], Client);						
+						if (PGMode == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_AUTO) /*Auto*/
+						{
+							if (FPGAPGStatus & (0x03 << 1)) /*SF*/
+								PGState = PROFILE_ADM10_ODU1_PG_STATE_ENUM_SIGNAL_FAIL;
+							else if (FPGAPGStatus & 0x01) /*SD*/
+								PGState = PROFILE_ADM10_ODU1_PG_STATE_ENUM_SIGNAL_DEGRADE;
+						}
+						else if (PGMode == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_LOCKOUT) /*Lockout*/
+						{
+							PGState = PROFILE_ADM10_ODU1_PG_STATE_ENUM_LOCKOUT;
+						}
+						else if (PGMode == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_FORCED) /*Forced*/
+						{
+							PGState = PROFILE_ADM10_ODU1_PG_STATE_ENUM_FORCED;
+						}
+						else if (PGMode == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
+						{
+							PGState = PROFILE_ADM10_ODU1_PG_STATE_ENUM_MANUAL;
+						}
+						
+						if (FPGAPGStatus & (0x01 << 3))
+							PGActiveODUk = PGProtectODUk;
+						else
+							PGActiveODUk = PGPrimaryODUk;					
+					}					
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_STATE_IS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_IS);
+				}
+				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetTypeIdx[i], &PGType))
+					return;
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetModeIdx[i], &PGMode))
+					return;
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetPrimaryODUkIdx[i], &PGPrimaryODUk))
+					return;
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1PGSetProtectODUkIdx[i], &PGProtectODUk))
+					return;
+				if ((PGType == PROFILE_ADM10_ODU1_PG_SET_TYPE_ENUM_DISABLED) ||
+						(PGPrimaryODUk == PROFILE_ADM10_ODU1_PG_SET_PRIMARY_ODUK_ENUM_NONE) ||
+						(PGProtectODUk == PROFILE_ADM10_ODU1_PG_SET_PROTECT_ODUK_ENUM_NONE))
+				{
+					PGState = PROFILE_ADM10_ODU1_PG_STATE_ENUM_NORMAL;
+					PGActiveODUk = PROFILE_ADM10_ODU1_PG_ACTIVE_ODUK_ENUM_NONE;
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU1PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
+				}
+				else
+				{
+					PGState = PROFILE_ADM10_ODU1_PG_STATE_ENUM_NORMAL;
+					PGActiveODUk = PROFILE_ADM10_ODU1_PG_ACTIVE_ODUK_ENUM_NONE;
+					
+					Target = 0xFFFFFFFF;
+					
+					for (j = 0; j < PROFILE_ADM10_ODU1_XCS; j++)
+					{
+						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[j], &ODU1XCSrc))
+							return;
+						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[j], &ODU1XCDst))
+							return;
+						if (ODU1XCSrc == PGPrimaryODUk)
+						{
+							Target = ODU1XCDst;
+							break;
+						}
+						if (ODU1XCDst == PGPrimaryODUk)
+						{
+							Target = ODU1XCSrc;
+							break;
+						}
+					}
+					
+					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU1(0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+					{
+						Client = ((Target - PROFILE_ADM10_XC_CLIENT_ODU1(0)) % 8) / 2;
+						
+						FPGAPGStatus = FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_STATUS_GET(&fpga_client_adm_2_5[(Target - PROFILE_ADM10_XC_CLIENT_ODU1(0)) / 8], Client);						
 						if (PGMode == PROFILE_ADM10_ODU1_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 						{
 							if (FPGAPGStatus & (0x03 << 1)) /*SF*/
@@ -2941,6 +3543,84 @@ static void PROFILE_ADM10_ODU0PG_UpdateValues(PROFILE_T *Profile)
 						Client = ((Target - PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) / 2) / 2;
 						
 						FPGAPGStatus = FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_STATUS_GET(&fpga_client_adm_2_5[1], Client);						
+						if (PGMode == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_AUTO) /*Auto*/
+						{
+							if (FPGAPGStatus & (0x03 << 1)) /*SF*/
+								PGState = PROFILE_ADM10_ODU0_PG_STATE_ENUM_SIGNAL_FAIL;
+							else if (FPGAPGStatus & 0x01) /*SD*/
+								PGState = PROFILE_ADM10_ODU0_PG_STATE_ENUM_SIGNAL_DEGRADE;
+						}
+						else if (PGMode == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_LOCKOUT) /*Lockout*/
+						{
+							PGState = PROFILE_ADM10_ODU0_PG_STATE_ENUM_LOCKOUT;
+						}
+						else if (PGMode == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_FORCED) /*Forced*/
+						{
+							PGState = PROFILE_ADM10_ODU0_PG_STATE_ENUM_FORCED;
+						}
+						else if (PGMode == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_MANUAL) /*Manual*/
+						{
+							PGState = PROFILE_ADM10_ODU0_PG_STATE_ENUM_MANUAL;
+						}
+						
+						if (FPGAPGStatus & (0x01 << 3))
+							PGActiveODUk = PGProtectODUk;
+						else
+							PGActiveODUk = PGPrimaryODUk;					
+					}					
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGStateIdx[i], &PGState, PROFILE_STATE_IS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_IS);
+				}
+				break;
+			case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetTypeIdx[i], &PGType))
+					return;
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetModeIdx[i], &PGMode))
+					return;
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetPrimaryODUkIdx[i], &PGPrimaryODUk))
+					return;
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0PGSetProtectODUkIdx[i], &PGProtectODUk))
+					return;
+				if ((PGType == PROFILE_ADM10_ODU0_PG_SET_TYPE_ENUM_DISABLED) ||
+						(PGPrimaryODUk == PROFILE_ADM10_ODU0_PG_SET_PRIMARY_ODUK_ENUM_NONE) ||
+						(PGProtectODUk == PROFILE_ADM10_ODU0_PG_SET_PROTECT_ODUK_ENUM_NONE))
+				{
+					PGState = PROFILE_ADM10_ODU0_PG_STATE_ENUM_NORMAL;
+					PGActiveODUk = PROFILE_ADM10_ODU0_PG_ACTIVE_ODUK_ENUM_NONE;
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGStateIdx[i], &PGState, PROFILE_STATE_OOS);
+					PROFILE_UpdateParam(Profile, PROFILE_TABLE_2, ProfileADM10DynamicODU0PGActiveODUkIdx[i], &PGActiveODUk, PROFILE_STATE_OOS);
+				}
+				else
+				{
+					PGState = PROFILE_ADM10_ODU0_PG_STATE_ENUM_NORMAL;
+					PGActiveODUk = PROFILE_ADM10_ODU0_PG_ACTIVE_ODUK_ENUM_NONE;
+					
+					Target = 0xFFFFFFFF;
+					
+					for (j = 0; j < PROFILE_ADM10_ODU0_XCS; j++)
+					{
+						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[j], &ODU0XCSrc))
+							return;
+						if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[j], &ODU0XCDst))
+							return;
+						if (ODU0XCSrc == PGPrimaryODUk)
+						{
+							Target = ODU0XCDst;
+							break;
+						}
+						if (ODU0XCDst == PGPrimaryODUk)
+						{
+							Target = ODU0XCSrc;
+							break;
+						}
+					}
+					
+					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 0)))
+					{
+						
+						Client = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) % 16) / 2) / 2;
+						
+						FPGAPGStatus = FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_STATUS_GET(&fpga_client_adm_2_5[((Target - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) / 8)], Client);						
 						if (PGMode == PROFILE_ADM10_ODU0_PG_SET_MODE_ENUM_AUTO) /*Auto*/
 						{
 							if (FPGAPGStatus & (0x03 << 1)) /*SF*/

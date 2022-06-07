@@ -60,7 +60,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU2XCSetSrcValue(PROFILE_T *Profile, uint8
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
-			if (*(uint32_t*)Value != PROFILE_ADM10_ODU1_XC_SET_SRC_ENUM_NONE)
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_XC_SET_SRC_ENUM_NONE)
 			{
 				return -1;
 			}
@@ -94,7 +94,7 @@ static int32_t PROFILE_ADM10_XC_CheckODU2XCSetDstValue(PROFILE_T *Profile, uint8
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_10BS_ADM_2_5:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10_EFEC:
 		case PROFILE_ADM10_SET_MODE_ENUM_AGG_2X10BS:
-			if (*(uint32_t*)Value != PROFILE_ADM10_ODU1_XC_SET_DST_ENUM_NONE)
+			if (*(uint32_t*)Value != PROFILE_ADM10_ODU2_XC_SET_DST_ENUM_NONE)
 			{
 				return -1;
 			}
@@ -213,7 +213,51 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetSrcValue(PROFILE_T *Profile, uint8
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
-			/*todo: add check of ODU1 XC in TP10 mode*/
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU1_XC_SET_SRC_ENUM_NONE)
+			{
+				/*Always allow to set ODU1XC source to None*/
+				return 0;
+			}
+			
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[ODU1XCIdx], &Dst))
+					return -1;
+			
+			if (Dst == PROFILE_ADM10_ODU1_XC_SET_DST_ENUM_NONE)
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU1(0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+					return -1;
+			}
+			else if ((Dst >= PROFILE_ADM10_XC_CLIENT_ODU1(0)) && (Dst <= PROFILE_ADM10_XC_CLIENT_ODU1(7)))
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU1(0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU1(7)))
+					return -1;
+			}
+			else if ((Dst >= PROFILE_ADM10_XC_CLIENT_ODU1(8)) && (Dst <= PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU1(8)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+					return -1;
+			}
+			else
+			{
+				return -1;
+			}
+			
+			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+			{
+				/*Check that there is no ODU1XC with same ODU1 container as source*/
+				if (i != ODU1XCIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], &Src))
+						return -1;
+					if (Src == *(uint32_t*)Value)
+						return -1;
+				}
+				/*Check that there is no ODU1XC with same ODU1 container as desctination*/
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], &Dst))
+					return -1;
+				if (Dst == *(uint32_t*)Value)
+					return -1;	
+			}
 			break;
 		default:
 			return -1;
@@ -323,7 +367,51 @@ static int32_t PROFILE_ADM10_XC_CheckODU1XCSetDstValue(PROFILE_T *Profile, uint8
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
-			/*todo: add check of ODU1 XC in TP10 mode*/
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU1_XC_SET_DST_ENUM_NONE)
+			{
+				/*Always allow to set ODU1XC source to None*/
+				return 0;
+			}
+			
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[ODU1XCIdx], &Src))
+					return -1;
+			
+			if (Src == PROFILE_ADM10_ODU1_XC_SET_SRC_ENUM_NONE)
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU1(0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+					return -1;
+			}
+			else if ((Src >= PROFILE_ADM10_XC_CLIENT_ODU1(0)) && (Src <= PROFILE_ADM10_XC_CLIENT_ODU1(7)))
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU1(0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU1(7)))
+					return -1;
+			}
+			else if ((Src >= PROFILE_ADM10_XC_CLIENT_ODU1(8)) && (Src <= PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU1(8)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU1(15)))
+					return -1;
+			}
+			else
+			{
+				return -1;
+			}
+			
+			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+			{
+				/*Check that there is no ODU1XC with same ODU1 container as destination*/
+				if (i != ODU1XCIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i], &Dst))
+						return -1;
+					if (Dst == *(uint32_t*)Value)
+						return -1;
+				}
+				/*Check that there is no ODU1XC with same ODU1 container as source*/
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i], &Src))
+					return -1;
+				if (Src == *(uint32_t*)Value)
+					return -1;	
+			}
 			break;
 		default:
 			return -1;
@@ -440,7 +528,51 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetSrcValue(PROFILE_T *Profile, uint8
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
-			/*todo: add check of ODU0 XC in TP10 mode*/
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_NONE)
+			{
+				/*Always allow to set ODU0XC source to None*/
+				return 0;
+			}
+			
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[ODU0XCIdx], &Dst))
+					return -1;
+			
+			if (Dst == PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_NONE)
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
+					return -1;
+			}
+			else if ((Dst >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) && (Dst <= PROFILE_ADM10_XC_CLIENT_ODU0(7, 1)))
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU0(7, 1)))
+					return -1;
+			}
+			else if ((Dst >= PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) && (Dst <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
+					return -1;
+			}
+			else
+			{
+				return -1;
+			}
+			
+			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+			{
+				/*Check that there is no ODU0XC with same ODU0 container as source*/
+				if (i != ODU0XCIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], &Src))
+						return -1;
+					if (Src == *(uint32_t*)Value)
+						return -1;
+				}
+				/*Check that there is no ODU0XC with same ODU0 container as desctination*/
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], &Dst))
+					return -1;
+				if (Dst == *(uint32_t*)Value)
+					return -1;	
+			}
 			break;
 		default:
 			return -1;
@@ -549,7 +681,51 @@ static int32_t PROFILE_ADM10_XC_CheckODU0XCSetDstValue(PROFILE_T *Profile, uint8
 			}
 			break;
 		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
-			/*todo: add check of ODU0 XC in TP10 mode*/
+			if (*(uint32_t*)Value == PROFILE_ADM10_ODU0_XC_SET_DST_ENUM_NONE)
+			{
+				/*Always allow to set ODU0XC source to None*/
+				return 0;
+			}
+			
+			if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[ODU0XCIdx], &Src))
+					return -1;
+			
+			if (Src == PROFILE_ADM10_ODU0_XC_SET_SRC_ENUM_NONE)
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
+					return -1;
+			}
+			else if ((Src >= PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) && (Src <= PROFILE_ADM10_XC_CLIENT_ODU0(7, 1)))
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU0(7, 1)))
+					return -1;
+			}
+			else if ((Src >= PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) && (Src <= PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
+			{
+				if ((*(uint32_t*)Value < PROFILE_ADM10_XC_CLIENT_ODU0(8, 0)) || (*(uint32_t*)Value > PROFILE_ADM10_XC_CLIENT_ODU0(15, 1)))
+					return -1;
+			}
+			else
+			{
+				return -1;
+			}
+			
+			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+			{
+				/*Check that there is no ODU0XC with same ODU0 container as destination*/
+				if (i != ODU0XCIdx)
+				{
+					if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i], &Dst))
+						return -1;
+					if (Dst == *(uint32_t*)Value)
+						return -1;
+				}
+				/*Check that there is no ODU0XC with same ODU0 container as source*/
+				if (PROFILE_GetValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i], &Src))
+					return -1;
+				if (Src == *(uint32_t*)Value)
+					return -1;	
+			}
 			break;
 		default:
 			return -1;
@@ -839,6 +1015,13 @@ static int32_t PROFILE_ADM10_XC_SetODU1FactoryValueDependencies(PROFILE_T *Profi
 				}
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetSrcIdx[i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU1XCSetDstIdx[i]);
+			}
+			break;
 		default:
 			return -1;
 	}
@@ -893,6 +1076,13 @@ static int32_t PROFILE_ADM10_XC_SetODU0FactoryValueDependencies(PROFILE_T *Profi
 				}
 			}
 			break;
+		case PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5:
+			for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+			{
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetSrcIdx[i]);
+				PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigODU0XCSetDstIdx[i]);
+			}
+			break;
 		default:
 			return -1;
 	}
@@ -927,6 +1117,7 @@ int32_t PROFILE_ADM10_XC_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t 
 void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 {
 	uint32_t i, j;
+	uint32_t fpga_client_idx;
 	uint32_t Mode;
 	uint32_t ODU1Mux, ODU0Mux;
 	uint32_t Target, TargetLine, TargetODU1Idx, TargetODU0Idx, TargetClient;
@@ -1384,7 +1575,160 @@ void PROFILE_ADM10_XC_UpdateConfigs(PROFILE_T *Profile)
 				}
 			}
 		}
-		
+	}
+	else if (Mode == PROFILE_ADM10_SET_MODE_ENUM_TP_2X10_2XADM_2_5)
+	{
+		for (fpga_client_idx = 0; fpga_client_idx < BSP_FPGA_CLIENT_CNT; fpga_client_idx++)
+		{
+			/*Cross-connects configuration for ADM-2.5*/		
+			for (i = 0; i < FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_CNT; i++)
+			{
+				FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[fpga_client_idx], i, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_STM16);
+				FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_SET(&fpga_client_adm_2_5[fpga_client_idx], i, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_CLIENT(i));
+				for (j = 0; j < 2; j++)
+				{
+					FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_SET(&fpga_client_adm_2_5[fpga_client_idx], i, j, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ODU0_LINE(i, j));
+				}
+			}
+			
+			for (i = 0; i < FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_CNT; i++)
+			{
+				FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[fpga_client_idx], i, FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_STM1);
+			}
+			
+			for (Line = 0; Line < FPGA_CLIENT_ADM_2_5_LINE_CNT; Line++)
+			{
+				if (ClOPU1Payload[(fpga_client_idx * 8) + (Line * 2)] == PROFILE_ADM10_CL_OPU1_SET_PAYLOAD_ENUM_ANY)
+				{
+					Target = 0;
+					for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+					{
+						if (XCODU1Src[i] == PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8) + (Line * 2)))
+						{
+							Target = XCODU1Dst[i];
+							break;
+						}
+						if (XCODU1Dst[i] == PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8) + (Line * 2)))
+						{
+							Target = XCODU1Src[i];
+							break;
+						}
+					}
+					
+					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8))) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8) + 7)))
+					{
+						TargetClient = ((Target - PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8))) / 2);
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[fpga_client_idx], Line, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_STM16);
+						FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_SET(&fpga_client_adm_2_5[fpga_client_idx], Line, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_MUX_CLIENT(TargetClient));
+					}
+				}
+				else if (ClOPU1Payload[(fpga_client_idx * 8) + (Line * 2)] == PROFILE_ADM10_CL_OPU1_SET_PAYLOAD_ENUM_AMP_2XODU0)
+				{
+					FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[fpga_client_idx], Line, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_OPU1_PAYLOAD_TYPE_2XODU0);
+					for (ODU0Idx = 0; ODU0Idx < 2; ODU0Idx++)
+					{
+						Target = 0;
+						for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+						{
+							if (XCODU0Src[i] == PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8) + (Line * 2), ODU0Idx))
+							{
+								Target = XCODU0Dst[i];
+								break;
+							}
+							if (XCODU0Dst[i] == PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8) + (Line * 2), ODU0Idx))
+							{
+								Target = XCODU0Src[i];
+								break;
+							}
+						}
+						
+						if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) &&
+							(Target <= PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8) + 7, 0)) &&
+							((((Target - PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) / 2) % 2) == 0))
+						{
+							TargetLine = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) / 2) / 2);
+							TargetODU0Idx = ((Target - PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) % 2);						
+							FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_SET(&fpga_client_adm_2_5[fpga_client_idx], Line, ODU0Idx, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ODU0_LINE(TargetLine, TargetODU0Idx));
+						}
+						else if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) &&
+							(Target <= PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8) + 7, 0)) &&
+							((((Target - PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) / 2) % 2) != 0))
+						{
+							TargetClient = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) / 2) / 2);
+							FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_SET(&fpga_client_adm_2_5[fpga_client_idx], Line, ODU0Idx, FPGA_CLIENT_ADM_2_5_ODU1_FRAMER_ODU0_MUX_ODU0_FRAMER(TargetClient));
+							if (ClDataType[(Target - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) / 2] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE)
+								FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[fpga_client_idx], TargetClient, FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_1GE);
+							else if (ClDataType[(Target - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) / 2] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1)
+								FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[fpga_client_idx], TargetClient, FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_STM1);
+							else if (ClDataType[(Target - PROFILE_ADM10_XC_CLIENT_ODU0(0, 0)) / 2] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4)
+								FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_SET(&fpga_client_adm_2_5[fpga_client_idx], TargetClient, FPGA_CLIENT_ADM_2_5_ODU0_FRAMER_OPU0_PAYLOAD_TYPE_STM4);
+						}
+					}
+				}
+			}
+			
+			for (Client = 0; Client < FPGA_CLIENT_ADM_2_5_CLIENT_CNT; Client++)
+			{
+				if (ClDataType[(fpga_client_idx * 8) + (Client * 2) + 1] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM16)
+				{
+					Target = 0;
+					for (i = 0; i < PROFILE_ADM10_ODU1_XCS; i++)
+					{
+						if (XCODU1Src[i] == PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8) + (Client * 2) + 1))
+						{
+							Target = XCODU1Dst[i];
+							break;
+						}
+						if (XCODU1Dst[i] == PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8) + (Client * 2) + 1))
+						{
+							Target = XCODU1Src[i];
+							break;
+						}
+					}
+						
+					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8))) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8) + 7)))
+					{
+						TargetLine = ((Target - PROFILE_ADM10_XC_CLIENT_ODU1((fpga_client_idx * 8))) / 2);
+						FPGA_CLIENT_ADM_2_5_CLIENT_ODU1_PG_PRIMARY_ODU1_SET(&fpga_client_adm_2_5[fpga_client_idx], Client, TargetLine);
+						FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_SET(&fpga_client_adm_2_5[fpga_client_idx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_EN_MASK);
+					}
+					else
+					{
+						FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_SET(&fpga_client_adm_2_5[fpga_client_idx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_EN_MASK | FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_AIS_MASK);
+					}
+				}
+				else if ((ClDataType[(fpga_client_idx * 8) + (Client * 2) + 1] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM1) || \
+					(ClDataType[(fpga_client_idx * 8) + (Client * 2) + 1] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_STM4) || \
+					(ClDataType[(fpga_client_idx * 8) + (Client * 2) + 1] == PROFILE_ADM10_CL_SET_DATA_TYPE_ENUM_1GE))
+				{
+					Target = 0;
+					for (i = 0; i < PROFILE_ADM10_ODU0_XCS; i++)
+					{
+						if (XCODU0Src[i] == PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8) + (Client * 2) + 1, 0))
+						{
+							Target = XCODU0Dst[i];
+							break;
+						}
+						if (XCODU0Dst[i] == PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8) + (Client * 2) + 1, 0))
+						{
+							Target = XCODU0Src[i];
+							break;
+						}
+					}					
+					if ((Target >= PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) && (Target <= PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8) + 7, 1)))
+					{
+						TargetLine = (((Target - PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) / 2) / 2);
+						TargetODU0Idx = ((Target - PROFILE_ADM10_XC_CLIENT_ODU0((fpga_client_idx * 8), 0)) % 2);
+						FPGA_CLIENT_ADM_2_5_CLIENT_ODU0_PG_PRIMARY_ODU0_SET(&fpga_client_adm_2_5[fpga_client_idx], Client, TargetLine, TargetODU0Idx);				
+						FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_SET(&fpga_client_adm_2_5[fpga_client_idx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_EN_MASK);
+					}
+					else
+					{
+						FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_SET(&fpga_client_adm_2_5[fpga_client_idx], Client, FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_EN_MASK | FPGA_CLIENT_ADM_2_5_CLIENT_CTRL_AIS_MASK);
+					}
+				}
+			}
+		}
 	}
 }
 
