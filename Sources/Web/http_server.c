@@ -1178,13 +1178,6 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	
 	if (RESPONCE_BODY[header_len + 1 + bodylen] != ';')
 		goto error;
-		
-	while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
-	{
-		RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-		RESPONCE_BODY_LEN--;
-	}
-	RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -1269,15 +1262,20 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 			goto error;
 	}
 	
+	if (RESPONCE_BODY[header_len] != ';')
+		goto error;
+	
 	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
 		goto error;
 	
-	while (RESPONCE_BODY[RESPONCE_BODY_LEN] != ';')
+	for (i = 0; i < bodylen; i++)
 	{
-		RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
-		RESPONCE_BODY_LEN--;
+		if (REQUEST_BODY[header_len + 1 + i] != RESPONCE_BODY[header_len + 1 + i])
+			goto error;
 	}
-	RESPONCE_BODY[RESPONCE_BODY_LEN] = 0;
+	
+	if (RESPONCE_BODY[header_len + 1 + bodylen] != ';')
+		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -2527,13 +2525,13 @@ receive:
 				if (strncmp(c, "/params/", sizeof("/params/") - 1) == 0)
 				{
 					param_idx = strtoul(&c[sizeof("/params/") - 1], &c, 10);
-					if (((section_idx == 1) && (param_idx >= Profile.Descr[Profile.Idx]->Table1Size)) ||
-							((section_idx == 2) && (param_idx >= Profile.Descr[Profile.Idx]->Table2Size)) ||
-							((section_idx == 3) && (param_idx >= Profile.Descr[Profile.Idx]->Table3Size)) ||
-							((section_idx == 4) && (param_idx >= Profile.Descr[Profile.Idx]->Table4Size)) ||
-							((section_idx == 5) && (param_idx >= Profile.Descr[Profile.Idx]->Table5Size)) ||
-							((section_idx == 8) && (param_idx >= Profile.Descr[Profile.Idx]->Table8Size)) ||
-							((section_idx == 103) && (param_idx >= Profile.Descr[Profile.Idx]->Table103Size)))
+					if (((section_idx == 1) && (param_idx > Profile.Descr[Profile.Idx]->Table1Size)) ||
+							((section_idx == 2) && (param_idx > Profile.Descr[Profile.Idx]->Table2Size)) ||
+							((section_idx == 3) && (param_idx > Profile.Descr[Profile.Idx]->Table3Size)) ||
+							((section_idx == 4) && (param_idx > Profile.Descr[Profile.Idx]->Table4Size)) ||
+							((section_idx == 5) && (param_idx > Profile.Descr[Profile.Idx]->Table5Size)) ||
+							((section_idx == 8) && (param_idx > Profile.Descr[Profile.Idx]->Table8Size)) ||
+							((section_idx == 103) && (param_idx > Profile.Descr[Profile.Idx]->Table103Size)))
 					{
 						http_server_write_404_error(conn);
 					}
