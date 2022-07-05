@@ -191,6 +191,34 @@ static void __PROFILE_GetDefaultValue(PROFILE_T *Profile, uint8_t Table, uint16_
 	}
 }
 
+static void __PROFILE_GetAccess(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *Access)
+{
+	switch (Table)
+	{
+		case PROFILE_TABLE_1:
+			*Access = Profile->Descr[Profile->Idx]->Table1[Idx - 1].Access;
+			break;
+		case PROFILE_TABLE_2:
+			*Access = Profile->Descr[Profile->Idx]->Table2[Idx - 1].Access;
+			break;
+		case PROFILE_TABLE_3:
+			*Access = Profile->Descr[Profile->Idx]->Table3[Idx - 1].Access;
+			break;
+		case PROFILE_TABLE_4:
+			*Access = Profile->Descr[Profile->Idx]->Table4[Idx - 1].Access;
+			break;
+		case PROFILE_TABLE_5:
+			*Access = Profile->Descr[Profile->Idx]->Table5[Idx - 1].Access;
+			break;
+		case PROFILE_TABLE_8:
+			*Access = Profile->Descr[Profile->Idx]->Table8[Idx - 1].Access;
+			break;
+		case PROFILE_TABLE_103:
+			*Access = Profile->Descr[Profile->Idx]->Table103[Idx - 1].Access;
+			break;
+	}
+}
+
 static void __PROFILE_GetType(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_t *Type)
 {
 	switch (Table)
@@ -626,6 +654,18 @@ int32_t PROFILE_CheckConfigValueRange(PROFILE_T *Profile, uint8_t Table, uint16_
 			return -1;
 	}
 	return 0;
+}
+
+int32_t PROFILE_CheckWriteAccess(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
+{
+	uint8_t Access;
+	
+	__PROFILE_GetAccess(Profile, Table, Idx, &Access);
+	
+	if (Access & (~PROFILE_ACCESS(PROFILE_ACCESS_READ, PROFILE_ACCESS_READ, PROFILE_ACCESS_READ, PROFILE_ACCESS_READ)))
+		return 0;
+	
+	return -1;
 }
 
 int32_t PROFILE_CheckValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)

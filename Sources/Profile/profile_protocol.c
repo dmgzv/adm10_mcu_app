@@ -105,6 +105,7 @@ static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_PROTOCOL_T *Protocol, char
 	else
 	{
 		strcpy( p,"NA" );
+		p+=2;
 		goto exit;
 	}
 	
@@ -121,6 +122,7 @@ static uint32_t PROFILE_PROTOCOL_SetAccessExt(PROFILE_PROTOCOL_T *Protocol, char
 	else
 	{
 		strcpy( p,"NA" );
+		p+=2;
 		goto exit;
 	}
 	
@@ -293,6 +295,7 @@ error:
 static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
 	uint32_t TableId;//номер таблицы (секции)
+	uint32_t TableSize;
 	uint32_t Item = 0;
 	char * p = cmd;
 	uint32_t error = 0;
@@ -358,56 +361,55 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 	{
 		case 1:
 			TableId = PROFILE_TABLE_1;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table1Size;
 			break;
 		case 2:
 			TableId = PROFILE_TABLE_2;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
 			break;
 		case 3:
 			TableId = PROFILE_TABLE_3;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table3Size;
 			break;
 		case 4:
 			TableId = PROFILE_TABLE_4;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table4Size;
 			break;
 		case 5:
 			TableId = PROFILE_TABLE_5;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table5Size;
 			break;
 		case 8:
 			TableId = PROFILE_TABLE_8;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table8Size;
 			break;
 		case 103:
 			TableId = PROFILE_TABLE_103;
+			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table103Size;
 			break;
 		default:
-			TableId = 0xFFFFFFFF;
-		break;
+			error = 1;
+			break;
 	}
 	
-	if ((!error) && (Protocol->Profile->SetEnable) && (TableId != 0xFFFFFFFF))
-	{	
-		if (PROFILE_StringToValue(Protocol->Profile, TableId, Item, TempValue, Value) == 0)
-		{
-			if (PROFILE_CheckValue(Protocol->Profile, TableId, Item, TempValue, 0) == 0)
-			{
-				if (PROFILE_SetValue(Protocol->Profile, TableId, Item, TempValue))
-				{
-					goto error;
-				}
-				if (PROFILE_SetValueDependencies(Protocol->Profile, TableId, Item, TempValue, 0))
-				{
-					goto error;
-				}
-				PROFILE_FLASH_SaveValue(Protocol->ProfileFlash, TableId, Item);
-			}				
-		}
-		if (PROFILE_GetValue(Protocol->Profile, TableId, Item, TempValue))
-		{
+	if ((!error) && (Protocol->Profile->SetEnable) && (Item >= 1) && (Item <= TableSize))
+	{
+		if (PROFILE_CheckWriteAccess(Protocol->Profile, TableId, Item))
 			goto error;
-		}
-		else
-		{
-			if (PROFILE_ValueToString(Protocol->Profile, TableId, Item, TempValue, p , &len) == 0)
-				p += len;
-		}
+		if (PROFILE_StringToValue(Protocol->Profile, TableId, Item, TempValue, Value))
+			goto error;
+		if (PROFILE_CheckValue(Protocol->Profile, TableId, Item, TempValue, 0))
+			goto error;
+		if (PROFILE_SetValue(Protocol->Profile, TableId, Item, TempValue))
+			goto error;
+		if (PROFILE_SetValueDependencies(Protocol->Profile, TableId, Item, TempValue, 0))
+			goto error;
+		PROFILE_FLASH_SaveValue(Protocol->ProfileFlash, TableId, Item);
+		if (PROFILE_GetValue(Protocol->Profile, TableId, Item, TempValue))
+			goto error;
+		if (PROFILE_ValueToString(Protocol->Profile, TableId, Item, TempValue, p , &len))
+			goto error;
+		p += len;
 	}
 	else//Ошибка установки параметров
 	{
@@ -596,7 +598,7 @@ int32_t PROFILE_PROTOCOL_WriteLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd,
 	p = rsp;
 	memcpy(p , cmd, 2);
 	p += 2;
-	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE)
+	if((!error) && (Item < (PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE)))
 	{
 		if (Item == 0)
 		{
@@ -660,7 +662,7 @@ int32_t PROFILE_PROTOCOL_ReadLangpack(PROFILE_PROTOCOL_T *Protocol, char * cmd, 
 	p = UintToStr( p, Item );// начинаем формировать ответ
 	*p++ = ';';
 	
-	if( !error && Item < PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE )
+	if((!error) && (Item < (PROFILE_FLASH_LANGS_SIZE / PROFILE_PROTOCOL_LANG_BLOCK_SIZE)))
 	{// читаем блок из флеш, если он доступен
 		if (Item == 0)
 		{
