@@ -22,7 +22,7 @@
 #define UART1_DMA_CLK_ENABLE()      		__HAL_RCC_DMA2_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
-#define UART1_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
+#define UART1_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #define UART1_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
 #else
 #define UART1_DMA_IRQ_PRIORITY           (0)
@@ -61,7 +61,7 @@
 #define UART2_DMA_CLK_ENABLE()      		__HAL_RCC_DMA1_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
-#define UART2_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
+#define UART2_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #define UART2_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
 #else
 #define UART2_DMA_IRQ_PRIORITY           (0)
@@ -100,7 +100,7 @@
 #define UART3_DMA_CLK_ENABLE()      		__HAL_RCC_DMA1_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
-#define UART3_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
+#define UART3_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #define UART3_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
 #else
 #define UART3_DMA_IRQ_PRIORITY           (0)
@@ -139,7 +139,7 @@
 #define UART4_DMA_CLK_ENABLE()      		__HAL_RCC_DMA1_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
-#define UART4_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
+#define UART4_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #define UART4_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
 #else
 #define UART4_DMA_IRQ_PRIORITY           (0)
@@ -178,7 +178,7 @@
 #define UART5_DMA_CLK_ENABLE()      		__HAL_RCC_DMA1_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
-#define UART5_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
+#define UART5_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #define UART5_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
 #else
 #define UART5_IRQ_PRIORITY               (0)
@@ -216,7 +216,7 @@
 #define UART6_DMA_CLK_ENABLE()      		__HAL_RCC_DMA2_CLK_ENABLE()
 
 #ifdef BSP_CONFIG_USE_FREERTOS
-#define UART6_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
+#define UART6_DMA_IRQ_PRIORITY           (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 4)
 #define UART6_IRQ_PRIORITY               (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 3)
 #else
 #define UART6_IRQ_PRIORITY               (0)
@@ -240,6 +240,11 @@
 #define UART6_DMA_TX_IRQHandler         DMA2_Stream6_IRQHandler
 #define UART6_DMA_RX_IRQHandler         DMA2_Stream1_IRQHandler
 
+#define UART_RX_MODE_IT						0
+#define UART_RX_MODE_IT_COMMAND		1
+#define UART_RX_MODE_DMA					2
+#define UART_RX_MODE_DMA_CIRCULAR	3
+
 typedef struct {	
 	UART_HandleTypeDef handle;
 	DMA_HandleTypeDef hdma_tx;
@@ -252,6 +257,7 @@ typedef struct {
 	uint32_t rx_buffer_size;
 	uint32_t rx_buffer_idx;
 	uint8_t *rx_buffer_end;
+	uint32_t rx_mode;
 	
 	osMutexId tx_mutex_id;
 	osMessageQId tx_message_queue_id;
@@ -300,5 +306,8 @@ int32_t UART_Receive(USART_TypeDef * Instance, char *Buffer, uint32_t  Size);
 int32_t UART_ReceiveCommand(USART_TypeDef *Instance, char *Buffer, uint32_t Size, char End, uint32_t *Len, uint32_t Timeout);
 
 int32_t UART_DMA_Transmit(USART_TypeDef * Instance, char *Buffer, uint32_t  Size);
+int32_t UART_DMA_Receive(USART_TypeDef * Instance, char *Buffer, uint32_t  Size);
+int32_t UART_DMA_StartCircularReceive(USART_TypeDef *Instance, char *Buffer, uint32_t Size);
+int32_t UART_DMA_GetCircularReceiveIdx(USART_TypeDef *Instance, uint32_t *Idx);
 
 #endif /* __UART_H */
