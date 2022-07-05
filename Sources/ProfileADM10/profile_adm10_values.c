@@ -1,9 +1,10 @@
 #include "profile_adm10_values.h"
+#include "bsp_config.h"
 
 const PROFILE_ADM10_VALUES_STATIC_T ProfileADM10ValuesStaticDefault = {
-    "ADM-10-SFP/SFP+-H8",
-    "IP1459-1",
-    "",
+    ""BSP_PT_NUMBER"",
+    ""BSP_HW_VERSION"",
+    "adm10 "BSP_SW_VERSION"",
     0,
     "",
     "",
