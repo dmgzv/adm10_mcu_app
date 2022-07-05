@@ -138,7 +138,7 @@ typedef struct {
     uint8_t Cl_16_SFP_PtNumberState;
     uint32_t Time;
     uint8_t TimeState;
-    int32_t BlockColor;
+    uint32_t BlockColor;
     uint8_t BlockColorState;
     uint32_t BlockState;
     uint8_t BlockStateState;
@@ -3169,6 +3169,7 @@ typedef struct {
 } PROFILE_ADM10_VALUES_DYNAMIC_T;
 
 typedef struct {
+    char pId[PROFILE_STRING_MAX_LEN];
     char HwNumber[PROFILE_STRING_MAX_LEN];
     char SwNumber[PROFILE_STRING_MAX_LEN];
     uint32_t FormFactor;
@@ -4481,7 +4482,6 @@ typedef struct {
 } PROFILE_ADM10_VALUES_STATIC_T;
 
 typedef struct {
-    char pId[PROFILE_STRING_MAX_LEN];
     char SrNumber[PROFILE_STRING_MAX_LEN];
     uint32_t SetDefault;
     uint32_t Reset;
