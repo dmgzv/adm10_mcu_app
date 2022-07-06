@@ -1111,7 +1111,6 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	uint16_t datalen;
 	uint32_t i;
 	uint32_t complete;
-	uint32_t header_len;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	if (ReqHeader->ContentLength == 0)
@@ -1142,7 +1141,6 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_SET_VALUE_2;
 	REQUEST_BODY_LEN = 2;
 	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d;%d;", section_idx, param_idx);
-	header_len = REQUEST_BODY_LEN - 1;
 	memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, datalen);
 	REQUEST_BODY_LEN += datalen;
 	REQUEST_BODY[REQUEST_BODY_LEN++] = ';';
@@ -1155,29 +1153,14 @@ static void http_server_serve_put_api_v1_profile_section_param_value(struct netc
 	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
 	Profile.SetEnable = 0;
 	
-	if (RESPONCE_BODY_LEN < REQUEST_BODY_LEN)
+	if (RESPONCE_BODY_LEN != REQUEST_BODY_LEN)
 		goto error;
 	
-	for (i = 0; i < header_len; i++)
+	for (i = 0; i < RESPONCE_BODY_LEN; i++)
 	{
 		if (REQUEST_BODY[i] != RESPONCE_BODY[i])
 			goto error;
 	}
-	
-	if (RESPONCE_BODY[header_len] != ';')
-		goto error;
-	
-	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
-		goto error;
-	
-	for (i = 0; i < bodylen; i++)
-	{
-		if (REQUEST_BODY[header_len + 1 + i] != RESPONCE_BODY[header_len + 1 + i])
-			goto error;
-	}
-	
-	if (RESPONCE_BODY[header_len + 1 + bodylen] != ';')
-		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;
@@ -1209,7 +1192,6 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 	uint16_t datalen;
 	uint32_t i;
 	uint32_t complete;
-	uint32_t header_len;
 	HTTP_RESPONCE_HEADER_T RspHeader;
 
 	if (ReqHeader->ContentLength == 0)
@@ -1240,7 +1222,6 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 	REQUEST_BODY[1] = PROFILE_PROTOCOL_CMD_SET_COLOR;
 	REQUEST_BODY_LEN = 2;
 	REQUEST_BODY_LEN += sprintf(&REQUEST_BODY[REQUEST_BODY_LEN], "%d;%d;", section_idx, param_idx);
-	header_len = REQUEST_BODY_LEN - 1;
 	memcpy(&REQUEST_BODY[REQUEST_BODY_LEN], data, datalen);
 	REQUEST_BODY_LEN += datalen;
 	REQUEST_BODY[REQUEST_BODY_LEN++] = ';';
@@ -1253,29 +1234,14 @@ static void http_server_serve_put_api_v1_profile_section_param_color(struct netc
 	RESPONCE_BODY_LEN = PROFILE_PROTOCOL_Command(&ProfileProtocol, REQUEST_BODY, RESPONCE_BODY, &complete);
 	Profile.SetEnable = 0;
 	
-	if (RESPONCE_BODY_LEN < REQUEST_BODY_LEN)
+	if (RESPONCE_BODY_LEN != REQUEST_BODY_LEN)
 		goto error;
 	
-	for (i = 0; i < header_len; i++)
+	for (i = 0; i < RESPONCE_BODY_LEN; i++)
 	{
 		if (REQUEST_BODY[i] != RESPONCE_BODY[i])
 			goto error;
 	}
-	
-	if (RESPONCE_BODY[header_len] != ';')
-		goto error;
-	
-	if ((RESPONCE_BODY[header_len + 1] == 'N') && (RESPONCE_BODY[header_len + 2] == 'A'))
-		goto error;
-	
-	for (i = 0; i < bodylen; i++)
-	{
-		if (REQUEST_BODY[header_len + 1 + i] != RESPONCE_BODY[header_len + 1 + i])
-			goto error;
-	}
-	
-	if (RESPONCE_BODY[header_len + 1 + bodylen] != ';')
-		goto error;
 	
 	RspHeader.Code = HTTP_RESPONCE_200_OK;
 	RspHeader.ContentType = NULL;

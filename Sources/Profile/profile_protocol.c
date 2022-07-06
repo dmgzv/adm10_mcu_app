@@ -294,68 +294,33 @@ error:
 
 static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
-	uint32_t TableId;//номер таблицы (секции)
+	uint32_t TableId;
 	uint32_t TableSize;
-	uint32_t Item = 0;
-	char * p = cmd;
-	uint32_t error = 0;
-	uint32_t len;
+	uint32_t Item;
+	char *p, *c;
 	uint32_t CRCRead, CRCCalc;
-	char *Value;
+	char Value[PROFILE_STRING_MAX_LEN];
 	char TempValue[PROFILE_STRING_MAX_LEN];
 	
-	//проверка и разбор структуры запроса
 	p = cmd + 2;
 	if( !StrToUint( p, &TableId, ';' ) )
-	{
-		error = 1;
-	}
-	if( ( p = strchr( p, ';' ) ) == NULL )
-	{
-		error = 1;		//;Конец таблицы
-	}
-	if( !StrToUint( p + 1, &Item, ';' ) )
-	{
-		error = 1;
-	}
-	if( (  p = strchr(  p + 1, ';' ) ) == NULL )
-	{
-		error = 1;		//;Конец индекса
-	}
-	Value =  p + 1;	  //Указатель на параметр 
+		goto cmd_parse_error;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
-	{
-		error = 1;		//;Конец параметра
-	}
-	if( strchr( p + 1, ';' ) )
-	{
-		error = 1;		 // ; на конце CRC быть не должно
-	}
-	if( p && !error )//успешно найдены точно 3 символа ";"
-	{	
-		//Проверка контрольной суммы	
-		p++;		
-		if( !StrToUint( p, &CRCRead, ';' ) )
-			CRCRead = 0xFFFFFFFF;
-		CRCCalc = Calc_CRC16_ASCII( cmd, p - cmd );
-		*--p = 0;
-		if( CRCRead != CRCCalc )
-		{
-			error = 1; //Неверная контрольная сумма
-		}
-	}
-	else
-	{
-		error = 1;
-	}
-	
-	p = rsp;
-	memcpy(p, cmd, 2);
-	p += 2;
-	p = UintToStr( p, TableId );
-	*p++ = ';';
-	p = UintToStr( p, Item );
-	*p++ = ';';
+		goto cmd_parse_error;
+	if( !StrToUint( p + 1, &Item, ';' ) )
+		goto cmd_parse_error;
+	if( (  p = strchr(  p + 1, ';' ) ) == NULL )
+		goto cmd_parse_error;
+	c = p + 1;
+	if( (  p = strchr(  p + 1, ';' ) ) == NULL )
+		goto cmd_parse_error;
+	if ((p - c) >= PROFILE_STRING_MAX_LEN)
+		goto cmd_parse_error;
+	memcpy(Value, c, p - c);
+	Value[p - c] = 0;
+	if( !StrToUint( p + 1, &CRCRead, ';' ) )
+		goto cmd_parse_error;
+	CRCCalc = Calc_CRC16_ASCII( cmd, p + 1 - cmd );
 	
 	switch (TableId)
 	{
@@ -388,44 +353,53 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table103Size;
 			break;
 		default:
-			error = 1;
-			break;
+			goto cmd_exec_error;
 	}
 	
-	if ((!error) && (Protocol->Profile->SetEnable) && (Item >= 1) && (Item <= TableSize))
-	{
-		if (PROFILE_CheckWriteAccess(Protocol->Profile, TableId, Item))
-			goto error;
-		if (PROFILE_StringToValue(Protocol->Profile, TableId, Item, TempValue, Value))
-			goto error;
-		if (PROFILE_CheckValue(Protocol->Profile, TableId, Item, TempValue, 0))
-			goto error;
-		if (PROFILE_SetValue(Protocol->Profile, TableId, Item, TempValue))
-			goto error;
-		if (PROFILE_SetValueDependencies(Protocol->Profile, TableId, Item, TempValue, 0))
-			goto error;
-		PROFILE_FLASH_SaveValue(Protocol->ProfileFlash, TableId, Item);
-		if (PROFILE_GetValue(Protocol->Profile, TableId, Item, TempValue))
-			goto error;
-		if (PROFILE_ValueToString(Protocol->Profile, TableId, Item, TempValue, p , &len))
-			goto error;
-		p += len;
-	}
-	else//Ошибка установки параметров
-	{
-		strcpy( p, "NA" );
-		p += 2;
-	}
-	*p++ = ';';
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
-	*p++ = '\r';
-	*p = 0;
-	return p - rsp;
+	if (!Protocol->Profile->SetEnable)
+		goto cmd_exec_error;
+	
+	if ((Item < 1) || (Item > TableSize))
+		goto cmd_exec_error;
+	
+	if( CRCRead != CRCCalc )
+		goto cmd_exec_error;
+	
+	if (PROFILE_CheckWriteAccess(Protocol->Profile, TableId, Item))
+		goto cmd_exec_error;
+	if (PROFILE_StringToValue(Protocol->Profile, TableId, Item, TempValue, Value))
+		goto cmd_exec_error;
+	if (PROFILE_CheckValue(Protocol->Profile, TableId, Item, TempValue, 0))
+		goto cmd_exec_error;
+	if (PROFILE_SetValue(Protocol->Profile, TableId, Item, TempValue))
+		goto cmd_exec_error;
+	if (PROFILE_SetValueDependencies(Protocol->Profile, TableId, Item, TempValue, 0))
+		goto cmd_exec_error;
+	PROFILE_FLASH_SaveValue(Protocol->ProfileFlash, TableId, Item);
 
-error:
+	strcpy(rsp, cmd);
+	return strlen(rsp);
+
+cmd_parse_error:
 	p = rsp;
 	*p++ = cmd[0];
 	*p++ = cmd[1];
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ = ';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
+	
+cmd_exec_error:
+	p = rsp;
+	*p++ = cmd[0];
+	*p++ = cmd[1];
+	p = UintToStr( p, TableId );
+	*p++ = ';';
+	p = UintToStr( p, Item );
+	*p++ = ';';
 	*p++ = 'N';
 	*p++ = 'A';
 	*p++ = ';';
@@ -437,84 +411,58 @@ error:
 
 int32_t PROFILE_PROTOCOL_SetColor(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
-	uint32_t TableId = 0;
-	uint32_t Item = 0;
+	uint32_t TableId;
+	uint32_t Item;
 	uint32_t tmp;
-	uint8_t ColorDegrade; //Degrade цвет
-	uint8_t ColorFailure; //Failure цвет
-	uint32_t ParamsCnt = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
-	int32_t error = 0;
-	char *p = rsp;
+	uint8_t ColorDegrade;
+	uint8_t ColorFailure;
+	uint32_t TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
+	char *p;
 	uint32_t CRCRead, CRCCalc;
 
-	//проверка и разбор структуры запроса
 	p = cmd + 2;
 	if( !StrToUint( p, &TableId, ';' ) )
-		error = 1;
+		goto cmd_parse_error;
 	if( ( p = strchr( p, ';' ) ) == NULL )
-		error = 1;		//;Конец таблицы
+		goto cmd_parse_error;
 	if( !StrToUint( p + 1, &Item, ';' ) )
-		error = 1;
+		goto cmd_parse_error;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
-		error = 1;		//;Конец индекса
+		goto cmd_parse_error;
 	if( !StrToUint( p + 1, &tmp, ';' ) )
-		error = 1; 
+		goto cmd_parse_error;
 	ColorDegrade = tmp;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
-		error = 1;		//;Конец цвета degrade
+		goto cmd_parse_error;
 	if( !StrToUint( p + 1, &tmp, ';' ) )
-		error = 1;
+		goto cmd_parse_error;
 	ColorFailure = tmp;
 	if( ( p = strchr( p + 1, ';' ) ) == NULL )
-		error = 1;		//;Конец цвета failure
-	if( strchr( p + 1, ';' ) )
-		error = 1;			 // ; на конце CRC быть не должно
-	if( p && !error )//успешно найдены точно 4 символа ";"
-	{	
-		//Проверка контрольной суммы	
-		p++;
-		if( !StrToUint( p, &CRCRead, ';' ) ) 
-			CRCRead = 0xFFFFFFFF;
-		CRCCalc = Calc_CRC16_ASCII( cmd, p - cmd );
-		*--p = 0;
-		if( CRCRead != CRCCalc )
-			error = 1; //Неверная контрольная сумма
-	}
-	else error = 1;
+		goto cmd_parse_error;
+	if( !StrToUint( p + 1, &CRCRead, ';' ) ) 
+		goto cmd_parse_error;
+	CRCCalc = Calc_CRC16_ASCII( cmd, p + 1 - cmd );
 
-	memcpy(rsp, cmd, 2);
-	p = rsp + 2;
-	// установка при отсутствии ошибок в запросе
-	if( !error && Protocol->Profile->SetEnable && TableId == 2 && Item && Item <= ParamsCnt)
-	{
-		if (PROFILE_SetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure))
-			goto error;
-		PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
-		if (PROFILE_GetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, Item, &ColorDegrade, &ColorFailure))
-			goto error;
-		p = UintToStr( p, TableId );
-		*p++ = ';';
-		p = UintToStr( p, Item );
-		*p++ = ';';
-		p = UintToStr( p, ColorDegrade ); 
-		*p++ = ';';
-		p = UintToStr( p, ColorFailure );
-		*p++ = ';';
-	}
-	else//Ошибка установки
-	{
-		p = UintToStr( p, TableId );
-		*p++ = ';';
-		p = UintToStr( p, Item );
-		strcpy( p, ";NA;" ); 
-		p += 4;
-	}
-	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );//Контрольная сумма и OD
-	*p++ = '\r';
-	*p = 0;
-	return p - rsp;
+	if (!Protocol->Profile->SetEnable)
+		goto cmd_exec_error;
+	
+	if (TableId != 2)
+		goto cmd_exec_error;
+	
+	if ((Item < 1) || (Item > TableSize))
+		goto cmd_exec_error;
+	
+	if( CRCRead != CRCCalc )
+		goto cmd_exec_error;
+	
+	if (PROFILE_SetAlarmColors(Protocol->Profile, PROFILE_TABLE_2, Item, ColorDegrade, ColorFailure))
+		goto cmd_exec_error;
+	PROFILE_FLASH_SaveConfigs(Protocol->ProfileFlash);
+	
+	strcpy(rsp, cmd);
+	return strlen(rsp);
 
-error:
+cmd_parse_error:
 	p = rsp;
 	*p++ = cmd[0];
 	*p++ = cmd[1];
@@ -524,7 +472,23 @@ error:
 	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
 	*p++ = '\r';
 	*p = 0;
-	return p - rsp;	
+	return p - rsp;
+	
+cmd_exec_error:
+	p = rsp;
+	*p++ = cmd[0];
+	*p++ = cmd[1];
+	p = UintToStr( p, TableId );
+	*p++ = ';';
+	p = UintToStr( p, Item );
+	*p++ = ';';
+	*p++ = 'N';
+	*p++ = 'A';
+	*p++ = ';';
+	p = UintToStr( p, Calc_CRC16_ASCII( rsp, p - rsp ) );
+	*p++ = '\r';
+	*p = 0;
+	return p - rsp;
 }
 
 int32_t PROFILE_PROTOCOL_GetColors(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
