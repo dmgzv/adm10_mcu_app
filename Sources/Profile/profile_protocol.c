@@ -294,6 +294,7 @@ error:
 
 static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * cmd, char * rsp)
 {
+	uint32_t Table;
 	uint32_t TableId;
 	uint32_t TableSize;
 	uint32_t Item;
@@ -325,31 +326,31 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 	switch (TableId)
 	{
 		case 1:
-			TableId = PROFILE_TABLE_1;
+			Table = PROFILE_TABLE_1;
 			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table1Size;
 			break;
 		case 2:
-			TableId = PROFILE_TABLE_2;
+			Table = PROFILE_TABLE_2;
 			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table2Size;
 			break;
 		case 3:
-			TableId = PROFILE_TABLE_3;
+			Table = PROFILE_TABLE_3;
 			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table3Size;
 			break;
 		case 4:
-			TableId = PROFILE_TABLE_4;
+			Table = PROFILE_TABLE_4;
 			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table4Size;
 			break;
 		case 5:
-			TableId = PROFILE_TABLE_5;
+			Table = PROFILE_TABLE_5;
 			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table5Size;
 			break;
 		case 8:
-			TableId = PROFILE_TABLE_8;
+			Table = PROFILE_TABLE_8;
 			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table8Size;
 			break;
 		case 103:
-			TableId = PROFILE_TABLE_103;
+			Table = PROFILE_TABLE_103;
 			TableSize = Protocol->Profile->Descr[Protocol->Profile->Idx]->Table103Size;
 			break;
 		default:
@@ -365,17 +366,17 @@ static uint32_t PROFILE_PROTOCOL_SetParam(PROFILE_PROTOCOL_T *Protocol, char * c
 	if( CRCRead != CRCCalc )
 		goto cmd_exec_error;
 	
-	if (PROFILE_CheckWriteAccess(Protocol->Profile, TableId, Item))
+	if (PROFILE_CheckWriteAccess(Protocol->Profile, Table, Item))
 		goto cmd_exec_error;
-	if (PROFILE_StringToValue(Protocol->Profile, TableId, Item, TempValue, Value))
+	if (PROFILE_StringToValue(Protocol->Profile, Table, Item, TempValue, Value))
 		goto cmd_exec_error;
-	if (PROFILE_CheckValue(Protocol->Profile, TableId, Item, TempValue, 0))
+	if (PROFILE_CheckValue(Protocol->Profile, Table, Item, TempValue, 0))
 		goto cmd_exec_error;
-	if (PROFILE_SetValue(Protocol->Profile, TableId, Item, TempValue))
+	if (PROFILE_SetValue(Protocol->Profile, Table, Item, TempValue))
 		goto cmd_exec_error;
-	if (PROFILE_SetValueDependencies(Protocol->Profile, TableId, Item, TempValue, 0))
+	if (PROFILE_SetValueDependencies(Protocol->Profile, Table, Item, TempValue, 0))
 		goto cmd_exec_error;
-	PROFILE_FLASH_SaveValue(Protocol->ProfileFlash, TableId, Item);
+	PROFILE_FLASH_SaveValue(Protocol->ProfileFlash, Table, Item);
 
 	strcpy(rsp, cmd);
 	return strlen(rsp);
