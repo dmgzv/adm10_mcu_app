@@ -14,7 +14,7 @@
 /* Private function prototypes -----------------------------------------------*/
 static void TFTP_BOOTLOADER_Thread(void const *argument);
 /* System Thread definition */
-osThreadDef(TFTP_BOOTLOADER, TFTP_BOOTLOADER_Thread, osPriorityNormal, 0, 256);
+osThreadDef(TFTP_BOOTLOADER, TFTP_BOOTLOADER_Thread, osPriorityNormal, 0, 512);
 osMessageQDef(TFTP_BOOTLOADER, TFTP_BOOTLOADER_QUEUE_SIZE, uint32_t);
 osMutexDef(TFTP_BOOTLOADER);
 
@@ -23,7 +23,6 @@ char TFTP_BOOTLOADER_InfoData[512];
 TFTP_BOOTLOADER_COMPONENT_T *TFTP_BOOTLOADER_COMPONENTS[] = 
 {
 	&TFTP_BOOTLOADER_MCU,
-	&TFTP_BOOTLOADER_FPGA,
 };
 
 TFTP_BOOTLOADER_T TFTP_BOOTLOADER = 
@@ -133,7 +132,9 @@ static void TFTP_BOOTLOADER_Thread(void const *argument)
 {
 	uint32_t i, j;
 	osEvent Event;
-	uint32_t IdleCompleteCntr, DownloadCompleteCntr, UpdateCompleteCntr;
+	uint32_t IdleCompleteCntr = 0;
+	uint32_t DownloadCompleteCntr = 0;
+	uint32_t UpdateCompleteCntr = 0;
 	
 	while(1)
   {

@@ -66,23 +66,23 @@ a lot of data that needs to be copied, this should be set high. */
 /* MEMP_NUM_NETBUF: the number of struct netbufs.*/
 #define MEMP_NUM_NETBUF   8
 /* MEMP_NUM_NETCONN: the number of struct netconns.*/
-#define MEMP_NUM_NETCONN   16
+#define MEMP_NUM_NETCONN   8
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
    should be set high. */
 #define MEMP_NUM_PBUF           8
 /* MEMP_NUM_UDP_PCB: the number of UDP protocol control blocks. One
    per active UDP "connection". */
-#define MEMP_NUM_UDP_PCB        2
+#define MEMP_NUM_UDP_PCB        3
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
    connections. */
-#define MEMP_NUM_TCP_PCB        12
+#define MEMP_NUM_TCP_PCB        6
 /* MEMP_NUM_TCP_PCB_LISTEN: the number of listening TCP
    connections. */
-#define MEMP_NUM_TCP_PCB_LISTEN 4
+#define MEMP_NUM_TCP_PCB_LISTEN 2
 /* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
    segments. */
-#define MEMP_NUM_TCP_SEG        12
+#define MEMP_NUM_TCP_SEG        8
 
 /* ---------- Pbuf options ---------- */
 /* PBUF_POOL_SIZE: the number of buffers in the pbuf pool. */
@@ -103,15 +103,15 @@ a lot of data that needs to be copied, this should be set high. */
 #define TCP_MSS                 (1500 - 40)	  /* TCP_MSS = (Ethernet MTU - IP header size - TCP header size) */
 
 /* TCP sender buffer space (bytes). */
-#define TCP_SND_BUF             (4*TCP_MSS)
+#define TCP_SND_BUF             (2*TCP_MSS)
 
 /*  TCP_SND_QUEUELEN: TCP sender buffer space (pbufs). This must be at least
   as much as (2 * TCP_SND_BUF/TCP_MSS) for things to work. */
 
-#define TCP_SND_QUEUELEN        (2* TCP_SND_BUF/TCP_MSS)
+#define TCP_SND_QUEUELEN        (3* TCP_SND_BUF/TCP_MSS)
 
 /* TCP receive window. */
-#define TCP_WND                 (2*TCP_MSS)
+#define TCP_WND                 TCP_MSS
 
 
 /* ---------- ICMP options ---------- */
@@ -219,8 +219,8 @@ The STM32F4xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define TCPIP_THREAD_STACKSIZE          512
 #define TCPIP_MBOX_SIZE                 16
 #define DEFAULT_UDP_RECVMBOX_SIZE       16
-#define DEFAULT_TCP_RECVMBOX_SIZE       16
-#define DEFAULT_ACCEPTMBOX_SIZE         16
+#define DEFAULT_TCP_RECVMBOX_SIZE       4
+#define DEFAULT_ACCEPTMBOX_SIZE         2
 #define DEFAULT_THREAD_STACKSIZE        256
 #define TCPIP_THREAD_PRIO               osPriorityHigh
 
