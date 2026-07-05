@@ -16,7 +16,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Stack size of the interface thread */
-#define BSP_NETIF_INPUT_THREAD_STACK_SIZE            ( 256 )
+#define BSP_NETIF_INPUT_THREAD_STACK_SIZE            ( 3 * 128 )
 
 /* Define those to better describe your network interface. */
 #define IFNAME0 's'
@@ -89,8 +89,8 @@ u32_t sys_now(void)
 static int32_t BSP_NETIF_Init(struct netif *netif, uint8_t Addr)
 {
 	ip_addr_t ipaddr;
-  ip_addr_t netmask;
-  ip_addr_t gw;	
+	ip_addr_t netmask;
+	ip_addr_t gw;
 	uint8_t mac[6];
 	
 	mac[0] = MAC_ADDR0;
@@ -108,9 +108,8 @@ static int32_t BSP_NETIF_Init(struct netif *netif, uint8_t Addr)
   IP_ADDR4(&ipaddr,IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3(Addr));
   IP_ADDR4(&netmask,NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
   IP_ADDR4(&gw,GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
-    
-  //netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &ethernet_input);
-	netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &tcpip_input);
+  
+  netif_add(netif, &ipaddr, &netmask, &gw, NULL, &__BSP_NETIF_Init, &tcpip_input);
   
   /*  Registers the default network interface. */
   netif_set_default(netif);
@@ -154,6 +153,14 @@ void BSP_ETH_Process(uint8_t Addr)
 	else
 	{
 		/* External faults absent */
+		if(ETH_RestartRequested())
+		{
+			if(netif_default != NULL)
+			{
+				BSP_NETIF_Deinit(&bsp_netif);
+			}
+			ETH_ClearRestartRequest();
+		}
 		if(netif_default == NULL)
 		{
 			BSP_NETIF_Init(&bsp_netif, Addr);

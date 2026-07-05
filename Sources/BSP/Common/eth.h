@@ -27,6 +27,8 @@
 
 int32_t ETH_Init(uint8_t *macaddress);
 void ETH_Deinit(void);
+int32_t ETH_RestartRequested(void);
+void ETH_ClearRestartRequest(void);
 err_t ETH_Transmit(struct pbuf *p);
 struct pbuf * ETH_Receive(void);
 
