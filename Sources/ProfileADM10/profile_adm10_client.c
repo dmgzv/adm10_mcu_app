@@ -1377,6 +1377,25 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetDataTypeValueDependencies(PROFILE_T 
 	return 0;
 }
 
+void PROFILE_ADM10_CLIENT_ResetCounters(uint32_t Idx)
+{
+	uint32_t i;
+	
+	ClEthRxPkts[Idx] = 0;
+	ClEthRxOcts[Idx] = 0;
+	ClEthRxErrs[Idx] = 0;
+	ClEthTxPkts[Idx] = 0;
+	ClEthTxOcts[Idx] = 0;
+	ClEthTxErrs[Idx] = 0;
+	PERF_Reset(&ClSDHRSPerf[Idx]);
+	PERF_Reset(&ClOTU1Perf[Idx]);
+	PERF_Reset(&ClODU1Perf[Idx]);
+	for (i = 0; i < PROFILE_ADM10_CLIENT_PORT_ODU0S; i++)
+	{
+		PERF_Reset(&ClODU0Perf[Idx][i]);
+	}
+}
+
 static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	uint32_t i;
@@ -1408,7 +1427,7 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_SETTINGS))
 	{
 		/* Set all config client parametes to factory*/
-		PROFILE_ADM10_CLIENT_SetFactoryConfigValues(Profile, Idx + 1);
+		PROFILE_ADM10_CLIENT_SetFactoryConfigValues(Profile, Idx);
 	}
 	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_THRESHOLDS))
 	{
@@ -1457,6 +1476,10 @@ static int32_t PROFILE_ADM10_CLIENT_SetClSetFactoryValueDependencies(PROFILE_T *
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_103, ProfileADM10PortRxClCatIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_103, ProfileADM10PortTxClInfoIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_103, ProfileADM10PortTxClCatIdx[Idx]);
+	}
+	if ((*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_CL_SET_FACTORY_ENUM_COUNTERS))
+	{
+		PROFILE_ADM10_CLIENT_ResetCounters(Idx);
 	}
 	return 0;
 }
@@ -2084,6 +2107,31 @@ static void PROFILE_ADM10_CLIENT_UpdateSDHRSAlarmsValue(PROFILE_T *Profile, uint
 			{
 				SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_RS_BIP;
 			}
+			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_ADM_10_IFACE_CNT) && (fpga_client_adm_10[Idx / 8].Iface[Idx % 8].__SDHRxStatus & FPGA_CLIENT_ADM_10_IFACE_SDH_RX_STATUS_MSREI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].__SDHRxStatus & FPGA_CLIENT_AGG_2X10_BS_IFACE_SDH_RX_STATUS_MSREI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CNT) && (fpga_client_agg_2x10_efec[Idx / 8].Client[Idx % 8].__SDHRxStatus & FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_SDH_RX_STATUS_MSREI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (Idx < 8)  && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].__SDHRxStatus & FPGA_CLIENT_AGG_2X10_BS_IFACE_SDH_RX_STATUS_MSREI_MASK))  || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && (((Idx % 8) / 2) < FPGA_CLIENT_ADM_2_5_CLIENT_CNT) && (Idx >= 8) && (Idx < 16) && (fpga_client_adm_2_5[Idx / 8].Client[(Idx % 8) / 2].__SDHRxStatus & FPGA_CLIENT_ADM_2_5_CLIENT_SDH_RX_STATUS_MSREI_MASK)))
+			{
+				SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_MS_REI;
+			}
+			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_ADM_10_IFACE_CNT) && (fpga_client_adm_10[Idx / 8].Iface[Idx % 8].__SDHRxStatus & FPGA_CLIENT_ADM_10_IFACE_SDH_RX_STATUS_MSRDI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].__SDHRxStatus & FPGA_CLIENT_AGG_2X10_BS_IFACE_SDH_RX_STATUS_MSRDI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CNT) && (fpga_client_agg_2x10_efec[Idx / 8].Client[Idx % 8].__SDHRxStatus & FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_SDH_RX_STATUS_MSRDI_MASK)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (Idx < 8)  && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].__SDHRxStatus & FPGA_CLIENT_AGG_2X10_BS_IFACE_SDH_RX_STATUS_MSRDI_MASK))  || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && (((Idx % 8) / 2) < FPGA_CLIENT_ADM_2_5_CLIENT_CNT) && (Idx >= 8) && (Idx < 16) && (fpga_client_adm_2_5[Idx / 8].Client[(Idx % 8) / 2].__SDHRxStatus & FPGA_CLIENT_ADM_2_5_CLIENT_SDH_RX_STATUS_MSRDI_MASK)))
+			{
+				SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_MS_RDI;
+			}
+			if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_ADM_10_IFACE_CNT) && (fpga_client_adm_10[Idx / 8].Iface[Idx % 8].SDHBIP24)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].SDHBIP24)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CNT) && (fpga_client_agg_2x10_efec[Idx / 8].Client[Idx % 8].SDHBIP24)) || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (Idx < 8)  && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].SDHBIP24))  || \
+				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && (((Idx % 8) / 2) < FPGA_CLIENT_ADM_2_5_CLIENT_CNT) && (Idx >= 8) && (Idx < 16) && (fpga_client_adm_2_5[Idx / 8].Client[(Idx % 8) / 2].SDHBIP24)))
+			{
+				SDHRSAlarms |= PROFILE_ADM10_CL_SDH_RS_ALARMS_BITMSK_MS_BIP;
+			}
+			
 		}			
 	}
 	else

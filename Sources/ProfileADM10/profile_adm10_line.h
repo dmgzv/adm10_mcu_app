@@ -11,6 +11,8 @@ int32_t PROFILE_ADM10_LINE_SetConfigValueDependencies(PROFILE_T *Profile, uint8_
 void PROFILE_ADM10_LINE_UpdateConfigs(PROFILE_T *Profile);
 void PROFILE_ADM10_LINE_UpdateValues(PROFILE_T *Profile);
 
+void PROFILE_ADM10_LINE_ResetCounters(uint32_t Idx);
+
 extern const uint16_t ProfileADM10DynamicLnSFPStateIdx[PROFILE_ADM10_LINE_PORTS];
 extern const uint16_t ProfileADM10DynamicLnSFPTempIdx[PROFILE_ADM10_LINE_PORTS];
 extern const uint16_t ProfileADM10DynamicLnSFPRxPwrIdx[PROFILE_ADM10_LINE_PORTS];

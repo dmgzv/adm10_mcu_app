@@ -11,6 +11,8 @@ int32_t PROFILE_ADM10_CLIENT_SetConfigValueDependencies(PROFILE_T *Profile, uint
 void PROFILE_ADM10_CLIENT_UpdateConfigs(PROFILE_T *Profile);
 void PROFILE_ADM10_CLIENT_UpdateValues(PROFILE_T *Profile);
 
+void PROFILE_ADM10_CLIENT_ResetCounters(uint32_t Idx);
+
 extern const uint16_t ProfileADM10DynamicClSFPStateIdx[PROFILE_ADM10_CLIENT_PORTS];
 extern const uint16_t ProfileADM10DynamicClSFPTempIdx[PROFILE_ADM10_CLIENT_PORTS];
 extern const uint16_t ProfileADM10DynamicClSFPRxPwrIdx[PROFILE_ADM10_CLIENT_PORTS];

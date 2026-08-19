@@ -922,6 +922,34 @@ static int32_t PROFILE_ADM10_LINE_SetLnOPU2SetPayloadDependencies(PROFILE_T *Pro
 	return 0;
 }
 
+void PROFILE_ADM10_LINE_ResetCounters(uint32_t Idx)
+{
+	uint32_t i;
+	
+	LnOTU2FECCorr[Idx] = 0;
+	LnOTU2FECUncorr[Idx] = 0;
+
+	LnOTU2EFECCorr[Idx][0] = 0;
+	LnOTU2EFECUncorr[Idx][0] = 0;
+	LnOTU2EFECBIP8[Idx][0] = 0;
+	LnODU2EFECBIP8[Idx][0] = 0;
+	LnOTU2EFECCorr[Idx][1] = 0;
+	LnOTU2EFECUncorr[Idx][1] = 0;
+	LnOTU2EFECBIP8[Idx][1] = 0;
+	LnODU2EFECBIP8[Idx][1] = 0;
+
+	PERF_Reset(&LnOTU2Perf[Idx]);
+	PERF_Reset(&LnODU2Perf[Idx]);
+	for (i = 0; i < PROFILE_ADM10_LINE_PORT_ODU1S; i++)
+	{
+		PERF_Reset(&LnODU1Perf[Idx][i]);
+	}
+	for (i = 0; i < PROFILE_ADM10_LINE_PORT_ODU0S; i++)
+	{
+		PERF_Reset(&LnODU0Perf[Idx][i]);
+	}
+}
+
 static int32_t PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t TableIdx, void *Value, uint32_t Idx, uint32_t Restore)
 {
 	float MinFreq, MaxFreq, FreqSp;
@@ -976,7 +1004,7 @@ static int32_t PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Pr
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnSetFECTypeIdx[Idx]);
 		}
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU2SetPayloadIdx[Idx]);
-		for (i = 0 ; i < 4; i++) 
+		for (i = 0 ; i < PROFILE_ADM10_LINE_PORT_ODU1S; i++) 
 		{
 			PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_3, ProfileADM10ConfigLnOPU1SetPayloadIdx[Idx][i]);
 		}
@@ -1040,6 +1068,10 @@ static int32_t PROFILE_ADM10_LINE_SetLnSetFactoryValueDependencies(PROFILE_T *Pr
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_103, ProfileADM10PortRxLnCatIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_103, ProfileADM10PortTxLnInfoIdx[Idx]);
 		PROFILE_SetFactoryValue(Profile, PROFILE_TABLE_103, ProfileADM10PortTxLnCatIdx[Idx]);
+	}
+	if ((*(uint32_t*)Value == PROFILE_ADM10_LN_SET_FACTORY_ENUM_ALL) || (*(uint32_t*)Value == PROFILE_ADM10_LN_SET_FACTORY_ENUM_COUNTERS))
+	{
+		PROFILE_ADM10_LINE_ResetCounters(Idx);
 	}
 	return 0;
 }

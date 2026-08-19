@@ -617,6 +617,8 @@ int32_t PROFILE_ADM10_CheckConfigValue(PROFILE_T *Profile, uint8_t Table, uint16
 
 int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
+	uint32_t i;
+	
 	if ((Idx == PROFILE_ADM10_SETDEFAULT_IDX) && (!Restore))
 		PROFILE_SetDefault(Profile);
 	
@@ -632,6 +634,13 @@ int32_t PROFILE_ADM10_SetConfigValueDependencies(PROFILE_T *Profile, uint8_t Tab
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_2);
 		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_PORTS))
 			PROFILE_SetFactoryTable(Profile, PROFILE_TABLE_103);
+		if (((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_ALL) || ((*(uint32_t*)Value) == PROFILE_ADM10_SET_FACTORY_ENUM_COUNTERS))
+		{
+			for (i = 0; i < PROFILE_ADM10_LINE_PORTS; i++)
+				PROFILE_ADM10_LINE_ResetCounters(i);
+			for (i = 0; i < PROFILE_ADM10_CLIENT_PORTS; i++)
+				PROFILE_ADM10_CLIENT_ResetCounters(i);
+		}
 	}
 	
 	if ((Idx == PROFILE_ADM10_RESET_IDX) && (!Restore))
