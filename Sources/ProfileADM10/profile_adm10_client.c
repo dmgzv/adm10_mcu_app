@@ -2173,7 +2173,15 @@ static void PROFILE_ADM10_CLIENT_UpdateEthAlarmsValue(PROFILE_T *Profile, uint32
 		{
 			EthAlarms |= PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_LOS;
 		}
-		else if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_ADM_10_IFACE_CNT) && (fpga_client_adm_10[Idx / 8].Iface[Idx % 8].EthRxErrs)) || \
+		else if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_ADM_10_IFACE_CNT) && (fpga_client_adm_10[Idx / 8].Iface[Idx % 8].__PCSStatus & FPGA_CLIENT_ADM_10_IFACE_PCSSTATUS_LOCK_MASK)) || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].__PCSStatus & FPGA_CLIENT_AGG_2X10_BS_IFACE_PCSSTATUS_LOCK_MASK))  || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CNT) && (fpga_client_agg_2x10_efec[Idx / 8].Client[Idx % 8].__PCSStatus & FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_PCSSTATUS_LOCK_MASK))  || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (Idx < 8) && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].__PCSStatus & FPGA_CLIENT_AGG_2X10_BS_IFACE_PCSSTATUS_LOCK_MASK))  || \
+			((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && (((Idx % 8) / 2) < FPGA_CLIENT_ADM_2_5_CLIENT_CNT) && (Idx >= 8) && (Idx < 16) && (fpga_client_adm_2_5[Idx / 8].Client[(Idx % 8) / 2].__PCSStatus & FPGA_CLIENT_ADM_2_5_CLIENT_PCSSTATUS_LOCK_MASK)))
+		{
+			EthAlarms |= PROFILE_ADM10_CL_ETH_ALARMS_BITMSK_LINK_DOWN;
+		}
+		else  if (((fpga_maxv.Mode == FPGA_MAXV_MODE_ADM_10) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_ADM_10_IFACE_CNT) && (fpga_client_adm_10[Idx / 8].Iface[Idx % 8].EthRxErrs)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_BS) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].EthRxErrs)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_2X10_EFEC) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_EFEC_CLIENT_CNT) && (fpga_client_agg_2x10_efec[Idx / 8].Client[Idx % 8].EthRxErrs)) || \
 				((fpga_maxv.Mode == FPGA_MAXV_MODE_AGG_10_BS_ADM_2_5) && ((Idx / 8) < BSP_FPGA_CLIENT_CNT) && ((Idx % 8) < FPGA_CLIENT_AGG_2X10_BS_IFACE_CNT) && (Idx < 8) && (fpga_client_agg_2x10_bs[Idx / 8].Iface[Idx % 8].EthRxErrs))  || \
