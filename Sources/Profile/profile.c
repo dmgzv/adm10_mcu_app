@@ -3,8 +3,10 @@
 #include "string_fnc.h"
 #include "crc.h"
 #include <string.h>
+#include <stdio.h>
 #include "cmsis_os.h"
 #include "bootloader.h"
+#include "log.h"
 
 #define PROFILE_DYNAMIC_PARAM_VALUE_PTR(Profile, Param) 							(void*)((uint32_t)((Profile)->Values->Dynamic) + (uint32_t)((Param)->Value))
 #define PROFILE_STATIC_PARAM_VALUE_PTR(Profile, Param) 								(void*)((uint32_t)((Profile)->Values->Static) + (uint32_t)((Param)->Value))
@@ -63,6 +65,38 @@ static uint32_t PROFILE_GetTableSize(PROFILE_T *Profile, uint8_t Table)
 	return 0;
 }
 
+int32_t PROFILE_CheckTableIdx(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
+{
+	uint32_t TableSize;
+	const char *DeviceClass = "";
+
+	if (!Profile)
+	{
+		LOG_Error("PROFILE", DeviceClass, "", "Profile = null");
+		return -1;
+	}
+	if ((!Profile->Descr) || (!Profile->Descr[Profile->Idx]))
+	{
+		LOG_Error("PROFILE", DeviceClass, "", "Profile descriptor = null");
+		return -1;
+	}
+
+	DeviceClass = Profile->Descr[Profile->Idx]->DeviceClass;
+
+	if (Idx == 0)
+	{
+		LOG_Error("PROFILE", DeviceClass, "", "Idx = 0");
+		return -1;
+	}
+	TableSize = PROFILE_GetTableSize(Profile, Table);
+	if (Idx > TableSize)
+	{
+		LOG_Error("PROFILE", DeviceClass, "", "Table = %d, TableSize = %d, Idx = %d", Table, TableSize, Idx);
+		return -1;
+	}
+	return 0;
+}
+
 uint32_t PROFILE_IsCalibParam(PROFILE_T *Profile, uint8_t Table, uint32_t Idx)
 {
 	switch (Table)
@@ -83,8 +117,8 @@ uint32_t PROFILE_IsCalibParam(PROFILE_T *Profile, uint8_t Table, uint32_t Idx)
 				return 1;
 			break;
 		case PROFILE_TABLE_103:
-			if (((Profile->Descr[Profile->Idx]->Table4[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) && 
-				((Profile->Descr[Profile->Idx]->Table4[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)) != PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)))
+			if (((Profile->Descr[Profile->Idx]->Table103[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) == PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE)) && 
+				((Profile->Descr[Profile->Idx]->Table103[Idx - 1].Access & PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)) != PROFILE_ACCESS(PROFILE_ACCESS_NONE, PROFILE_ACCESS_NONE, PROFILE_ACCESS_WRITE, PROFILE_ACCESS_NONE)))
 				return 1;
 			break;
 		default:
@@ -116,8 +150,8 @@ static int32_t PROFILE_InitValues(PROFILE_T *Profile)
 	if ( !Profile->Values->Mutex )
 		return -1;
 	
-	PROFILE_InitStates(Profile);
 	PROFILE_SetDefault(Profile);
+	PROFILE_InitStates(Profile);
 	
 	return 0;
 }
@@ -369,47 +403,50 @@ int32_t PROFILE_ValueToString(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, v
 	char *p = Str;
 	uint8_t Type;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	__PROFILE_GetType(Profile,Table,Idx, &Type);
 
 	if( !Str || !Value || !Len ) 
-		return -1;//На всякий случай, указатели должны быть ненулевые
+		return -1;//РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№, СѓРєР°Р·Р°С‚РµР»Рё РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РЅРµРЅСѓР»РµРІС‹Рµ
 	
 	switch( Type )
 	{
-		//разная печать в зависимости от типа параметра
+		//СЂР°Р·РЅР°СЏ РїРµС‡Р°С‚СЊ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР° РїР°СЂР°РјРµС‚СЂР°
 		case PROFILE_TYPE_BOOL:
 		case PROFILE_TYPE_UINT32:
-		case PROFILE_TYPE_CNT://счётчик без знака
+		case PROFILE_TYPE_CNT://СЃС‡С‘С‚С‡РёРє Р±РµР· Р·РЅР°РєР°
 		case PROFILE_TYPE_BITMSK:
 			p = UintToStr(p, *(unsigned int*)Value);
 			break;
-		case PROFILE_TYPE_ENUM://перечисление Без знака
-		case PROFILE_TYPE_INT32:// со знаком
-			p = IntToStr(p, *(int*)Value);// печать
+		case PROFILE_TYPE_ENUM://РїРµСЂРµС‡РёСЃР»РµРЅРёРµ Р‘РµР· Р·РЅР°РєР°
+		case PROFILE_TYPE_INT32:// СЃРѕ Р·РЅР°РєРѕРј
+			p = IntToStr(p, *(int*)Value);// РїРµС‡Р°С‚СЊ
 			break;
-		case PROFILE_TYPE_HEX32:// шестнадцатеричный формат печати
+		case PROFILE_TYPE_HEX32:// С€РµСЃС‚РЅР°РґС†Р°С‚РµСЂРёС‡РЅС‹Р№ С„РѕСЂРјР°С‚ РїРµС‡Р°С‚Рё
 			p = UintToHexStr(p, *(unsigned int*)Value);
 			break;
-		case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-		case PROFILE_TYPE_STRING:// произвольная строка
+		case PROFILE_TYPE_OID:// СЃС‚СЂРѕРєР° РёР· С‡РёСЃРµР», СЂР°Р·РґРµР»С‘РЅРЅС‹С… "."
+		case PROFILE_TYPE_STRING:// РїСЂРѕРёР·РІРѕР»СЊРЅР°СЏ СЃС‚СЂРѕРєР°
 			strncpy(p, Value, PROFILE_STRING_MAX_LEN);
 			p[PROFILE_STRING_MAX_LEN - 1] = 0;
 			p += strlen(p);
 			break;
-		case PROFILE_TYPE_FLOAT_1:// плавающая точка формата (+/-)ххх.х
+		case PROFILE_TYPE_FLOAT_1:// РїР»Р°РІР°СЋС‰Р°СЏ С‚РѕС‡РєР° С„РѕСЂРјР°С‚Р° (+/-)С…С…С….С…
 			p = FloatToStr( p, *(float*)Value, 1 );
 			break;
-		case PROFILE_TYPE_FLOAT_2:// плавающая точка формата (+/-)ххх.хx
+		case PROFILE_TYPE_FLOAT_2:// РїР»Р°РІР°СЋС‰Р°СЏ С‚РѕС‡РєР° С„РѕСЂРјР°С‚Р° (+/-)С…С…С….С…x
 			p = FloatToStr( p, *(float*)Value, 2 );
 			break;
-		case PROFILE_TYPE_FLOAT_3:// плавающая точка формата (+/-)ххх.хxx
+		case PROFILE_TYPE_FLOAT_3:// РїР»Р°РІР°СЋС‰Р°СЏ С‚РѕС‡РєР° С„РѕСЂРјР°С‚Р° (+/-)С…С…С….С…xx
 			p = FloatToStr( p, *(float*)Value, 2 );
 			break;
-		case PROFILE_TYPE_FLOAT_E:// плавающая точка формата (+/-)x.xxe-xx
+		case PROFILE_TYPE_FLOAT_E:// РїР»Р°РІР°СЋС‰Р°СЏ С‚РѕС‡РєР° С„РѕСЂРјР°С‚Р° (+/-)x.xxe-xx
 			sprintf( p, "%.2e", *(float*)Value );
 			p += strlen(Str);
 			break;
-		case PROFILE_TYPE_IP://массив из 4 байтов, выводится на печать в формате ххх.ххх.ххх.ххх
+		case PROFILE_TYPE_IP://РјР°СЃСЃРёРІ РёР· 4 Р±Р°Р№С‚РѕРІ, РІС‹РІРѕРґРёС‚СЃСЏ РЅР° РїРµС‡Р°С‚СЊ РІ С„РѕСЂРјР°С‚Рµ С…С…С….С…С…С….С…С…С….С…С…С…
 			p = IPToStr( p, *(unsigned int*)Value);
 			break;
 		case PROFILE_TYPE_UINT64:
@@ -419,7 +456,7 @@ int32_t PROFILE_ValueToString(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, v
 		default:
 			return -1;		
 	}
-	*Len = p - Str; // длина напечатанного
+	*Len = p - Str; // РґР»РёРЅР° РЅР°РїРµС‡Р°С‚Р°РЅРЅРѕРіРѕ
 	return 0;
 }
 
@@ -427,27 +464,30 @@ int32_t PROFILE_StringToValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, v
 {
 	uint8_t Type;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	__PROFILE_GetType(Profile,Table,Idx, &Type);
 	
 	if( !Str || !Value ) 
-		return -1;//На всякий случай
+		return -1;//РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 	switch( Type )
 	{
 		case PROFILE_TYPE_BOOL:
 		case PROFILE_TYPE_ENUM:
 		case PROFILE_TYPE_BITMSK:
 		case PROFILE_TYPE_UINT32:
-		case PROFILE_TYPE_CNT://счётчик - беззнаковое
+		case PROFILE_TYPE_CNT://СЃС‡С‘С‚С‡РёРє - Р±РµР·Р·РЅР°РєРѕРІРѕРµ
 			if( !StrToUint( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё СЃС‚СЂРѕРєРѕРІРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РІ Р·РІРїСЂРѕСЃРµ Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІ С‡РёСЃР»Рѕ
 			break;
-		case PROFILE_TYPE_INT32://Со знаком
+		case PROFILE_TYPE_INT32://РЎРѕ Р·РЅР°РєРѕРј
 			if( !StrToInt( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё СЃС‚СЂРѕРєРѕРІРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РІ Р·РІРїСЂРѕСЃРµ Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІ С‡РёСЃР»Рѕ
 			break;
 		case PROFILE_TYPE_HEX32:
 			if( !HexStrToUint( Str, Value, 0 ) )
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё СЃС‚СЂРѕРєРѕРІРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РІ Р·РІРїСЂРѕСЃРµ Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІ С‡РёСЃР»Рѕ
 			break;
 		case PROFILE_TYPE_STRING:
 		case PROFILE_TYPE_OID:
@@ -459,11 +499,11 @@ int32_t PROFILE_StringToValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, v
 		case PROFILE_TYPE_FLOAT_3:
 		case PROFILE_TYPE_FLOAT_E:
 			if( !StrToFloat( Str, Value, 0 ) ) 
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё СЃС‚СЂРѕРєРѕРІРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РІ Р·РІРїСЂРѕСЃРµ Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІ С‡РёСЃР»Рѕ
 			break;
 		case PROFILE_TYPE_IP:		
 			if( !StrToIP( Str, Value ))
-				return -1;// проверка корректности строкового представления в звпросе и преобразование в число
+				return -1;// РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё СЃС‚СЂРѕРєРѕРІРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РІ Р·РІРїСЂРѕСЃРµ Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РІ С‡РёСЃР»Рѕ
 			break;
 		case PROFILE_TYPE_UINT64:
 			*(uint64_t*)Value = strtoull(Str, &Str, 10);
@@ -622,14 +662,55 @@ int32_t PROFILE_CheckConfigValueRange(PROFILE_T *Profile, uint8_t Table, uint16_
 					return -1;
 			}
 			break;
+		case PROFILE_TYPE_STRING:
+			break;
 		default:
 			return -1;
 	}
 	return 0;
 }
 
+int32_t PROFILE_CheckTypeValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value)
+{
+	uint32_t i;
+	uint8_t Type;
+	char* Str;
+
+	__PROFILE_GetType(Profile, Table, Idx, &Type);
+
+	switch (Type)
+	{
+		case PROFILE_TYPE_STRING:
+			Str = Value;
+			for (i = 0; i < PROFILE_STRING_MAX_LEN; i++)
+			{
+				if (Str[i] == 0)
+					break;
+				if (Str[i] <= 0x1F)
+					return -1;
+				if (Str[i] == 0x7F)
+					return -1;
+				if (Str[i] == '@')
+					return -1;
+				if (Str[i] == ';')
+					return -1;
+			}
+			if (i == PROFILE_STRING_MAX_LEN)
+				return -1;
+			break;
+		default:
+			break;
+	}
+	return 0;
+}
+
 int32_t PROFILE_CheckValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
+	if (PROFILE_CheckTypeValue(Profile, Table, Idx, Value))
+		return -1;
 	if ((Table == PROFILE_TABLE_4) && (!Restore))
 		return PROFILE_CheckThresholdValue(Profile, Table, Idx, Value);
 	if (Table == PROFILE_TABLE_3)
@@ -644,6 +725,9 @@ int32_t PROFILE_CheckValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void
 
 int32_t PROFILE_SetValueDependencies(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint32_t Restore)
 {
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Table == PROFILE_TABLE_3)
 		return PROFILE_SetConfigValueDependencies(Profile, Table, Idx, Value, Restore);
 	return 0;
@@ -655,6 +739,9 @@ int32_t PROFILE_SetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 	uint8_t Type;
 	uint8_t *State;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return -1;
 	
@@ -699,8 +786,8 @@ int32_t PROFILE_SetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 			}
 			osMutexRelease( Profile->Values->Mutex );
 			break;
-		case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-		case PROFILE_TYPE_STRING:// произвольная строка
+		case PROFILE_TYPE_OID:// СЃС‚СЂРѕРєР° РёР· С‡РёСЃРµР», СЂР°Р·РґРµР»С‘РЅРЅС‹С… "."
+		case PROFILE_TYPE_STRING:// РїСЂРѕРёР·РІРѕР»СЊРЅР°СЏ СЃС‚СЂРѕРєР°
 			osMutexWait( Profile->Values->Mutex, osWaitForever );
 			if (strncmp((char*)Value, (char*)SetValue, PROFILE_STRING_MAX_LEN))
 			{
@@ -725,6 +812,9 @@ int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 	uint8_t Type;
 	uint8_t *State;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return -1;
 	
@@ -755,8 +845,8 @@ int32_t PROFILE_GetValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *
 			memcpy(GetValue, Value, sizeof(uint64_t));
 			osMutexRelease( Profile->Values->Mutex );
 			break;
-		case PROFILE_TYPE_OID:// строка из чисел, разделённых "."
-		case PROFILE_TYPE_STRING:// произвольная строка
+		case PROFILE_TYPE_OID:// СЃС‚СЂРѕРєР° РёР· С‡РёСЃРµР», СЂР°Р·РґРµР»С‘РЅРЅС‹С… "."
+		case PROFILE_TYPE_STRING:// РїСЂРѕРёР·РІРѕР»СЊРЅР°СЏ СЃС‚СЂРѕРєР°
 			osMutexWait( Profile->Values->Mutex, osWaitForever );
 			strncpy( (char*)GetValue, (char*)Value, PROFILE_STRING_MAX_LEN);
 			((char*)GetValue)[ PROFILE_STRING_MAX_LEN - 1 ] = 0;
@@ -772,6 +862,9 @@ int32_t PROFILE_SetFactoryValue(PROFILE_T *Profile, uint8_t Table, uint16_t Idx)
 {
 	void *DefaultValue;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return -1;
 	
@@ -784,6 +877,9 @@ int32_t PROFILE_SetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, 
 {
 	uint8_t *DegradeColor, *FailureColor;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return-1;
 	
@@ -803,6 +899,9 @@ int32_t PROFILE_GetAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, 
 {
 	uint8_t *DegradeColor, *FailureColor;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return -1;
 	
@@ -826,6 +925,9 @@ int32_t PROFILE_SetFactoryAlarmColors(PROFILE_T *Profile, uint8_t Table, uint16_
 {
 	uint8_t *DefaultDegradeColor, *DefaultFailureColor;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return -1;
 		
@@ -868,6 +970,7 @@ int32_t PROFILE_SetDefault(PROFILE_T *Profile)
 		return - 1;
 	
 	osMutexWait( Profile->Values->Mutex, osWaitForever );
+	memset(Profile->Values->Dynamic, 0, Profile->Descr[Profile->Idx]->DynamicValuesSize);
 	memcpy(Profile->Values->Calib, Profile->Descr[Profile->Idx]->CalibDefaultValues, Profile->Descr[Profile->Idx]->CalibValuesSize);
 	memcpy(Profile->Values->Static, Profile->Descr[Profile->Idx]->StaticDefaultValues, Profile->Descr[Profile->Idx]->StaticValuesSize);
 	osMutexRelease( Profile->Values->Mutex );
@@ -894,6 +997,9 @@ int32_t PROFILE_GetColor(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_
 	uint8_t *DegradeColor;
 	uint8_t *FailureColor;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return -1;
 	
@@ -1051,6 +1157,9 @@ int32_t PROFILE_GetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_
 {
 	uint8_t *State;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return -1;
 	
@@ -1070,6 +1179,9 @@ int32_t PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_
 	uint8_t *State;
 	void *ParamValueThr;
 	
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+
 	if (Profile->ValuesLock)
 		return -1;
 	
@@ -1095,6 +1207,10 @@ int32_t PROFILE_SetState(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, uint8_
 
 int32_t PROFILE_UpdateParam(PROFILE_T *Profile, uint8_t Table, uint16_t Idx, void *Value, uint8_t State)
 {
+	if (PROFILE_CheckTableIdx(Profile, Table, Idx))
+		return -1;
+	if (PROFILE_CheckTypeValue(Profile, Table, Idx, Value))
+		return -1;
 	if (PROFILE_SetValue(Profile, Table, Idx, Value))
 		return -1;
 	if (PROFILE_SetState(Profile, Table, Idx, State))
