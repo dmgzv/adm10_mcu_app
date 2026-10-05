@@ -510,7 +510,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGTARM</Key>
-          <Name>(1010=2332,190,2782,747,0)(1007=3407,311,3594,586,0)(1008=2962,84,3338,320,0)(1009=-1,-1,-1,-1,0)(1012=2055,169,2532,484,0)</Name>
+          <Name>(1010=1470,190,1920,747,0)(1007=1733,311,1920,586,0)(1008=1544,84,1920,320,0)(1009=-1,-1,-1,-1,0)(1012=1443,169,1920,484,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -1178,7 +1178,7 @@
 
   <Group>
     <GroupName>BSP/Devices</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1554,7 +1554,7 @@
 
   <Group>
     <GroupName>BSP</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -1994,7 +1994,7 @@
       <GroupNumber>9</GroupNumber>
       <FileNumber>99</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Sources\ProfileADM10\profile_adm10_line.c</PathWithFileName>
@@ -2574,7 +2574,7 @@
 
   <Group>
     <GroupName>Shell</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
